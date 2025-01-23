@@ -1,0 +1,55 @@
+---
+name: Change
+about: A System Change.
+title: ''
+labels: ''
+assignees: ''
+type: Change
+
+---
+**Type**: Feature | Fix | System
+
+# Outcome
+After this change is complete TODO
+
+# Size
+Extra-Large | Large | Medium | Small | Extra-Small
+
+# Justification
+TODO
+
+# Prioritization
+High | Medium | Low | See LINK
+
+# Plan
+TODO
+
+# Estimate
+TODO
+
+# Plan Endorsement
+TODO
+
+# Execution Result
+TODO
+
+# Communication
+TODO
+
+# Verification Result
+TODO
+
+# Completion
+TODO
+
+# Evaluation
+TODO
+
+# Validation
+TODO
+
+# Follow Up
+TODO
+
+# Finished
+TODO
