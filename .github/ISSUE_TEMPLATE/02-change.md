@@ -7,15 +7,18 @@ assignees: ''
 type: Change
 
 ---
-**Type**: Feature | Fix | System
+# Description
 
-# Outcome
+**Source**:
+Feature | Change | Observation TODO
+
+## Outcome
 After this change is complete TODO
 
-# Size
+## Size
 Extra-Large | Large | Medium | Small | Extra-Small
 
-# Justification
+## Justification
 TODO
 
 # Prioritization
@@ -24,31 +27,35 @@ High | Medium | Low | See LINK
 # Plan
 TODO
 
-# Estimate
+## Estimate
 TODO
 
-# Plan Endorsement
+## Plan Endorsement
 TODO
 
-# Execution Result
+# Implementation
+
+## Execution Result
 TODO
 
-# Communication
+## Communication
 TODO
 
-# Verification Result
+## Verification Result
 TODO
 
 # Completion
 TODO
 
-# Evaluation
+# Review
+
+## Evaluation
 TODO
 
-# Validation
+## Validation
 TODO
 
-# Follow Up
+## Follow Up
 TODO
 
 # Finished
