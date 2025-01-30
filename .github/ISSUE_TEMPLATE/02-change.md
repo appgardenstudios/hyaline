@@ -9,8 +9,8 @@ type: Change
 ---
 # Description
 
-**Source**:
-Feature | Change | Observation TODO
+## Source(s)
+* Feature | Change | Observation: TODO
 
 ## Outcome
 After this change is complete TODO
