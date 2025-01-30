@@ -7,15 +7,16 @@ assignees: ''
 type: Feature
 
 ---
-**Type**: Major | Minor
+# Definition
+TODO
 
-# Need
+## Need
 As a user, I need the ability to TODO
 
-# Outcome
+## Outcome
 After this feature is complete I will be able to TODO
 
-# Justification
+## Justification
 TODO
 
 # Prioritization
@@ -24,31 +25,34 @@ High | Medium | Low
 # Design
 TODO
 
-# Estimate
+## Estimate
 TODO
 
-# Design Endorsement
+## Design Endorsement
+TODO
+# Build
+
+## Estimate Update(s)
 TODO
 
-# Estimate Update(s)
+## Verification
 TODO
 
-# Verification
-TODO
-
-# Communication
+## Communication
 TODO
 
 # Completion
 TODO
 
-# Review
+# Validation
+
+## Review
 TODO
 
-# Confirmation
+## Confirmation
 TODO
 
-# Follow Up
+## Follow Up
 TODO
 
 # Finished
