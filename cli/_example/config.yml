@@ -1,0 +1,13 @@
+systems:
+  - id: local
+    code:
+      - id: app
+        extractor: fs
+        path: ./
+        preset: js
+    docs:
+      - id: docs
+        type: md
+        extractor: fs
+        path: ./
+        glob: ./docs/**/*.md
