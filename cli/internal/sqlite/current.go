@@ -20,6 +20,7 @@ type CurrentSystem struct {
 }
 
 func InsertCurrentSystem(row CurrentSystem, db *sql.DB) (err error) {
+	// TODO switch these to named inserts
 	stmt, err := db.Prepare(`insert into system values(?)`)
 	if err != nil {
 		return
@@ -59,6 +60,43 @@ func InsertCurrentFile(row CurrentFile, db *sql.DB) (err error) {
 		return
 	}
 	stmt.Exec(row.ID, row.CodeID, row.SystemID, row.RelativePath, row.RawData)
+
+	return
+}
+
+type CurrentDocumentation struct {
+	ID       string
+	SystemID string
+	Type     string
+	Path     string
+}
+
+func InsertCurrentDocumentation(row CurrentDocumentation, db *sql.DB) (err error) {
+	stmt, err := db.Prepare(`insert into documentation values(?, ?, ?, ?)`)
+	if err != nil {
+		return
+	}
+	stmt.Exec(row.ID, row.SystemID, row.Type, row.Path)
+
+	return
+}
+
+type CurrentDocument struct {
+	ID              string
+	DocumentationID string
+	SystemID        string
+	RelativePath    string
+	Format          string
+	RawData         string
+	ExtractedText   string
+}
+
+func InsertCurrentDocument(row CurrentDocument, db *sql.DB) (err error) {
+	stmt, err := db.Prepare(`insert into document values(?, ?, ?, ?, ?, ?, ?)`)
+	if err != nil {
+		return
+	}
+	stmt.Exec(row.ID, row.DocumentationID, row.SystemID, row.RelativePath, row.Format, row.RawData, row.ExtractedText)
 
 	return
 }

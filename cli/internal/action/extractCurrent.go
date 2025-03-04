@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"hyaline/internal/code"
 	"hyaline/internal/config"
+	"hyaline/internal/docs"
 	"hyaline/internal/sqlite"
 	"os"
 	"path/filepath"
@@ -62,7 +63,10 @@ func ExtractCurrent(args *ExtractCurrentArgs) error {
 	}
 
 	// Extract/Insert Docs
-	// TODO
+	err = docs.ExtractCurrent(args.System, cfg, db)
+	if err != nil {
+		return err
+	}
 
 	return nil
 }
