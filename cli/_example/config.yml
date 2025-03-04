@@ -9,5 +9,5 @@ systems:
       - id: docs
         type: md
         extractor: fs
-        path: ./
-        glob: ./docs/**/*.md
+        path: ./_example/
+        glob: ./**/*.md

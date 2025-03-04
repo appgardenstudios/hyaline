@@ -44,3 +44,21 @@ func InsertCurrentCode(row CurrentCode, db *sql.DB) (err error) {
 
 	return
 }
+
+type CurrentFile struct {
+	ID           string
+	CodeID       string
+	SystemID     string
+	RelativePath string
+	RawData      string
+}
+
+func InsertCurrentFile(row CurrentFile, db *sql.DB) (err error) {
+	stmt, err := db.Prepare(`insert into file values(?, ?, ?, ?, ?)`)
+	if err != nil {
+		return
+	}
+	stmt.Exec(row.ID, row.CodeID, row.SystemID, row.RelativePath, row.RawData)
+
+	return
+}
