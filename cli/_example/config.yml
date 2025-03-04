@@ -3,7 +3,7 @@ systems:
     code:
       - id: app
         extractor: fs
-        path: ./
+        path: ./_example/
         preset: js
     docs:
       - id: docs

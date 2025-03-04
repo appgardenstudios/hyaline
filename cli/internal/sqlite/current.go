@@ -14,3 +14,33 @@ create table section(id, document_id, documentation_id, system_id, parent_sectio
 
 	return
 }
+
+type CurrentSystem struct {
+	ID string
+}
+
+func InsertCurrentSystem(row CurrentSystem, db *sql.DB) (err error) {
+	stmt, err := db.Prepare(`insert into system values(?)`)
+	if err != nil {
+		return
+	}
+	stmt.Exec(row.ID)
+
+	return
+}
+
+type CurrentCode struct {
+	ID       string
+	SystemID string
+	Path     string
+}
+
+func InsertCurrentCode(row CurrentCode, db *sql.DB) (err error) {
+	stmt, err := db.Prepare(`insert into code values(?, ?, ?)`)
+	if err != nil {
+		return
+	}
+	stmt.Exec(row.ID, row.SystemID, row.Path)
+
+	return
+}

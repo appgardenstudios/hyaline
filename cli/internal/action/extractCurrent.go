@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"hyaline/internal/code"
 	"hyaline/internal/config"
 	"hyaline/internal/sqlite"
 	"os"
@@ -22,7 +23,7 @@ func ExtractCurrent(args *ExtractCurrentArgs) error {
 	fmt.Println("Extracting Current", args)
 
 	// Load Config
-	_, err := config.Load(args.Config)
+	cfg, err := config.Load(args.Config)
 	if err != nil {
 		return err
 	}
@@ -32,7 +33,6 @@ func ExtractCurrent(args *ExtractCurrentArgs) error {
 	if err != nil {
 		return err
 	}
-	fmt.Println(absPath)
 	// Error if file exists as we want to ensure we start from an empty DB
 	// NOTE this is fragile as the file could be created by another program between here and
 	// when we open the DB
@@ -50,14 +50,19 @@ func ExtractCurrent(args *ExtractCurrentArgs) error {
 		return err
 	}
 
-	// Extract Code
-	// TODO
+	// Insert System
+	sqlite.InsertCurrentSystem(sqlite.CurrentSystem{
+		ID: args.System,
+	}, db)
 
-	// Extract Docs
-	// TODO
+	// Extract/Insert Code
+	err = code.ExtractCurrent(args.System, cfg, db)
+	if err != nil {
+		return err
+	}
 
-	// Cleanup
-	// TODO close sqlite
+	// Extract/Insert Docs
+	// TODO
 
 	return nil
 }
