@@ -1,6 +1,7 @@
 package config
 
 import (
+	"errors"
 	"log/slog"
 	"os"
 	"path/filepath"
@@ -55,8 +56,33 @@ func Load(path string) (cfg *Config, err error) {
 		return
 	}
 
-	// Validate config
-	// TODO Ensure that system/code/documentation combinations are unique (see below)
+	// Validate
+	slog.Debug("Load config validating")
+	codeCombinations := map[string]struct{}{}
+	docsCombinations := map[string]struct{}{}
+	for _, system := range cfg.Systems {
+		// Ensure that system/code combinations are unique
+		for _, code := range system.Code {
+			id := system.ID + "-" + code.ID
+			if _, ok := codeCombinations[id]; ok {
+				slog.Debug("Load found duplicate system/code combination", "error", err)
+				err = errors.New("duplicate system/code combination detected: " + system.ID + " > " + code.ID)
+				return
+			}
+			codeCombinations[id] = struct{}{}
+		}
+
+		// Ensure that system/docs combinations are unique
+		for _, doc := range system.Docs {
+			id := system.ID + "-" + doc.ID
+			if _, ok := docsCombinations[id]; ok {
+				slog.Debug("Load found duplicate system/docs combination", "error", err)
+				err = errors.New("duplicate system/docs combination detected: " + system.ID + " > " + doc.ID)
+				return
+			}
+			docsCombinations[id] = struct{}{}
+		}
+	}
 
 	slog.Debug("Load config complete")
 	return

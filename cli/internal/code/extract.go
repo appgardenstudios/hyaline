@@ -53,7 +53,7 @@ func ExtractCurrent(system string, cfg *config.Config, db *sql.DB) (err error) {
 		// Get our absolute path
 		absPath, err := filepath.Abs(c.Path)
 		if err != nil {
-			slog.Debug("ExtractCurrent could not determine absolute path", "error", err, "path", c.Path)
+			slog.Debug("ExtractCurrent could not determine absolute code path", "error", err, "path", c.Path)
 			return err
 		}
 		absPath += string(os.PathSeparator)
@@ -74,7 +74,7 @@ func ExtractCurrent(system string, cfg *config.Config, db *sql.DB) (err error) {
 		glob := filepath.Join(absPath, preset.Glob)
 		matches, err := zglob.Glob(glob)
 		if err != nil {
-			slog.Debug("ExtractCurrent could not find files with glob", "error", err)
+			slog.Debug("ExtractCurrent could not find code files with glob", "error", err)
 			return err
 		}
 		for _, file := range matches {
@@ -96,7 +96,7 @@ func ExtractCurrent(system string, cfg *config.Config, db *sql.DB) (err error) {
 		for file := range files {
 			contents, err := os.ReadFile(file)
 			if err != nil {
-				slog.Debug("ExtractCurrent could not read file", "error", err, "file", file)
+				slog.Debug("ExtractCurrent could not read code file", "error", err, "file", file)
 				return err
 			}
 			relativePath := strings.TrimPrefix(file, absPath)

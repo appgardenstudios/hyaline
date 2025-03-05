@@ -5,6 +5,7 @@ import (
 	"errors"
 	"hyaline/internal/config"
 	"hyaline/internal/sqlite"
+	"log/slog"
 	"os"
 	"path/filepath"
 	"strings"
@@ -21,12 +22,14 @@ func ExtractCurrent(system string, cfg *config.Config, db *sql.DB) (err error) {
 		}
 	}
 	if targetSystem == nil {
-		// TODO better error message here
-		return errors.New("system not found")
+		slog.Debug("ExtractCurrent target system not found", "system", system)
+		return errors.New("system not found: " + system)
 	}
+	slog.Debug("ExtractCurrent extracting docs for target system", "system", system)
 
 	// Process each docs source
 	for _, d := range targetSystem.Docs {
+		slog.Debug("ExtractCurrent extracting docs", "system", system, "docs", d.ID)
 		// Insert Documentation
 		documentationId := targetSystem.ID + "-" + d.ID
 		err = sqlite.InsertCurrentDocumentation(sqlite.CurrentDocumentation{
@@ -39,21 +42,26 @@ func ExtractCurrent(system string, cfg *config.Config, db *sql.DB) (err error) {
 		// Get our absolute path
 		absPath, err := filepath.Abs(d.Path)
 		if err != nil {
+			slog.Debug("ExtractCurrent could not determine absolute docs path", "error", err, "path", d.Path)
 			return err
 		}
 		absPath += string(os.PathSeparator)
+		slog.Debug("ExtractCurrent extracting docs from path", "absPath", absPath)
 
 		// Get files from our fully qualified glob path
 		glob := filepath.Join(absPath, d.Glob)
 		files, err := zglob.Glob(glob)
 		if err != nil {
+			slog.Debug("ExtractCurrent could not find doc files with glob", "error", err)
 			return err
 		}
+		slog.Debug("ExtractCurrent found the following doc file matches using glob", "glob", glob, "matches", files)
 
 		// Insert documents/sections
 		for _, file := range files {
 			contents, err := os.ReadFile(file)
 			if err != nil {
+				slog.Debug("ExtractCurrent could not read doc file", "error", err, "file", file)
 				return err
 			}
 			relativePath := strings.TrimPrefix(file, absPath)
@@ -67,6 +75,7 @@ func ExtractCurrent(system string, cfg *config.Config, db *sql.DB) (err error) {
 				ExtractedText:   extractMarkdownText(contents),
 			}, db)
 			if err != nil {
+				slog.Debug("ExtractCurrent could not insert document", "error", err)
 				return err
 			}
 
@@ -75,6 +84,7 @@ func ExtractCurrent(system string, cfg *config.Config, db *sql.DB) (err error) {
 			sections := getMarkdownSections(strings.Split(cleanContent, "\n"))
 			err = insertSectionAndChildren(sections, 0, relativePath, documentationId, targetSystem.ID, d.Type, db)
 			if err != nil {
+				slog.Debug("ExtractCurrent could not insert section", "error", err)
 				return err
 			}
 		}
@@ -102,6 +112,7 @@ func insertSectionAndChildren(s *section, order int, documentId string, document
 		ExtractedText:   extractMarkdownText([]byte(s.Content)),
 	}, db)
 	if err != nil {
+		slog.Debug("insertSectionAndChildren could not insert section", "error", err)
 		return err
 	}
 
