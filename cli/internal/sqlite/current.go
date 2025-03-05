@@ -25,7 +25,6 @@ type CurrentSystem struct {
 }
 
 func InsertCurrentSystem(row CurrentSystem, db *sql.DB) (err error) {
-	// TODO switch these to named inserts
 	stmt, err := db.Prepare(`
 insert into system
 	(id)
