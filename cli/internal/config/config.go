@@ -1,6 +1,7 @@
 package config
 
 import (
+	"log/slog"
 	"os"
 	"path/filepath"
 
@@ -33,13 +34,16 @@ type Doc struct {
 }
 
 func Load(path string) (cfg *Config, err error) {
+	slog.Debug("Load config starting")
 	// Read file from disk
 	absPath, err := filepath.Abs(path)
 	if err != nil {
+		slog.Debug("Load could not get an absolute path from the provided path", "path", path, "error", err)
 		return
 	}
 	data, err := os.ReadFile(absPath)
 	if err != nil {
+		slog.Debug("Load could not read config file from disk", "error", err)
 		return
 	}
 
@@ -47,12 +51,13 @@ func Load(path string) (cfg *Config, err error) {
 	cfg = &Config{}
 	err = yaml.Unmarshal(data, cfg)
 	if err != nil {
+		slog.Debug("Load could not unmarshal yaml config", "error", err)
 		return
 	}
 
 	// Validate config
 	// TODO Ensure that system/code/documentation combinations are unique (see below)
 
-	// Return
+	slog.Debug("Load config complete")
 	return
 }

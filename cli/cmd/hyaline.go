@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"hyaline/internal/action"
 	"log"
+	"log/slog"
 	"os"
 
 	"github.com/urfave/cli/v2"
@@ -12,12 +13,22 @@ import (
 var Version = "unknown"
 
 func main() {
+	var logLevel = new(slog.LevelVar)
+	h := slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{Level: logLevel})
+	slog.SetDefault(slog.New(h))
+
 	app := &cli.App{
 		Name:  "hyaline",
 		Usage: "Maintain Your Documentation - Find, Fix, and Prevent Documentation Issues",
 		Action: func(*cli.Context) error {
 			fmt.Println("hello world")
 			return nil
+		},
+		Flags: []cli.Flag{
+			&cli.BoolFlag{
+				Name:  "debug",
+				Usage: "Include debug output",
+			},
 		},
 		Commands: []*cli.Command{
 			{
@@ -53,6 +64,11 @@ func main() {
 							},
 						},
 						Action: func(cCtx *cli.Context) error {
+							// Set log level
+							if cCtx.Bool("debug") {
+								logLevel.Set(slog.LevelDebug)
+							}
+
 							err := action.ExtractCurrent(&action.ExtractCurrentArgs{
 								Config: cCtx.String("config"),
 								System: cCtx.String("system"),

@@ -3,11 +3,11 @@ package action
 import (
 	"database/sql"
 	"errors"
-	"fmt"
 	"hyaline/internal/code"
 	"hyaline/internal/config"
 	"hyaline/internal/docs"
 	"hyaline/internal/sqlite"
+	"log/slog"
 	"os"
 	"path/filepath"
 
@@ -21,17 +21,24 @@ type ExtractCurrentArgs struct {
 }
 
 func ExtractCurrent(args *ExtractCurrentArgs) error {
-	fmt.Println("Extracting Current", args)
+	slog.Info("Extracting current code and docs")
+	slog.Debug("ExtractCurrent Args", slog.Group("args",
+		"config", args.Config,
+		"system", args.System,
+		"output", args.Output,
+	))
 
 	// Load Config
 	cfg, err := config.Load(args.Config)
 	if err != nil {
+		slog.Debug("ExtractCurrent could not load the config", "error", err)
 		return err
 	}
 
 	// Create/Scaffold SQLite
 	absPath, err := filepath.Abs(args.Output)
 	if err != nil {
+		slog.Debug("ExtractCurrent could not get an absolute path for output", "output", args.Output, "error", err)
 		return err
 	}
 	// Error if file exists as we want to ensure we start from an empty DB
@@ -39,34 +46,50 @@ func ExtractCurrent(args *ExtractCurrentArgs) error {
 	// when we open the DB
 	_, err = os.Stat(absPath)
 	if err == nil {
+		slog.Debug("ExtractCurrent detected that output db already exists", "absPath", absPath)
 		return errors.New("output file already exists")
 	}
 	db, err := sql.Open("sqlite", absPath)
 	if err != nil {
+		slog.Debug("ExtractCurrent could not open a new SQLite DB", "dataSourceName", absPath, "error", err)
 		return err
 	}
 	defer db.Close()
 	err = sqlite.CreateCurrentSchema(db)
 	if err != nil {
+		slog.Debug("ExtractCurrent could not create the current schema", "error", err)
 		return err
 	}
 
+	slog.Debug("ExtractCurrent starting extraction")
+
 	// Insert System
-	sqlite.InsertCurrentSystem(sqlite.CurrentSystem{
+	err = sqlite.InsertCurrentSystem(sqlite.CurrentSystem{
 		ID: args.System,
 	}, db)
+	if err != nil {
+		slog.Debug("ExtractCurrent could not insert the system", "error", err)
+		return err
+	}
+	slog.Debug("ExtractCurrent system inserted")
 
 	// Extract/Insert Code
 	err = code.ExtractCurrent(args.System, cfg, db)
 	if err != nil {
+		slog.Debug("ExtractCurrent could not extract code", "error", err)
 		return err
 	}
+	slog.Debug("ExtractCurrent code inserted")
 
 	// Extract/Insert Docs
 	err = docs.ExtractCurrent(args.System, cfg, db)
 	if err != nil {
+		slog.Debug("ExtractCurrent could not extract docs", "error", err)
 		return err
 	}
+	slog.Debug("ExtractCurrent docs inserted")
 
+	slog.Debug("ExtractCurrent extraction complete")
+	slog.Info("Extraction complete")
 	return nil
 }

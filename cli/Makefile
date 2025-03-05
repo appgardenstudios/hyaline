@@ -9,4 +9,4 @@ extract:
 	rm -f ./current.db
 	make build
 	echo "---"
-	./hyaline extract current --config ./_example/config.yml --system local --output ./current.db
+	./hyaline --debug extract current --config ./_example/config.yml --system local --output ./current.db
