@@ -26,7 +26,12 @@ type CurrentSystem struct {
 
 func InsertCurrentSystem(row CurrentSystem, db *sql.DB) (err error) {
 	// TODO switch these to named inserts
-	stmt, err := db.Prepare(`insert into system values(?)`)
+	stmt, err := db.Prepare(`
+insert into system
+	(id)
+values
+	(?)
+`)
 	if err != nil {
 		return
 	}
@@ -42,7 +47,12 @@ type CurrentCode struct {
 }
 
 func InsertCurrentCode(row CurrentCode, db *sql.DB) (err error) {
-	stmt, err := db.Prepare(`insert into code values(?, ?, ?)`)
+	stmt, err := db.Prepare(`
+insert into code
+	(id, system_id, path)
+values
+	(?, ?, ?)
+`)
 	if err != nil {
 		return
 	}
@@ -60,7 +70,12 @@ type CurrentFile struct {
 }
 
 func InsertCurrentFile(row CurrentFile, db *sql.DB) (err error) {
-	stmt, err := db.Prepare(`insert into file values(?, ?, ?, ?, ?)`)
+	stmt, err := db.Prepare(`
+insert into file
+	(id, code_id, system_id, relative_path, raw_data)
+values
+	(?, ?, ?, ?, ?)
+`)
 	if err != nil {
 		return
 	}
@@ -77,7 +92,12 @@ type CurrentDocumentation struct {
 }
 
 func InsertCurrentDocumentation(row CurrentDocumentation, db *sql.DB) (err error) {
-	stmt, err := db.Prepare(`insert into documentation values(?, ?, ?, ?)`)
+	stmt, err := db.Prepare(`
+insert into documentation
+	(id, system_id, type, path)
+values
+	(?, ?, ?, ?)
+`)
 	if err != nil {
 		return
 	}
@@ -97,7 +117,12 @@ type CurrentDocument struct {
 }
 
 func InsertCurrentDocument(row CurrentDocument, db *sql.DB) (err error) {
-	stmt, err := db.Prepare(`insert into document values(?, ?, ?, ?, ?, ?, ?)`)
+	stmt, err := db.Prepare(`
+insert into document
+	(id, documentation_id, system_id, relative_path, format, raw_data, extracted_text)
+values
+	(?, ?, ?, ?, ?, ?, ?)
+`)
 	if err != nil {
 		return
 	}
@@ -120,7 +145,12 @@ type CurrentSection struct {
 }
 
 func InsertCurrentSection(row CurrentSection, db *sql.DB) (err error) {
-	stmt, err := db.Prepare(`insert into section values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`)
+	stmt, err := db.Prepare(`
+insert into section
+	(id, document_id, documentation_id, system_id, parent_section_id, section_order, title, format, raw_data, extracted_text)
+values
+	(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+`)
 	if err != nil {
 		return
 	}
