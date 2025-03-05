@@ -28,8 +28,9 @@ func ExtractCurrent(system string, cfg *config.Config, db *sql.DB) (err error) {
 	// Process each docs source
 	for _, d := range targetSystem.Docs {
 		// Insert Documentation
+		documentationId := targetSystem.ID + "-" + d.ID
 		err = sqlite.InsertCurrentDocumentation(sqlite.CurrentDocumentation{
-			ID:       d.ID,
+			ID:       documentationId,
 			SystemID: targetSystem.ID,
 			Type:     d.Type,
 			Path:     d.Path,
@@ -58,7 +59,7 @@ func ExtractCurrent(system string, cfg *config.Config, db *sql.DB) (err error) {
 			relativePath := strings.TrimPrefix(file, absPath)
 			err = sqlite.InsertCurrentDocument(sqlite.CurrentDocument{
 				ID:              relativePath,
-				DocumentationID: d.ID,
+				DocumentationID: documentationId,
 				SystemID:        targetSystem.ID,
 				RelativePath:    relativePath,
 				Format:          d.Type,
@@ -72,7 +73,7 @@ func ExtractCurrent(system string, cfg *config.Config, db *sql.DB) (err error) {
 			// Get and insert sections
 			cleanContent := strings.ReplaceAll(string(contents), "\r", "")
 			sections := getMarkdownSections(strings.Split(cleanContent, "\n"))
-			err = insertSectionAndChildren(sections, 0, relativePath, d.ID, targetSystem.ID, d.Type, db)
+			err = insertSectionAndChildren(sections, 0, relativePath, documentationId, targetSystem.ID, d.Type, db)
 			if err != nil {
 				return err
 			}
@@ -93,7 +94,7 @@ func insertSectionAndChildren(s *section, order int, documentId string, document
 		DocumentID:      documentId,
 		DocumentationID: documentationId,
 		SystemID:        systemId,
-		ParentSectionId: parentSectionId,
+		ParentSectionID: parentSectionId,
 		Order:           order,
 		Title:           s.Title,
 		Format:          format,

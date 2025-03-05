@@ -106,7 +106,7 @@ type CurrentSection struct {
 	DocumentID      string
 	DocumentationID string
 	SystemID        string
-	ParentSectionId string
+	ParentSectionID string
 	Order           int
 	Title           string
 	Format          string
@@ -119,7 +119,7 @@ func InsertCurrentSection(row CurrentSection, db *sql.DB) (err error) {
 	if err != nil {
 		return
 	}
-	stmt.Exec(row.ID, row.DocumentID, row.DocumentationID, row.SystemID, row.ParentSectionId, row.Order, row.Title, row.Format, row.RawData, row.ExtractedText)
+	stmt.Exec(row.ID, row.DocumentID, row.DocumentationID, row.SystemID, row.ParentSectionID, row.Order, row.Title, row.Format, row.RawData, row.ExtractedText)
 
 	return
 }

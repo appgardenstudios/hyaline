@@ -41,8 +41,9 @@ func ExtractCurrent(system string, cfg *config.Config, db *sql.DB) (err error) {
 	// Process each code source
 	for _, c := range targetSystem.Code {
 		// Insert Code
+		codeId := targetSystem.ID + "-" + c.ID
 		err = sqlite.InsertCurrentCode(sqlite.CurrentCode{
-			ID:       c.ID,
+			ID:       codeId,
 			SystemID: targetSystem.ID,
 			Path:     c.Path,
 		}, db)
@@ -93,7 +94,7 @@ func ExtractCurrent(system string, cfg *config.Config, db *sql.DB) (err error) {
 			relativePath := strings.TrimPrefix(file, absPath)
 			err = sqlite.InsertCurrentFile(sqlite.CurrentFile{
 				ID:           relativePath,
-				CodeID:       c.ID,
+				CodeID:       codeId,
 				SystemID:     targetSystem.ID,
 				RelativePath: relativePath,
 				RawData:      string(contents),
