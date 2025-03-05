@@ -16,12 +16,12 @@ func (r *textRenderer) RenderNode(w io.Writer, node ast.Node, entering bool) ast
 	switch node := node.(type) {
 	case *ast.Text:
 		if entering {
-			io.WriteString(w, string(node.Literal))
+			io.Writer.Write(w, node.Literal)
 			io.WriteString(w, "\n")
 		}
 	case *ast.Heading:
 		if entering {
-			io.WriteString(w, string(node.Literal))
+			io.Writer.Write(w, node.Literal)
 			io.WriteString(w, "\n")
 		}
 	// Note: This will eventually need to support additional types
@@ -31,6 +31,7 @@ func (r *textRenderer) RenderNode(w io.Writer, node ast.Node, entering bool) ast
 
 	return ast.GoToNext
 }
+
 func (r *textRenderer) RenderHeader(w io.Writer, ast ast.Node) {
 	// do nothing
 }
