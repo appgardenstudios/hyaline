@@ -69,9 +69,48 @@ func ExtractCurrent(system string, cfg *config.Config, db *sql.DB) (err error) {
 				return err
 			}
 
-			// TODO get and insert sections
+			// Get and insert sections
+			cleanContent := strings.ReplaceAll(string(contents), "\r", "")
+			sections := getMarkdownSections(strings.Split(cleanContent, "\n"))
+			err = insertSectionAndChildren(sections, 0, relativePath, d.ID, targetSystem.ID, d.Type, db)
+			if err != nil {
+				return err
+			}
 		}
 	}
 
 	return
+}
+
+func insertSectionAndChildren(s *section, order int, documentId string, documentationId string, systemId string, format string, db *sql.DB) error {
+	// Insert this section
+	parentSectionId := ""
+	if s.Parent != nil {
+		parentSectionId = documentId + "#" + s.Parent.Title
+	}
+	err := sqlite.InsertCurrentSection(sqlite.CurrentSection{
+		ID:              documentId + "#" + s.Title,
+		DocumentID:      documentId,
+		DocumentationID: documentationId,
+		SystemID:        systemId,
+		ParentSectionId: parentSectionId,
+		Order:           order,
+		Title:           s.Title,
+		Format:          format,
+		RawData:         strings.TrimSpace(s.Content),
+		ExtractedText:   "TODO", // Use https://github.com/gomarkdown/markdown https://github.com/gomarkdown/markdown/blob/master/md/md_renderer.go
+	}, db)
+	if err != nil {
+		return err
+	}
+
+	// Insert children
+	for i, child := range s.Children {
+		err = insertSectionAndChildren(child, i, documentId, documentationId, systemId, format, db)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
 }

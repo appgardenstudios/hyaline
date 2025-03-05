@@ -100,3 +100,26 @@ func InsertCurrentDocument(row CurrentDocument, db *sql.DB) (err error) {
 
 	return
 }
+
+type CurrentSection struct {
+	ID              string
+	DocumentID      string
+	DocumentationID string
+	SystemID        string
+	ParentSectionId string
+	Order           int
+	Title           string
+	Format          string
+	RawData         string
+	ExtractedText   string
+}
+
+func InsertCurrentSection(row CurrentSection, db *sql.DB) (err error) {
+	stmt, err := db.Prepare(`insert into section values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`)
+	if err != nil {
+		return
+	}
+	stmt.Exec(row.ID, row.DocumentID, row.DocumentationID, row.SystemID, row.ParentSectionId, row.Order, row.Title, row.Format, row.RawData, row.ExtractedText)
+
+	return
+}
