@@ -63,7 +63,7 @@ func ExtractCurrent(system string, cfg *config.Config, db *sql.DB) (err error) {
 				RelativePath:    relativePath,
 				Format:          d.Type,
 				RawData:         string(contents),
-				ExtractedText:   "TODO", // Use https://github.com/gomarkdown/markdown https://github.com/gomarkdown/markdown/blob/master/md/md_renderer.go
+				ExtractedText:   extractMarkdownText(contents),
 			}, db)
 			if err != nil {
 				return err
@@ -98,7 +98,7 @@ func insertSectionAndChildren(s *section, order int, documentId string, document
 		Title:           s.Title,
 		Format:          format,
 		RawData:         strings.TrimSpace(s.Content),
-		ExtractedText:   "TODO", // Use https://github.com/gomarkdown/markdown https://github.com/gomarkdown/markdown/blob/master/md/md_renderer.go
+		ExtractedText:   extractMarkdownText([]byte(s.Content)),
 	}, db)
 	if err != nil {
 		return err

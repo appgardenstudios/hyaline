@@ -3,6 +3,7 @@ module hyaline
 go 1.24.0
 
 require (
+	github.com/gomarkdown/markdown v0.0.0-20250207164621-7a1f277a159e
 	github.com/mattn/go-zglob v0.0.6
 	github.com/urfave/cli/v2 v2.27.5
 	gopkg.in/yaml.v3 v3.0.1
