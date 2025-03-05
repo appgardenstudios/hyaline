@@ -63,6 +63,8 @@ func ExtractCurrent(args *ExtractCurrentArgs) error {
 
 	slog.Debug("ExtractCurrent starting extraction")
 
+	// TODO get system here and remove it from the Extract sets (pass in just the system)
+
 	// Insert System
 	err = sqlite.InsertCurrentSystem(sqlite.CurrentSystem{
 		ID: args.System,
