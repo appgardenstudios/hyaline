@@ -2,7 +2,11 @@ package action
 
 import (
 	"database/sql"
+	"encoding/json"
+	"fmt"
+	"hyaline/internal/check"
 	"hyaline/internal/config"
+	"hyaline/internal/rule"
 	"log/slog"
 	"path/filepath"
 
@@ -51,10 +55,27 @@ func Check(args *CheckArgs) error {
 	}
 
 	// Run checks
+	results := []*rule.Result{}
 	for _, c := range system.Checks {
 		slog.Info("Running check " + c.ID)
-		// TODO run the check
+		result, err := check.Run(c, system.ID, db)
+		if err != nil {
+			slog.Debug("Check could not run", "check", c.ID, "error", err)
+			return err
+		}
+		results = append(results, result)
 	}
+
+	// Print out checks
+	data := struct {
+		Results []*rule.Result `json:"results"`
+	}{results}
+	output, err := json.MarshalIndent(data, "", "  ")
+	if err != nil {
+		slog.Debug("Check could not marshal results", "error", err)
+		return err
+	}
+	fmt.Println(string(output))
 
 	return nil
 }
