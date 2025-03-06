@@ -2,7 +2,6 @@ package code
 
 import (
 	"database/sql"
-	"errors"
 	"hyaline/internal/config"
 	"hyaline/internal/sqlite"
 	"log/slog"
@@ -25,28 +24,15 @@ var presets = map[string]Preset{
 	},
 }
 
-func ExtractCurrent(system string, cfg *config.Config, db *sql.DB) (err error) {
-	// Find our target system (error if not found)
-	var targetSystem *config.System
-	for _, s := range cfg.Systems {
-		if s.ID == system {
-			targetSystem = &s
-		}
-	}
-	if targetSystem == nil {
-		slog.Debug("ExtractCurrent target system not found", "system", system)
-		return errors.New("system not found: " + system)
-	}
-	slog.Debug("ExtractCurrent extracting code for target system", "system", system)
-
+func ExtractCurrent(system *config.System, db *sql.DB) (err error) {
 	// Process each code source
-	for _, c := range targetSystem.Code {
+	for _, c := range system.Code {
 		slog.Debug("ExtractCurrent extracting code", "system", system, "code", c.ID)
 		// Insert Code
-		codeId := targetSystem.ID + "-" + c.ID
+		codeId := system.ID + "-" + c.ID
 		err = sqlite.InsertCurrentCode(sqlite.CurrentCode{
 			ID:       codeId,
-			SystemID: targetSystem.ID,
+			SystemID: system.ID,
 			Path:     c.Path,
 		}, db)
 
@@ -103,7 +89,7 @@ func ExtractCurrent(system string, cfg *config.Config, db *sql.DB) (err error) {
 			err = sqlite.InsertCurrentFile(sqlite.CurrentFile{
 				ID:           relativePath,
 				CodeID:       codeId,
-				SystemID:     targetSystem.ID,
+				SystemID:     system.ID,
 				RelativePath: relativePath,
 				RawData:      string(contents),
 			}, db)

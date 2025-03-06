@@ -2,7 +2,6 @@ package docs
 
 import (
 	"database/sql"
-	"errors"
 	"hyaline/internal/config"
 	"hyaline/internal/sqlite"
 	"log/slog"
@@ -13,28 +12,15 @@ import (
 	"github.com/mattn/go-zglob"
 )
 
-func ExtractCurrent(system string, cfg *config.Config, db *sql.DB) (err error) {
-	// Find our target system (error if not found)
-	var targetSystem *config.System
-	for _, s := range cfg.Systems {
-		if s.ID == system {
-			targetSystem = &s
-		}
-	}
-	if targetSystem == nil {
-		slog.Debug("ExtractCurrent target system not found", "system", system)
-		return errors.New("system not found: " + system)
-	}
-	slog.Debug("ExtractCurrent extracting docs for target system", "system", system)
-
+func ExtractCurrent(system *config.System, db *sql.DB) (err error) {
 	// Process each docs source
-	for _, d := range targetSystem.Docs {
+	for _, d := range system.Docs {
 		slog.Debug("ExtractCurrent extracting docs", "system", system, "docs", d.ID)
 		// Insert Documentation
-		documentationId := targetSystem.ID + "-" + d.ID
+		documentationId := system.ID + "-" + d.ID
 		err = sqlite.InsertCurrentDocumentation(sqlite.CurrentDocumentation{
 			ID:       documentationId,
-			SystemID: targetSystem.ID,
+			SystemID: system.ID,
 			Type:     d.Type,
 			Path:     d.Path,
 		}, db)
@@ -68,7 +54,7 @@ func ExtractCurrent(system string, cfg *config.Config, db *sql.DB) (err error) {
 			err = sqlite.InsertCurrentDocument(sqlite.CurrentDocument{
 				ID:              relativePath,
 				DocumentationID: documentationId,
-				SystemID:        targetSystem.ID,
+				SystemID:        system.ID,
 				RelativePath:    relativePath,
 				Format:          d.Type,
 				RawData:         string(contents),
@@ -82,7 +68,7 @@ func ExtractCurrent(system string, cfg *config.Config, db *sql.DB) (err error) {
 			// Get and insert sections
 			cleanContent := strings.ReplaceAll(string(contents), "\r", "")
 			sections := getMarkdownSections(strings.Split(cleanContent, "\n"))
-			err = insertSectionAndChildren(sections, 0, relativePath, documentationId, targetSystem.ID, d.Type, db)
+			err = insertSectionAndChildren(sections, 0, relativePath, documentationId, system.ID, d.Type, db)
 			if err != nil {
 				slog.Debug("ExtractCurrent could not insert section", "error", err)
 				return err
