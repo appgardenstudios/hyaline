@@ -54,14 +54,18 @@ func Check(args *CheckArgs) error {
 		return err
 	}
 
-	// Run checks
+	// Run checks and count failures
 	results := []*rule.Result{}
+	failed := 0
 	for _, c := range system.Checks {
 		slog.Info("Running check " + c.ID)
 		result, err := check.Run(c, system.ID, db)
 		if err != nil {
 			slog.Debug("Check could not run", "check", c.ID, "error", err)
 			return err
+		}
+		if !result.Pass {
+			failed++
 		}
 		results = append(results, result)
 	}
@@ -76,6 +80,11 @@ func Check(args *CheckArgs) error {
 		return err
 	}
 	fmt.Println(string(output))
+
+	// If >0 failed, return an error so the program error code != 0
+	if failed > 0 {
+		return fmt.Errorf("%d checks failed", failed)
+	}
 
 	return nil
 }
