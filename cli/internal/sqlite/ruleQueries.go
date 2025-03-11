@@ -10,7 +10,6 @@ type GetDocumentSectionRow struct {
 }
 
 func GetDocumentSection(document string, section string, systemID string, db *sql.DB) (*GetDocumentSectionRow, error) {
-	// TODO match on section or document
 	stmt, err := db.Prepare(`
 select
 	document_id,
