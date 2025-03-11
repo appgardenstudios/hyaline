@@ -9,4 +9,5 @@ type Result struct {
 	Pass        bool        `json:"pass"`
 	Severity    string      `json:"severity,omitempty"`
 	Message     string      `json:"message,omitempty"`
+	Action      string      `json:"action,omitempty"`
 }

@@ -45,7 +45,7 @@ func sectionExistsWithoutTodos(allowTodos bool) string {
 	}
 }
 
-func RunSectionExists(id string, description string, options SectionExistsOptions, system string, current *sql.DB) (result *Result, err error) {
+func RunSectionExists(id string, description string, options SectionExistsOptions, system string, current *sql.DB, suggest bool) (result *Result, err error) {
 	result = &Result{
 		System:      system,
 		ID:          id,
@@ -65,6 +65,10 @@ func RunSectionExists(id string, description string, options SectionExistsOption
 		result.Pass = false
 		result.Severity = options.Severity
 		result.Message = fmt.Sprintf("The section '%s' must exist in '%s'%s.", options.Section, options.Document, sectionExistsWithoutTodos(options.AllowTodos))
+		if suggest {
+			// TODO
+			result.Action = "TODO"
+		}
 		return
 	}
 
