@@ -8,4 +8,4 @@ Subsection 1 content
 Subsection 2 content
 
 # Running Locally
-Some Text with stuff... TODO
+Some Text with stuff...
