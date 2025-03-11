@@ -16,3 +16,9 @@ check:
 	make build
 	echo "---"
 	./hyaline --debug check --config ./_example/config.yml --current ./current.db --system local
+
+.PHONY: recommend
+recommend:
+	make build
+	echo "---"
+	./hyaline --debug check --config ./_example/config.yml --current ./current.db --system local --recommend

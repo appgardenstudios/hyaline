@@ -59,8 +59,8 @@ func main() {
 						Usage:    "ID of the system to extract",
 					},
 					&cli.BoolFlag{
-						Name:  "suggest",
-						Usage: "Include a suggestion when a check does not pass",
+						Name:  "recommend",
+						Usage: "Include a recommended action when a check does not pass",
 					},
 				},
 				Action: func(cCtx *cli.Context) error {
@@ -71,10 +71,10 @@ func main() {
 
 					// Execute action
 					err := action.Check(&action.CheckArgs{
-						Config:  cCtx.String("config"),
-						Current: cCtx.String("current"),
-						System:  cCtx.String("system"),
-						Suggest: cCtx.Bool("suggest"),
+						Config:    cCtx.String("config"),
+						Current:   cCtx.String("current"),
+						System:    cCtx.String("system"),
+						Recommend: cCtx.Bool("recommend"),
 					})
 					if err != nil {
 						return cli.Exit(err.Error(), 1)

@@ -7,7 +7,7 @@ import (
 	"hyaline/internal/rule"
 )
 
-func Run(check config.Check, system string, current *sql.DB, suggest bool) (result *rule.Result, err error) {
+func Run(check config.Check, system string, current *sql.DB, recommendAction bool) (result *rule.Result, err error) {
 	switch check.Rule {
 	case rule.SectionExistsRule:
 		var options rule.SectionExistsOptions
@@ -15,7 +15,7 @@ func Run(check config.Check, system string, current *sql.DB, suggest bool) (resu
 		if err != nil {
 			return nil, err
 		}
-		result, err = rule.RunSectionExists(check.ID, check.Description, options, system, current, suggest)
+		result, err = rule.RunSectionExists(check.ID, check.Description, options, system, current, recommendAction)
 	default:
 		err = errors.New("unknown rule " + check.Rule)
 	}
