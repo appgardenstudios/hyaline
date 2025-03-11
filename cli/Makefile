@@ -10,3 +10,9 @@ extract:
 	make build
 	echo "---"
 	./hyaline --debug extract current --config ./_example/config.yml --system local --output ./current.db
+
+.PHONY: check
+check:
+	make build
+	echo "---"
+	./hyaline --debug check --config ./_example/config.yml --current ./current.db --system local

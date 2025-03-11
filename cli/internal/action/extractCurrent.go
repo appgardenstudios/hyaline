@@ -63,9 +63,16 @@ func ExtractCurrent(args *ExtractCurrentArgs) error {
 
 	slog.Debug("ExtractCurrent starting extraction")
 
+	// Get System
+	system, err := config.GetSystem(args.System, cfg)
+	if err != nil {
+		slog.Debug("Check could not locate the system", "system", args.System, "error", err)
+		return err
+	}
+
 	// Insert System
 	err = sqlite.InsertCurrentSystem(sqlite.CurrentSystem{
-		ID: args.System,
+		ID: system.ID,
 	}, db)
 	if err != nil {
 		slog.Debug("ExtractCurrent could not insert the system", "error", err)
@@ -74,7 +81,7 @@ func ExtractCurrent(args *ExtractCurrentArgs) error {
 	slog.Debug("ExtractCurrent system inserted")
 
 	// Extract/Insert Code
-	err = code.ExtractCurrent(args.System, cfg, db)
+	err = code.ExtractCurrent(system, db)
 	if err != nil {
 		slog.Debug("ExtractCurrent could not extract code", "error", err)
 		return err
@@ -82,7 +89,7 @@ func ExtractCurrent(args *ExtractCurrentArgs) error {
 	slog.Debug("ExtractCurrent code inserted")
 
 	// Extract/Insert Docs
-	err = docs.ExtractCurrent(args.System, cfg, db)
+	err = docs.ExtractCurrent(system, db)
 	if err != nil {
 		slog.Debug("ExtractCurrent could not extract docs", "error", err)
 		return err

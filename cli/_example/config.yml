@@ -11,3 +11,12 @@ systems:
         extractor: fs
         path: ./_example/
         glob: ./**/*.md
+    checks:
+      - id: run-locally
+        description: Ensure that instructions on how to run the system locally for development exist. 
+        rule: section-exists
+        options:
+          document: README.md
+          section: Running Locally
+          severity: ERROR
+          allowTodos: false

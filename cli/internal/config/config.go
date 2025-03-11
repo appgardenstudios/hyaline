@@ -14,9 +14,10 @@ type Config struct {
 }
 
 type System struct {
-	ID   string `yaml:"id"`
-	Code []Code `yaml:"code"`
-	Docs []Doc  `yaml:"docs"`
+	ID     string  `yaml:"id"`
+	Code   []Code  `yaml:"code"`
+	Docs   []Doc   `yaml:"docs"`
+	Checks []Check `yaml:"checks"`
 }
 
 type Code struct {
@@ -32,6 +33,13 @@ type Doc struct {
 	Extractor string `yaml:"extractor"`
 	Path      string `yaml:"path"`
 	Glob      string `yaml:"glob"`
+}
+
+type Check struct {
+	ID          string                 `yaml:"id"`
+	Description string                 `yaml:"description"`
+	Rule        string                 `yaml:"rule"`
+	Options     map[string]interface{} `yaml:"options"`
 }
 
 func Load(path string) (cfg *Config, err error) {
@@ -85,5 +93,19 @@ func Load(path string) (cfg *Config, err error) {
 	}
 
 	slog.Debug("Load config complete")
+	return
+}
+
+func GetSystem(system string, cfg *Config) (targetSystem *System, err error) {
+	for _, s := range cfg.Systems {
+		if s.ID == system {
+			targetSystem = &s
+		}
+	}
+	if targetSystem == nil {
+		slog.Debug("GetSystem target system not found", "system", system)
+		err = errors.New("system not found: " + system)
+	}
+
 	return
 }

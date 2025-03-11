@@ -14,7 +14,7 @@ var Version = "unknown"
 
 func main() {
 	var logLevel = new(slog.LevelVar)
-	h := slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{Level: logLevel})
+	h := slog.NewTextHandler(os.Stderr, &slog.HandlerOptions{Level: logLevel})
 	slog.SetDefault(slog.New(h))
 
 	app := &cli.App{
@@ -36,6 +36,44 @@ func main() {
 				Usage: "Print out the current version",
 				Action: func(cCtx *cli.Context) error {
 					fmt.Println(Version)
+					return nil
+				},
+			},
+			{
+				Name:  "check",
+				Usage: "Check documentation for issues and errors",
+				Flags: []cli.Flag{
+					&cli.StringFlag{
+						Name:     "config",
+						Required: true,
+						Usage:    "Path to the config file",
+					},
+					&cli.StringFlag{
+						Name:     "current",
+						Required: true,
+						Usage:    "Path to the current data set",
+					},
+					&cli.StringFlag{
+						Name:     "system",
+						Required: true,
+						Usage:    "ID of the system to extract",
+					},
+				},
+				Action: func(cCtx *cli.Context) error {
+					// Set log level
+					if cCtx.Bool("debug") {
+						logLevel.Set(slog.LevelDebug)
+					}
+
+					// Execute action
+					err := action.Check(&action.CheckArgs{
+						Config:  cCtx.String("config"),
+						Current: cCtx.String("current"),
+						System:  cCtx.String("system"),
+					})
+					if err != nil {
+						return cli.Exit(err.Error(), 1)
+					}
 					return nil
 				},
 			},
@@ -69,6 +107,7 @@ func main() {
 								logLevel.Set(slog.LevelDebug)
 							}
 
+							// Execute action
 							err := action.ExtractCurrent(&action.ExtractCurrentArgs{
 								Config: cCtx.String("config"),
 								System: cCtx.String("system"),
