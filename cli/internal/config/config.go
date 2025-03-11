@@ -10,7 +10,14 @@ import (
 )
 
 type Config struct {
+	LLM     LLM      `yaml:"llm"`
 	Systems []System `yaml:"systems"`
+}
+
+type LLM struct {
+	Provider string `yaml:"provider"`
+	Model    string `yaml:"model"`
+	Key      string `yaml:"key"`
 }
 
 type System struct {
@@ -55,6 +62,9 @@ func Load(path string) (cfg *Config, err error) {
 		slog.Debug("Load could not read config file from disk", "error", err)
 		return
 	}
+
+	// Replace any env references ($KEY or ${KEY} with the contents of KEY from env)
+	data = []byte(os.ExpandEnv(string(data)))
 
 	// Parse file into struct
 	cfg = &Config{}
