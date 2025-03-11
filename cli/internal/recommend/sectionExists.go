@@ -11,7 +11,7 @@ import (
 )
 
 func SectionExists(sectionExists bool, section string, document string, systemID string, current *sql.DB, llmOpts config.LLM) (string, error) {
-	// Note that this should really use a string builder
+	// Note that this function should really use a string builder
 	systemPrompt := "You are a senior technical writer who writes clear and accurate system documentation."
 
 	// Create our existence action for use below
