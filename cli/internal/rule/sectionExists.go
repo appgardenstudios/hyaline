@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"hyaline/internal/recommend"
 	"hyaline/internal/sqlite"
+	"log/slog"
 	"strings"
 )
 
@@ -56,7 +57,7 @@ func RunSectionExists(id string, description string, options SectionExistsOption
 	}
 
 	// Retrieve section (if exists)
-	section, err := sqlite.GetDocumentSection(options.Document, options.Section, current)
+	section, err := sqlite.GetDocumentSection(options.Document, options.Section, system, current)
 	if err != nil {
 		return
 	}
@@ -67,9 +68,10 @@ func RunSectionExists(id string, description string, options SectionExistsOption
 		result.Severity = options.Severity
 		result.Message = fmt.Sprintf("The section '%s' must exist in '%s'%s.", options.Section, options.Document, sectionExistsWithoutTodos(options.AllowTodos))
 		if recommendAction {
-			action, err := recommend.SectionExists(current)
-			// TODO handle err != nil
-			if err == nil {
+			action, err := recommend.SectionExists(system, current)
+			if err != nil {
+				slog.Debug("RunSectionExists could not generate recommendation", "error", err)
+			} else {
 				result.Action = action
 			}
 		}

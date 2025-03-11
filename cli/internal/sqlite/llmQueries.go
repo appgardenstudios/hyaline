@@ -12,14 +12,14 @@ type GetCodeFileRow struct {
 	RawData string
 }
 
-func GetCodeFile(files []string, db *sql.DB) (*[]GetCodeFileRow, error) {
+func GetCodeFile(files []string, systemID string, db *sql.DB) (*[]GetCodeFileRow, error) {
 	// Guard against an empty array of files and short-circuit
 	if len(files) == 0 {
 		return nil, nil
 	}
 
 	// Construct our list of ids and the corresponding placeholder string (for in)
-	ids := []any{}
+	ids := []any{systemID}
 	for _, file := range files {
 		ids = append(ids, file)
 	}
@@ -33,7 +33,8 @@ select
 from
 	file
 where
-	id IN (%s)
+  system_id = ?
+	AND id IN (%s)
 `, placeholders))
 	if err != nil {
 		return nil, err

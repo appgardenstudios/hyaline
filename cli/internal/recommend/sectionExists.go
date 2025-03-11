@@ -8,13 +8,13 @@ import (
 	"strings"
 )
 
-func SectionExists(current *sql.DB) (string, error) {
+func SectionExists(systemID string, current *sql.DB) (string, error) {
 	// Note that this should really use a string builder
 	systemPrompt := "You are a senior technical writer who writes clear and accurate system documentation."
 
 	// Get documents for the prompt
 	potentialFiles := []string{"package.json", "Makefile"}
-	files, err := sqlite.GetCodeFile(potentialFiles, current)
+	files, err := sqlite.GetCodeFile(potentialFiles, systemID, current)
 	if err != nil {
 		slog.Debug("SectionExists could not get code files", "error", err, "files", files)
 		return "", err
