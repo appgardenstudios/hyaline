@@ -22,7 +22,7 @@ type ExtractCurrentArgs struct {
 
 func ExtractCurrent(args *ExtractCurrentArgs) error {
 	slog.Info("Extracting current code and docs")
-	slog.Debug("ExtractCurrent Args", slog.Group("args",
+	slog.Debug("action.ExtractCurrent Args", slog.Group("args",
 		"config", args.Config,
 		"system", args.System,
 		"output", args.Output,
@@ -31,14 +31,14 @@ func ExtractCurrent(args *ExtractCurrentArgs) error {
 	// Load Config
 	cfg, err := config.Load(args.Config)
 	if err != nil {
-		slog.Debug("ExtractCurrent could not load the config", "error", err)
+		slog.Debug("action.ExtractCurrent could not load the config", "error", err)
 		return err
 	}
 
 	// Create/Scaffold SQLite
 	absPath, err := filepath.Abs(args.Output)
 	if err != nil {
-		slog.Debug("ExtractCurrent could not get an absolute path for output", "output", args.Output, "error", err)
+		slog.Debug("action.ExtractCurrent could not get an absolute path for output", "output", args.Output, "error", err)
 		return err
 	}
 	// Error if file exists as we want to ensure we start from an empty DB
@@ -46,27 +46,27 @@ func ExtractCurrent(args *ExtractCurrentArgs) error {
 	// when we open the DB
 	_, err = os.Stat(absPath)
 	if err == nil {
-		slog.Debug("ExtractCurrent detected that output db already exists", "absPath", absPath)
+		slog.Debug("action.ExtractCurrent detected that output db already exists", "absPath", absPath)
 		return errors.New("output file already exists")
 	}
 	db, err := sql.Open("sqlite", absPath)
 	if err != nil {
-		slog.Debug("ExtractCurrent could not open a new SQLite DB", "dataSourceName", absPath, "error", err)
+		slog.Debug("action.ExtractCurrent could not open a new SQLite DB", "dataSourceName", absPath, "error", err)
 		return err
 	}
 	defer db.Close()
 	err = sqlite.CreateCurrentSchema(db)
 	if err != nil {
-		slog.Debug("ExtractCurrent could not create the current schema", "error", err)
+		slog.Debug("action.ExtractCurrent could not create the current schema", "error", err)
 		return err
 	}
 
-	slog.Debug("ExtractCurrent starting extraction")
+	slog.Debug("action.ExtractCurrent starting extraction")
 
 	// Get System
 	system, err := config.GetSystem(args.System, cfg)
 	if err != nil {
-		slog.Debug("ExtractCurrent could not locate the system", "system", args.System, "error", err)
+		slog.Debug("action.ExtractCurrent could not locate the system", "system", args.System, "error", err)
 		return err
 	}
 
@@ -75,26 +75,26 @@ func ExtractCurrent(args *ExtractCurrentArgs) error {
 		ID: system.ID,
 	}, db)
 	if err != nil {
-		slog.Debug("ExtractCurrent could not insert the system", "error", err)
+		slog.Debug("action.ExtractCurrent could not insert the system", "error", err)
 		return err
 	}
-	slog.Debug("ExtractCurrent system inserted")
+	slog.Debug("action.ExtractCurrent system inserted")
 
 	// Extract/Insert Code
 	err = code.ExtractCurrent(system, db)
 	if err != nil {
-		slog.Debug("ExtractCurrent could not extract code", "error", err)
+		slog.Debug("action.ExtractCurrent could not extract code", "error", err)
 		return err
 	}
-	slog.Debug("ExtractCurrent code inserted")
+	slog.Debug("action.ExtractCurrent code inserted")
 
 	// Extract/Insert Docs
 	err = docs.ExtractCurrent(system, db)
 	if err != nil {
-		slog.Debug("ExtractCurrent could not extract docs", "error", err)
+		slog.Debug("action.ExtractCurrent could not extract docs", "error", err)
 		return err
 	}
-	slog.Debug("ExtractCurrent docs inserted")
+	slog.Debug("action.ExtractCurrent docs inserted")
 
 	slog.Info("Extraction complete")
 	return nil

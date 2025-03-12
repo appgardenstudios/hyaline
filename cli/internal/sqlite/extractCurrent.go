@@ -6,7 +6,7 @@ import (
 )
 
 func CreateCurrentSchema(db *sql.DB) (err error) {
-	slog.Debug("CreateCurrentSchema schema creation started")
+	slog.Debug("sqlite.CreateCurrentSchema schema creation started")
 	_, err = db.Exec(`
 create table system(id);
 create table code(id, system_id, path);
@@ -16,7 +16,7 @@ create table document(id, documentation_id, system_id, relative_path, format, ra
 create table section(id, document_id, documentation_id, system_id, parent_section_id, section_order, title, format, raw_data, extracted_text);
 `)
 
-	slog.Debug("CreateCurrentSchema schema creation complete")
+	slog.Debug("sqlite.CreateCurrentSchema schema creation complete")
 	return
 }
 

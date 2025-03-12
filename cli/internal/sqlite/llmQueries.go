@@ -42,7 +42,7 @@ where
 
 	// Get rows
 	var rows []GetCodeFileRow
-	slog.Debug("GetCodeFile executing query", "query", fmt.Sprintf("%v", stmt), "ids", ids)
+	slog.Debug("sqlite.GetCodeFile executing query", "query", fmt.Sprintf("%v", stmt), "ids", ids)
 	rawRows, err := stmt.Query(ids...)
 	if err != nil {
 		return nil, err

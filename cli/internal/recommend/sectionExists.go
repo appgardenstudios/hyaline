@@ -26,7 +26,7 @@ func SectionExists(sectionExists bool, section string, document string, systemID
 	potentialFiles := []string{"package.json", "Makefile"}
 	files, err := sqlite.GetCodeFile(potentialFiles, systemID, current)
 	if err != nil {
-		slog.Debug("SectionExists could not get code files", "error", err, "files", files)
+		slog.Debug("recommend.SectionExists could not get code files", "error", err, "files", files)
 		return "", err
 	}
 
@@ -53,12 +53,12 @@ func SectionExists(sectionExists bool, section string, document string, systemID
 	userPrompt := fmt.Sprintf(`%s
 
 Given the documents above, generate documentation describing how to run this %s project locally for development. Be clear, accurate, and show console commands where appropriate. Produce the documentation in the %s format.`, documents, "js", "markdown")
-	slog.Debug("SectionExists prompts generated", "systemPrompt", systemPrompt, "userPrompt", userPrompt)
+	slog.Debug("recommend.SectionExists prompts generated", "systemPrompt", systemPrompt, "userPrompt", userPrompt)
 
 	// Get the suggestion from Anthropic
 	suggestion, err := llm.CallAnthropic(systemPrompt, userPrompt, llmOpts.Model, llmOpts.Key)
 	if err != nil {
-		slog.Debug("SectionExists could not call anthropic", "error", err, "systemPrompt", systemPrompt, "userPrompt", userPrompt, "model", llmOpts.Model)
+		slog.Debug("recommend.SectionExists could not call anthropic", "error", err, "systemPrompt", systemPrompt, "userPrompt", userPrompt, "model", llmOpts.Model)
 		return "", err
 	}
 
