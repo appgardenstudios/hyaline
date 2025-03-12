@@ -96,7 +96,6 @@ func ExtractCurrent(args *ExtractCurrentArgs) error {
 	}
 	slog.Debug("ExtractCurrent docs inserted")
 
-	slog.Debug("ExtractCurrent extraction complete")
 	slog.Info("Extraction complete")
 	return nil
 }
