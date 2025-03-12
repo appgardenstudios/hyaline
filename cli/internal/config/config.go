@@ -57,6 +57,7 @@ func Load(path string) (cfg *Config, err error) {
 		slog.Debug("config.Load could not get an absolute path from the provided path", "path", path, "error", err)
 		return
 	}
+	slog.Debug("config.Load resolved absolute path for config", "path", path, "absPath", absPath)
 	data, err := os.ReadFile(absPath)
 	if err != nil {
 		slog.Debug("config.Load could not read config file from disk", "error", err)

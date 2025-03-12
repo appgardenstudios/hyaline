@@ -16,7 +16,7 @@ change:
 	rm -f ./change.db
 	make build
 	echo "---"
-	./hyaline --debug extract change --config ./_example/config.yml --system local --base main --head feat-1 --output ./change.db
+	./hyaline --debug extract change --config ../../hyaline-example/config.yml --system local --base main --head feat-1 --output ./change.db
 
 .PHONY: check
 check:
