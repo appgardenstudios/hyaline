@@ -66,7 +66,7 @@ func ExtractCurrent(args *ExtractCurrentArgs) error {
 	// Get System
 	system, err := config.GetSystem(args.System, cfg)
 	if err != nil {
-		slog.Debug("Check could not locate the system", "system", args.System, "error", err)
+		slog.Debug("ExtractCurrent could not locate the system", "system", args.System, "error", err)
 		return err
 	}
 
