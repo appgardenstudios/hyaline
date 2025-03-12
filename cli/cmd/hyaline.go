@@ -58,6 +58,10 @@ func main() {
 						Required: true,
 						Usage:    "ID of the system to extract",
 					},
+					&cli.BoolFlag{
+						Name:  "recommend",
+						Usage: "Include a recommended action when a check does not pass",
+					},
 				},
 				Action: func(cCtx *cli.Context) error {
 					// Set log level
@@ -67,9 +71,10 @@ func main() {
 
 					// Execute action
 					err := action.Check(&action.CheckArgs{
-						Config:  cCtx.String("config"),
-						Current: cCtx.String("current"),
-						System:  cCtx.String("system"),
+						Config:    cCtx.String("config"),
+						Current:   cCtx.String("current"),
+						System:    cCtx.String("system"),
+						Recommend: cCtx.Bool("recommend"),
 					})
 					if err != nil {
 						return cli.Exit(err.Error(), 1)

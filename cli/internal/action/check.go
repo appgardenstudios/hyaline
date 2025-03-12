@@ -14,9 +14,10 @@ import (
 )
 
 type CheckArgs struct {
-	Config  string
-	Current string
-	System  string
+	Config    string
+	Current   string
+	System    string
+	Recommend bool
 }
 
 func Check(args *CheckArgs) error {
@@ -59,7 +60,7 @@ func Check(args *CheckArgs) error {
 	failed := 0
 	for _, c := range system.Checks {
 		slog.Info("Running check " + c.ID)
-		result, err := check.Run(c, system.ID, db)
+		result, err := check.Run(c, system.ID, db, args.Recommend, cfg.LLM)
 		if err != nil {
 			slog.Debug("Check could not run", "check", c.ID, "error", err)
 			return err

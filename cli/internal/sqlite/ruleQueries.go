@@ -9,7 +9,7 @@ type GetDocumentSectionRow struct {
 	RawData    string
 }
 
-func GetDocumentSection(document string, section string, db *sql.DB) (*GetDocumentSectionRow, error) {
+func GetDocumentSection(document string, section string, systemID string, db *sql.DB) (*GetDocumentSectionRow, error) {
 	stmt, err := db.Prepare(`
 select
 	document_id,
@@ -18,7 +18,8 @@ select
 from
 	section
 where
-	document_id = ?
+  system_id = ?
+	AND document_id = ?
 	AND title = ?
 `)
 	if err != nil {
@@ -26,7 +27,7 @@ where
 	}
 
 	var row GetDocumentSectionRow
-	err = stmt.QueryRow(document, section).Scan(&row.DocumentID, &row.Title, &row.RawData)
+	err = stmt.QueryRow(systemID, document, section).Scan(&row.DocumentID, &row.Title, &row.RawData)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return nil, nil
