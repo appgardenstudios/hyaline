@@ -3,6 +3,7 @@ package action
 import (
 	"database/sql"
 	"errors"
+	"hyaline/internal/code"
 	"hyaline/internal/config"
 	"hyaline/internal/sqlite"
 	"log/slog"
@@ -77,7 +78,12 @@ func ExtractChange(args *ExtractChangeArgs) error {
 	slog.Debug("action.ExtractChange system inserted")
 
 	// Extract/Insert Code
-	// TODO
+	err = code.ExtractChange(system, args.Head, args.Base, db)
+	if err != nil {
+		slog.Debug("action.ExtractChange could not extract code", "error", err)
+		return err
+	}
+	slog.Debug("action.ExtractChange code inserted")
 
 	// Extract/Insert Docs
 	// TODO

@@ -12,18 +12,6 @@ import (
 	"github.com/mattn/go-zglob"
 )
 
-type Preset struct {
-	Glob  string
-	Files []string
-}
-
-var presets = map[string]Preset{
-	"js": {
-		Glob:  "./**/*.js",
-		Files: []string{"./package.json", "./Makefile"},
-	},
-}
-
 func ExtractCurrent(system *config.System, db *sql.DB) (err error) {
 	// Process each code source
 	for _, c := range system.Code {
