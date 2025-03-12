@@ -1,7 +1,9 @@
 package code
 
 import (
+	"context"
 	"database/sql"
+	"fmt"
 	"hyaline/internal/config"
 	"hyaline/internal/sqlite"
 	"log/slog"
@@ -9,6 +11,8 @@ import (
 	"path/filepath"
 
 	"github.com/go-git/go-git/v5"
+	"github.com/go-git/go-git/v5/plumbing"
+	"github.com/go-git/go-git/v5/plumbing/object"
 )
 
 func ExtractChange(system *config.System, head string, base string, db *sql.DB) (err error) {
@@ -48,6 +52,9 @@ func ExtractChange(system *config.System, head string, base string, db *sql.DB) 
 			return err
 		}
 
+		// Ensure repo is clean
+		// TODO
+
 		// Ensure we are on the head branch
 		ref, err := repo.Head()
 		if err != nil {
@@ -58,7 +65,46 @@ func ExtractChange(system *config.System, head string, base string, db *sql.DB) 
 		// TODO compare refs
 
 		// Get a list of files change between head and base
-		// TODO get the set of
+		headRef, err := repo.ResolveRevision(plumbing.Revision(head))
+		if err != nil {
+			slog.Debug("code.ExtractChange could not resolve head", "error", err)
+			return err
+		}
+		headCommit, err := repo.CommitObject(*headRef)
+		if err != nil {
+			slog.Debug("code.ExtractChange could not get head commit", "error", err)
+			return err
+		}
+		headTree, err := headCommit.Tree()
+		if err != nil {
+			slog.Debug("code.ExtractChange could not get head tree", "error", err)
+			return err
+		}
+		baseRef, err := repo.ResolveRevision(plumbing.Revision(base))
+		if err != nil {
+			slog.Debug("code.ExtractChange could not resolve base", "error", err)
+			return err
+		}
+		baseCommit, err := repo.CommitObject(*baseRef)
+		if err != nil {
+			slog.Debug("code.ExtractChange could not get base commit", "error", err)
+			return err
+		}
+		baseTree, err := baseCommit.Tree()
+		if err != nil {
+			slog.Debug("code.ExtractChange could not get base tree", "error", err)
+			return err
+		}
+		diffs, err := object.DiffTreeWithOptions(context.Background(), baseTree, headTree, object.DefaultDiffTreeOptions)
+		if err != nil {
+			slog.Debug("code.ExtractChange could not get diff", "error", err)
+			return err
+		}
+
+		// TODO
+		for _, diff := range diffs {
+			fmt.Println(diff.String())
+		}
 
 	}
 
