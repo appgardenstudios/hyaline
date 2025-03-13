@@ -39,22 +39,34 @@ func Check(args *CheckArgs) error {
 	}
 
 	// Open current data set database
-	absPath, err := filepath.Abs(args.Current)
+	currentAbsPath, err := filepath.Abs(args.Current)
 	if err != nil {
 		slog.Debug("action.Check could not get an absolute path for current", "current", args.Current, "error", err)
 		return err
 	}
-	currentDB, err := sql.Open("sqlite", absPath)
+	currentDB, err := sql.Open("sqlite", currentAbsPath)
 	if err != nil {
-		slog.Debug("action.Check could not open a new SQLite DB", "dataSourceName", absPath, "error", err)
+		slog.Debug("action.Check could not open current SQLite DB", "dataSourceName", currentAbsPath, "error", err)
 		return err
 	}
+	slog.Debug("action.Check opened current database", "current", args.Current, "path", currentAbsPath)
 	defer currentDB.Close()
 
 	// Open change data set database (if passed in)
-	// var changeDB *sql.DB
+	var changeDB *sql.DB
 	if args.Change != "" {
-		// TODO load change db
+		changeAbsPath, err := filepath.Abs(args.Change)
+		if err != nil {
+			slog.Debug("action.Check could not get an absolute path for change", "change", args.Change, "error", err)
+			return err
+		}
+		changeDB, err := sql.Open("sqlite", changeAbsPath)
+		if err != nil {
+			slog.Debug("action.Check could not open change SQLite DB", "dataSourceName", changeAbsPath, "error", err)
+			return err
+		}
+		slog.Debug("action.Check opened change database", "change", args.Change, "path", changeAbsPath)
+		defer changeDB.Close()
 	}
 
 	// Get System
@@ -69,7 +81,7 @@ func Check(args *CheckArgs) error {
 	failed := 0
 	for _, c := range system.Checks {
 		slog.Info("Running check " + c.ID)
-		result, err := check.Run(c, system.ID, currentDB, args.Recommend, cfg.LLM)
+		result, err := check.Run(c, system.ID, currentDB, changeDB, args.Recommend, cfg.LLM)
 		if err != nil {
 			slog.Debug("action.Check could not run", "check", c.ID, "error", err)
 			return err

@@ -48,7 +48,7 @@ func sectionExistsWithoutTodos(allowTodos bool) string {
 	}
 }
 
-func RunSectionExists(id string, description string, options SectionExistsOptions, system string, current *sql.DB, recommendAction bool, llmOpts config.LLM) (result *Result, err error) {
+func RunSectionExists(id string, description string, options SectionExistsOptions, system string, current *sql.DB, change *sql.DB, recommendAction bool, llmOpts config.LLM) (result *Result, err error) {
 	result = &Result{
 		System:      system,
 		ID:          id,
@@ -58,7 +58,7 @@ func RunSectionExists(id string, description string, options SectionExistsOption
 	}
 
 	// Retrieve section (if exists)
-	section, err := sqlite.GetDocumentSection(options.Document, options.Section, system, current)
+	section, err := sqlite.GetDocumentSection(options.Document, options.Section, system, current, change)
 	if err != nil {
 		return
 	}
