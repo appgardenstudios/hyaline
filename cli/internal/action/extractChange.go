@@ -5,6 +5,7 @@ import (
 	"errors"
 	"hyaline/internal/code"
 	"hyaline/internal/config"
+	"hyaline/internal/docs"
 	"hyaline/internal/sqlite"
 	"log/slog"
 	"os"
@@ -86,7 +87,12 @@ func ExtractChange(args *ExtractChangeArgs) error {
 	slog.Debug("action.ExtractChange code inserted")
 
 	// Extract/Insert Docs
-	// TODO
+	err = docs.ExtractChange(system, args.Head, args.Base, db)
+	if err != nil {
+		slog.Debug("action.ExtractChange could not extract docs", "error", err)
+		return err
+	}
+	slog.Debug("action.ExtractChange docs inserted")
 
 	slog.Info("Extraction complete")
 	return nil

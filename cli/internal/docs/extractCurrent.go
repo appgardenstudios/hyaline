@@ -68,7 +68,7 @@ func ExtractCurrent(system *config.System, db *sql.DB) (err error) {
 			// Get and insert sections
 			cleanContent := strings.ReplaceAll(string(contents), "\r", "")
 			sections := getMarkdownSections(strings.Split(cleanContent, "\n"))
-			err = insertSectionAndChildren(sections, 0, relativePath, documentationId, system.ID, d.Type, db)
+			err = insertCurrentSectionAndChildren(sections, 0, relativePath, documentationId, system.ID, d.Type, db)
 			if err != nil {
 				slog.Debug("docs.ExtractCurrent could not insert section", "error", err)
 				return err
@@ -79,7 +79,7 @@ func ExtractCurrent(system *config.System, db *sql.DB) (err error) {
 	return
 }
 
-func insertSectionAndChildren(s *section, order int, documentId string, documentationId string, systemId string, format string, db *sql.DB) error {
+func insertCurrentSectionAndChildren(s *section, order int, documentId string, documentationId string, systemId string, format string, db *sql.DB) error {
 	// Insert this section
 	parentSectionId := ""
 	if s.Parent != nil {
@@ -98,13 +98,13 @@ func insertSectionAndChildren(s *section, order int, documentId string, document
 		ExtractedText:   extractMarkdownText([]byte(s.Content)),
 	}, db)
 	if err != nil {
-		slog.Debug("docs.insertSectionAndChildren could not insert section", "error", err)
+		slog.Debug("docs.insertCurrentSectionAndChildren could not insert section", "error", err)
 		return err
 	}
 
 	// Insert children
 	for i, child := range s.Children {
-		err = insertSectionAndChildren(child, i, documentId, documentationId, systemId, format, db)
+		err = insertCurrentSectionAndChildren(child, i, documentId, documentationId, systemId, format, db)
 		if err != nil {
 			return err
 		}
