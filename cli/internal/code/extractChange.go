@@ -53,7 +53,7 @@ func ExtractChange(system *config.System, head string, base string, db *sql.DB) 
 				slog.Debug("code.ExtractChange could not retrieve action for diff", "error", err, "diff", diff)
 				return err
 			}
-			from, to, err := diff.Files()
+			_, to, err := diff.Files()
 			if err != nil {
 				slog.Debug("code.ExtractChange could not retrieve files for diff", "error", err, "diff", diff)
 				return err
@@ -62,18 +62,18 @@ func ExtractChange(system *config.System, head string, base string, db *sql.DB) 
 			case merkletrie.Insert:
 				fallthrough
 			case merkletrie.Modify:
-				if glob.Match(to.Name) || slices.Contains(preset.Files, to.Name) {
-					slog.Debug("code.ExtractChange inserting file", "file", to.Name, "action", action)
+				if glob.Match(diff.To.Name) || slices.Contains(preset.Files, diff.To.Name) {
+					slog.Debug("code.ExtractChange inserting file", "file", diff.To.Name, "action", action)
 					bytes, err := repo.GetBlobBytes(to.Blob)
 					if err != nil {
 						slog.Debug("code.ExtractChange could not retrieve blob from diff", "error", err)
 						return err
 					}
 					err = sqlite.InsertChangeFile(sqlite.ChangeFile{
-						ID:           to.Name,
+						ID:           diff.To.Name,
 						CodeID:       codeId,
 						SystemID:     system.ID,
-						RelativePath: to.Name,
+						RelativePath: diff.To.Name,
 						Action:       action.String(),
 						RawData:      string(bytes),
 					}, db)
@@ -83,13 +83,13 @@ func ExtractChange(system *config.System, head string, base string, db *sql.DB) 
 					}
 				}
 			case merkletrie.Delete:
-				if glob.Match(from.Name) || slices.Contains(preset.Files, from.Name) {
-					slog.Debug("code.ExtractChange inserting file", "file", from.Name, "action", action)
+				if glob.Match(diff.From.Name) || slices.Contains(preset.Files, diff.From.Name) {
+					slog.Debug("code.ExtractChange inserting file", "file", diff.From.Name, "action", action)
 					err = sqlite.InsertChangeFile(sqlite.ChangeFile{
-						ID:           from.Name,
+						ID:           diff.From.Name,
 						CodeID:       codeId,
 						SystemID:     system.ID,
-						RelativePath: from.Name,
+						RelativePath: diff.From.Name,
 						Action:       action.String(),
 						RawData:      "",
 					}, db)
