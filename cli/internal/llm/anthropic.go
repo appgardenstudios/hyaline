@@ -64,14 +64,14 @@ func CallAnthropic(systemPrompt string, userPrompt string, model string, key str
 	}
 	reqBody, err := json.Marshal(reqData)
 	if err != nil {
-		slog.Debug("CallAnthropic could not marshal json", "error", err)
+		slog.Debug("llm.CallAnthropic could not marshal json", "error", err)
 		return
 	}
 
 	// Create our request
 	req, err := http.NewRequest(http.MethodPost, "https://api.anthropic.com/v1/messages", bytes.NewBuffer(reqBody))
 	if err != nil {
-		slog.Debug("CallAnthropic could not create request", "error", err)
+		slog.Debug("llm.CallAnthropic could not create request", "error", err)
 		return
 	}
 
@@ -83,7 +83,7 @@ func CallAnthropic(systemPrompt string, userPrompt string, model string, key str
 	// Make request
 	resp, err := client.Do(req)
 	if err != nil {
-		slog.Debug("CallAnthropic could not make request", "error", err)
+		slog.Debug("llm.CallAnthropic could not make request", "error", err)
 		return
 	}
 	defer resp.Body.Close()
@@ -91,12 +91,12 @@ func CallAnthropic(systemPrompt string, userPrompt string, model string, key str
 	// Read response body
 	resBodyBytes, err := io.ReadAll(resp.Body)
 	if err != nil {
-		slog.Debug("CallAnthropic could not read response body", "error", err)
+		slog.Debug("llm.CallAnthropic could not read response body", "error", err)
 	}
 
 	// Check status code
 	if resp.StatusCode != http.StatusOK {
-		slog.Debug("CallAnthropic returned with a non-200 status code", "statusCode", resp.StatusCode, "body", string(resBodyBytes))
+		slog.Debug("llm.CallAnthropic returned with a non-200 status code", "statusCode", resp.StatusCode, "body", string(resBodyBytes))
 		return
 	}
 
@@ -104,7 +104,7 @@ func CallAnthropic(systemPrompt string, userPrompt string, model string, key str
 	var resBody AnthropicMessagesResponse
 	err = json.Unmarshal(resBodyBytes, &resBody)
 	if err != nil {
-		slog.Debug("CallAnthropic could not unmarshal response body", "error", err, "body", string(resBodyBytes))
+		slog.Debug("llm.CallAnthropic could not unmarshal response body", "error", err, "body", string(resBodyBytes))
 		return
 	}
 

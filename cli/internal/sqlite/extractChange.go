@@ -5,26 +5,26 @@ import (
 	"log/slog"
 )
 
-func CreateCurrentSchema(db *sql.DB) (err error) {
-	slog.Debug("sqlite.CreateCurrentSchema schema creation started")
+func CreateChangeSchema(db *sql.DB) (err error) {
+	slog.Debug("sqlite.CreateChangeSchema schema creation started")
 	_, err = db.Exec(`
 create table system(id);
 create table code(id, system_id, path);
-create table file(id, code_id, system_id, relative_path, raw_data);
+create table file(id, code_id, system_id, relative_path, action, raw_data);
 create table documentation(id, system_id, type, path);
-create table document(id, documentation_id, system_id, relative_path, format, raw_data, extracted_text);
+create table document(id, documentation_id, system_id, relative_path, format, action, raw_data, extracted_text);
 create table section(id, document_id, documentation_id, system_id, parent_section_id, section_order, title, format, raw_data, extracted_text);
 `)
 
-	slog.Debug("sqlite.CreateCurrentSchema schema creation complete")
+	slog.Debug("sqlite.CreateChangeSchema schema creation complete")
 	return
 }
 
-type CurrentSystem struct {
+type ChangeSystem struct {
 	ID string
 }
 
-func InsertCurrentSystem(row CurrentSystem, db *sql.DB) (err error) {
+func InsertChangeSystem(row ChangeSystem, db *sql.DB) (err error) {
 	stmt, err := db.Prepare(`
 insert into system
 	(id)
@@ -39,13 +39,13 @@ values
 	return
 }
 
-type CurrentCode struct {
+type ChangeCode struct {
 	ID       string
 	SystemID string
 	Path     string
 }
 
-func InsertCurrentCode(row CurrentCode, db *sql.DB) (err error) {
+func InsertChangeCode(row ChangeCode, db *sql.DB) (err error) {
 	stmt, err := db.Prepare(`
 insert into code
 	(id, system_id, path)
@@ -60,37 +60,38 @@ values
 	return
 }
 
-type CurrentFile struct {
+type ChangeFile struct {
 	ID           string
 	CodeID       string
 	SystemID     string
 	RelativePath string
+	Action       string
 	RawData      string
 }
 
-func InsertCurrentFile(row CurrentFile, db *sql.DB) (err error) {
+func InsertChangeFile(row ChangeFile, db *sql.DB) (err error) {
 	stmt, err := db.Prepare(`
 insert into file
-	(id, code_id, system_id, relative_path, raw_data)
+	(id, code_id, system_id, relative_path, action, raw_data)
 values
-	(?, ?, ?, ?, ?)
+	(?, ?, ?, ?, ?, ?)
 `)
 	if err != nil {
 		return
 	}
-	stmt.Exec(row.ID, row.CodeID, row.SystemID, row.RelativePath, row.RawData)
+	stmt.Exec(row.ID, row.CodeID, row.SystemID, row.RelativePath, row.Action, row.RawData)
 
 	return
 }
 
-type CurrentDocumentation struct {
+type ChangeDocumentation struct {
 	ID       string
 	SystemID string
 	Type     string
 	Path     string
 }
 
-func InsertCurrentDocumentation(row CurrentDocumentation, db *sql.DB) (err error) {
+func InsertChangeDocumentation(row ChangeDocumentation, db *sql.DB) (err error) {
 	stmt, err := db.Prepare(`
 insert into documentation
 	(id, system_id, type, path)
@@ -105,32 +106,33 @@ values
 	return
 }
 
-type CurrentDocument struct {
+type ChangeDocument struct {
 	ID              string
 	DocumentationID string
 	SystemID        string
 	RelativePath    string
 	Format          string
+	Action          string
 	RawData         string
 	ExtractedText   string
 }
 
-func InsertCurrentDocument(row CurrentDocument, db *sql.DB) (err error) {
+func InsertChangeDocument(row ChangeDocument, db *sql.DB) (err error) {
 	stmt, err := db.Prepare(`
 insert into document
-	(id, documentation_id, system_id, relative_path, format, raw_data, extracted_text)
+	(id, documentation_id, system_id, relative_path, format, action, raw_data, extracted_text)
 values
-	(?, ?, ?, ?, ?, ?, ?)
+	(?, ?, ?, ?, ?, ?, ?, ?)
 `)
 	if err != nil {
 		return
 	}
-	stmt.Exec(row.ID, row.DocumentationID, row.SystemID, row.RelativePath, row.Format, row.RawData, row.ExtractedText)
+	stmt.Exec(row.ID, row.DocumentationID, row.SystemID, row.RelativePath, row.Format, row.Action, row.RawData, row.ExtractedText)
 
 	return
 }
 
-type CurrentSection struct {
+type ChangeSection struct {
 	ID              string
 	DocumentID      string
 	DocumentationID string
@@ -143,7 +145,7 @@ type CurrentSection struct {
 	ExtractedText   string
 }
 
-func InsertCurrentSection(row CurrentSection, db *sql.DB) (err error) {
+func InsertChangeSection(row ChangeSection, db *sql.DB) (err error) {
 	stmt, err := db.Prepare(`
 insert into section
 	(id, document_id, documentation_id, system_id, parent_section_id, section_order, title, format, raw_data, extracted_text)

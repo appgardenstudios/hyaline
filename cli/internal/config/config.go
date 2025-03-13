@@ -50,16 +50,17 @@ type Check struct {
 }
 
 func Load(path string) (cfg *Config, err error) {
-	slog.Debug("Load config starting")
+	slog.Debug("config.Load config starting")
 	// Read file from disk
 	absPath, err := filepath.Abs(path)
 	if err != nil {
-		slog.Debug("Load could not get an absolute path from the provided path", "path", path, "error", err)
+		slog.Debug("config.Load could not get an absolute path from the provided path", "path", path, "error", err)
 		return
 	}
+	slog.Debug("config.Load resolved absolute path for config", "path", path, "absPath", absPath)
 	data, err := os.ReadFile(absPath)
 	if err != nil {
-		slog.Debug("Load could not read config file from disk", "error", err)
+		slog.Debug("config.Load could not read config file from disk", "error", err)
 		return
 	}
 
@@ -70,12 +71,12 @@ func Load(path string) (cfg *Config, err error) {
 	cfg = &Config{}
 	err = yaml.Unmarshal(data, cfg)
 	if err != nil {
-		slog.Debug("Load could not unmarshal yaml config", "error", err)
+		slog.Debug("config.Load could not unmarshal yaml config", "error", err)
 		return
 	}
 
 	// Validate
-	slog.Debug("Load config validating")
+	slog.Debug("config.Load config validating")
 	codeCombinations := map[string]struct{}{}
 	docsCombinations := map[string]struct{}{}
 	for _, system := range cfg.Systems {
@@ -83,7 +84,7 @@ func Load(path string) (cfg *Config, err error) {
 		for _, code := range system.Code {
 			id := system.ID + "-" + code.ID
 			if _, ok := codeCombinations[id]; ok {
-				slog.Debug("Load found duplicate system/code combination", "error", err)
+				slog.Debug("config.Load found duplicate system/code combination", "error", err)
 				err = errors.New("duplicate system/code combination detected: " + system.ID + " > " + code.ID)
 				return
 			}
@@ -94,7 +95,7 @@ func Load(path string) (cfg *Config, err error) {
 		for _, doc := range system.Docs {
 			id := system.ID + "-" + doc.ID
 			if _, ok := docsCombinations[id]; ok {
-				slog.Debug("Load found duplicate system/docs combination", "error", err)
+				slog.Debug("config.Load found duplicate system/docs combination", "error", err)
 				err = errors.New("duplicate system/docs combination detected: " + system.ID + " > " + doc.ID)
 				return
 			}
@@ -102,7 +103,7 @@ func Load(path string) (cfg *Config, err error) {
 		}
 	}
 
-	slog.Debug("Load config complete")
+	slog.Debug("config.Load config complete")
 	return
 }
 
@@ -113,7 +114,7 @@ func GetSystem(system string, cfg *Config) (targetSystem *System, err error) {
 		}
 	}
 	if targetSystem == nil {
-		slog.Debug("GetSystem target system not found", "system", system)
+		slog.Debug("config.GetSystem target system not found", "system", system)
 		err = errors.New("system not found: " + system)
 	}
 

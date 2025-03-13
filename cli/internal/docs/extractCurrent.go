@@ -15,7 +15,7 @@ import (
 func ExtractCurrent(system *config.System, db *sql.DB) (err error) {
 	// Process each docs source
 	for _, d := range system.Docs {
-		slog.Debug("ExtractCurrent extracting docs", "system", system, "docs", d.ID)
+		slog.Debug("docs.ExtractCurrent extracting docs", "system", system, "docs", d.ID)
 		// Insert Documentation
 		documentationId := system.ID + "-" + d.ID
 		err = sqlite.InsertCurrentDocumentation(sqlite.CurrentDocumentation{
@@ -28,26 +28,26 @@ func ExtractCurrent(system *config.System, db *sql.DB) (err error) {
 		// Get our absolute path
 		absPath, err := filepath.Abs(d.Path)
 		if err != nil {
-			slog.Debug("ExtractCurrent could not determine absolute docs path", "error", err, "path", d.Path)
+			slog.Debug("docs.ExtractCurrent could not determine absolute docs path", "error", err, "path", d.Path)
 			return err
 		}
 		absPath += string(os.PathSeparator)
-		slog.Debug("ExtractCurrent extracting docs from path", "absPath", absPath)
+		slog.Debug("docs.ExtractCurrent extracting docs from path", "absPath", absPath)
 
 		// Get files from our fully qualified glob path
 		glob := filepath.Join(absPath, d.Glob)
 		files, err := zglob.Glob(glob)
 		if err != nil {
-			slog.Debug("ExtractCurrent could not find doc files with glob", "error", err)
+			slog.Debug("docs.ExtractCurrent could not find doc files with glob", "error", err)
 			return err
 		}
-		slog.Debug("ExtractCurrent found the following doc file matches using glob", "glob", glob, "matches", files)
+		slog.Debug("docs.ExtractCurrent found the following doc file matches using glob", "glob", glob, "matches", files)
 
 		// Insert documents/sections
 		for _, file := range files {
 			contents, err := os.ReadFile(file)
 			if err != nil {
-				slog.Debug("ExtractCurrent could not read doc file", "error", err, "file", file)
+				slog.Debug("docs.ExtractCurrent could not read doc file", "error", err, "file", file)
 				return err
 			}
 			relativePath := strings.TrimPrefix(file, absPath)
@@ -61,16 +61,16 @@ func ExtractCurrent(system *config.System, db *sql.DB) (err error) {
 				ExtractedText:   extractMarkdownText(contents),
 			}, db)
 			if err != nil {
-				slog.Debug("ExtractCurrent could not insert document", "error", err)
+				slog.Debug("docs.ExtractCurrent could not insert document", "error", err)
 				return err
 			}
 
 			// Get and insert sections
 			cleanContent := strings.ReplaceAll(string(contents), "\r", "")
 			sections := getMarkdownSections(strings.Split(cleanContent, "\n"))
-			err = insertSectionAndChildren(sections, 0, relativePath, documentationId, system.ID, d.Type, db)
+			err = insertCurrentSectionAndChildren(sections, 0, relativePath, documentationId, system.ID, d.Type, db)
 			if err != nil {
-				slog.Debug("ExtractCurrent could not insert section", "error", err)
+				slog.Debug("docs.ExtractCurrent could not insert section", "error", err)
 				return err
 			}
 		}
@@ -79,7 +79,7 @@ func ExtractCurrent(system *config.System, db *sql.DB) (err error) {
 	return
 }
 
-func insertSectionAndChildren(s *section, order int, documentId string, documentationId string, systemId string, format string, db *sql.DB) error {
+func insertCurrentSectionAndChildren(s *section, order int, documentId string, documentationId string, systemId string, format string, db *sql.DB) error {
 	// Insert this section
 	parentSectionId := ""
 	if s.Parent != nil {
@@ -98,13 +98,13 @@ func insertSectionAndChildren(s *section, order int, documentId string, document
 		ExtractedText:   extractMarkdownText([]byte(s.Content)),
 	}, db)
 	if err != nil {
-		slog.Debug("insertSectionAndChildren could not insert section", "error", err)
+		slog.Debug("docs.insertCurrentSectionAndChildren could not insert section", "error", err)
 		return err
 	}
 
 	// Insert children
 	for i, child := range s.Children {
-		err = insertSectionAndChildren(child, i, documentId, documentationId, systemId, format, db)
+		err = insertCurrentSectionAndChildren(child, i, documentId, documentationId, systemId, format, db)
 		if err != nil {
 			return err
 		}

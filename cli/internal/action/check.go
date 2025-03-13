@@ -22,7 +22,7 @@ type CheckArgs struct {
 
 func Check(args *CheckArgs) error {
 	slog.Info("Checking current docs")
-	slog.Debug("Check Args", slog.Group("args",
+	slog.Debug("action.Check Args", slog.Group("args",
 		"config", args.Config,
 		"current", args.Current,
 		"system", args.System,
@@ -31,19 +31,19 @@ func Check(args *CheckArgs) error {
 	// Load Config
 	cfg, err := config.Load(args.Config)
 	if err != nil {
-		slog.Debug("Check could not load the config", "error", err)
+		slog.Debug("action.Check could not load the config", "error", err)
 		return err
 	}
 
 	// Open current data set database
 	absPath, err := filepath.Abs(args.Current)
 	if err != nil {
-		slog.Debug("Check could not get an absolute path for current", "current", args.Current, "error", err)
+		slog.Debug("action.Check could not get an absolute path for current", "current", args.Current, "error", err)
 		return err
 	}
 	db, err := sql.Open("sqlite", absPath)
 	if err != nil {
-		slog.Debug("Check could not open a new SQLite DB", "dataSourceName", absPath, "error", err)
+		slog.Debug("action.Check could not open a new SQLite DB", "dataSourceName", absPath, "error", err)
 		return err
 	}
 	defer db.Close()
@@ -51,7 +51,7 @@ func Check(args *CheckArgs) error {
 	// Get System
 	system, err := config.GetSystem(args.System, cfg)
 	if err != nil {
-		slog.Debug("Check could not locate the system", "system", args.System, "error", err)
+		slog.Debug("action.Check could not locate the system", "system", args.System, "error", err)
 		return err
 	}
 
@@ -62,7 +62,7 @@ func Check(args *CheckArgs) error {
 		slog.Info("Running check " + c.ID)
 		result, err := check.Run(c, system.ID, db, args.Recommend, cfg.LLM)
 		if err != nil {
-			slog.Debug("Check could not run", "check", c.ID, "error", err)
+			slog.Debug("action.Check could not run", "check", c.ID, "error", err)
 			return err
 		}
 		if !result.Pass {
@@ -77,7 +77,7 @@ func Check(args *CheckArgs) error {
 	}{results}
 	output, err := json.MarshalIndent(data, "", "  ")
 	if err != nil {
-		slog.Debug("Check could not marshal results", "error", err)
+		slog.Debug("action.Check could not marshal results", "error", err)
 		return err
 	}
 	fmt.Println(string(output))

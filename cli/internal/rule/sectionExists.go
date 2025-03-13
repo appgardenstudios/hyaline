@@ -71,7 +71,7 @@ func RunSectionExists(id string, description string, options SectionExistsOption
 		if recommendAction {
 			action, err := recommend.SectionExists(true, options.Section, options.Document, system, current, llmOpts)
 			if err != nil {
-				slog.Debug("RunSectionExists could not generate recommendation", "error", err)
+				slog.Debug("rule.RunSectionExists could not generate recommendation", "error", err)
 			} else {
 				result.Action = action
 			}
@@ -87,7 +87,7 @@ func RunSectionExists(id string, description string, options SectionExistsOption
 		if recommendAction {
 			action, err := recommend.SectionExists(false, options.Section, options.Document, system, current, llmOpts)
 			if err != nil {
-				slog.Debug("RunSectionExists could not generate recommendation", "error", err)
+				slog.Debug("rule.RunSectionExists could not generate recommendation", "error", err)
 			} else {
 				result.Action = action
 			}

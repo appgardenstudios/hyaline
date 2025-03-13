@@ -4,12 +4,19 @@
 build:
 	go build -o ./hyaline -ldflags="-X 'main.Version=development'" ./cmd/hyaline.go
 
-.PHONY: extract
-extract:
+.PHONY: current
+current:
 	rm -f ./current.db
 	make build
 	echo "---"
 	./hyaline --debug extract current --config ./_example/config.yml --system local --output ./current.db
+
+.PHONY: change
+change:
+	rm -f ./change.db
+	make build
+	echo "---"
+	./hyaline --debug extract change --config ../../hyaline-example/config.yml --system local --base main --head feat-1 --output ./change.db
 
 .PHONY: check
 check:
