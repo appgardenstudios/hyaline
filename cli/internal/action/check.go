@@ -16,6 +16,7 @@ import (
 type CheckArgs struct {
 	Config    string
 	Current   string
+	Change    string
 	System    string
 	Recommend bool
 }
@@ -25,7 +26,9 @@ func Check(args *CheckArgs) error {
 	slog.Debug("action.Check Args", slog.Group("args",
 		"config", args.Config,
 		"current", args.Current,
+		"change", args.Change,
 		"system", args.System,
+		"recommend", args.Recommend,
 	))
 
 	// Load Config
@@ -41,12 +44,18 @@ func Check(args *CheckArgs) error {
 		slog.Debug("action.Check could not get an absolute path for current", "current", args.Current, "error", err)
 		return err
 	}
-	db, err := sql.Open("sqlite", absPath)
+	currentDB, err := sql.Open("sqlite", absPath)
 	if err != nil {
 		slog.Debug("action.Check could not open a new SQLite DB", "dataSourceName", absPath, "error", err)
 		return err
 	}
-	defer db.Close()
+	defer currentDB.Close()
+
+	// Open change data set database (if passed in)
+	// var changeDB *sql.DB
+	if args.Change != "" {
+		// TODO load change db
+	}
 
 	// Get System
 	system, err := config.GetSystem(args.System, cfg)
@@ -60,7 +69,7 @@ func Check(args *CheckArgs) error {
 	failed := 0
 	for _, c := range system.Checks {
 		slog.Info("Running check " + c.ID)
-		result, err := check.Run(c, system.ID, db, args.Recommend, cfg.LLM)
+		result, err := check.Run(c, system.ID, currentDB, args.Recommend, cfg.LLM)
 		if err != nil {
 			slog.Debug("action.Check could not run", "check", c.ID, "error", err)
 			return err

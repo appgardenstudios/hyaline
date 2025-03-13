@@ -54,6 +54,11 @@ func main() {
 						Usage:    "Path to the current data set",
 					},
 					&cli.StringFlag{
+						Name:     "change",
+						Required: false,
+						Usage:    "Path to the change data set",
+					},
+					&cli.StringFlag{
 						Name:     "system",
 						Required: true,
 						Usage:    "ID of the system to extract",
@@ -73,6 +78,7 @@ func main() {
 					err := action.Check(&action.CheckArgs{
 						Config:    cCtx.String("config"),
 						Current:   cCtx.String("current"),
+						Change:    cCtx.String("change"),
 						System:    cCtx.String("system"),
 						Recommend: cCtx.Bool("recommend"),
 					})
