@@ -8,6 +8,6 @@ type Preset struct {
 var presets = map[string]Preset{
 	"js": {
 		Glob:  "./**/*.js",
-		Files: []string{"./package.json", "./Makefile"},
+		Files: []string{"package.json", "Makefile"},
 	},
 }
