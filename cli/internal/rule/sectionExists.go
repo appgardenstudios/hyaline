@@ -48,7 +48,8 @@ func sectionExistsWithoutTodos(allowTodos bool) string {
 	}
 }
 
-func RunSectionExists(id string, description string, options SectionExistsOptions, system string, current *sql.DB, recommendAction bool, llmOpts config.LLM) (result *Result, err error) {
+func RunSectionExists(id string, description string, options SectionExistsOptions, system string, current *sql.DB, change *sql.DB, recommendAction bool, llmOpts config.LLM) (result *Result, err error) {
+	slog.Debug("rule.RunSectionExists running", "id", id, "description", description, "options", options, "system", system, "hasChange", change != nil)
 	result = &Result{
 		System:      system,
 		ID:          id,
@@ -57,14 +58,57 @@ func RunSectionExists(id string, description string, options SectionExistsOption
 		Options:     options,
 	}
 
-	// Retrieve section (if exists)
-	section, err := sqlite.GetDocumentSection(options.Document, options.Section, system, current)
+	var sectionContents *string
+	changed := false
+
+	// Retrieve current section (if exists)
+	currentSection, err := sqlite.GetCurrentDocumentSection(options.Document, options.Section, system, current)
 	if err != nil {
+		return
+	}
+	if currentSection != nil {
+		sectionContents = &currentSection.RawData
+		slog.Debug("rule.RunSectionExists current section found")
+	}
+
+	// Retrieve changed section (if exists)
+	if change != nil {
+		// Get document from change
+		changeDocument, err := sqlite.GetChangeDocument(options.Document, system, change)
+		if err != nil {
+			return nil, err
+		}
+
+		// Mark as changed if we got a record
+		if changeDocument != nil {
+			changed = true
+			sectionContents = nil
+			slog.Debug("rule.RunSectionExists has a change in scope")
+
+			// Get section contents as long as the document was not deleted
+			if changeDocument.Action != "Delete" {
+				changeSection, err := sqlite.GetChangeDocumentSection(options.Document, options.Section, system, change)
+				if err != nil {
+					return nil, err
+				}
+				if changeSection != nil {
+					sectionContents = &changeSection.RawData
+				}
+			}
+			slog.Debug("rule.RunSectionExists document changed", "action", changeDocument.Action, "sectionContents", sectionContents)
+		}
+	}
+
+	// Section Deleted
+	if changed && sectionContents == nil {
+		result.Pass = false
+		result.Severity = options.Severity
+		result.Message = fmt.Sprintf("The section '%s' must exist in '%s'%s but was deleted.", options.Section, options.Document, sectionExistsWithoutTodos(options.AllowTodos))
 		return
 	}
 
 	// Ensure section exists
-	if section == nil {
+	if sectionContents == nil {
 		result.Pass = false
 		result.Severity = options.Severity
 		result.Message = fmt.Sprintf("The section '%s' must exist in '%s'%s.", options.Section, options.Document, sectionExistsWithoutTodos(options.AllowTodos))
@@ -80,7 +124,7 @@ func RunSectionExists(id string, description string, options SectionExistsOption
 	}
 
 	// Ensure section is not empty
-	if strings.TrimSpace(section.RawData) == "" {
+	if strings.TrimSpace(*sectionContents) == "" {
 		result.Pass = false
 		result.Severity = options.Severity
 		result.Message = fmt.Sprintf("The section '%s' in '%s' must contain text%s.", options.Section, options.Document, sectionExistsWithoutTodos(options.AllowTodos))
@@ -96,7 +140,7 @@ func RunSectionExists(id string, description string, options SectionExistsOption
 	}
 
 	// If allowTodos is false, ensure there are no TODOs
-	if !options.AllowTodos && strings.Contains(section.RawData, "TODO") {
+	if !options.AllowTodos && strings.Contains(*sectionContents, "TODO") {
 		result.Pass = false
 		result.Severity = options.Severity
 		result.Message = fmt.Sprintf("The section '%s' in '%s' must not contain TODOs.", options.Section, options.Document)

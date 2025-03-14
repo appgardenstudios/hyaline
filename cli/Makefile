@@ -24,6 +24,12 @@ check:
 	echo "---"
 	./hyaline --debug check --config ./_example/config.yml --current ./current.db --system local
 
+.PHONY: check-change
+check-change:
+	make build
+	echo "---"
+	./hyaline --debug check --config ./_example/config.yml --current ./current.db --change ./change.db --system local
+
 .PHONY: recommend
 recommend:
 	make build
