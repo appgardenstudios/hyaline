@@ -58,8 +58,6 @@ func RunSectionExists(id string, description string, options SectionExistsOption
 		Options:     options,
 	}
 
-	var currentSectionContents *string
-	var changeSectionContents *string
 	var sectionContents *string
 	changed := false
 
@@ -69,7 +67,8 @@ func RunSectionExists(id string, description string, options SectionExistsOption
 		return
 	}
 	if currentSection != nil {
-		currentSectionContents = &currentSection.RawData
+		sectionContents = &currentSection.RawData
+		slog.Debug("rule.RunSectionExists current section found")
 	}
 
 	// Retrieve changed section (if exists)
@@ -83,6 +82,7 @@ func RunSectionExists(id string, description string, options SectionExistsOption
 		// Mark as changed if we got a record
 		if changeDocument != nil {
 			changed = true
+			sectionContents = nil
 			slog.Debug("rule.RunSectionExists has a change in scope")
 
 			// Get section contents as long as the document was not deleted
@@ -92,21 +92,15 @@ func RunSectionExists(id string, description string, options SectionExistsOption
 					return nil, err
 				}
 				if changeSection != nil {
-					changeSectionContents = &changeSection.RawData
+					sectionContents = &changeSection.RawData
 				}
 			}
-			slog.Debug("rule.RunSectionExists document changed", "action", changeDocument.Action, "changeSection", changeSectionContents)
+			slog.Debug("rule.RunSectionExists document changed", "action", changeDocument.Action, "sectionContents", sectionContents)
 		}
 	}
 
-	// Set sectionContents
-	sectionContents = currentSectionContents
-	if changed {
-		sectionContents = changeSectionContents
-	}
-
 	// Section Deleted
-	if changed && changeSectionContents == nil {
+	if changed && sectionContents == nil {
 		result.Pass = false
 		result.Severity = options.Severity
 		result.Message = fmt.Sprintf("The section '%s' must exist in '%s'%s but was deleted.", options.Section, options.Document, sectionExistsWithoutTodos(options.AllowTodos))
