@@ -60,7 +60,7 @@ func Check(args *CheckArgs) error {
 			slog.Debug("action.Check could not get an absolute path for change", "change", args.Change, "error", err)
 			return err
 		}
-		changeDB, err := sql.Open("sqlite", changeAbsPath)
+		changeDB, err = sql.Open("sqlite", changeAbsPath)
 		if err != nil {
 			slog.Debug("action.Check could not open change SQLite DB", "dataSourceName", changeAbsPath, "error", err)
 			return err
