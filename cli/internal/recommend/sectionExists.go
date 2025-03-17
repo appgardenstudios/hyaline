@@ -16,7 +16,7 @@ func SectionExists(sectionExists bool, section string, document string, systemID
 
 	// Create our existence action for use below
 	var existenceAction string
-	if sectionExists {
+	if !sectionExists {
 		existenceAction = "create"
 	} else {
 		existenceAction = "add content to"
