@@ -124,7 +124,7 @@ func RunSectionExists(id string, description string, options SectionExistsOption
 		result.Severity = options.Severity
 		result.Message = fmt.Sprintf("The section '%s' must exist in '%s'%s.", options.Section, options.Document, sectionExistsWithoutTodos(options.AllowTodos))
 		if recommendAction {
-			action, err := recommend.SectionExists(true, options.Section, options.Document, system, current, change, llmOpts)
+			action, err := recommend.SectionExists(false, options.Section, options.Document, system, current, change, llmOpts)
 			if err != nil {
 				slog.Debug("rule.RunSectionExists could not generate recommendation", "error", err)
 			} else {
@@ -140,7 +140,7 @@ func RunSectionExists(id string, description string, options SectionExistsOption
 		result.Severity = options.Severity
 		result.Message = fmt.Sprintf("The section '%s' in '%s' must contain text%s.", options.Section, options.Document, sectionExistsWithoutTodos(options.AllowTodos))
 		if recommendAction {
-			action, err := recommend.SectionExists(false, options.Section, options.Document, system, current, change, llmOpts)
+			action, err := recommend.SectionExists(true, options.Section, options.Document, system, current, change, llmOpts)
 			if err != nil {
 				slog.Debug("rule.RunSectionExists could not generate recommendation", "error", err)
 			} else {
