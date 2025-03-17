@@ -35,3 +35,9 @@ recommend:
 	make build
 	echo "---"
 	./hyaline --debug check --config ./_example/config.yml --current ./current.db --system local --recommend
+
+.PHONY: recommend-change
+recommend-change:
+	make build
+	echo "---"
+	./hyaline --debug check --config ./_example/config.yml --current ./current.db --change ./change.db --system local --recommend
