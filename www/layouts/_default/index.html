@@ -1,5 +1,5 @@
 {{ define "main" }}
-  <section class="pt-2 pb-4 sm:bg-contain sm:bg-right sm:bg-no-repeat sm:bg-[linear-gradient(to_left,rgba(255,255,255,0.5),rgba(255,255,255,1),rgba(255,255,255,1)),url('/img/index-hero.jpg')]">
+  <section class="pt-2 px-4 pb-6 sm:bg-contain sm:bg-right sm:bg-no-repeat sm:bg-[linear-gradient(to_left,rgba(255,255,255,0.5),rgba(255,255,255,1),rgba(255,255,255,1)),url('/img/index-hero.jpg')]">
     <h1 class="text-5xl leading-[1.2]">Identify what documentation<br />
       needs to be updated<br />
       for a pull request.
@@ -11,7 +11,7 @@
     </h2>
     <a href="#" class="text-white bg-green-600 hover:bg-green-500 focus:ring-4 focus:ring-green-500 font-medium rounded-lg text-sm px-5 py-2.5">Get Started</a>
   </section>
-  <section class="pt-4">
+  <section class="py-4 px-4 bg-gray-200">
     <div class="max-w-md">
       <h3 class="text-xl font-semibold">1. Tell Hyaline about your code & documentation</h3>
       <p class="pl-4">Create a configuration file explaining where your code and docs are and what rules you would like to enforce.</p>
@@ -26,21 +26,25 @@
       <a class="pl-4 underline" href="#">Learn More →</a>
     </div>
   </section>
-  <section class="pt-4">
-    <h2>Hyaline can:</h2>
-    <ul>
-      <li>Find what documentation should be updated for any change</li>
-      <li>Fix documentation issues before something released</li>
-      <li>Prevent documentation from getting out of sync</li>
-      <li>Ensure current documentation is complete</li>
-      <li>Pull documentation from repositories, file systems, and websites</li>
-      <li>Be configured to use your specific documentation practices</li>
-      <li>Export a full set of documentation for your use</li>
-    </ul>
+  <section class="py-4 px-4 bg-gray-50">
+    <div class="flex flex-col">
+      <h2 class="text-4xl self-center pb-4">Hyaline can:</h2>
+      <ul class="space-y-1 text-gray-800 list-disc list-inside">
+        <li>Find what documentation should be updated for any change</li>
+        <li>Fix documentation issues before something released</li>
+        <li>Prevent documentation from getting out of sync</li>
+        <li>Ensure current documentation is complete</li>
+        <li>Pull documentation from repositories, file systems, and websites</li>
+        <li>Be configured to use your specific documentation practices</li>
+        <li>Export a full set of documentation for your use</li>
+      </ul>
+    </div>
   </section>
-  <section>
-    <h1>Hyaline</h1>
-    <h2>Find, Fix, &amp; Prevent Documentation Issues</h2>
-    <a href="#">Try it Now</a>
+  <section class="py-4 px-4 bg-gray-200">
+    <div class="flex flex-col items-center">
+      <h1 class="text-5xl pb-4">Hyaline</h1>
+      <h2 class="text-3xl pb-4">Find, Fix, &amp; Prevent Documentation Issues</h2>
+      <a href="#" class="text-white bg-green-600 hover:bg-green-500 focus:ring-4 focus:ring-green-500 font-medium rounded-lg text-sm px-5 py-2.5">Try it Now</a>
+    </div>
   </section>
 {{ end }}
