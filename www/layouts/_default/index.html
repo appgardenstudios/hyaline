@@ -1,5 +1,5 @@
 {{ define "main" }}
-  <section class="pt-2 sm:bg-contain sm:bg-right sm:bg-no-repeat sm:bg-[linear-gradient(to_left,rgba(255,255,255,0.5),rgba(255,255,255,1),rgba(255,255,255,1)),url('/img/index-hero.jpg')]">
+  <section class="pt-2 pb-4 sm:bg-contain sm:bg-right sm:bg-no-repeat sm:bg-[linear-gradient(to_left,rgba(255,255,255,0.5),rgba(255,255,255,1),rgba(255,255,255,1)),url('/img/index-hero.jpg')]">
     <h1 class="text-5xl leading-[1.2]">Identify what documentation<br />
       needs to be updated<br />
       for a pull request.
@@ -9,22 +9,24 @@
       see what needs to be updated,<br />
       and recommends what updates to make.
     </h2>
-    <a href="#" class="text-white bg-blue-600 hover:bg-blue-780 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5">Get Started</a>
+    <a href="#" class="text-white bg-emerald-500 hover:bg-blue-780 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5">Get Started</a>
   </section>
-  <section class="pt-8">
-    <h3>1. Tell Hyaline about your code & documentation</h3>
-    <p>Create a configuration file explaining where your code and docs are and what rules you would like to enforce.</p>
-    <a href="#">Learn More →</a>
-
-    <h3>2. Add Hyaline to your CI workflows</h3>
-    <p>Integrate Hyaline into your GitHub Actions (or other workflows) so that it is called when a Pull Request is created or updated.</p>
-    <a href="#">Learn More →</a>
-
-    <h3>3. Hyaline tells you which docs should be updated</h3>
-    <p>See a list of documentation that should be checked or updated, as well as a recommended set of changes to that documentation.</p>
-    <a href="#">Learn More →</a>
+  <section class="pt-4">
+    <div class="max-w-md">
+      <h3 class="text-xl font-semibold">1. Tell Hyaline about your code & documentation</h3>
+      <p class="pl-4">Create a configuration file explaining where your code and docs are and what rules you would like to enforce.</p>
+      <a class="pl-4 underline" href="#">Learn More →</a>
+  
+      <h3 class="pt-4 text-xl font-semibold">2. Add Hyaline to your CI workflows</h3>
+      <p class="pl-4">Integrate Hyaline into your GitHub Actions (or other workflows) so that it is called when a Pull Request is created or updated.</p>
+      <a class="pl-4 underline" href="#">Learn More →</a>
+  
+      <h3 class="pt-4 text-xl font-semibold">3. Hyaline tells you which docs should be updated</h3>
+      <p class="pl-4">See a list of documentation that should be checked or updated, as well as a recommended set of changes to that documentation.</p>
+      <a class="pl-4 underline" href="#">Learn More →</a>
+    </div>
   </section>
-  <section>
+  <section class="pt-4">
     <h2>Hyaline can:</h2>
     <ul>
       <li>Find what documentation should be updated for any change</li>
@@ -41,6 +43,4 @@
     <h2>Find, Fix, &amp; Prevent Documentation Issues</h2>
     <a href="#">Try it Now</a>
   </section>
-
-  <p>This line is from <code>layouts/index.html</code>.</p>
 {{ end }}
