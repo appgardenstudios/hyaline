@@ -4,13 +4,13 @@
   {{ partialCached "css.html" . }}
 </head>
 <body class="h-full">
-	<div class="min-h-full">
+	<div class="flex flex-col min-h-full items-stretch">
 		<nav class="border-b border-gray-200 bg-white">
 			<div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
 				<div class="flex h-16 justify-between">
 					<div class="flex shrink-0 items-center">
 						<a href="/">
-							<img class="block h-8 w-auto lg:hidden" src="/img/logo.svg" alt="Hyaline">
+							<img class="block h-8 w-auto" src="/img/logo.svg" alt="Hyaline">
 						</a>
 					</div>
 					<div class="flex">
@@ -52,10 +52,17 @@
 			</div>
 		</nav>
 	
-		<main class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-			{{ block "main" . }}
-			{{ end }}
+		<main class="flex-1">
+			<div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+				{{ block "main" . }}
+				{{ end }}
+			</div>
 		</main>
+
+		<footer class="flex h-16 items-center justify-center">
+			<span>&copy; 2025</span>
+			<span class="px-1">-</span>
+			<a href="/about">About</a></footer>
 	</div>
 </body>
 <script type="text/javascript">
