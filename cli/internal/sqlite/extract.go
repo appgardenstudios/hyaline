@@ -38,3 +38,47 @@ VALUES
 
 	return
 }
+
+type Code struct {
+	ID       string
+	SystemID string
+	Path     string
+}
+
+func InsertCode(code Code, db *sql.DB) (err error) {
+	stmt, err := db.Prepare(`
+INSERT INTO CODE
+	(ID, SYSTEM_ID, PATH)
+VALUES
+	(?, ?, ?)
+`)
+	if err != nil {
+		return
+	}
+	stmt.Exec(code.ID, code.SystemID, code.Path)
+
+	return
+}
+
+type File struct {
+	ID       string
+	CodeID   string
+	SystemID string
+	Action   string
+	RawData  string
+}
+
+func InsertFile(file File, db *sql.DB) (err error) {
+	stmt, err := db.Prepare(`
+INSERT INTO FILE
+	(ID, CODE_ID, SYSTEM_ID, ACTION, RAW_DATA)
+values
+	(?, ?, ?, ?, ?)
+`)
+	if err != nil {
+		return
+	}
+	stmt.Exec(file.ID, file.CodeID, file.SystemID, file.Action, file.RawData)
+
+	return
+}
