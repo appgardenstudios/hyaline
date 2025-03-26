@@ -13,7 +13,7 @@ systems:
           - package.json
           - "./**/*.js"
         exclude:
-          - "./**/*test.js"
+          - "./**/*.test.js"
     docs:
       - id: docs
         type: md

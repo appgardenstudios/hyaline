@@ -15,7 +15,7 @@ import (
 func ExtractCurrent(system *config.System, db *sql.DB) (err error) {
 	// Process each docs source
 	for _, d := range system.Docs {
-		slog.Debug("docs.ExtractCurrent extracting docs", "system", system, "docs", d.ID)
+		slog.Debug("docs.ExtractCurrent extracting docs", "system", system.ID, "docs", d.ID)
 		// Insert Documentation
 		documentationId := system.ID + "-" + d.ID
 		err = sqlite.InsertCurrentDocumentation(sqlite.CurrentDocumentation{

@@ -31,8 +31,8 @@ type Code struct {
 	ID        string   `yaml:"id"`
 	Extractor string   `yaml:"extractor"`
 	Path      string   `yaml:"path"`
-	Includes  []string `yaml:"includes"`
-	Excludes  []string `yaml:"excludes"`
+	Include   []string `yaml:"include"`
+	Exclude   []string `yaml:"exclude"`
 }
 
 type Doc struct {
