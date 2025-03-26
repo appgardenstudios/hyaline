@@ -77,15 +77,24 @@ func Load(path string) (cfg *Config, err error) {
 	}
 
 	// Validate
-	// TODO test this
-	slog.Debug("config.Load config validating")
+	err = validate(cfg)
+	if err != nil {
+		slog.Debug("config.Load found an invalid config", "error", err)
+		return
+	}
+
+	slog.Debug("config.Load config complete")
+	return
+}
+
+func validate(cfg *Config) (err error) {
 	for _, system := range cfg.Systems {
 		// Ensure that system/code combinations are unique
 		codeIDs := map[string]struct{}{}
 		for _, code := range system.Code {
 			if _, ok := codeIDs[code.ID]; ok {
 				err = errors.New("duplicate code id detected: " + system.ID + " > " + code.ID)
-				slog.Debug("config.Load found duplicate code id", "system", system.ID, "code", code.ID, "error", err)
+				slog.Debug("config.Validate found duplicate code id", "system", system.ID, "code", code.ID, "error", err)
 				return
 			}
 			codeIDs[code.ID] = struct{}{}
@@ -94,17 +103,14 @@ func Load(path string) (cfg *Config, err error) {
 		// Ensure that system/docs combinations are unique
 		docIDs := map[string]struct{}{}
 		for _, doc := range system.Docs {
-			id := system.ID + "-" + doc.ID
 			if _, ok := docIDs[doc.ID]; ok {
 				err = errors.New("duplicate docs id detected: " + system.ID + " > " + doc.ID)
-				slog.Debug("config.Load found duplicate docs id", "system", system.ID, "doc", doc.ID, "error", err)
+				slog.Debug("config.Validate found duplicate docs id", "system", system.ID, "doc", doc.ID, "error", err)
 				return
 			}
-			docIDs[id] = struct{}{}
+			docIDs[doc.ID] = struct{}{}
 		}
 	}
-
-	slog.Debug("config.Load config complete")
 	return
 }
 

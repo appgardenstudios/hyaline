@@ -4,6 +4,10 @@
 build:
 	go build -o ./hyaline -ldflags="-X 'main.Version=development'" ./cmd/hyaline.go
 
+.PHONY: test
+test:
+	go test ./...
+
 .PHONY: extract-current
 extract-current:
 	rm -f ./current.db
