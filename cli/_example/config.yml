@@ -9,7 +9,11 @@ systems:
       - id: app
         extractor: fs
         path: ./_example/
-        preset: js
+        include:
+          - package.json
+          - "./**/*.js"
+        exclude:
+          - "./**/*test.js"
     docs:
       - id: docs
         type: md

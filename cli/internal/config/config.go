@@ -28,10 +28,11 @@ type System struct {
 }
 
 type Code struct {
-	ID        string `yaml:"id"`
-	Extractor string `yaml:"extractor"`
-	Path      string `yaml:"path"`
-	Preset    string `yaml:"preset"`
+	ID        string   `yaml:"id"`
+	Extractor string   `yaml:"extractor"`
+	Path      string   `yaml:"path"`
+	Includes  []string `yaml:"includes"`
+	Excludes  []string `yaml:"excludes"`
 }
 
 type Doc struct {
@@ -76,30 +77,30 @@ func Load(path string) (cfg *Config, err error) {
 	}
 
 	// Validate
+	// TODO test this
 	slog.Debug("config.Load config validating")
-	codeCombinations := map[string]struct{}{}
-	docsCombinations := map[string]struct{}{}
 	for _, system := range cfg.Systems {
 		// Ensure that system/code combinations are unique
+		codeIDs := map[string]struct{}{}
 		for _, code := range system.Code {
-			id := system.ID + "-" + code.ID
-			if _, ok := codeCombinations[id]; ok {
-				slog.Debug("config.Load found duplicate system/code combination", "error", err)
-				err = errors.New("duplicate system/code combination detected: " + system.ID + " > " + code.ID)
+			if _, ok := codeIDs[code.ID]; ok {
+				err = errors.New("duplicate code id detected: " + system.ID + " > " + code.ID)
+				slog.Debug("config.Load found duplicate code id", "system", system.ID, "code", code.ID, "error", err)
 				return
 			}
-			codeCombinations[id] = struct{}{}
+			codeIDs[code.ID] = struct{}{}
 		}
 
 		// Ensure that system/docs combinations are unique
+		docIDs := map[string]struct{}{}
 		for _, doc := range system.Docs {
 			id := system.ID + "-" + doc.ID
-			if _, ok := docsCombinations[id]; ok {
-				slog.Debug("config.Load found duplicate system/docs combination", "error", err)
-				err = errors.New("duplicate system/docs combination detected: " + system.ID + " > " + doc.ID)
+			if _, ok := docIDs[doc.ID]; ok {
+				err = errors.New("duplicate docs id detected: " + system.ID + " > " + doc.ID)
+				slog.Debug("config.Load found duplicate docs id", "system", system.ID, "doc", doc.ID, "error", err)
 				return
 			}
-			docsCombinations[id] = struct{}{}
+			docIDs[id] = struct{}{}
 		}
 	}
 
