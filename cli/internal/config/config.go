@@ -68,7 +68,7 @@ func Load(path string) (cfg *Config, err error) {
 	// Replace any env references ($KEY or ${KEY} with the contents of KEY from env)
 	data = []byte(os.ExpandEnv(string(data)))
 
-	// Parse file into struct
+	// Parse file into the struct
 	cfg = &Config{}
 	err = yaml.Unmarshal(data, cfg)
 	if err != nil {

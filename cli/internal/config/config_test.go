@@ -1,6 +1,56 @@
 package config
 
-import "testing"
+import (
+	"os"
+	"path"
+	"reflect"
+	"testing"
+)
+
+func TestLoad(t *testing.T) {
+	llmKey := "TEST_KEY"
+
+	expectedConfig := Config{
+		LLM: LLM{
+			Provider: "anthropic",
+			Model:    "claude-3-5-sonnet-20241022",
+			Key:      llmKey,
+		},
+		Systems: []System{{
+			ID: "my-app",
+			Code: []Code{{
+				ID:        "app",
+				Extractor: "fs",
+				Path:      "./",
+				Include:   []string{"package.json", "./**/*.js"},
+				Exclude:   []string{"./**/*.test.js"},
+			}},
+			Docs: []Doc{{
+				ID:        "docs",
+				Type:      "md",
+				Extractor: "fs",
+				Path:      "./",
+				Glob:      "./**/*.md",
+			}},
+		}},
+	}
+
+	os.Setenv("ANTHROPIC_KEY", llmKey)
+
+	dir, err := os.Getwd()
+	if err != nil {
+		t.Fatalf("Could not get cwd: %v", err)
+	}
+	absPath := path.Join(dir, "test_config.yml")
+	cfg, err := Load(absPath)
+	if err != nil {
+		t.Fatalf("Could not get config: %v", err)
+	}
+
+	if !reflect.DeepEqual(*cfg, expectedConfig) {
+		t.Fatalf("Expected config to match. Got %v, Wanted %v", *cfg, expectedConfig)
+	}
+}
 
 func TestValidate(t *testing.T) {
 	code := Code{
@@ -24,7 +74,7 @@ func TestValidate(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		cfg := Config{
+		cfg := &Config{
 			Systems: []System{{
 				ID:   "test-system",
 				Code: test.code,
@@ -32,7 +82,7 @@ func TestValidate(t *testing.T) {
 			}},
 		}
 
-		err := validate(&cfg)
+		err := validate(cfg)
 		if (err == nil && test.shouldError) || (err != nil && !test.shouldError) {
 			t.Errorf("got %v, want %t", err, test.shouldError)
 		}
