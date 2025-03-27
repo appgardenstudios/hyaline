@@ -3,3 +3,7 @@ hyaline
 
 # Intermediate databases
 *.db
+
+# Testing artifacts
+hyaline-coverage
+.coverdata/

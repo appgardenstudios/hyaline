@@ -6,7 +6,16 @@ build:
 
 .PHONY: test
 test:
-	go test ./...
+	go test ./cmd/... ./internal/...
+
+.PHONY: e2e
+e2e:
+	rm -rf ./e2e/_output/*
+	rm -rf .coverdata
+	mkdir -p .coverdata
+	go build -o ./hyaline-coverage -ldflags="-X 'main.Version=development'" -cover ./cmd/hyaline.go
+	go test ./e2e/...
+	go tool covdata percent -i=.coverdata
 
 .PHONY: extract-current
 extract-current:
