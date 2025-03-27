@@ -3,9 +3,6 @@ package docs
 import (
 	"database/sql"
 	"hyaline/internal/config"
-	"hyaline/internal/sqlite"
-	"log/slog"
-	"strings"
 )
 
 func ExtractChange(system *config.System, head string, base string, db *sql.DB) (err error) {
@@ -107,36 +104,36 @@ func ExtractChange(system *config.System, head string, base string, db *sql.DB) 
 	return
 }
 
-func insertChangeSectionAndChildren(s *section, order int, documentId string, documentationId string, systemId string, format string, db *sql.DB) error {
-	// Insert this section
-	parentSectionId := ""
-	if s.Parent != nil {
-		parentSectionId = documentId + "#" + s.Parent.Name
-	}
-	err := sqlite.InsertChangeSection(sqlite.ChangeSection{
-		ID:              documentId + "#" + s.Name,
-		DocumentID:      documentId,
-		DocumentationID: documentationId,
-		SystemID:        systemId,
-		ParentSectionID: parentSectionId,
-		Order:           order,
-		Title:           s.Name,
-		Format:          format,
-		RawData:         strings.TrimSpace(s.Content),
-		ExtractedText:   extractMarkdownText([]byte(s.Content)),
-	}, db)
-	if err != nil {
-		slog.Debug("docs.insertChangeSectionAndChildren could not insert section", "error", err)
-		return err
-	}
+// func insertChangeSectionAndChildren(s *section, order int, documentId string, documentationId string, systemId string, format string, db *sql.DB) error {
+// 	// Insert this section
+// 	parentSectionId := ""
+// 	if s.Parent != nil {
+// 		parentSectionId = documentId + "#" + s.Parent.Name
+// 	}
+// 	err := sqlite.InsertChangeSection(sqlite.ChangeSection{
+// 		ID:              documentId + "#" + s.Name,
+// 		DocumentID:      documentId,
+// 		DocumentationID: documentationId,
+// 		SystemID:        systemId,
+// 		ParentSectionID: parentSectionId,
+// 		Order:           order,
+// 		Title:           s.Name,
+// 		Format:          format,
+// 		RawData:         strings.TrimSpace(s.Content),
+// 		ExtractedText:   extractMarkdownText([]byte(s.Content)),
+// 	}, db)
+// 	if err != nil {
+// 		slog.Debug("docs.insertChangeSectionAndChildren could not insert section", "error", err)
+// 		return err
+// 	}
 
-	// Insert children
-	for i, child := range s.Children {
-		err = insertChangeSectionAndChildren(child, i, documentId, documentationId, systemId, format, db)
-		if err != nil {
-			return err
-		}
-	}
+// 	// Insert children
+// 	for i, child := range s.Children {
+// 		err = insertChangeSectionAndChildren(child, i, documentId, documentationId, systemId, format, db)
+// 		if err != nil {
+// 			return err
+// 		}
+// 	}
 
-	return nil
-}
+// 	return nil
+// }
