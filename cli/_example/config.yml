@@ -16,7 +16,7 @@ systems:
           - "./**/*.test.js"
     docs:
       - id: docs
-        type: invalid
+        type: md
         extractor: fs
         path: ./_example/
         include:

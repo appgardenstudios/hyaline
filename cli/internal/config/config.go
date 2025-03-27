@@ -36,12 +36,13 @@ type Code struct {
 }
 
 type Doc struct {
-	ID        string   `yaml:"id"`
-	Type      DocType  `yaml:"type"`
-	Extractor string   `yaml:"extractor"`
-	Path      string   `yaml:"path"`
-	Include   []string `yaml:"include"`
-	Exclude   []string `yaml:"exclude"`
+	ID        string         `yaml:"id"`
+	Type      DocType        `yaml:"type"`
+	HTML      DocHTMLOptions `yaml:"html"`
+	Extractor string         `yaml:"extractor"`
+	Path      string         `yaml:"path"`
+	Include   []string       `yaml:"include"`
+	Exclude   []string       `yaml:"exclude"`
 }
 
 type DocType string
@@ -63,6 +64,10 @@ const (
 	DocTypeMarkdown DocType = "md"
 	DocTypeHTML     DocType = "html"
 )
+
+type DocHTMLOptions struct {
+	Selector string `yaml:"selector"`
+}
 
 type Check struct {
 	ID          string                 `yaml:"id"`
