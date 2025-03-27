@@ -20,7 +20,7 @@ func ExtractCurrent(system *config.System, db *sql.DB) (err error) {
 		err = sqlite.InsertDocumentation(sqlite.Documentation{
 			ID:       d.ID,
 			SystemID: system.ID,
-			Type:     d.Type,
+			Type:     d.Type.String(),
 			Path:     d.Path,
 		}, db)
 
@@ -82,7 +82,7 @@ func ExtractCurrent(system *config.System, db *sql.DB) (err error) {
 				ID:              relativePath,
 				DocumentationID: d.ID,
 				SystemID:        system.ID,
-				Type:            d.Type,
+				Type:            d.Type.String(),
 				Action:          "",
 				RawData:         string(contents),
 				ExtractedData:   strings.TrimSpace(string(contents)), // TODO support html
@@ -106,7 +106,7 @@ func ExtractCurrent(system *config.System, db *sql.DB) (err error) {
 	return
 }
 
-func insertSectionAndChildren(s *section, order int, documentId string, documentationId string, systemId string, docType string, db *sql.DB) error {
+func insertSectionAndChildren(s *section, order int, documentId string, documentationId string, systemId string, docType config.DocType, db *sql.DB) error {
 	// Insert this section
 	parentId := ""
 	if s.Parent != nil {
@@ -117,7 +117,7 @@ func insertSectionAndChildren(s *section, order int, documentId string, document
 		DocumentID:      documentId,
 		DocumentationID: documentationId,
 		SystemID:        systemId,
-		Type:            docType,
+		Type:            docType.String(),
 		Name:            s.Name,
 		ParentID:        parentId,
 		PeerOrder:       order,

@@ -37,12 +37,32 @@ type Code struct {
 
 type Doc struct {
 	ID        string   `yaml:"id"`
-	Type      string   `yaml:"type"`
+	Type      DocType  `yaml:"type"`
 	Extractor string   `yaml:"extractor"`
 	Path      string   `yaml:"path"`
 	Include   []string `yaml:"include"`
 	Exclude   []string `yaml:"exclude"`
 }
+
+type DocType string
+
+func (dt DocType) String() string {
+	return string(dt)
+}
+
+func (dt DocType) IsValid() bool {
+	switch dt {
+	case DocTypeMarkdown, DocTypeHTML:
+		return true
+	default:
+		return false
+	}
+}
+
+const (
+	DocTypeMarkdown DocType = "md"
+	DocTypeHTML     DocType = "html"
+)
 
 type Check struct {
 	ID          string                 `yaml:"id"`
@@ -89,10 +109,13 @@ func Load(path string) (cfg *Config, err error) {
 }
 
 func validate(cfg *Config) (err error) {
+	// Validate Systems
 	for _, system := range cfg.Systems {
-		// Ensure that system/code combinations are unique
+
+		// Validate code block
 		codeIDs := map[string]struct{}{}
 		for _, code := range system.Code {
+			// Ensure that system/code combinations are unique
 			if _, ok := codeIDs[code.ID]; ok {
 				err = errors.New("duplicate code id detected: " + system.ID + " > " + code.ID)
 				slog.Debug("config.Validate found duplicate code id", "system", system.ID, "code", code.ID, "error", err)
@@ -101,15 +124,23 @@ func validate(cfg *Config) (err error) {
 			codeIDs[code.ID] = struct{}{}
 		}
 
-		// Ensure that system/docs combinations are unique
+		// Validate docs block
 		docIDs := map[string]struct{}{}
 		for _, doc := range system.Docs {
+			// Ensure that system/docs combinations are unique
 			if _, ok := docIDs[doc.ID]; ok {
 				err = errors.New("duplicate docs id detected: " + system.ID + " > " + doc.ID)
 				slog.Debug("config.Validate found duplicate docs id", "system", system.ID, "doc", doc.ID, "error", err)
 				return
 			}
 			docIDs[doc.ID] = struct{}{}
+
+			// Ensure that doc type is valid
+			if !doc.Type.IsValid() {
+				err = errors.New("invalid doc type '" + doc.Type.String() + "' detected: " + system.ID + " > " + doc.ID)
+				slog.Debug("config.Validate found invalid doc type", "system", system.ID, "doc", doc.ID, "type", doc.Type.String(), "error", err)
+				return
+			}
 		}
 	}
 	return

@@ -57,7 +57,12 @@ func TestValidate(t *testing.T) {
 		ID: "1234",
 	}
 	doc := Doc{
-		ID: "1234",
+		ID:   "1234",
+		Type: "md",
+	}
+	invalidDoc := Doc{
+		ID:   "1234",
+		Type: "invalid",
 	}
 
 	var tests = []struct {
@@ -71,6 +76,7 @@ func TestValidate(t *testing.T) {
 		{[]Code{code}, []Doc{doc}, false},
 		{[]Code{code, code}, []Doc{doc}, true},
 		{[]Code{code}, []Doc{doc, doc}, true},
+		{[]Code{code}, []Doc{invalidDoc}, true},
 	}
 
 	for _, test := range tests {
