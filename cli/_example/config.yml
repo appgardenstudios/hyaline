@@ -19,7 +19,8 @@ systems:
         type: md
         extractor: fs
         path: ./_example/
-        glob: ./**/*.md
+        include:
+          - ./**/*.md
     checks:
       - id: run-locally
         description: Ensure that instructions on how to run the system locally for development exist. 

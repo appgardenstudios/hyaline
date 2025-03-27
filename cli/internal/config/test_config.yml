@@ -19,4 +19,5 @@ systems:
         type: md
         extractor: fs
         path: ./
-        glob: ./**/*.md
+        include: 
+         - ./**/*.md

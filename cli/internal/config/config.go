@@ -36,11 +36,12 @@ type Code struct {
 }
 
 type Doc struct {
-	ID        string `yaml:"id"`
-	Type      string `yaml:"type"`
-	Extractor string `yaml:"extractor"`
-	Path      string `yaml:"path"`
-	Glob      string `yaml:"glob"`
+	ID        string   `yaml:"id"`
+	Type      string   `yaml:"type"`
+	Extractor string   `yaml:"extractor"`
+	Path      string   `yaml:"path"`
+	Include   []string `yaml:"include"`
+	Exclude   []string `yaml:"exclude"`
 }
 
 type Check struct {

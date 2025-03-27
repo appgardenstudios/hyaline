@@ -30,7 +30,7 @@ func TestLoad(t *testing.T) {
 				Type:      "md",
 				Extractor: "fs",
 				Path:      "./",
-				Glob:      "./**/*.md",
+				Include:   []string{"./**/*.md"},
 			}},
 		}},
 	}

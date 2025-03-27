@@ -1,6 +1,7 @@
 package docs
 
 import (
+	"fmt"
 	"io"
 	"strings"
 
@@ -53,7 +54,8 @@ func extractMarkdownText(content []byte) string {
 type section struct {
 	Parent   *section
 	Depth    int
-	Title    string
+	Name     string
+	FullName string
 	Content  string
 	Children []*section
 }
@@ -63,7 +65,8 @@ func getMarkdownSections(lines []string) *section {
 	root := &section{
 		Parent:   nil,
 		Depth:    0,
-		Title:    "",
+		Name:     "",
+		FullName: "",
 		Content:  "",
 		Children: []*section{},
 	}
@@ -80,10 +83,12 @@ func getMarkdownSections(lines []string) *section {
 			for current.Depth >= level {
 				current = current.Parent
 			}
+			name := strings.TrimSpace(strings.ReplaceAll(line[level:], "#", ""))
 			newSection := &section{
 				Parent:   current,
 				Depth:    level,
-				Title:    strings.TrimSpace(line[level:]),
+				Name:     name,
+				FullName: fmt.Sprintf("%s#%s", current.FullName, name),
 				Content:  "",
 				Children: []*section{},
 			}

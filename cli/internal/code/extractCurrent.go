@@ -43,7 +43,7 @@ func ExtractCurrent(system *config.System, db *sql.DB) (err error) {
 		for _, include := range c.Include {
 			slog.Debug("code.ExtractCurrent extracting code using include", "include", include, "code", c.ID)
 
-			// Construct include includePattern and get matches
+			// Construct our includePattern and get matches
 			includePattern := filepath.Join(absPath, include)
 			matches, err := zglob.Glob(includePattern)
 			if err != nil {

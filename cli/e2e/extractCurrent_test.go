@@ -55,5 +55,5 @@ func TestExtractCurrent(t *testing.T) {
 }
 
 func compareDBs(db1 string, db2 string) {
-
+	// TODO
 }
