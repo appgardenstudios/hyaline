@@ -2,54 +2,8 @@ package docs
 
 import (
 	"fmt"
-	"io"
 	"strings"
-
-	"github.com/gomarkdown/markdown"
-	"github.com/gomarkdown/markdown/ast"
-	"github.com/gomarkdown/markdown/parser"
 )
-
-// Based off of https://github.com/gomarkdown/markdown/blob/master/md/md_renderer.go
-type textRenderer struct{}
-
-func (r *textRenderer) RenderNode(w io.Writer, node ast.Node, entering bool) ast.WalkStatus {
-	switch node := node.(type) {
-	case *ast.Text:
-		if entering {
-			io.Writer.Write(w, node.Literal)
-			io.WriteString(w, "\n")
-		}
-	case *ast.Heading:
-		if entering {
-			io.Writer.Write(w, node.Literal)
-			io.WriteString(w, "\n")
-		}
-	// Note: This will eventually need to support additional types
-	default:
-		// Do nothing
-	}
-
-	return ast.GoToNext
-}
-
-func (r *textRenderer) RenderHeader(w io.Writer, ast ast.Node) {
-	// do nothing
-}
-
-func (r *textRenderer) RenderFooter(w io.Writer, ast ast.Node) {
-	// do nothing
-}
-
-func extractMarkdownText(content []byte) string {
-	extensions := parser.CommonExtensions | parser.AutoHeadingIDs | parser.NoEmptyLineBeforeBlock
-	p := parser.NewWithExtensions(extensions)
-	doc := p.Parse(content)
-
-	renderer := &textRenderer{}
-
-	return strings.TrimSpace(string(markdown.Render(doc, renderer)))
-}
 
 type section struct {
 	Parent   *section
