@@ -10,7 +10,7 @@ import (
 )
 
 func extractHTMLDocument(rawHTML string, selector string) (markdown string, err error) {
-	// Parse the raw rootNode, which will clean it up a bit and ensure it is well formatted
+	// Parse the raw HTML, which will clean it up a bit and ensure it is well formatted
 	rootNode, err := htmlquery.Parse(strings.NewReader(rawHTML))
 	if err != nil {
 		return
