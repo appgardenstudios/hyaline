@@ -15,8 +15,16 @@ systems:
         exclude:
           - "./**/*.test.js"
     docs:
-      - id: docs
+      - id: md-docs
         type: md
+        extractor: fs
+        path: ./
+        include: 
+         - ./**/*.md
+      - id: html-docs
+        type: html
+        html:
+          selector: main
         extractor: fs
         path: ./
         include: 

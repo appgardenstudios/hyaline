@@ -26,8 +26,17 @@ func TestLoad(t *testing.T) {
 				Exclude:   []string{"./**/*.test.js"},
 			}},
 			Docs: []Doc{{
-				ID:        "docs",
+				ID:        "md-docs",
 				Type:      "md",
+				Extractor: "fs",
+				Path:      "./",
+				Include:   []string{"./**/*.md"},
+			}, {
+				ID:   "html-docs",
+				Type: "html",
+				HTML: DocHTMLOptions{
+					Selector: "main",
+				},
 				Extractor: "fs",
 				Path:      "./",
 				Include:   []string{"./**/*.md"},
