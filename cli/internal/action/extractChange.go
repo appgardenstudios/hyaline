@@ -10,6 +10,8 @@ import (
 	"log/slog"
 	"os"
 	"path/filepath"
+
+	_ "modernc.org/sqlite"
 )
 
 type ExtractChangeArgs struct {

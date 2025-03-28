@@ -14,4 +14,5 @@ systems:
         type: md
         extractor: fs
         path: ./e2e/_input/extract-current/
-        glob: ./**/*.md
+        include:
+          - ./**/*.md
