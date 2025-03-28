@@ -15,12 +15,18 @@ systems:
         exclude:
           - "./**/*.test.js"
     docs:
-      - id: docs
+      - id: md-docs
         type: md
         extractor: fs
         path: ./_example/
         include:
           - ./**/*.md
+      - id: html-docs
+        type: html
+        extractor: fs
+        path: ./_example/
+        include:
+          - ./**/*.html
     checks:
       - id: run-locally
         description: Ensure that instructions on how to run the system locally for development exist. 

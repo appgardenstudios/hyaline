@@ -5,24 +5,24 @@ import (
 	"strings"
 )
 
-type markdownSection struct {
-	Parent   *markdownSection
+type section struct {
+	Parent   *section
 	Depth    int
 	Name     string
 	FullName string
 	Content  string
-	Children []*markdownSection
+	Children []*section
 }
 
-func getMarkdownSections(lines []string) *markdownSection {
+func getMarkdownSections(lines []string) *section {
 	// Create our root
-	root := &markdownSection{
+	root := &section{
 		Parent:   nil,
 		Depth:    0,
 		Name:     "",
 		FullName: "",
 		Content:  "",
-		Children: []*markdownSection{},
+		Children: []*section{},
 	}
 	current := root
 
@@ -38,13 +38,13 @@ func getMarkdownSections(lines []string) *markdownSection {
 				current = current.Parent
 			}
 			name := strings.TrimSpace(strings.ReplaceAll(line[level:], "#", ""))
-			newSection := &markdownSection{
+			newSection := &section{
 				Parent:   current,
 				Depth:    level,
 				Name:     name,
 				FullName: fmt.Sprintf("%s#%s", current.FullName, name),
 				Content:  "",
-				Children: []*markdownSection{},
+				Children: []*section{},
 			}
 			current.Children = append(current.Children, newSection)
 			current = newSection

@@ -72,8 +72,8 @@ func ExtractCurrent(system *config.System, db *sql.DB) (err error) {
 
 		// Insert docs
 		for doc := range docs {
-			// Get file contents
-			contents, err := os.ReadFile(doc)
+			// Get file rawData
+			rawData, err := os.ReadFile(doc)
 			if err != nil {
 				slog.Debug("docs.ExtractCurrent could not read doc file", "error", err, "doc", doc)
 				return err
@@ -81,14 +81,19 @@ func ExtractCurrent(system *config.System, db *sql.DB) (err error) {
 			// Calculate our relative path to the document path
 			relativePath := strings.TrimPrefix(doc, absPath)
 
-			// Extract data
+			// Extract and clean data (trim whitespace and remove carriage returns)
 			var extractedData string
 			switch d.Type {
 			case config.DocTypeHTML:
-				extractedData = "TODO" // wire this up
+				extractedData, err = extractHTMLDocument(string(rawData))
+				if err != nil {
+					slog.Debug("docs.ExtractCurrent could not extract html document", "error", err, "doc", doc)
+					return err
+				}
 			default:
-				extractedData = strings.TrimSpace(string(contents))
+				extractedData = strings.TrimSpace(string(rawData))
 			}
+			extractedData = strings.ReplaceAll(extractedData, "\r", "")
 
 			// Insert our document
 			err = sqlite.InsertDocument(sqlite.Document{
@@ -97,7 +102,7 @@ func ExtractCurrent(system *config.System, db *sql.DB) (err error) {
 				SystemID:        system.ID,
 				Type:            d.Type.String(),
 				Action:          "",
-				RawData:         string(contents),
+				RawData:         string(rawData),
 				ExtractedData:   extractedData,
 			}, db)
 			if err != nil {
@@ -106,17 +111,11 @@ func ExtractCurrent(system *config.System, db *sql.DB) (err error) {
 			}
 
 			// Get and insert sections
-			switch d.Type {
-			case config.DocTypeHTML:
-				// TODO
-			case config.DocTypeMarkdown:
-				cleanContent := strings.ReplaceAll(string(contents), "\r", "")
-				sections := getMarkdownSections(strings.Split(cleanContent, "\n"))
-				err = insertMarkdownSectionAndChildren(sections, 0, relativePath, d.ID, system.ID, d.Type, db)
-				if err != nil {
-					slog.Debug("docs.ExtractCurrent could not insert section", "error", err)
-					return err
-				}
+			sections := getMarkdownSections(strings.Split(extractedData, "\n"))
+			err = insertMarkdownSectionAndChildren(sections, 0, relativePath, d.ID, system.ID, db)
+			if err != nil {
+				slog.Debug("docs.ExtractCurrent could not insert section", "error", err)
+				return err
 			}
 		}
 	}
@@ -124,7 +123,7 @@ func ExtractCurrent(system *config.System, db *sql.DB) (err error) {
 	return
 }
 
-func insertMarkdownSectionAndChildren(s *markdownSection, order int, documentId string, documentationId string, systemId string, docType config.DocType, db *sql.DB) error {
+func insertMarkdownSectionAndChildren(s *section, order int, documentId string, documentationId string, systemId string, db *sql.DB) error {
 	// Insert this section
 	parentId := ""
 	if s.Parent != nil {
@@ -135,11 +134,9 @@ func insertMarkdownSectionAndChildren(s *markdownSection, order int, documentId 
 		DocumentID:      documentId,
 		DocumentationID: documentationId,
 		SystemID:        systemId,
-		Type:            docType.String(),
 		Name:            s.Name,
 		ParentID:        parentId,
 		PeerOrder:       order,
-		RawData:         s.Content,
 		ExtractedData:   strings.TrimSpace(s.Content),
 	}, db)
 	if err != nil {
@@ -149,7 +146,7 @@ func insertMarkdownSectionAndChildren(s *markdownSection, order int, documentId 
 
 	// Insert children
 	for i, child := range s.Children {
-		err = insertMarkdownSectionAndChildren(child, i, documentId, documentationId, systemId, docType, db)
+		err = insertMarkdownSectionAndChildren(child, i, documentId, documentationId, systemId, db)
 		if err != nil {
 			return err
 		}
