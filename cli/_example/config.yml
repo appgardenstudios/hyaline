@@ -23,6 +23,8 @@ systems:
           - ./**/*.md
       - id: html-docs
         type: html
+        html:
+          selector: main
         extractor: fs
         path: ./_example/
         include:
