@@ -21,13 +21,17 @@ func extractHTMLDocument(rawHTML string, selector string) (markdown string, err 
 	if selector != "" {
 		expr = fmt.Sprintf("//%s", selector)
 	}
-	docNode := htmlquery.FindOne(rootNode, expr)
+	docNode, err := htmlquery.Query(rootNode, expr)
+	if err != nil {
+		return
+	}
 	if docNode == nil {
 		err = errors.New("could not find body tag in html document")
 		return
 	}
 	cleanHTML := htmlquery.OutputHTML(docNode, true)
 
+	// Convert it to markdown
 	markdown, err = htmltomarkdown.ConvertString(cleanHTML)
 	if err != nil {
 		return
