@@ -2,6 +2,7 @@ package docs
 
 import (
 	"database/sql"
+	"errors"
 	"hyaline/internal/config"
 	"hyaline/internal/sqlite"
 	"log/slog"
@@ -23,103 +24,134 @@ func ExtractCurrent(system *config.System, db *sql.DB) (err error) {
 			Type:     d.Type.String(),
 			Path:     d.FsOptions.Path,
 		}, db)
-
-		// Get our absolute path
-		absPath, err := filepath.Abs(d.FsOptions.Path)
 		if err != nil {
-			slog.Debug("docs.ExtractCurrent could not determine absolute docs path", "error", err, "path", d.FsOptions.Path)
+			slog.Debug("docs.ExtractCurrent could not insert docs", "error", err, "doc", d.ID)
 			return err
 		}
-		absPath += string(os.PathSeparator)
-		slog.Debug("docs.ExtractCurrent extracting docs from path", "absPath", absPath)
 
-		// Our set of files (as a map so we don't get dupes)
-		docs := map[string]struct{}{}
-
-		// Loop through our includes and get files
-		for _, include := range d.Include {
-			slog.Debug("docs.ExtractCurrent extracting docs using include", "include", include, "doc", d.ID)
-
-			// Construct our includePattern and get matches
-			includePattern := filepath.Join(absPath, include)
-			matches, err := zglob.Glob(includePattern)
+		// Extract based on the extractor
+		switch d.Extractor {
+		case config.ExtractorFs:
+			err = ExtractCurrentFs(system.ID, &d, db)
 			if err != nil {
-				slog.Debug("docs.ExtractCurrent could not find docs files with glob", "glob", includePattern, "error", err)
-				return err
+				slog.Debug("docs.ExtractCurrent could not extract docs using fs extractor", "error", err, "doc", d.ID)
+				return
 			}
+		case config.ExtractorGit:
+			err = ExtractCurrentGit(system.ID, &d, db)
+			if err != nil {
+				slog.Debug("docs.ExtractCurrent could not extract docs using git extractor", "error", err, "doc", d.ID)
+				return
+			}
+		default:
+			slog.Debug("docs.ExtractCurrent unknown extractor", "extractor", d.Extractor.String(), "doc", d.ID)
+			return errors.New("Unknown Extractor '" + d.Extractor.String() + "' for doc " + d.ID)
+		}
+	}
 
-			// Loop through docs and add those that aren't in our excludes
-			for _, doc := range matches {
-				// See if we have a match for at least one of our excludes
-				match := false
-				for _, exclude := range d.Exclude {
-					excludePattern := filepath.Join(absPath, exclude)
-					match, err = zglob.Match(excludePattern, doc)
-					if err != nil {
-						slog.Debug("docs.ExtractCurrent could not match exclude", "excludePattern", excludePattern, "doc", doc, "error", err)
-						return err
-					}
-					if match {
-						slog.Debug("docs.ExtractCurrent doc excluded", "doc", doc, "excludePattern", excludePattern)
-						break
-					}
-				}
-				if !match {
-					docs[doc] = struct{}{}
-				}
-			}
+	return
+}
+
+func ExtractCurrentFs(systemID string, d *config.Doc, db *sql.DB) (err error) {
+	// Get our absolute path
+	absPath, err := filepath.Abs(d.FsOptions.Path)
+	if err != nil {
+		slog.Debug("docs.ExtractCurrent could not determine absolute docs path", "error", err, "path", d.FsOptions.Path)
+		return err
+	}
+	absPath += string(os.PathSeparator)
+	slog.Debug("docs.ExtractCurrent extracting docs from path", "absPath", absPath)
+
+	// Our set of files (as a map so we don't get dupes)
+	docs := map[string]struct{}{}
+
+	// Loop through our includes and get files
+	for _, include := range d.Include {
+		slog.Debug("docs.ExtractCurrent extracting docs using include", "include", include, "doc", d.ID)
+
+		// Construct our includePattern and get matches
+		includePattern := filepath.Join(absPath, include)
+		matches, err := zglob.Glob(includePattern)
+		if err != nil {
+			slog.Debug("docs.ExtractCurrent could not find docs files with glob", "glob", includePattern, "error", err)
+			return err
 		}
 
-		// Insert docs
-		for doc := range docs {
-			// Get file rawData
-			rawData, err := os.ReadFile(doc)
-			if err != nil {
-				slog.Debug("docs.ExtractCurrent could not read doc file", "error", err, "doc", doc)
-				return err
-			}
-			// Calculate our relative path to the document path
-			relativePath := strings.TrimPrefix(doc, absPath)
-
-			// Extract and clean data (trim whitespace and remove carriage returns)
-			var extractedData string
-			switch d.Type {
-			case config.DocTypeHTML:
-				extractedData, err = extractHTMLDocument(string(rawData), d.HTML.Selector)
+		// Loop through docs and add those that aren't in our excludes
+		for _, doc := range matches {
+			// See if we have a match for at least one of our excludes
+			match := false
+			for _, exclude := range d.Exclude {
+				excludePattern := filepath.Join(absPath, exclude)
+				match, err = zglob.Match(excludePattern, doc)
 				if err != nil {
-					slog.Debug("docs.ExtractCurrent could not extract html document", "error", err, "doc", doc)
+					slog.Debug("docs.ExtractCurrent could not match exclude", "excludePattern", excludePattern, "doc", doc, "error", err)
 					return err
 				}
-			default:
-				extractedData = strings.TrimSpace(string(rawData))
+				if match {
+					slog.Debug("docs.ExtractCurrent doc excluded", "doc", doc, "excludePattern", excludePattern)
+					break
+				}
 			}
-			extractedData = strings.ReplaceAll(extractedData, "\r", "")
-
-			// Insert our document
-			err = sqlite.InsertDocument(sqlite.Document{
-				ID:              relativePath,
-				DocumentationID: d.ID,
-				SystemID:        system.ID,
-				Type:            d.Type.String(),
-				Action:          "",
-				RawData:         string(rawData),
-				ExtractedData:   extractedData,
-			}, db)
-			if err != nil {
-				slog.Debug("docs.ExtractCurrent could not insert document", "error", err)
-				return err
-			}
-
-			// Get and insert sections
-			sections := getMarkdownSections(strings.Split(extractedData, "\n"))
-			err = insertMarkdownSectionAndChildren(sections, 0, relativePath, d.ID, system.ID, db)
-			if err != nil {
-				slog.Debug("docs.ExtractCurrent could not insert section", "error", err)
-				return err
+			if !match {
+				docs[doc] = struct{}{}
 			}
 		}
 	}
 
+	// Insert docs
+	for doc := range docs {
+		// Get file rawData
+		rawData, err := os.ReadFile(doc)
+		if err != nil {
+			slog.Debug("docs.ExtractCurrent could not read doc file", "error", err, "doc", doc)
+			return err
+		}
+		// Calculate our relative path to the document path
+		relativePath := strings.TrimPrefix(doc, absPath)
+
+		// Extract and clean data (trim whitespace and remove carriage returns)
+		var extractedData string
+		switch d.Type {
+		case config.DocTypeHTML:
+			extractedData, err = extractHTMLDocument(string(rawData), d.HTML.Selector)
+			if err != nil {
+				slog.Debug("docs.ExtractCurrent could not extract html document", "error", err, "doc", doc)
+				return err
+			}
+		default:
+			extractedData = strings.TrimSpace(string(rawData))
+		}
+		extractedData = strings.ReplaceAll(extractedData, "\r", "")
+
+		// Insert our document
+		err = sqlite.InsertDocument(sqlite.Document{
+			ID:              relativePath,
+			DocumentationID: d.ID,
+			SystemID:        systemID,
+			Type:            d.Type.String(),
+			Action:          "",
+			RawData:         string(rawData),
+			ExtractedData:   extractedData,
+		}, db)
+		if err != nil {
+			slog.Debug("docs.ExtractCurrent could not insert document", "error", err)
+			return err
+		}
+
+		// Get and insert sections
+		sections := getMarkdownSections(strings.Split(extractedData, "\n"))
+		err = insertMarkdownSectionAndChildren(sections, 0, relativePath, d.ID, systemID, db)
+		if err != nil {
+			slog.Debug("docs.ExtractCurrent could not insert section", "error", err)
+			return err
+		}
+	}
+
+	return
+}
+
+func ExtractCurrentGit(systemID string, d *config.Doc, db *sql.DB) (err error) {
 	return
 }
 
