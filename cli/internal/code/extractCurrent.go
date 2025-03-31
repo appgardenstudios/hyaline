@@ -20,7 +20,7 @@ func ExtractCurrent(system *config.System, db *sql.DB) (err error) {
 		err = sqlite.InsertCode(sqlite.Code{
 			ID:       c.ID,
 			SystemID: system.ID,
-			Path:     c.Path,
+			Path:     c.FsOptions.Path,
 		}, db)
 		if err != nil {
 			slog.Debug("code.ExtractCurrent could not insert code", "error", err, "code", c.ID)
@@ -28,9 +28,9 @@ func ExtractCurrent(system *config.System, db *sql.DB) (err error) {
 		}
 
 		// Get our absolute path
-		absPath, err := filepath.Abs(c.Path)
+		absPath, err := filepath.Abs(c.FsOptions.Path)
 		if err != nil {
-			slog.Debug("code.ExtractCurrent could not determine absolute code path", "error", err, "path", c.Path)
+			slog.Debug("code.ExtractCurrent could not determine absolute code path", "error", err, "path", c.FsOptions.Path)
 			return err
 		}
 		absPath += string(os.PathSeparator)

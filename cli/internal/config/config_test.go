@@ -21,16 +21,20 @@ func TestLoad(t *testing.T) {
 			Code: []Code{{
 				ID:        "app",
 				Extractor: "fs",
-				Path:      "./",
-				Include:   []string{"package.json", "./**/*.js"},
-				Exclude:   []string{"./**/*.test.js"},
+				FsOptions: FsOptions{
+					Path: "./",
+				},
+				Include: []string{"package.json", "./**/*.js"},
+				Exclude: []string{"./**/*.test.js"},
 			}},
 			Docs: []Doc{{
 				ID:        "md-docs",
 				Type:      "md",
 				Extractor: "fs",
-				Path:      "./",
-				Include:   []string{"./**/*.md"},
+				FsOptions: FsOptions{
+					Path: "./",
+				},
+				Include: []string{"./**/*.md"},
 			}, {
 				ID:   "html-docs",
 				Type: "html",
@@ -38,8 +42,10 @@ func TestLoad(t *testing.T) {
 					Selector: "main",
 				},
 				Extractor: "fs",
-				Path:      "./",
-				Include:   []string{"./**/*.md"},
+				FsOptions: FsOptions{
+					Path: "./",
+				},
+				Include: []string{"./**/*.md"},
 			}},
 		}},
 	}

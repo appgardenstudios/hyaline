@@ -21,13 +21,13 @@ func ExtractCurrent(system *config.System, db *sql.DB) (err error) {
 			ID:       d.ID,
 			SystemID: system.ID,
 			Type:     d.Type.String(),
-			Path:     d.Path,
+			Path:     d.FsOptions.Path,
 		}, db)
 
 		// Get our absolute path
-		absPath, err := filepath.Abs(d.Path)
+		absPath, err := filepath.Abs(d.FsOptions.Path)
 		if err != nil {
-			slog.Debug("docs.ExtractCurrent could not determine absolute docs path", "error", err, "path", d.Path)
+			slog.Debug("docs.ExtractCurrent could not determine absolute docs path", "error", err, "path", d.FsOptions.Path)
 			return err
 		}
 		absPath += string(os.PathSeparator)

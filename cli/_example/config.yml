@@ -4,11 +4,12 @@ llm:
   key: ${ANTHROPIC_KEY}
 
 systems:
-  - id: local
+  - id: fs
     code:
       - id: app
         extractor: fs
-        path: ./_example/
+        fs:
+          path: ./_example/
         include:
           - package.json
           - "./**/*.js"
@@ -18,7 +19,8 @@ systems:
       - id: md-docs
         type: md
         extractor: fs
-        path: ./_example/
+        fs:
+          path: ./_example/
         include:
           - ./**/*.md
       - id: html-docs
@@ -26,7 +28,8 @@ systems:
         html:
           selector: main
         extractor: fs
-        path: ./_example/
+        fs:
+          path: ./_example/
         include:
           - ./**/*.html
     checks:
@@ -38,3 +41,18 @@ systems:
           section: Running Locally
           severity: ERROR
           allowTodos: false
+  - id: git
+    code:
+      - id: app-ssh
+        extractor: git
+        git:
+          # repo: git@github.com:appgardenstudios/hyaline-example.git
+          path: ../hyaline-example/
+          branch: main
+          # clone: false
+          # fetch: false
+        include:
+          - package.json
+          - "./**/*.js"
+        exclude:
+          - "./**/*.test.js"

@@ -8,7 +8,8 @@ systems:
     code:
       - id: app
         extractor: fs
-        path: ./
+        fs:
+          path: ./
         include:
           - package.json
           - "./**/*.js"
@@ -18,7 +19,8 @@ systems:
       - id: md-docs
         type: md
         extractor: fs
-        path: ./
+        fs:
+          path: ./
         include: 
          - ./**/*.md
       - id: html-docs
@@ -26,6 +28,7 @@ systems:
         html:
           selector: main
         extractor: fs
-        path: ./
+        fs:
+          path: ./
         include: 
          - ./**/*.md

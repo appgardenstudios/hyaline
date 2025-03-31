@@ -27,22 +27,52 @@ type System struct {
 	Checks []Check `yaml:"checks"`
 }
 
+type Extractor string
+
+func (e Extractor) String() string {
+	return string(e)
+}
+
+func (e Extractor) IsValid() bool {
+	switch e {
+	case ExtractorFs, ExtractorGit:
+		return true
+	default:
+		return false
+	}
+}
+
+const (
+	ExtractorFs  Extractor = "fs"
+	ExtractorGit Extractor = "git"
+)
+
+type FsOptions struct {
+	Path string `yaml:"path"`
+}
+
+type GitOptions struct {
+	Path string `yaml:"path"`
+}
+
 type Code struct {
-	ID        string   `yaml:"id"`
-	Extractor string   `yaml:"extractor"`
-	Path      string   `yaml:"path"`
-	Include   []string `yaml:"include"`
-	Exclude   []string `yaml:"exclude"`
+	ID         string     `yaml:"id"`
+	Extractor  Extractor  `yaml:"extractor"`
+	FsOptions  FsOptions  `yaml:"fs"`
+	GitOptions GitOptions `yaml:"git"`
+	Include    []string   `yaml:"include"`
+	Exclude    []string   `yaml:"exclude"`
 }
 
 type Doc struct {
-	ID        string         `yaml:"id"`
-	Type      DocType        `yaml:"type"`
-	HTML      DocHTMLOptions `yaml:"html"`
-	Extractor string         `yaml:"extractor"`
-	Path      string         `yaml:"path"`
-	Include   []string       `yaml:"include"`
-	Exclude   []string       `yaml:"exclude"`
+	ID         string         `yaml:"id"`
+	Type       DocType        `yaml:"type"`
+	HTML       DocHTMLOptions `yaml:"html"`
+	Extractor  Extractor      `yaml:"extractor"`
+	FsOptions  FsOptions      `yaml:"fs"`
+	GitOptions GitOptions     `yaml:"git"`
+	Include    []string       `yaml:"include"`
+	Exclude    []string       `yaml:"exclude"`
 }
 
 type DocType string
