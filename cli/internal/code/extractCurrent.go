@@ -15,14 +15,17 @@ import (
 func ExtractCurrent(system *config.System, db *sql.DB) (err error) {
 	// Process each code source
 	for _, c := range system.Code {
-		slog.Debug("code.ExtractCurrent extracting code", "system", system, "code", c.ID)
+		slog.Debug("code.ExtractCurrent extracting code", "system", system.ID, "code", c.ID)
 		// Insert Code
-		codeId := system.ID + "-" + c.ID
-		err = sqlite.InsertCurrentCode(sqlite.CurrentCode{
-			ID:       codeId,
+		err = sqlite.InsertCode(sqlite.Code{
+			ID:       c.ID,
 			SystemID: system.ID,
 			Path:     c.Path,
 		}, db)
+		if err != nil {
+			slog.Debug("code.ExtractCurrent could not insert code", "error", err, "code", c.ID)
+			return err
+		}
 
 		// Get our absolute path
 		absPath, err := filepath.Abs(c.Path)
@@ -33,38 +36,42 @@ func ExtractCurrent(system *config.System, db *sql.DB) (err error) {
 		absPath += string(os.PathSeparator)
 		slog.Debug("code.ExtractCurrent extracting code from path", "absPath", absPath)
 
-		// Make sure we have a valid preset. If not, skip
-		preset, ok := presets[c.Preset]
-		if !ok {
-			slog.Info("Code Preset Not Found. Skipping...", "system", system, "code", c.ID, "preset", c.Preset)
-			continue
-		}
-		slog.Debug("code.ExtractCurrent extracting code using preset", "presetID", c.Preset, "preset", preset)
-
 		// Our set of files (as a map so we don't get dupes)
 		files := map[string]struct{}{}
 
-		// Get files from our fully qualified glob path
-		glob := filepath.Join(absPath, preset.Glob)
-		matches, err := zglob.Glob(glob)
-		if err != nil {
-			slog.Debug("code.ExtractCurrent could not find code files with glob", "error", err)
-			return err
-		}
-		for _, file := range matches {
-			files[file] = struct{}{}
-		}
-		slog.Debug("code.ExtractCurrent found the following code file matches using glob", "glob", glob, "matches", matches)
+		// Loop through our includes and get files
+		for _, include := range c.Include {
+			slog.Debug("code.ExtractCurrent extracting code using include", "include", include, "code", c.ID)
 
-		// Get files from our set of individual preset files
-		for _, addtnlFile := range preset.Files {
-			file := filepath.Join(absPath, addtnlFile)
-			stat, err := os.Stat(file)
-			if err == nil && !stat.IsDir() {
-				files[file] = struct{}{}
+			// Construct our includePattern and get matches
+			includePattern := filepath.Join(absPath, include)
+			matches, err := zglob.Glob(includePattern)
+			if err != nil {
+				slog.Debug("code.ExtractCurrent could not find code files with glob", "glob", includePattern, "error", err)
+				return err
+			}
+
+			// Loop through files and add those that aren't in our excludes
+			for _, file := range matches {
+				// See if we have a match for at least one of our excludes
+				match := false
+				for _, exclude := range c.Exclude {
+					excludePattern := filepath.Join(absPath, exclude)
+					match, err = zglob.Match(excludePattern, file)
+					if err != nil {
+						slog.Debug("code.ExtractCurrent could not match exclude", "excludePattern", excludePattern, "file", file, "error", err)
+						return err
+					}
+					if match {
+						slog.Debug("code.ExtractCurrent file excluded", "file", file, "excludePattern", excludePattern)
+						break
+					}
+				}
+				if !match {
+					files[file] = struct{}{}
+				}
 			}
 		}
-		slog.Debug("code.ExtractCurrent will insert the following code files (glob plus additional)", "glob", glob, "additionalFiles", preset.Files, "files", files)
 
 		// Insert files
 		for file := range files {
@@ -74,12 +81,11 @@ func ExtractCurrent(system *config.System, db *sql.DB) (err error) {
 				return err
 			}
 			relativePath := strings.TrimPrefix(file, absPath)
-			err = sqlite.InsertCurrentFile(sqlite.CurrentFile{
-				ID:           relativePath,
-				CodeID:       codeId,
-				SystemID:     system.ID,
-				RelativePath: relativePath,
-				RawData:      string(contents),
+			err = sqlite.InsertFile(sqlite.File{
+				ID:       relativePath,
+				CodeID:   c.ID,
+				SystemID: system.ID,
+				RawData:  string(contents),
 			}, db)
 			if err != nil {
 				slog.Debug("code.ExtractCurrent could not insert file", "error", err)

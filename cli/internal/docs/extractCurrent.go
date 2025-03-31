@@ -15,13 +15,12 @@ import (
 func ExtractCurrent(system *config.System, db *sql.DB) (err error) {
 	// Process each docs source
 	for _, d := range system.Docs {
-		slog.Debug("docs.ExtractCurrent extracting docs", "system", system, "docs", d.ID)
+		slog.Debug("docs.ExtractCurrent extracting docs", "system", system.ID, "docs", d.ID)
 		// Insert Documentation
-		documentationId := system.ID + "-" + d.ID
-		err = sqlite.InsertCurrentDocumentation(sqlite.CurrentDocumentation{
-			ID:       documentationId,
+		err = sqlite.InsertDocumentation(sqlite.Documentation{
+			ID:       d.ID,
 			SystemID: system.ID,
-			Type:     d.Type,
+			Type:     d.Type.String(),
 			Path:     d.Path,
 		}, db)
 
@@ -34,31 +33,77 @@ func ExtractCurrent(system *config.System, db *sql.DB) (err error) {
 		absPath += string(os.PathSeparator)
 		slog.Debug("docs.ExtractCurrent extracting docs from path", "absPath", absPath)
 
-		// Get files from our fully qualified glob path
-		glob := filepath.Join(absPath, d.Glob)
-		files, err := zglob.Glob(glob)
-		if err != nil {
-			slog.Debug("docs.ExtractCurrent could not find doc files with glob", "error", err)
-			return err
-		}
-		slog.Debug("docs.ExtractCurrent found the following doc file matches using glob", "glob", glob, "matches", files)
+		// Our set of files (as a map so we don't get dupes)
+		docs := map[string]struct{}{}
 
-		// Insert documents/sections
-		for _, file := range files {
-			contents, err := os.ReadFile(file)
+		// Loop through our includes and get files
+		for _, include := range d.Include {
+			slog.Debug("docs.ExtractCurrent extracting docs using include", "include", include, "doc", d.ID)
+
+			// Construct our includePattern and get matches
+			includePattern := filepath.Join(absPath, include)
+			matches, err := zglob.Glob(includePattern)
 			if err != nil {
-				slog.Debug("docs.ExtractCurrent could not read doc file", "error", err, "file", file)
+				slog.Debug("docs.ExtractCurrent could not find docs files with glob", "glob", includePattern, "error", err)
 				return err
 			}
-			relativePath := strings.TrimPrefix(file, absPath)
-			err = sqlite.InsertCurrentDocument(sqlite.CurrentDocument{
+
+			// Loop through docs and add those that aren't in our excludes
+			for _, doc := range matches {
+				// See if we have a match for at least one of our excludes
+				match := false
+				for _, exclude := range d.Exclude {
+					excludePattern := filepath.Join(absPath, exclude)
+					match, err = zglob.Match(excludePattern, doc)
+					if err != nil {
+						slog.Debug("docs.ExtractCurrent could not match exclude", "excludePattern", excludePattern, "doc", doc, "error", err)
+						return err
+					}
+					if match {
+						slog.Debug("docs.ExtractCurrent doc excluded", "doc", doc, "excludePattern", excludePattern)
+						break
+					}
+				}
+				if !match {
+					docs[doc] = struct{}{}
+				}
+			}
+		}
+
+		// Insert docs
+		for doc := range docs {
+			// Get file rawData
+			rawData, err := os.ReadFile(doc)
+			if err != nil {
+				slog.Debug("docs.ExtractCurrent could not read doc file", "error", err, "doc", doc)
+				return err
+			}
+			// Calculate our relative path to the document path
+			relativePath := strings.TrimPrefix(doc, absPath)
+
+			// Extract and clean data (trim whitespace and remove carriage returns)
+			var extractedData string
+			switch d.Type {
+			case config.DocTypeHTML:
+				extractedData, err = extractHTMLDocument(string(rawData), d.HTML.Selector)
+				if err != nil {
+					slog.Debug("docs.ExtractCurrent could not extract html document", "error", err, "doc", doc)
+					return err
+				}
+			default:
+				extractedData = strings.TrimSpace(string(rawData))
+			}
+			extractedData = strings.ReplaceAll(extractedData, "\r", "")
+
+			// Insert our document
+			err = sqlite.InsertDocument(sqlite.Document{
 				ID:              relativePath,
-				DocumentationID: documentationId,
+				DocumentationID: d.ID,
 				SystemID:        system.ID,
-				RelativePath:    relativePath,
-				Format:          d.Type,
-				RawData:         string(contents),
-				ExtractedText:   extractMarkdownText(contents),
+				Type:            d.Type.String(),
+				Action:          "",
+				RawData:         string(rawData),
+				ExtractedData:   extractedData,
 			}, db)
 			if err != nil {
 				slog.Debug("docs.ExtractCurrent could not insert document", "error", err)
@@ -66,9 +111,8 @@ func ExtractCurrent(system *config.System, db *sql.DB) (err error) {
 			}
 
 			// Get and insert sections
-			cleanContent := strings.ReplaceAll(string(contents), "\r", "")
-			sections := getMarkdownSections(strings.Split(cleanContent, "\n"))
-			err = insertCurrentSectionAndChildren(sections, 0, relativePath, documentationId, system.ID, d.Type, db)
+			sections := getMarkdownSections(strings.Split(extractedData, "\n"))
+			err = insertMarkdownSectionAndChildren(sections, 0, relativePath, d.ID, system.ID, db)
 			if err != nil {
 				slog.Debug("docs.ExtractCurrent could not insert section", "error", err)
 				return err
@@ -79,32 +123,30 @@ func ExtractCurrent(system *config.System, db *sql.DB) (err error) {
 	return
 }
 
-func insertCurrentSectionAndChildren(s *section, order int, documentId string, documentationId string, systemId string, format string, db *sql.DB) error {
+func insertMarkdownSectionAndChildren(s *section, order int, documentId string, documentationId string, systemId string, db *sql.DB) error {
 	// Insert this section
-	parentSectionId := ""
+	parentId := ""
 	if s.Parent != nil {
-		parentSectionId = documentId + "#" + s.Parent.Title
+		parentId = documentId + s.Parent.FullName
 	}
-	err := sqlite.InsertCurrentSection(sqlite.CurrentSection{
-		ID:              documentId + "#" + s.Title,
+	err := sqlite.InsertSection(sqlite.Section{
+		ID:              documentId + s.FullName,
 		DocumentID:      documentId,
 		DocumentationID: documentationId,
 		SystemID:        systemId,
-		ParentSectionID: parentSectionId,
-		Order:           order,
-		Title:           s.Title,
-		Format:          format,
-		RawData:         strings.TrimSpace(s.Content),
-		ExtractedText:   extractMarkdownText([]byte(s.Content)),
+		Name:            s.Name,
+		ParentID:        parentId,
+		PeerOrder:       order,
+		ExtractedData:   strings.TrimSpace(s.Content),
 	}, db)
 	if err != nil {
-		slog.Debug("docs.insertCurrentSectionAndChildren could not insert section", "error", err)
+		slog.Debug("docs.insertSectionAndChildren could not insert section", "error", err)
 		return err
 	}
 
 	// Insert children
 	for i, child := range s.Children {
-		err = insertCurrentSectionAndChildren(child, i, documentId, documentationId, systemId, format, db)
+		err = insertMarkdownSectionAndChildren(child, i, documentId, documentationId, systemId, db)
 		if err != nil {
 			return err
 		}

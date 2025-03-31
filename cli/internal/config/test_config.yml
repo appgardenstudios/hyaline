@@ -1,0 +1,31 @@
+llm:
+  provider: anthropic
+  model: claude-3-5-sonnet-20241022
+  key: ${ANTHROPIC_KEY}
+
+systems:
+  - id: my-app
+    code:
+      - id: app
+        extractor: fs
+        path: ./
+        include:
+          - package.json
+          - "./**/*.js"
+        exclude:
+          - "./**/*.test.js"
+    docs:
+      - id: md-docs
+        type: md
+        extractor: fs
+        path: ./
+        include: 
+         - ./**/*.md
+      - id: html-docs
+        type: html
+        html:
+          selector: main
+        extractor: fs
+        path: ./
+        include: 
+         - ./**/*.md

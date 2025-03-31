@@ -9,13 +9,26 @@ systems:
       - id: app
         extractor: fs
         path: ./_example/
-        preset: js
+        include:
+          - package.json
+          - "./**/*.js"
+        exclude:
+          - "./**/*.test.js"
     docs:
-      - id: docs
+      - id: md-docs
         type: md
         extractor: fs
         path: ./_example/
-        glob: ./**/*.md
+        include:
+          - ./**/*.md
+      - id: html-docs
+        type: html
+        html:
+          selector: main
+        extractor: fs
+        path: ./_example/
+        include:
+          - ./**/*.html
     checks:
       - id: run-locally
         description: Ensure that instructions on how to run the system locally for development exist. 

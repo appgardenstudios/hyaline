@@ -3,16 +3,19 @@ module hyaline
 go 1.24.0
 
 require (
+	github.com/JohannesKaufmann/html-to-markdown/v2 v2.3.1
+	github.com/andybalholm/cascadia v1.3.3
 	github.com/go-git/go-git/v5 v5.14.0
-	github.com/gomarkdown/markdown v0.0.0-20250207164621-7a1f277a159e
 	github.com/mattn/go-zglob v0.0.6
 	github.com/urfave/cli/v2 v2.27.5
+	golang.org/x/net v0.35.0
 	gopkg.in/yaml.v3 v3.0.1
 	modernc.org/sqlite v1.36.0
 )
 
 require (
 	dario.cat/mergo v1.0.0 // indirect
+	github.com/JohannesKaufmann/dom v0.2.0 // indirect
 	github.com/Microsoft/go-winio v0.6.2 // indirect
 	github.com/ProtonMail/go-crypto v1.1.5 // indirect
 	github.com/cloudflare/circl v1.6.0 // indirect
@@ -37,7 +40,7 @@ require (
 	github.com/xrash/smetrics v0.0.0-20240521201337-686a1a2994c1 // indirect
 	golang.org/x/crypto v0.35.0 // indirect
 	golang.org/x/exp v0.0.0-20240719175910-8a7402abbf56 // indirect
-	golang.org/x/net v0.35.0 // indirect
+	golang.org/x/sync v0.11.0 // indirect
 	golang.org/x/sys v0.30.0 // indirect
 	gopkg.in/warnings.v0 v0.1.2 // indirect
 	modernc.org/libc v1.61.13 // indirect

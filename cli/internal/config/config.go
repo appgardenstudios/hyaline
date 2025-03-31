@@ -28,18 +28,45 @@ type System struct {
 }
 
 type Code struct {
-	ID        string `yaml:"id"`
-	Extractor string `yaml:"extractor"`
-	Path      string `yaml:"path"`
-	Preset    string `yaml:"preset"`
+	ID        string   `yaml:"id"`
+	Extractor string   `yaml:"extractor"`
+	Path      string   `yaml:"path"`
+	Include   []string `yaml:"include"`
+	Exclude   []string `yaml:"exclude"`
 }
 
 type Doc struct {
-	ID        string `yaml:"id"`
-	Type      string `yaml:"type"`
-	Extractor string `yaml:"extractor"`
-	Path      string `yaml:"path"`
-	Glob      string `yaml:"glob"`
+	ID        string         `yaml:"id"`
+	Type      DocType        `yaml:"type"`
+	HTML      DocHTMLOptions `yaml:"html"`
+	Extractor string         `yaml:"extractor"`
+	Path      string         `yaml:"path"`
+	Include   []string       `yaml:"include"`
+	Exclude   []string       `yaml:"exclude"`
+}
+
+type DocType string
+
+func (dt DocType) String() string {
+	return string(dt)
+}
+
+func (dt DocType) IsValid() bool {
+	switch dt {
+	case DocTypeMarkdown, DocTypeHTML:
+		return true
+	default:
+		return false
+	}
+}
+
+const (
+	DocTypeMarkdown DocType = "md"
+	DocTypeHTML     DocType = "html"
+)
+
+type DocHTMLOptions struct {
+	Selector string `yaml:"selector"`
 }
 
 type Check struct {
@@ -67,7 +94,7 @@ func Load(path string) (cfg *Config, err error) {
 	// Replace any env references ($KEY or ${KEY} with the contents of KEY from env)
 	data = []byte(os.ExpandEnv(string(data)))
 
-	// Parse file into struct
+	// Parse file into the struct
 	cfg = &Config{}
 	err = yaml.Unmarshal(data, cfg)
 	if err != nil {
@@ -76,34 +103,51 @@ func Load(path string) (cfg *Config, err error) {
 	}
 
 	// Validate
-	slog.Debug("config.Load config validating")
-	codeCombinations := map[string]struct{}{}
-	docsCombinations := map[string]struct{}{}
-	for _, system := range cfg.Systems {
-		// Ensure that system/code combinations are unique
-		for _, code := range system.Code {
-			id := system.ID + "-" + code.ID
-			if _, ok := codeCombinations[id]; ok {
-				slog.Debug("config.Load found duplicate system/code combination", "error", err)
-				err = errors.New("duplicate system/code combination detected: " + system.ID + " > " + code.ID)
-				return
-			}
-			codeCombinations[id] = struct{}{}
-		}
-
-		// Ensure that system/docs combinations are unique
-		for _, doc := range system.Docs {
-			id := system.ID + "-" + doc.ID
-			if _, ok := docsCombinations[id]; ok {
-				slog.Debug("config.Load found duplicate system/docs combination", "error", err)
-				err = errors.New("duplicate system/docs combination detected: " + system.ID + " > " + doc.ID)
-				return
-			}
-			docsCombinations[id] = struct{}{}
-		}
+	err = validate(cfg)
+	if err != nil {
+		slog.Debug("config.Load found an invalid config", "error", err)
+		return
 	}
 
 	slog.Debug("config.Load config complete")
+	return
+}
+
+func validate(cfg *Config) (err error) {
+	// Validate Systems
+	for _, system := range cfg.Systems {
+
+		// Validate code block
+		codeIDs := map[string]struct{}{}
+		for _, code := range system.Code {
+			// Ensure that system/code combinations are unique
+			if _, ok := codeIDs[code.ID]; ok {
+				err = errors.New("duplicate code id detected: " + system.ID + " > " + code.ID)
+				slog.Debug("config.Validate found duplicate code id", "system", system.ID, "code", code.ID, "error", err)
+				return
+			}
+			codeIDs[code.ID] = struct{}{}
+		}
+
+		// Validate docs block
+		docIDs := map[string]struct{}{}
+		for _, doc := range system.Docs {
+			// Ensure that system/docs combinations are unique
+			if _, ok := docIDs[doc.ID]; ok {
+				err = errors.New("duplicate docs id detected: " + system.ID + " > " + doc.ID)
+				slog.Debug("config.Validate found duplicate docs id", "system", system.ID, "doc", doc.ID, "error", err)
+				return
+			}
+			docIDs[doc.ID] = struct{}{}
+
+			// Ensure that doc type is valid
+			if !doc.Type.IsValid() {
+				err = errors.New("invalid doc type '" + doc.Type.String() + "' detected: " + system.ID + " > " + doc.ID)
+				slog.Debug("config.Validate found invalid doc type", "system", system.ID, "doc", doc.ID, "type", doc.Type.String(), "error", err)
+				return
+			}
+		}
+	}
 	return
 }
 

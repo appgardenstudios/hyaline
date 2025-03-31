@@ -4,22 +4,35 @@
 build:
 	go build -o ./hyaline -ldflags="-X 'main.Version=development'" ./cmd/hyaline.go
 
-.PHONY: current
-current:
+.PHONY: test
+test:
+	go test ./cmd/... ./internal/...
+
+.PHONY: e2e
+e2e:
+	rm -rf ./e2e/_output/*
+	rm -rf .coverdata
+	mkdir -p .coverdata
+	go build -o ./hyaline-coverage -ldflags="-X 'main.Version=development'" -cover ./cmd/hyaline.go
+	go test ./e2e/...
+	go tool covdata percent -i=.coverdata
+
+.PHONY: extract-current
+extract-current:
 	rm -f ./current.db
 	make build
 	echo "---"
 	./hyaline --debug extract current --config ./_example/config.yml --system local --output ./current.db
 
-.PHONY: change
-change:
+.PHONY: extract-change
+extract-change:
 	rm -f ./change.db
 	make build
 	echo "---"
 	./hyaline --debug extract change --config ../../hyaline-example/config.yml --system local --base main --head feat-1 --output ./change.db
 
-.PHONY: check
-check:
+.PHONY: check-current
+check-current:
 	make build
 	echo "---"
 	./hyaline --debug check --config ./_example/config.yml --current ./current.db --system local
@@ -30,8 +43,8 @@ check-change:
 	echo "---"
 	./hyaline --debug check --config ./_example/config.yml --current ./current.db --change ./change.db --system local
 
-.PHONY: recommend
-recommend:
+.PHONY: recommend-current
+recommend-current:
 	make build
 	echo "---"
 	./hyaline --debug check --config ./_example/config.yml --current ./current.db --system local --recommend

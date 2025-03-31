@@ -1,59 +1,15 @@
 package docs
 
 import (
-	"io"
+	"fmt"
 	"strings"
-
-	"github.com/gomarkdown/markdown"
-	"github.com/gomarkdown/markdown/ast"
-	"github.com/gomarkdown/markdown/parser"
 )
-
-// Based off of https://github.com/gomarkdown/markdown/blob/master/md/md_renderer.go
-type textRenderer struct{}
-
-func (r *textRenderer) RenderNode(w io.Writer, node ast.Node, entering bool) ast.WalkStatus {
-	switch node := node.(type) {
-	case *ast.Text:
-		if entering {
-			io.Writer.Write(w, node.Literal)
-			io.WriteString(w, "\n")
-		}
-	case *ast.Heading:
-		if entering {
-			io.Writer.Write(w, node.Literal)
-			io.WriteString(w, "\n")
-		}
-	// Note: This will eventually need to support additional types
-	default:
-		// Do nothing
-	}
-
-	return ast.GoToNext
-}
-
-func (r *textRenderer) RenderHeader(w io.Writer, ast ast.Node) {
-	// do nothing
-}
-
-func (r *textRenderer) RenderFooter(w io.Writer, ast ast.Node) {
-	// do nothing
-}
-
-func extractMarkdownText(content []byte) string {
-	extensions := parser.CommonExtensions | parser.AutoHeadingIDs | parser.NoEmptyLineBeforeBlock
-	p := parser.NewWithExtensions(extensions)
-	doc := p.Parse(content)
-
-	renderer := &textRenderer{}
-
-	return strings.TrimSpace(string(markdown.Render(doc, renderer)))
-}
 
 type section struct {
 	Parent   *section
 	Depth    int
-	Title    string
+	Name     string
+	FullName string
 	Content  string
 	Children []*section
 }
@@ -63,7 +19,8 @@ func getMarkdownSections(lines []string) *section {
 	root := &section{
 		Parent:   nil,
 		Depth:    0,
-		Title:    "",
+		Name:     "",
+		FullName: "",
 		Content:  "",
 		Children: []*section{},
 	}
@@ -80,10 +37,12 @@ func getMarkdownSections(lines []string) *section {
 			for current.Depth >= level {
 				current = current.Parent
 			}
+			name := strings.TrimSpace(strings.ReplaceAll(line[level:], "#", ""))
 			newSection := &section{
 				Parent:   current,
 				Depth:    level,
-				Title:    strings.TrimSpace(line[level:]),
+				Name:     name,
+				FullName: fmt.Sprintf("%s#%s", current.FullName, name),
 				Content:  "",
 				Children: []*section{},
 			}

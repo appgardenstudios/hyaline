@@ -1,0 +1,18 @@
+systems:
+  - id: my-app
+    code:
+      - id: app
+        extractor: fs
+        path: ./e2e/_input/extract-current/
+        include:
+          - package.json
+          - "./**/*.js"
+        exclude:
+          - "./**/*.test.js"
+    docs:
+      - id: docs
+        type: md
+        extractor: fs
+        path: ./e2e/_input/extract-current/
+        include:
+          - ./**/*.md

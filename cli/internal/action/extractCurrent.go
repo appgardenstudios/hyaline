@@ -55,9 +55,9 @@ func ExtractCurrent(args *ExtractCurrentArgs) error {
 		return err
 	}
 	defer db.Close()
-	err = sqlite.CreateCurrentSchema(db)
+	err = sqlite.CreateSchema(db)
 	if err != nil {
-		slog.Debug("action.ExtractCurrent could not create the current schema", "error", err)
+		slog.Debug("action.ExtractCurrent could not create the schema", "error", err)
 		return err
 	}
 
@@ -71,7 +71,7 @@ func ExtractCurrent(args *ExtractCurrentArgs) error {
 	}
 
 	// Insert System
-	err = sqlite.InsertCurrentSystem(sqlite.CurrentSystem{
+	err = sqlite.InsertSystem(sqlite.System{
 		ID: system.ID,
 	}, db)
 	if err != nil {
