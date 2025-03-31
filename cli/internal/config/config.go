@@ -157,6 +157,9 @@ func validate(cfg *Config) (err error) {
 				return
 			}
 			codeIDs[code.ID] = struct{}{}
+
+			// Ensure extractor is valid
+			// TODO
 		}
 
 		// Validate docs block
@@ -176,6 +179,9 @@ func validate(cfg *Config) (err error) {
 				slog.Debug("config.Validate found invalid doc type", "system", system.ID, "doc", doc.ID, "type", doc.Type.String(), "error", err)
 				return
 			}
+
+			// Ensure extractor is valid
+			// TODO
 		}
 	}
 	return
