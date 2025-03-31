@@ -49,7 +49,7 @@ Some section one content`
 	}{
 		{"", expectedBody, false},
 		{"main", expectedMain, false},
-		{"/\\/invalid", "", true},
+		{"invalid", "", true},
 		{"missing", "", true},
 	}
 
