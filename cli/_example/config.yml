@@ -47,12 +47,12 @@ systems:
         extractor: git
         git:
           # repo: git@github.com:appgardenstudios/hyaline-example.git
-          path: ../hyaline-example/
+          path: ../../hyaline-example/
           branch: main
           # clone: false
           # fetch: false
         include:
           - package.json
-          - "./**/*.js"
+          - "**/*.js"
         exclude:
-          - "./**/*.test.js"
+          - "**/*.test.js"

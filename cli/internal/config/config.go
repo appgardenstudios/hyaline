@@ -52,7 +52,12 @@ type FsOptions struct {
 }
 
 type GitOptions struct {
-	Path string `yaml:"path"`
+	Repo       string `yaml:"repo"`
+	Branch     string `yaml:"branch"`
+	Path       string `yaml:"path"`
+	Clone      bool   `yaml:"clone"`
+	Fetch      bool   `yaml:"fetch"`
+	RemoteName string `yaml:"remote"`
 }
 
 type Code struct {

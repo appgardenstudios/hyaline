@@ -4,12 +4,18 @@ import (
 	"database/sql"
 	"errors"
 	"hyaline/internal/config"
+	"hyaline/internal/repo"
 	"hyaline/internal/sqlite"
 	"log/slog"
 	"os"
 	"path/filepath"
 	"strings"
 
+	"github.com/bmatcuk/doublestar/v4"
+	"github.com/go-git/go-git/v5"
+	"github.com/go-git/go-git/v5/plumbing"
+	"github.com/go-git/go-git/v5/plumbing/object"
+	"github.com/go-git/go-git/v5/storage/memory"
 	"github.com/mattn/go-zglob"
 )
 
@@ -122,6 +128,129 @@ func ExtractCurrentFs(systemID string, c *config.Code, db *sql.DB) (err error) {
 }
 
 func ExtractCurrentGit(systemID string, c *config.Code, db *sql.DB) (err error) {
+	// Initialize go-git (on disk or in mem)
+	var r *git.Repository
+	if c.GitOptions.Clone {
+		// Ensure remote repo is passed in
+		if c.GitOptions.Repo == "" {
+			err = errors.New("git.repo is required to be set if git.clone is true")
+			return
+		}
+		if c.GitOptions.Path != "" {
+			// Clone to disk
+			var absPath string
+			absPath, err = filepath.Abs(c.GitOptions.Path)
+			if err != nil {
+				slog.Debug("code.ExtractCurrentGit could not determine absolute path", "error", err, "path", c.GitOptions.Path)
+				return
+			}
+			r, err = git.PlainClone(absPath, false, &git.CloneOptions{
+				URL: c.GitOptions.Repo,
+			})
+			if err != nil {
+				slog.Debug("code.ExtractCurrentGit could clone repo", "error", err, "path", c.GitOptions.Path, "repo", c.GitOptions.Repo)
+				return
+			}
+		} else {
+			// Clone into a memory fs
+			r, err = git.Clone(memory.NewStorage(), nil, &git.CloneOptions{
+				URL: c.GitOptions.Repo,
+			})
+			if err != nil {
+				slog.Debug("code.ExtractCurrentGit could clone repo", "error", err, "path", c.GitOptions.Path, "repo", c.GitOptions.Repo)
+				return
+			}
+		}
+	} else {
+		if c.GitOptions.Path == "" {
+			err = errors.New("git.path must be set if git.clone is false")
+			return
+		} else {
+			// Open repo already on disk
+			var absPath string
+			absPath, err = filepath.Abs(c.GitOptions.Path)
+			if err != nil {
+				slog.Debug("code.ExtractCurrentGit could not determine absolute path", "error", err, "path", c.GitOptions.Path)
+				return
+			}
+			r, err = git.PlainOpen(absPath)
+			if err != nil {
+				slog.Debug("code.ExtractCurrentGit could not open git repo", "error", err, "path", c.GitOptions.Path)
+				return
+			}
+		}
+	}
+
+	// Fetch (if needed)
+	if c.GitOptions.Fetch {
+		remoteName := "origin"
+		if c.GitOptions.RemoteName != "" {
+			remoteName = c.GitOptions.RemoteName
+		}
+		r.Fetch(&git.FetchOptions{
+			RemoteName: remoteName,
+		})
+	}
+
+	// Extract files from branch
+	branch := "main"
+	if c.GitOptions.Branch != "" {
+		branch = c.GitOptions.Branch
+	}
+	ref, err := r.ResolveRevision(plumbing.Revision(branch))
+	if err != nil {
+		slog.Debug("code.ExtractCurrentGit could not resolve head", "error", err)
+		return
+	}
+	commit, err := r.CommitObject(*ref)
+	if err != nil {
+		slog.Debug("code.ExtractCurrentGit could not get head commit", "error", err)
+		return
+	}
+	tree, err := commit.Tree()
+	if err != nil {
+		slog.Debug("code.ExtractCurrentGit could not get head tree", "error", err)
+		return
+	}
+
+	// Validate includes/excludes (move to config validation)
+	for _, include := range c.Include {
+		if !doublestar.ValidatePattern(include) {
+			slog.Debug("code.ExtractCurrentGit could not validate include", "include", include)
+			err = errors.New("include pattern invalid: " + include)
+			return
+		}
+	}
+
+	// Get and save code files
+	tree.Files().ForEach(func(f *object.File) error {
+		for _, include := range c.Include {
+			if doublestar.MatchUnvalidated(include, f.Name) {
+				for _, exclude := range c.Exclude {
+					if doublestar.MatchUnvalidated(exclude, f.Name) {
+						continue
+					}
+				}
+				var bytes []byte
+				bytes, err = repo.GetBlobBytes(f.Blob)
+				if err != nil {
+					slog.Debug("code.ExtractCurrentGit could not get blob bytes", "error", err)
+					return err
+				}
+				err = sqlite.InsertFile(sqlite.File{
+					ID:       f.Name,
+					CodeID:   c.ID,
+					SystemID: systemID,
+					RawData:  string(bytes),
+				}, db)
+				if err != nil {
+					slog.Debug("code.ExtractCurrentFs could not insert file", "error", err)
+					return err
+				}
+			}
+		}
+		return nil
+	})
 
 	return
 }
