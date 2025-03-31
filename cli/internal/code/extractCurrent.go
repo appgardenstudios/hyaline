@@ -70,6 +70,8 @@ func ExtractCurrentFs(systemID string, c *config.Code, db *sql.DB) (err error) {
 	// Our set of files (as a map so we don't get dupes)
 	files := map[string]struct{}{}
 
+	// TODO Use os.OpenRoot(absPath), and then use root.FS() to get the FS to pass to doublestar.Glob()
+
 	// Loop through our includes and get files
 	for _, include := range c.Include {
 		slog.Debug("code.ExtractCurrentFs extracting code using include", "include", include, "code", c.ID)
@@ -213,7 +215,8 @@ func ExtractCurrentGit(systemID string, c *config.Code, db *sql.DB) (err error) 
 		return
 	}
 
-	// Validate includes/excludes (move to config validation)
+	// Validate includes/excludes
+	// TODO move to config validation
 	for _, include := range c.Include {
 		if !doublestar.ValidatePattern(include) {
 			slog.Debug("code.ExtractCurrentGit could not validate include", "include", include)
