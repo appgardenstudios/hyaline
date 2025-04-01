@@ -68,17 +68,17 @@ systems:
           - "**/*.js"
         exclude:
           - "**/*.test.js"
-      # - id: app-http
-      #   extractor: git
-      #   git:
-      #     repo: https://github.com/appgardenstudios/hyaline-example.git
-      #     branch: main
-      #     clone: true
-      #     httpAuth:
-      #       username: git
-      #       password: ${HYALINE_GITHUB_PAT}
-      #   include:
-      #     - package.json
-      #     - "**/*.js"
-      #   exclude:
-      #     - "**/*.test.js"
+      - id: app-http
+        extractor: git
+        git:
+          repo: https://github.com/appgardenstudios/hyaline-example.git
+          branch: main
+          clone: true
+          httpAuth:
+            username: git
+            password: ${HYALINE_GITHUB_PAT}
+        include:
+          - package.json
+          - "**/*.js"
+        exclude:
+          - "**/*.test.js"

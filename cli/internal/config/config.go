@@ -2,9 +2,11 @@ package config
 
 import (
 	"errors"
+	"fmt"
 	"log/slog"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/bmatcuk/doublestar/v4"
 	"gopkg.in/yaml.v3"
@@ -139,7 +141,7 @@ func Load(path string) (cfg *Config, err error) {
 	}
 
 	// Replace any env references ($KEY or ${KEY} with the contents of KEY from env)
-	data = []byte(os.ExpandEnv(string(data)))
+	data = []byte(os.Expand(string(data), getEscapedEnv))
 
 	// Parse file into the struct
 	cfg = &Config{}
@@ -158,6 +160,23 @@ func Load(path string) (cfg *Config, err error) {
 
 	slog.Debug("config.Load config complete")
 	return
+}
+
+// Handle cases where an env var contains newlines by escaping them and
+// wrapping the value in double quotes so that \n will be expanded back out
+// in the final string value (ex. PEM files)
+func getEscapedEnv(key string) string {
+	val := os.Getenv(key)
+	if strings.Contains(val, "\n") {
+		// Strip out carriage returns
+		val = strings.ReplaceAll(val, "\r", "")
+		// Escape all newlines and double quotes
+		val = strings.ReplaceAll(val, "\"", "\\\"")
+		val = strings.ReplaceAll(val, "\n", "\\n")
+		return fmt.Sprintf("\"%s\"", val)
+	}
+
+	return val
 }
 
 func validate(cfg *Config) (err error) {
