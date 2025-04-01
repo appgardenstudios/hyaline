@@ -164,7 +164,8 @@ func Load(path string) (cfg *Config, err error) {
 
 // Handle cases where an env var contains newlines by escaping them and
 // wrapping the value in double quotes so that \n will be expanded back out
-// in the final string value (ex. PEM files)
+// in the final string value (ex. PEM files). This is done so our env var
+// substitution does not mess up the yaml config file.
 func getEscapedEnv(key string) string {
 	val := os.Getenv(key)
 	if strings.Contains(val, "\n") {
