@@ -6,6 +6,7 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/bmatcuk/doublestar/v4"
 	"gopkg.in/yaml.v3"
 )
 
@@ -52,12 +53,23 @@ type FsOptions struct {
 }
 
 type GitOptions struct {
-	Repo       string `yaml:"repo"`
-	Branch     string `yaml:"branch"`
-	Path       string `yaml:"path"`
-	Clone      bool   `yaml:"clone"`
-	Fetch      bool   `yaml:"fetch"`
-	RemoteName string `yaml:"remote"`
+	Repo     string             `yaml:"repo"`
+	Branch   string             `yaml:"branch"`
+	Path     string             `yaml:"path"`
+	Clone    bool               `yaml:"clone"`
+	HTTPAuth GitHTTPAuthOptions `yaml:"httpAuth"`
+	SSHAuth  GitSSHAuthOptions  `yaml:"sshAuth"`
+}
+
+type GitHTTPAuthOptions struct {
+	Username string `yaml:"username"`
+	Password string `yaml:"password"`
+}
+
+type GitSSHAuthOptions struct {
+	User     string `yaml:"user"`
+	PEM      string `yaml:"pem"`
+	Password string `yaml:"password"`
 }
 
 type Code struct {
@@ -165,6 +177,24 @@ func validate(cfg *Config) (err error) {
 
 			// Ensure extractor is valid
 			// TODO
+
+			// Ensure include patterns are valid
+			for _, include := range code.Include {
+				if !doublestar.ValidatePattern(include) {
+					err = errors.New("invalid code include pattern detected: " + system.ID + " > " + code.ID + ">" + include)
+					slog.Debug("config.Validate ", "include", include, "system", system.ID, "code", code.ID, "error", err)
+					return
+				}
+			}
+
+			// Ensure exclude patterns are valid
+			for _, exclude := range code.Exclude {
+				if !doublestar.ValidatePattern(exclude) {
+					err = errors.New("invalid code exclude pattern detected: " + system.ID + " > " + code.ID + ">" + exclude)
+					slog.Debug("config.Validate ", "exclude", exclude, "system", system.ID, "code", code.ID, "error", err)
+					return
+				}
+			}
 		}
 
 		// Validate docs block
@@ -187,6 +217,24 @@ func validate(cfg *Config) (err error) {
 
 			// Ensure extractor is valid
 			// TODO
+
+			// Ensure include patterns are valid
+			for _, include := range doc.Include {
+				if !doublestar.ValidatePattern(include) {
+					err = errors.New("invalid doc include pattern detected: " + system.ID + " > " + doc.ID + ">" + include)
+					slog.Debug("config.Validate ", "include", include, "system", system.ID, "doc", doc.ID, "error", err)
+					return
+				}
+			}
+
+			// Ensure exclude patterns are valid
+			for _, exclude := range doc.Exclude {
+				if !doublestar.ValidatePattern(exclude) {
+					err = errors.New("invalid doc exclude pattern detected: " + system.ID + " > " + doc.ID + ">" + exclude)
+					slog.Debug("config.Validate ", "exclude", exclude, "system", system.ID, "doc", doc.ID, "error", err)
+					return
+				}
+			}
 		}
 	}
 	return
