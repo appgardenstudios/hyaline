@@ -71,6 +71,8 @@ func ExtractCurrentFs(systemID string, c *config.Code, db *sql.DB) (err error) {
 	files := map[string]struct{}{}
 
 	// TODO Use os.OpenRoot(absPath), and then use root.FS() to get the FS to pass to doublestar.Glob()
+	// https://pkg.go.dev/os@go1.24.1#Root
+	// https://pkg.go.dev/github.com/bmatcuk/doublestar/v4#readme-glob
 
 	// Loop through our includes and get files
 	for _, include := range c.Include {
