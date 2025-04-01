@@ -12,9 +12,9 @@ systems:
           path: ./_example/
         include:
           - package.json
-          - "./**/*.js"
+          - "**/*.js"
         exclude:
-          - "./**/*.test.js"
+          - "**/*.test.js"
     docs:
       - id: md-docs
         type: md
@@ -22,7 +22,7 @@ systems:
         fs:
           path: ./_example/
         include:
-          - ./**/*.md
+          - "**/*.md"
       - id: html-docs
         type: html
         html:
@@ -31,7 +31,7 @@ systems:
         fs:
           path: ./_example/
         include:
-          - ./**/*.html
+          - "**/*.html"
     checks:
       - id: run-locally
         description: Ensure that instructions on how to run the system locally for development exist. 

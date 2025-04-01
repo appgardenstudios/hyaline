@@ -6,6 +6,7 @@ import (
 	"hyaline/internal/config"
 	"hyaline/internal/repo"
 	"hyaline/internal/sqlite"
+	"io/fs"
 	"log/slog"
 	"os"
 	"path/filepath"
@@ -16,7 +17,6 @@ import (
 	"github.com/go-git/go-git/v5/plumbing"
 	"github.com/go-git/go-git/v5/plumbing/object"
 	"github.com/go-git/go-git/v5/storage/memory"
-	"github.com/mattn/go-zglob"
 )
 
 func ExtractCurrent(system *config.System, db *sql.DB) (err error) {
@@ -67,22 +67,27 @@ func ExtractCurrentFs(systemID string, c *config.Code, db *sql.DB) (err error) {
 	absPath += string(os.PathSeparator)
 	slog.Debug("code.ExtractCurrentFs extracting code from path", "absPath", absPath)
 
+	// Get our root FS
+	// We use a root FS so symlinks and relative paths don't escape our path
+	// https://pkg.go.dev/os@go1.24.1#Root
+	root, err := os.OpenRoot(absPath)
+	if err != nil {
+		slog.Debug("code.ExtractCurrentFs could not open fs root", "error", err, "path", c.FsOptions.Path)
+		return err
+	}
+	fsRoot := root.FS()
+
 	// Our set of files (as a map so we don't get dupes)
 	files := map[string]struct{}{}
-
-	// TODO Use os.OpenRoot(absPath), and then use root.FS() to get the FS to pass to doublestar.Glob()
-	// https://pkg.go.dev/os@go1.24.1#Root
-	// https://pkg.go.dev/github.com/bmatcuk/doublestar/v4#readme-glob
 
 	// Loop through our includes and get files
 	for _, include := range c.Include {
 		slog.Debug("code.ExtractCurrentFs extracting code using include", "include", include, "code", c.ID)
 
-		// Construct our includePattern and get matches
-		includePattern := filepath.Join(absPath, include)
-		matches, err := zglob.Glob(includePattern)
+		// Get matched files
+		matches, err := doublestar.Glob(fsRoot, include)
 		if err != nil {
-			slog.Debug("code.ExtractCurrentFs could not find code files with glob", "glob", includePattern, "error", err)
+			slog.Debug("code.ExtractCurrentFs could not find code files with include", "include", include, "error", err)
 			return err
 		}
 
@@ -91,14 +96,9 @@ func ExtractCurrentFs(systemID string, c *config.Code, db *sql.DB) (err error) {
 			// See if we have a match for at least one of our excludes
 			match := false
 			for _, exclude := range c.Exclude {
-				excludePattern := filepath.Join(absPath, exclude)
-				match, err = zglob.Match(excludePattern, file)
-				if err != nil {
-					slog.Debug("code.ExtractCurrentFs could not match exclude", "excludePattern", excludePattern, "file", file, "error", err)
-					return err
-				}
+				match = doublestar.MatchUnvalidated(exclude, file)
 				if match {
-					slog.Debug("code.ExtractCurrentFs file excluded", "file", file, "excludePattern", excludePattern)
+					slog.Debug("code.ExtractCurrentFs file excluded", "file", file, "exclude", exclude)
 					break
 				}
 			}
@@ -110,7 +110,7 @@ func ExtractCurrentFs(systemID string, c *config.Code, db *sql.DB) (err error) {
 
 	// Insert files
 	for file := range files {
-		contents, err := os.ReadFile(file)
+		contents, err := fs.ReadFile(fsRoot, file)
 		if err != nil {
 			slog.Debug("code.ExtractCurrentFs could not read code file", "error", err, "file", file)
 			return err

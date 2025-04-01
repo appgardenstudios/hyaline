@@ -5,12 +5,13 @@ import (
 	"errors"
 	"hyaline/internal/config"
 	"hyaline/internal/sqlite"
+	"io/fs"
 	"log/slog"
 	"os"
 	"path/filepath"
 	"strings"
 
-	"github.com/mattn/go-zglob"
+	"github.com/bmatcuk/doublestar/v4"
 )
 
 func ExtractCurrent(system *config.System, db *sql.DB) (err error) {
@@ -62,6 +63,16 @@ func ExtractCurrentFs(systemID string, d *config.Doc, db *sql.DB) (err error) {
 	absPath += string(os.PathSeparator)
 	slog.Debug("docs.ExtractCurrent extracting docs from path", "absPath", absPath)
 
+	// Get our root FS
+	// We use a root FS so symlinks and relative paths don't escape our path
+	// https://pkg.go.dev/os@go1.24.1#Root
+	root, err := os.OpenRoot(absPath)
+	if err != nil {
+		slog.Debug("code.ExtractCurrentFs could not open fs root", "error", err, "path", d.FsOptions.Path)
+		return err
+	}
+	fsRoot := root.FS()
+
 	// Our set of files (as a map so we don't get dupes)
 	docs := map[string]struct{}{}
 
@@ -69,11 +80,10 @@ func ExtractCurrentFs(systemID string, d *config.Doc, db *sql.DB) (err error) {
 	for _, include := range d.Include {
 		slog.Debug("docs.ExtractCurrent extracting docs using include", "include", include, "doc", d.ID)
 
-		// Construct our includePattern and get matches
-		includePattern := filepath.Join(absPath, include)
-		matches, err := zglob.Glob(includePattern)
+		// Get matched docs
+		matches, err := doublestar.Glob(fsRoot, include)
 		if err != nil {
-			slog.Debug("docs.ExtractCurrent could not find docs files with glob", "glob", includePattern, "error", err)
+			slog.Debug("docs.ExtractCurrent could not find docs files with include", "include", include, "error", err)
 			return err
 		}
 
@@ -82,14 +92,9 @@ func ExtractCurrentFs(systemID string, d *config.Doc, db *sql.DB) (err error) {
 			// See if we have a match for at least one of our excludes
 			match := false
 			for _, exclude := range d.Exclude {
-				excludePattern := filepath.Join(absPath, exclude)
-				match, err = zglob.Match(excludePattern, doc)
-				if err != nil {
-					slog.Debug("docs.ExtractCurrent could not match exclude", "excludePattern", excludePattern, "doc", doc, "error", err)
-					return err
-				}
+				match = doublestar.MatchUnvalidated(exclude, doc)
 				if match {
-					slog.Debug("docs.ExtractCurrent doc excluded", "doc", doc, "excludePattern", excludePattern)
+					slog.Debug("docs.ExtractCurrent doc excluded", "doc", doc, "exclude", exclude)
 					break
 				}
 			}
@@ -102,7 +107,7 @@ func ExtractCurrentFs(systemID string, d *config.Doc, db *sql.DB) (err error) {
 	// Insert docs
 	for doc := range docs {
 		// Get file rawData
-		rawData, err := os.ReadFile(doc)
+		rawData, err := fs.ReadFile(fsRoot, doc)
 		if err != nil {
 			slog.Debug("docs.ExtractCurrent could not read doc file", "error", err, "doc", doc)
 			return err

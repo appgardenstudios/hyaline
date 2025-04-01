@@ -5,8 +5,8 @@ go 1.24.0
 require (
 	github.com/JohannesKaufmann/html-to-markdown/v2 v2.3.1
 	github.com/andybalholm/cascadia v1.3.3
+	github.com/bmatcuk/doublestar/v4 v4.8.1
 	github.com/go-git/go-git/v5 v5.14.0
-	github.com/mattn/go-zglob v0.0.6
 	github.com/urfave/cli/v2 v2.27.5
 	golang.org/x/net v0.35.0
 	gopkg.in/yaml.v3 v3.0.1
@@ -18,7 +18,6 @@ require (
 	github.com/JohannesKaufmann/dom v0.2.0 // indirect
 	github.com/Microsoft/go-winio v0.6.2 // indirect
 	github.com/ProtonMail/go-crypto v1.1.5 // indirect
-	github.com/bmatcuk/doublestar/v4 v4.8.1 // indirect
 	github.com/cloudflare/circl v1.6.0 // indirect
 	github.com/cpuguy83/go-md2man/v2 v2.0.5 // indirect
 	github.com/cyphar/filepath-securejoin v0.4.1 // indirect

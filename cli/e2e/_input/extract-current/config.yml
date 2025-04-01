@@ -7,9 +7,9 @@ systems:
           path: ./e2e/_input/extract-current/
         include:
           - package.json
-          - "./**/*.js"
+          - "**/*.js"
         exclude:
-          - "./**/*.test.js"
+          - "**/*.test.js"
     docs:
       - id: docs
         type: md
@@ -17,4 +17,4 @@ systems:
         fs:
           path: ./e2e/_input/extract-current/
         include:
-          - ./**/*.md
+          - "**/*.md"
