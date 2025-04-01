@@ -60,7 +60,6 @@ func ExtractCurrentFs(systemID string, d *config.Doc, db *sql.DB) (err error) {
 		slog.Debug("docs.ExtractCurrent could not determine absolute docs path", "error", err, "path", d.FsOptions.Path)
 		return err
 	}
-	absPath += string(os.PathSeparator)
 	slog.Debug("docs.ExtractCurrent extracting docs from path", "absPath", absPath)
 
 	// Get our root FS
@@ -112,8 +111,6 @@ func ExtractCurrentFs(systemID string, d *config.Doc, db *sql.DB) (err error) {
 			slog.Debug("docs.ExtractCurrent could not read doc file", "error", err, "doc", doc)
 			return err
 		}
-		// Calculate our relative path to the document path
-		relativePath := strings.TrimPrefix(doc, absPath)
 
 		// Extract and clean data (trim whitespace and remove carriage returns)
 		var extractedData string
@@ -131,7 +128,7 @@ func ExtractCurrentFs(systemID string, d *config.Doc, db *sql.DB) (err error) {
 
 		// Insert our document
 		err = sqlite.InsertDocument(sqlite.Document{
-			ID:              relativePath,
+			ID:              doc,
 			DocumentationID: d.ID,
 			SystemID:        systemID,
 			Type:            d.Type.String(),
@@ -146,7 +143,7 @@ func ExtractCurrentFs(systemID string, d *config.Doc, db *sql.DB) (err error) {
 
 		// Get and insert sections
 		sections := getMarkdownSections(strings.Split(extractedData, "\n"))
-		err = insertMarkdownSectionAndChildren(sections, 0, relativePath, d.ID, systemID, db)
+		err = insertMarkdownSectionAndChildren(sections, 0, doc, d.ID, systemID, db)
 		if err != nil {
 			slog.Debug("docs.ExtractCurrent could not insert section", "error", err)
 			return err

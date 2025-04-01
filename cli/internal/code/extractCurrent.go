@@ -10,7 +10,6 @@ import (
 	"log/slog"
 	"os"
 	"path/filepath"
-	"strings"
 
 	"github.com/bmatcuk/doublestar/v4"
 	"github.com/go-git/go-git/v5"
@@ -64,7 +63,6 @@ func ExtractCurrentFs(systemID string, c *config.Code, db *sql.DB) (err error) {
 		slog.Debug("code.ExtractCurrentFs could not determine absolute code path", "error", err, "path", c.FsOptions.Path)
 		return err
 	}
-	absPath += string(os.PathSeparator)
 	slog.Debug("code.ExtractCurrentFs extracting code from path", "absPath", absPath)
 
 	// Get our root FS
@@ -115,9 +113,9 @@ func ExtractCurrentFs(systemID string, c *config.Code, db *sql.DB) (err error) {
 			slog.Debug("code.ExtractCurrentFs could not read code file", "error", err, "file", file)
 			return err
 		}
-		relativePath := strings.TrimPrefix(file, absPath)
+
 		err = sqlite.InsertFile(sqlite.File{
-			ID:       relativePath,
+			ID:       file,
 			CodeID:   c.ID,
 			SystemID: systemID,
 			RawData:  string(contents),
