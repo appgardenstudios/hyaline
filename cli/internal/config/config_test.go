@@ -71,6 +71,18 @@ func TestValidate(t *testing.T) {
 	code := Code{
 		ID:        "1234",
 		Extractor: "fs",
+		Include:   []string{"**/*.js"},
+		Exclude:   []string{"**/*.test.js"},
+	}
+	invalidCodeInclude := Code{
+		ID:        "1234",
+		Extractor: "fs",
+		Include:   []string{"{a"},
+	}
+	invalidCodeExclude := Code{
+		ID:        "1234",
+		Extractor: "fs",
+		Exclude:   []string{"{a"},
 	}
 	invalidCodeExtractor := Code{
 		ID:        "1234",
@@ -80,11 +92,25 @@ func TestValidate(t *testing.T) {
 		ID:        "1234",
 		Type:      "md",
 		Extractor: "fs",
+		Include:   []string{"**/*.md"},
+		Exclude:   []string{"random.md"},
 	}
 	invalidDoc := Doc{
 		ID:        "1234",
 		Type:      "invalid",
 		Extractor: "fs",
+	}
+	invalidDocInclude := Doc{
+		ID:        "1234",
+		Type:      "md",
+		Extractor: "fs",
+		Include:   []string{"{a"},
+	}
+	invalidDocExclude := Doc{
+		ID:        "1234",
+		Type:      "md",
+		Extractor: "fs",
+		Include:   []string{"{a"},
 	}
 	invalidDocExtractor := Doc{
 		ID:        "1234",
@@ -104,6 +130,10 @@ func TestValidate(t *testing.T) {
 		{[]Code{code, code}, []Doc{doc}, true},
 		{[]Code{code}, []Doc{doc, doc}, true},
 		{[]Code{code}, []Doc{invalidDoc}, true},
+		{[]Code{invalidCodeInclude}, []Doc{}, true},
+		{[]Code{invalidCodeExclude}, []Doc{}, true},
+		{[]Code{}, []Doc{invalidDocInclude}, true},
+		{[]Code{}, []Doc{invalidDocExclude}, true},
 		{[]Code{invalidCodeExtractor}, []Doc{}, true},
 		{[]Code{}, []Doc{invalidDocExtractor}, true},
 	}
