@@ -164,11 +164,19 @@ func ExtractCurrentGit(systemID string, c *config.Code, db *sql.DB) (err error) 
 	tree.Files().ForEach(func(f *object.File) error {
 		for _, include := range c.Include {
 			if doublestar.MatchUnvalidated(include, f.Name) {
+				// If excluded, skip this file and continue
+				excluded := false
 				for _, exclude := range c.Exclude {
 					if doublestar.MatchUnvalidated(exclude, f.Name) {
-						continue
+						excluded = true
+						break
 					}
 				}
+				if excluded {
+					continue
+				}
+
+				// Get contents of file and insert into db
 				var bytes []byte
 				bytes, err = repo.GetBlobBytes(f.Blob)
 				if err != nil {

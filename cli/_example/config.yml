@@ -57,6 +57,7 @@ systems:
         extractor: git
         git:
           repo: git@github.com:appgardenstudios/hyaline-example.git
+          # path: /Users/johnmclark/code/hyaline-ssh
           branch: main
           clone: true
           sshAuth:
@@ -72,6 +73,7 @@ systems:
         extractor: git
         git:
           repo: https://github.com/appgardenstudios/hyaline-example.git
+          # path: /Users/johnmclark/code/hyaline-http
           branch: main
           clone: true
           httpAuth:
