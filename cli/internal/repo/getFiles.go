@@ -11,21 +11,21 @@ import (
 func GetFiles(branch string, r *git.Repository, cb func(*object.File) error) (err error) {
 	ref, err := r.ResolveRevision(plumbing.Revision(branch))
 	if err != nil {
-		slog.Debug("code.ExtractCurrentGit could not resolve head", "error", err)
+		slog.Debug("repo.GetFiles could not resolve head", "error", err)
 		return
 	}
 	commit, err := r.CommitObject(*ref)
 	if err != nil {
-		slog.Debug("code.ExtractCurrentGit could not get head commit", "error", err)
+		slog.Debug("repo.GetFiles could not get head commit", "error", err)
 		return
 	}
 	tree, err := commit.Tree()
 	if err != nil {
-		slog.Debug("code.ExtractCurrentGit could not get head tree", "error", err)
+		slog.Debug("repo.GetFiles could not get head tree", "error", err)
 		return
 	}
 
-	// Get and save code files
+	// Call cb for each file
 	err = tree.Files().ForEach(cb)
 
 	return

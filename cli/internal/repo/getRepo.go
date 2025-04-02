@@ -45,7 +45,7 @@ func GetRepo(options config.GitOptions) (r *git.Repository, err error) {
 			var keys *ssh.PublicKeys
 			keys, err = ssh.NewPublicKeys(user, []byte(options.SSHAuth.PEM), options.SSHAuth.Password)
 			if err != nil {
-				slog.Debug("code.ExtractCurrentGit could not parse git ssh PEM", "error", err)
+				slog.Debug("repo.GetRepo could not parse git ssh PEM", "error", err)
 				return
 			}
 			cloneOptions.Auth = keys
@@ -56,19 +56,19 @@ func GetRepo(options config.GitOptions) (r *git.Repository, err error) {
 			var absPath string
 			absPath, err = filepath.Abs(options.Path)
 			if err != nil {
-				slog.Debug("code.ExtractCurrentGit could not determine absolute path", "error", err, "path", options.Path)
+				slog.Debug("repo.GetRepo could not determine absolute path", "error", err, "path", options.Path)
 				return
 			}
 			r, err = git.PlainClone(absPath, false, cloneOptions)
 			if err != nil {
-				slog.Debug("code.ExtractCurrentGit could clone repo", "error", err, "path", options.Path, "repo", options.Repo)
+				slog.Debug("repo.GetRepo could clone repo", "error", err, "path", options.Path, "repo", options.Repo)
 				return
 			}
 		} else {
 			// Clone into a memory fs
 			r, err = git.Clone(memory.NewStorage(), nil, cloneOptions)
 			if err != nil {
-				slog.Debug("code.ExtractCurrentGit could clone repo", "error", err, "path", options.Path, "repo", options.Repo)
+				slog.Debug("repo.GetRepo could clone repo", "error", err, "path", options.Path, "repo", options.Repo)
 				return
 			}
 		}
@@ -81,12 +81,12 @@ func GetRepo(options config.GitOptions) (r *git.Repository, err error) {
 			var absPath string
 			absPath, err = filepath.Abs(options.Path)
 			if err != nil {
-				slog.Debug("code.ExtractCurrentGit could not determine absolute path", "error", err, "path", options.Path)
+				slog.Debug("repo.GetRepo could not determine absolute path", "error", err, "path", options.Path)
 				return
 			}
 			r, err = git.PlainOpen(absPath)
 			if err != nil {
-				slog.Debug("code.ExtractCurrentGit could not open git repo", "error", err, "path", options.Path)
+				slog.Debug("repo.GetRepo could not open git repo", "error", err, "path", options.Path)
 				return
 			}
 		}
