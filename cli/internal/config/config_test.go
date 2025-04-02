@@ -69,15 +69,27 @@ func TestLoad(t *testing.T) {
 
 func TestValidate(t *testing.T) {
 	code := Code{
-		ID: "1234",
+		ID:        "1234",
+		Extractor: "fs",
+	}
+	invalidCodeExtractor := Code{
+		ID:        "1234",
+		Extractor: "invalid",
 	}
 	doc := Doc{
-		ID:   "1234",
-		Type: "md",
+		ID:        "1234",
+		Type:      "md",
+		Extractor: "fs",
 	}
 	invalidDoc := Doc{
-		ID:   "1234",
-		Type: "invalid",
+		ID:        "1234",
+		Type:      "invalid",
+		Extractor: "fs",
+	}
+	invalidDocExtractor := Doc{
+		ID:        "1234",
+		Type:      "md",
+		Extractor: "invalid",
 	}
 
 	var tests = []struct {
@@ -92,6 +104,8 @@ func TestValidate(t *testing.T) {
 		{[]Code{code, code}, []Doc{doc}, true},
 		{[]Code{code}, []Doc{doc, doc}, true},
 		{[]Code{code}, []Doc{invalidDoc}, true},
+		{[]Code{invalidCodeExtractor}, []Doc{}, true},
+		{[]Code{}, []Doc{invalidDocExtractor}, true},
 	}
 
 	for _, test := range tests {
