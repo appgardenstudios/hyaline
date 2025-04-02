@@ -84,3 +84,31 @@ systems:
           - "**/*.js"
         exclude:
           - "**/*.test.js"
+    docs:
+      - id: md-ssh
+        type: md
+        extractor: git
+        git:
+          repo: git@github.com:appgardenstudios/hyaline-example.git
+          # path: /Users/johnmclark/code/hyaline-ssh
+          branch: main
+          clone: true
+          sshAuth:
+            user: git
+            pem: ${HYALINE_SSH_PEM}
+            password: ${HYALINE_SSH_PASSWORD}
+        include:
+          - "**/*.md"
+      - id: md-http
+        type: md
+        extractor: git
+        git:
+          repo: https://github.com/appgardenstudios/hyaline-example.git
+          # path: /Users/johnmclark/code/hyaline-http
+          branch: main
+          clone: true
+          httpAuth:
+            username: git
+            password: ${HYALINE_GITHUB_PAT}
+        include:
+          - "**/*.md"
