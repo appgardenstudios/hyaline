@@ -12,6 +12,7 @@ import (
 	_ "modernc.org/sqlite"
 )
 
+// runBinary will run the ../hyaline-coverage using _this_ directory as the working directory (i.e. cli/e2e)
 func runBinary(args []string, t *testing.T) ([]byte, error) {
 	dir, err := os.Getwd()
 	if err != nil {
