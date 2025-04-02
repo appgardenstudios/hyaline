@@ -24,6 +24,14 @@ extract-current:
 	echo "---"
 	./hyaline --debug extract current --config ./_example/config.yml --system local --output ./current.db
 
+.PHONY: extract-current-git
+extract-current-git:
+	rm -f ./current.db
+	make build
+	echo "---"
+	./hyaline --debug extract current --config ./_example/config.yml --system git --output ./current.db
+
+
 .PHONY: extract-change
 extract-change:
 	rm -f ./change.db

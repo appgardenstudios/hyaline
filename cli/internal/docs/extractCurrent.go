@@ -2,14 +2,19 @@ package docs
 
 import (
 	"database/sql"
+	"errors"
 	"hyaline/internal/config"
+	"hyaline/internal/repo"
 	"hyaline/internal/sqlite"
+	"io/fs"
 	"log/slog"
 	"os"
 	"path/filepath"
 	"strings"
 
-	"github.com/mattn/go-zglob"
+	"github.com/bmatcuk/doublestar/v4"
+	"github.com/go-git/go-git/v5"
+	"github.com/go-git/go-git/v5/plumbing/object"
 )
 
 func ExtractCurrent(system *config.System, db *sql.DB) (err error) {
@@ -21,103 +26,216 @@ func ExtractCurrent(system *config.System, db *sql.DB) (err error) {
 			ID:       d.ID,
 			SystemID: system.ID,
 			Type:     d.Type.String(),
-			Path:     d.Path,
+			Path:     d.FsOptions.Path,
 		}, db)
-
-		// Get our absolute path
-		absPath, err := filepath.Abs(d.Path)
 		if err != nil {
-			slog.Debug("docs.ExtractCurrent could not determine absolute docs path", "error", err, "path", d.Path)
+			slog.Debug("docs.ExtractCurrent could not insert docs", "error", err, "doc", d.ID)
 			return err
 		}
-		absPath += string(os.PathSeparator)
-		slog.Debug("docs.ExtractCurrent extracting docs from path", "absPath", absPath)
 
-		// Our set of files (as a map so we don't get dupes)
-		docs := map[string]struct{}{}
-
-		// Loop through our includes and get files
-		for _, include := range d.Include {
-			slog.Debug("docs.ExtractCurrent extracting docs using include", "include", include, "doc", d.ID)
-
-			// Construct our includePattern and get matches
-			includePattern := filepath.Join(absPath, include)
-			matches, err := zglob.Glob(includePattern)
+		// Extract based on the extractor
+		switch d.Extractor {
+		case config.ExtractorFs:
+			err = ExtractCurrentFs(system.ID, &d, db)
 			if err != nil {
-				slog.Debug("docs.ExtractCurrent could not find docs files with glob", "glob", includePattern, "error", err)
+				slog.Debug("docs.ExtractCurrent could not extract docs using fs extractor", "error", err, "doc", d.ID)
+				return
+			}
+		case config.ExtractorGit:
+			err = ExtractCurrentGit(system.ID, &d, db)
+			if err != nil {
+				slog.Debug("docs.ExtractCurrent could not extract docs using git extractor", "error", err, "doc", d.ID)
+				return
+			}
+		default:
+			slog.Debug("docs.ExtractCurrent unknown extractor", "extractor", d.Extractor.String(), "doc", d.ID)
+			return errors.New("Unknown Extractor '" + d.Extractor.String() + "' for doc " + d.ID)
+		}
+	}
+
+	return
+}
+
+func ExtractCurrentFs(systemID string, d *config.Doc, db *sql.DB) (err error) {
+	// Get our absolute path
+	absPath, err := filepath.Abs(d.FsOptions.Path)
+	if err != nil {
+		slog.Debug("docs.ExtractCurrentFs could not determine absolute docs path", "error", err, "path", d.FsOptions.Path)
+		return err
+	}
+	slog.Debug("docs.ExtractCurrentFs extracting docs from path", "absPath", absPath)
+
+	// Get our root FS
+	// We use a root FS so symlinks and relative paths don't escape our path
+	// https://pkg.go.dev/os@go1.24.1#Root
+	root, err := os.OpenRoot(absPath)
+	if err != nil {
+		slog.Debug("code.ExtractCurrentFs could not open fs root", "error", err, "path", d.FsOptions.Path)
+		return err
+	}
+	fsRoot := root.FS()
+
+	// Our set of files (as a map so we don't get dupes)
+	docs := map[string]struct{}{}
+
+	// Loop through our includes and get files
+	for _, include := range d.Include {
+		slog.Debug("docs.ExtractCurrentFs extracting docs using include", "include", include, "doc", d.ID)
+
+		// Get matched docs
+		matches, err := doublestar.Glob(fsRoot, include)
+		if err != nil {
+			slog.Debug("docs.ExtractCurrentFs could not find docs files with include", "include", include, "error", err)
+			return err
+		}
+
+		// Loop through docs and add those that aren't in our excludes
+		for _, doc := range matches {
+			// See if we have a match for at least one of our excludes
+			match := false
+			for _, exclude := range d.Exclude {
+				match = doublestar.MatchUnvalidated(exclude, doc)
+				if match {
+					slog.Debug("docs.ExtractCurrentFs doc excluded", "doc", doc, "exclude", exclude)
+					break
+				}
+			}
+			if !match {
+				docs[doc] = struct{}{}
+			}
+		}
+	}
+
+	// Insert docs
+	for doc := range docs {
+		// Get file rawData
+		rawData, err := fs.ReadFile(fsRoot, doc)
+		if err != nil {
+			slog.Debug("docs.ExtractCurrentFs could not read doc file", "error", err, "doc", doc)
+			return err
+		}
+
+		// Extract and clean data (trim whitespace and remove carriage returns)
+		var extractedData string
+		switch d.Type {
+		case config.DocTypeHTML:
+			extractedData, err = extractHTMLDocument(string(rawData), d.HTML.Selector)
+			if err != nil {
+				slog.Debug("docs.ExtractCurrentFs could not extract html document", "error", err, "doc", doc)
 				return err
 			}
+		default:
+			extractedData = strings.TrimSpace(string(rawData))
+		}
+		extractedData = strings.ReplaceAll(extractedData, "\r", "")
 
-			// Loop through docs and add those that aren't in our excludes
-			for _, doc := range matches {
-				// See if we have a match for at least one of our excludes
-				match := false
+		// Insert our document
+		err = sqlite.InsertDocument(sqlite.Document{
+			ID:              doc,
+			DocumentationID: d.ID,
+			SystemID:        systemID,
+			Type:            d.Type.String(),
+			Action:          "",
+			RawData:         string(rawData),
+			ExtractedData:   extractedData,
+		}, db)
+		if err != nil {
+			slog.Debug("docs.ExtractCurrentFs could not insert document", "error", err)
+			return err
+		}
+
+		// Get and insert sections
+		sections := getMarkdownSections(strings.Split(extractedData, "\n"))
+		err = insertMarkdownSectionAndChildren(sections, 0, doc, d.ID, systemID, db)
+		if err != nil {
+			slog.Debug("docs.ExtractCurrentFs could not insert section", "error", err)
+			return err
+		}
+	}
+
+	return
+}
+
+func ExtractCurrentGit(systemID string, d *config.Doc, db *sql.DB) (err error) {
+	// Initialize go-git repo (on disk or in mem)
+	var r *git.Repository
+	r, err = repo.GetRepo(d.GitOptions)
+	if err != nil {
+		slog.Debug("docs.ExtractCurrentGit could not get repo", "error", err)
+		return
+	}
+
+	// Extract files from branch
+	branch := "main"
+	if d.GitOptions.Branch != "" {
+		branch = d.GitOptions.Branch
+	}
+	err = repo.GetFiles(branch, r, func(f *object.File) error {
+		for _, include := range d.Include {
+			if doublestar.MatchUnvalidated(include, f.Name) {
+				// If excluded, skip this file and continue
+				excluded := false
 				for _, exclude := range d.Exclude {
-					excludePattern := filepath.Join(absPath, exclude)
-					match, err = zglob.Match(excludePattern, doc)
-					if err != nil {
-						slog.Debug("docs.ExtractCurrent could not match exclude", "excludePattern", excludePattern, "doc", doc, "error", err)
-						return err
-					}
-					if match {
-						slog.Debug("docs.ExtractCurrent doc excluded", "doc", doc, "excludePattern", excludePattern)
+					if doublestar.MatchUnvalidated(exclude, f.Name) {
+						excluded = true
 						break
 					}
 				}
-				if !match {
-					docs[doc] = struct{}{}
+				if excluded {
+					continue
 				}
-			}
-		}
 
-		// Insert docs
-		for doc := range docs {
-			// Get file rawData
-			rawData, err := os.ReadFile(doc)
-			if err != nil {
-				slog.Debug("docs.ExtractCurrent could not read doc file", "error", err, "doc", doc)
-				return err
-			}
-			// Calculate our relative path to the document path
-			relativePath := strings.TrimPrefix(doc, absPath)
-
-			// Extract and clean data (trim whitespace and remove carriage returns)
-			var extractedData string
-			switch d.Type {
-			case config.DocTypeHTML:
-				extractedData, err = extractHTMLDocument(string(rawData), d.HTML.Selector)
+				// Get contents of file and insert into db
+				var bytes []byte
+				bytes, err = repo.GetBlobBytes(f.Blob)
 				if err != nil {
-					slog.Debug("docs.ExtractCurrent could not extract html document", "error", err, "doc", doc)
+					slog.Debug("docs.ExtractCurrentGit could not get blob bytes", "error", err)
 					return err
 				}
-			default:
-				extractedData = strings.TrimSpace(string(rawData))
-			}
-			extractedData = strings.ReplaceAll(extractedData, "\r", "")
 
-			// Insert our document
-			err = sqlite.InsertDocument(sqlite.Document{
-				ID:              relativePath,
-				DocumentationID: d.ID,
-				SystemID:        system.ID,
-				Type:            d.Type.String(),
-				Action:          "",
-				RawData:         string(rawData),
-				ExtractedData:   extractedData,
-			}, db)
-			if err != nil {
-				slog.Debug("docs.ExtractCurrent could not insert document", "error", err)
-				return err
-			}
+				// Extract and clean data (trim whitespace and remove carriage returns)
+				var extractedData string
+				switch d.Type {
+				case config.DocTypeHTML:
+					extractedData, err = extractHTMLDocument(string(bytes), d.HTML.Selector)
+					if err != nil {
+						slog.Debug("docs.ExtractCurrentGit could not extract html document", "error", err, "doc", f.Name)
+						return err
+					}
+				default:
+					extractedData = strings.TrimSpace(string(bytes))
+				}
+				extractedData = strings.ReplaceAll(extractedData, "\r", "")
 
-			// Get and insert sections
-			sections := getMarkdownSections(strings.Split(extractedData, "\n"))
-			err = insertMarkdownSectionAndChildren(sections, 0, relativePath, d.ID, system.ID, db)
-			if err != nil {
-				slog.Debug("docs.ExtractCurrent could not insert section", "error", err)
-				return err
+				// Insert our document
+				err = sqlite.InsertDocument(sqlite.Document{
+					ID:              f.Name,
+					DocumentationID: d.ID,
+					SystemID:        systemID,
+					Type:            d.Type.String(),
+					Action:          "",
+					RawData:         string(bytes),
+					ExtractedData:   extractedData,
+				}, db)
+				if err != nil {
+					slog.Debug("docs.ExtractCurrentGit could not insert document", "error", err)
+					return err
+				}
+
+				// Get and insert sections
+				sections := getMarkdownSections(strings.Split(extractedData, "\n"))
+				err = insertMarkdownSectionAndChildren(sections, 0, f.Name, d.ID, systemID, db)
+				if err != nil {
+					slog.Debug("docs.ExtractCurrentGit could not insert section", "error", err)
+					return err
+				}
 			}
 		}
+		return nil
+	})
+	if err != nil {
+		slog.Debug("code.ExtractCurrentGit could not get files", "error", err)
+		return
 	}
 
 	return

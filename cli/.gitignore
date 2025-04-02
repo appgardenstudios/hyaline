@@ -7,3 +7,6 @@ hyaline
 # Testing artifacts
 hyaline-coverage
 .coverdata/
+
+# Developer environment variables used for debugging
+.env

@@ -21,16 +21,50 @@ func TestLoad(t *testing.T) {
 			Code: []Code{{
 				ID:        "app",
 				Extractor: "fs",
-				Path:      "./",
-				Include:   []string{"package.json", "./**/*.js"},
-				Exclude:   []string{"./**/*.test.js"},
+				FsOptions: FsOptions{
+					Path: "./",
+				},
+				GitOptions: GitOptions{
+					Repo:   "git@github.com:appgardenstudios/hyaline-example.git",
+					Branch: "main",
+					Path:   "my/path",
+					Clone:  true,
+					HTTPAuth: GitHTTPAuthOptions{
+						Username: "bob",
+						Password: "nope",
+					},
+					SSHAuth: GitSSHAuthOptions{
+						User:     "bob",
+						PEM:      "my-pem",
+						Password: "nope",
+					},
+				},
+				Include: []string{"package.json", "./**/*.js"},
+				Exclude: []string{"./**/*.test.js"},
 			}},
 			Docs: []Doc{{
 				ID:        "md-docs",
 				Type:      "md",
 				Extractor: "fs",
-				Path:      "./",
-				Include:   []string{"./**/*.md"},
+				FsOptions: FsOptions{
+					Path: "./",
+				},
+				GitOptions: GitOptions{
+					Repo:   "git@github.com:appgardenstudios/hyaline-example.git",
+					Branch: "main",
+					Path:   "my/path",
+					Clone:  true,
+					HTTPAuth: GitHTTPAuthOptions{
+						Username: "bob",
+						Password: "nope",
+					},
+					SSHAuth: GitSSHAuthOptions{
+						User:     "bob",
+						PEM:      "my-pem",
+						Password: "nope",
+					},
+				},
+				Include: []string{"./**/*.md"},
 			}, {
 				ID:   "html-docs",
 				Type: "html",
@@ -38,8 +72,25 @@ func TestLoad(t *testing.T) {
 					Selector: "main",
 				},
 				Extractor: "fs",
-				Path:      "./",
-				Include:   []string{"./**/*.md"},
+				FsOptions: FsOptions{
+					Path: "./",
+				},
+				GitOptions: GitOptions{
+					Repo:   "git@github.com:appgardenstudios/hyaline-example.git",
+					Branch: "main",
+					Path:   "my/path",
+					Clone:  true,
+					HTTPAuth: GitHTTPAuthOptions{
+						Username: "bob",
+						Password: "nope",
+					},
+					SSHAuth: GitSSHAuthOptions{
+						User:     "bob",
+						PEM:      "my-pem",
+						Password: "nope",
+					},
+				},
+				Include: []string{"./**/*.md"},
 			}},
 		}},
 	}
@@ -61,17 +112,80 @@ func TestLoad(t *testing.T) {
 	}
 }
 
+func TestGetEscapedEnv(t *testing.T) {
+	var tests = []struct {
+		env    string
+		result string
+	}{
+		{"", ""},
+		{"plain", "plain"},
+		{`Line1
+Line2`, `"Line1\nLine2"`},
+		{`Line1"
+Line2`, `"Line1\"\nLine2"`},
+		{`Line1\nLine2`, `"Line1\nLine2"`},
+		{`Line1"\nLine2`, `"Line1\"\nLine2"`},
+		{"Line1\r\nLine2", `"Line1\nLine2"`},
+	}
+
+	for _, test := range tests {
+		os.Setenv("TestGetEscapedEnv", test.env)
+		result := getEscapedEnv("TestGetEscapedEnv")
+		if result != test.result {
+			t.Errorf("got %s, wanted %s", result, test.result)
+		}
+	}
+}
+
 func TestValidate(t *testing.T) {
 	code := Code{
-		ID: "1234",
+		ID:        "1234",
+		Extractor: "fs",
+		Include:   []string{"**/*.js"},
+		Exclude:   []string{"**/*.test.js"},
+	}
+	invalidCodeInclude := Code{
+		ID:        "1234",
+		Extractor: "fs",
+		Include:   []string{"{a"},
+	}
+	invalidCodeExclude := Code{
+		ID:        "1234",
+		Extractor: "fs",
+		Exclude:   []string{"{a"},
+	}
+	invalidCodeExtractor := Code{
+		ID:        "1234",
+		Extractor: "invalid",
 	}
 	doc := Doc{
-		ID:   "1234",
-		Type: "md",
+		ID:        "1234",
+		Type:      "md",
+		Extractor: "fs",
+		Include:   []string{"**/*.md"},
+		Exclude:   []string{"random.md"},
 	}
 	invalidDoc := Doc{
-		ID:   "1234",
-		Type: "invalid",
+		ID:        "1234",
+		Type:      "invalid",
+		Extractor: "fs",
+	}
+	invalidDocInclude := Doc{
+		ID:        "1234",
+		Type:      "md",
+		Extractor: "fs",
+		Include:   []string{"{a"},
+	}
+	invalidDocExclude := Doc{
+		ID:        "1234",
+		Type:      "md",
+		Extractor: "fs",
+		Include:   []string{"{a"},
+	}
+	invalidDocExtractor := Doc{
+		ID:        "1234",
+		Type:      "md",
+		Extractor: "invalid",
 	}
 
 	var tests = []struct {
@@ -86,6 +200,12 @@ func TestValidate(t *testing.T) {
 		{[]Code{code, code}, []Doc{doc}, true},
 		{[]Code{code}, []Doc{doc, doc}, true},
 		{[]Code{code}, []Doc{invalidDoc}, true},
+		{[]Code{invalidCodeInclude}, []Doc{}, true},
+		{[]Code{invalidCodeExclude}, []Doc{}, true},
+		{[]Code{}, []Doc{invalidDocInclude}, true},
+		{[]Code{}, []Doc{invalidDocExclude}, true},
+		{[]Code{invalidCodeExtractor}, []Doc{}, true},
+		{[]Code{}, []Doc{invalidDocExtractor}, true},
 	}
 
 	for _, test := range tests {

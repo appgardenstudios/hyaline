@@ -3,16 +3,18 @@ systems:
     code:
       - id: app
         extractor: fs
-        path: ./e2e/_input/extract-current/
+        fs:
+          path: ./_input/extract-current/
         include:
           - package.json
-          - "./**/*.js"
+          - "**/*.js"
         exclude:
-          - "./**/*.test.js"
+          - "**/*.test.js"
     docs:
       - id: docs
         type: md
         extractor: fs
-        path: ./e2e/_input/extract-current/
+        fs:
+          path: ./_input/extract-current/
         include:
-          - ./**/*.md
+          - "**/*.md"

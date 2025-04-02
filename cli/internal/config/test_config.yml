@@ -8,7 +8,20 @@ systems:
     code:
       - id: app
         extractor: fs
-        path: ./
+        fs:
+          path: ./
+        git:
+          repo: git@github.com:appgardenstudios/hyaline-example.git
+          branch: main
+          path: my/path
+          clone: true
+          httpAuth:
+            username: bob
+            password: nope
+          sshAuth:
+            user: bob
+            pem: my-pem
+            password: nope
         include:
           - package.json
           - "./**/*.js"
@@ -18,7 +31,20 @@ systems:
       - id: md-docs
         type: md
         extractor: fs
-        path: ./
+        fs:
+          path: ./
+        git:
+          repo: git@github.com:appgardenstudios/hyaline-example.git
+          branch: main
+          path: my/path
+          clone: true
+          httpAuth:
+            username: bob
+            password: nope
+          sshAuth:
+            user: bob
+            pem: my-pem
+            password: nope
         include: 
          - ./**/*.md
       - id: html-docs
@@ -26,6 +52,19 @@ systems:
         html:
           selector: main
         extractor: fs
-        path: ./
+        fs:
+          path: ./
+        git:
+          repo: git@github.com:appgardenstudios/hyaline-example.git
+          branch: main
+          path: my/path
+          clone: true
+          httpAuth:
+            username: bob
+            password: nope
+          sshAuth:
+            user: bob
+            pem: my-pem
+            password: nope
         include: 
          - ./**/*.md

@@ -2,10 +2,13 @@ package config
 
 import (
 	"errors"
+	"fmt"
 	"log/slog"
 	"os"
 	"path/filepath"
+	"strings"
 
+	"github.com/bmatcuk/doublestar/v4"
 	"gopkg.in/yaml.v3"
 )
 
@@ -27,22 +30,68 @@ type System struct {
 	Checks []Check `yaml:"checks"`
 }
 
+type Extractor string
+
+func (e Extractor) String() string {
+	return string(e)
+}
+
+func (e Extractor) IsValid() bool {
+	switch e {
+	case ExtractorFs, ExtractorGit:
+		return true
+	default:
+		return false
+	}
+}
+
+const (
+	ExtractorFs  Extractor = "fs"
+	ExtractorGit Extractor = "git"
+)
+
+type FsOptions struct {
+	Path string `yaml:"path"`
+}
+
+type GitOptions struct {
+	Repo     string             `yaml:"repo"`
+	Branch   string             `yaml:"branch"`
+	Path     string             `yaml:"path"`
+	Clone    bool               `yaml:"clone"`
+	HTTPAuth GitHTTPAuthOptions `yaml:"httpAuth"`
+	SSHAuth  GitSSHAuthOptions  `yaml:"sshAuth"`
+}
+
+type GitHTTPAuthOptions struct {
+	Username string `yaml:"username"`
+	Password string `yaml:"password"`
+}
+
+type GitSSHAuthOptions struct {
+	User     string `yaml:"user"`
+	PEM      string `yaml:"pem"`
+	Password string `yaml:"password"`
+}
+
 type Code struct {
-	ID        string   `yaml:"id"`
-	Extractor string   `yaml:"extractor"`
-	Path      string   `yaml:"path"`
-	Include   []string `yaml:"include"`
-	Exclude   []string `yaml:"exclude"`
+	ID         string     `yaml:"id"`
+	Extractor  Extractor  `yaml:"extractor"`
+	FsOptions  FsOptions  `yaml:"fs"`
+	GitOptions GitOptions `yaml:"git"`
+	Include    []string   `yaml:"include"`
+	Exclude    []string   `yaml:"exclude"`
 }
 
 type Doc struct {
-	ID        string         `yaml:"id"`
-	Type      DocType        `yaml:"type"`
-	HTML      DocHTMLOptions `yaml:"html"`
-	Extractor string         `yaml:"extractor"`
-	Path      string         `yaml:"path"`
-	Include   []string       `yaml:"include"`
-	Exclude   []string       `yaml:"exclude"`
+	ID         string         `yaml:"id"`
+	Type       DocType        `yaml:"type"`
+	HTML       DocHTMLOptions `yaml:"html"`
+	Extractor  Extractor      `yaml:"extractor"`
+	FsOptions  FsOptions      `yaml:"fs"`
+	GitOptions GitOptions     `yaml:"git"`
+	Include    []string       `yaml:"include"`
+	Exclude    []string       `yaml:"exclude"`
 }
 
 type DocType string
@@ -92,7 +141,7 @@ func Load(path string) (cfg *Config, err error) {
 	}
 
 	// Replace any env references ($KEY or ${KEY} with the contents of KEY from env)
-	data = []byte(os.ExpandEnv(string(data)))
+	data = []byte(os.Expand(string(data), getEscapedEnv))
 
 	// Parse file into the struct
 	cfg = &Config{}
@@ -113,6 +162,32 @@ func Load(path string) (cfg *Config, err error) {
 	return
 }
 
+// Handle cases where an env var contains newlines by escaping them and
+// wrapping the value in double quotes so that \n will be expanded back out
+// in the final string value (ex. PEM files). This is done so our env var
+// substitution does not mess up the yaml config file.
+func getEscapedEnv(key string) string {
+	val := os.Getenv(key)
+
+	// If the value contains the 2 character sequence "\"+"n", replace it with a newline character.
+	if strings.Contains(val, "\\n") {
+		val = strings.ReplaceAll(val, "\\n", "\n")
+	}
+
+	// If the value contains a newline character, escape the entire string and enclose it in "" so
+	// that the yaml parser interprets the \n as newline characters when parsing it.
+	if strings.Contains(val, "\n") {
+		// Strip out carriage returns (just in case)
+		val = strings.ReplaceAll(val, "\r", "")
+		// Escape all newlines and double quotes
+		val = strings.ReplaceAll(val, "\"", "\\\"")
+		val = strings.ReplaceAll(val, "\n", "\\n")
+		return fmt.Sprintf("\"%s\"", val)
+	}
+
+	return val
+}
+
 func validate(cfg *Config) (err error) {
 	// Validate Systems
 	for _, system := range cfg.Systems {
@@ -127,6 +202,31 @@ func validate(cfg *Config) (err error) {
 				return
 			}
 			codeIDs[code.ID] = struct{}{}
+
+			// Ensure extractor is valid
+			if !code.Extractor.IsValid() {
+				err = errors.New("invalid code extractor detected: " + system.ID + " > " + code.ID + " > " + code.Extractor.String())
+				slog.Debug("config.Validate found invalid code extractor", "extractor", code.Extractor.String(), "system", system.ID, "code", code.ID, "error", err)
+				return
+			}
+
+			// Ensure include patterns are valid
+			for _, include := range code.Include {
+				if !doublestar.ValidatePattern(include) {
+					err = errors.New("invalid code include pattern detected: " + system.ID + " > " + code.ID + " > " + include)
+					slog.Debug("config.Validate found invalid include pattern", "include", include, "system", system.ID, "code", code.ID, "error", err)
+					return
+				}
+			}
+
+			// Ensure exclude patterns are valid
+			for _, exclude := range code.Exclude {
+				if !doublestar.ValidatePattern(exclude) {
+					err = errors.New("invalid code exclude pattern detected: " + system.ID + " > " + code.ID + " > " + exclude)
+					slog.Debug("config.Validate found invalid exclude pattern", "exclude", exclude, "system", system.ID, "code", code.ID, "error", err)
+					return
+				}
+			}
 		}
 
 		// Validate docs block
@@ -145,6 +245,31 @@ func validate(cfg *Config) (err error) {
 				err = errors.New("invalid doc type '" + doc.Type.String() + "' detected: " + system.ID + " > " + doc.ID)
 				slog.Debug("config.Validate found invalid doc type", "system", system.ID, "doc", doc.ID, "type", doc.Type.String(), "error", err)
 				return
+			}
+
+			// Ensure extractor is valid
+			if !doc.Extractor.IsValid() {
+				err = errors.New("invalid doc extractor detected: " + system.ID + " > " + doc.ID + " > " + doc.Extractor.String())
+				slog.Debug("config.Validate found invalid doc extractor", "extractor", doc.Extractor.String(), "system", system.ID, "doc", doc.ID, "error", err)
+				return
+			}
+
+			// Ensure include patterns are valid
+			for _, include := range doc.Include {
+				if !doublestar.ValidatePattern(include) {
+					err = errors.New("invalid doc include pattern detected: " + system.ID + " > " + doc.ID + " > " + include)
+					slog.Debug("config.Validate found invalid doc include", "include", include, "system", system.ID, "doc", doc.ID, "error", err)
+					return
+				}
+			}
+
+			// Ensure exclude patterns are valid
+			for _, exclude := range doc.Exclude {
+				if !doublestar.ValidatePattern(exclude) {
+					err = errors.New("invalid doc exclude pattern detected: " + system.ID + " > " + doc.ID + " > " + exclude)
+					slog.Debug("config.Validate found invalid doc exclude", "exclude", exclude, "system", system.ID, "doc", doc.ID, "error", err)
+					return
+				}
 			}
 		}
 	}
