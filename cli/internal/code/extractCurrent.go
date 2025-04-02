@@ -13,11 +13,7 @@ import (
 
 	"github.com/bmatcuk/doublestar/v4"
 	"github.com/go-git/go-git/v5"
-	"github.com/go-git/go-git/v5/plumbing"
 	"github.com/go-git/go-git/v5/plumbing/object"
-	"github.com/go-git/go-git/v5/plumbing/transport/http"
-	"github.com/go-git/go-git/v5/plumbing/transport/ssh"
-	"github.com/go-git/go-git/v5/storage/memory"
 )
 
 func ExtractCurrent(system *config.System, db *sql.DB) (err error) {
@@ -132,8 +128,9 @@ func ExtractCurrentFs(systemID string, c *config.Code, db *sql.DB) (err error) {
 }
 
 func ExtractCurrentGit(systemID string, c *config.Code, db *sql.DB) (err error) {
-	// Initialize go-git (on disk or in mem)
-	r, err := getRepo(c.GitOptions)
+	// Initialize go-git repo (on disk or in mem)
+	var r *git.Repository
+	r, err = repo.GetRepo(c.GitOptions)
 	if err != nil {
 		slog.Debug("code.ExtractCurrentGit could not get repo", "error", err)
 		return
@@ -144,24 +141,7 @@ func ExtractCurrentGit(systemID string, c *config.Code, db *sql.DB) (err error) 
 	if c.GitOptions.Branch != "" {
 		branch = c.GitOptions.Branch
 	}
-	ref, err := r.ResolveRevision(plumbing.Revision(branch))
-	if err != nil {
-		slog.Debug("code.ExtractCurrentGit could not resolve head", "error", err)
-		return
-	}
-	commit, err := r.CommitObject(*ref)
-	if err != nil {
-		slog.Debug("code.ExtractCurrentGit could not get head commit", "error", err)
-		return
-	}
-	tree, err := commit.Tree()
-	if err != nil {
-		slog.Debug("code.ExtractCurrentGit could not get head tree", "error", err)
-		return
-	}
-
-	// Get and save code files
-	tree.Files().ForEach(func(f *object.File) error {
+	err = repo.GetFiles(branch, r, func(f *object.File) error {
 		for _, include := range c.Include {
 			if doublestar.MatchUnvalidated(include, f.Name) {
 				// If excluded, skip this file and continue
@@ -197,88 +177,9 @@ func ExtractCurrentGit(systemID string, c *config.Code, db *sql.DB) (err error) 
 		}
 		return nil
 	})
-
-	return
-}
-
-func getRepo(options config.GitOptions) (r *git.Repository, err error) {
-	if options.Clone {
-		// Ensure remote repo is passed in
-		if options.Repo == "" {
-			err = errors.New("git.repo is required to be set if git.clone is true")
-			return
-		}
-		// Create cloneOptions
-		cloneOptions := &git.CloneOptions{
-			URL: options.Repo,
-		}
-
-		// Add http auth if password is set
-		if options.HTTPAuth.Password != "" {
-			username := "git"
-			if options.HTTPAuth.Username != "" {
-				username = options.HTTPAuth.Username
-			}
-			cloneOptions.Auth = &http.BasicAuth{
-				Username: username,
-				Password: options.HTTPAuth.Password,
-			}
-		}
-
-		// Add ssh auth if PEM is set
-		if options.SSHAuth.PEM != "" {
-			user := "git"
-			if options.SSHAuth.User != "" {
-				user = options.SSHAuth.User
-			}
-			var keys *ssh.PublicKeys
-			keys, err = ssh.NewPublicKeys(user, []byte(options.SSHAuth.PEM), options.SSHAuth.Password)
-			if err != nil {
-				slog.Debug("code.ExtractCurrentGit could not parse git ssh PEM", "error", err)
-				return
-			}
-			cloneOptions.Auth = keys
-		}
-
-		if options.Path != "" {
-			// Clone to disk
-			var absPath string
-			absPath, err = filepath.Abs(options.Path)
-			if err != nil {
-				slog.Debug("code.ExtractCurrentGit could not determine absolute path", "error", err, "path", options.Path)
-				return
-			}
-			r, err = git.PlainClone(absPath, false, cloneOptions)
-			if err != nil {
-				slog.Debug("code.ExtractCurrentGit could clone repo", "error", err, "path", options.Path, "repo", options.Repo)
-				return
-			}
-		} else {
-			// Clone into a memory fs
-			r, err = git.Clone(memory.NewStorage(), nil, cloneOptions)
-			if err != nil {
-				slog.Debug("code.ExtractCurrentGit could clone repo", "error", err, "path", options.Path, "repo", options.Repo)
-				return
-			}
-		}
-	} else {
-		if options.Path == "" {
-			err = errors.New("git.path must be set if git.clone is false")
-			return
-		} else {
-			// Open repo already on disk
-			var absPath string
-			absPath, err = filepath.Abs(options.Path)
-			if err != nil {
-				slog.Debug("code.ExtractCurrentGit could not determine absolute path", "error", err, "path", options.Path)
-				return
-			}
-			r, err = git.PlainOpen(absPath)
-			if err != nil {
-				slog.Debug("code.ExtractCurrentGit could not open git repo", "error", err, "path", options.Path)
-				return
-			}
-		}
+	if err != nil {
+		slog.Debug("code.ExtractCurrentGit could not get files", "error", err)
+		return
 	}
 
 	return
