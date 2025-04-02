@@ -24,6 +24,21 @@ func TestLoad(t *testing.T) {
 				FsOptions: FsOptions{
 					Path: "./",
 				},
+				GitOptions: GitOptions{
+					Repo:   "git@github.com:appgardenstudios/hyaline-example.git",
+					Branch: "main",
+					Path:   "my/path",
+					Clone:  true,
+					HTTPAuth: GitHTTPAuthOptions{
+						Username: "bob",
+						Password: "nope",
+					},
+					SSHAuth: GitSSHAuthOptions{
+						User:     "bob",
+						PEM:      "my-pem",
+						Password: "nope",
+					},
+				},
 				Include: []string{"package.json", "./**/*.js"},
 				Exclude: []string{"./**/*.test.js"},
 			}},
@@ -33,6 +48,21 @@ func TestLoad(t *testing.T) {
 				Extractor: "fs",
 				FsOptions: FsOptions{
 					Path: "./",
+				},
+				GitOptions: GitOptions{
+					Repo:   "git@github.com:appgardenstudios/hyaline-example.git",
+					Branch: "main",
+					Path:   "my/path",
+					Clone:  true,
+					HTTPAuth: GitHTTPAuthOptions{
+						Username: "bob",
+						Password: "nope",
+					},
+					SSHAuth: GitSSHAuthOptions{
+						User:     "bob",
+						PEM:      "my-pem",
+						Password: "nope",
+					},
 				},
 				Include: []string{"./**/*.md"},
 			}, {
@@ -44,6 +74,21 @@ func TestLoad(t *testing.T) {
 				Extractor: "fs",
 				FsOptions: FsOptions{
 					Path: "./",
+				},
+				GitOptions: GitOptions{
+					Repo:   "git@github.com:appgardenstudios/hyaline-example.git",
+					Branch: "main",
+					Path:   "my/path",
+					Clone:  true,
+					HTTPAuth: GitHTTPAuthOptions{
+						Username: "bob",
+						Password: "nope",
+					},
+					SSHAuth: GitSSHAuthOptions{
+						User:     "bob",
+						PEM:      "my-pem",
+						Password: "nope",
+					},
 				},
 				Include: []string{"./**/*.md"},
 			}},
