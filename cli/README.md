@@ -26,4 +26,6 @@ HYALINE_SSH_PASSWORD= #A password for the PEM above (blank if PEM is not passwor
 ## Testing
 Unit tests are run with `make test`, and there are e2e tests that invoke the actual hyaline binary that you can run with `make e2e`.
 
-Note that the following env vars must be set for the e2e tests to work and pass: TODO
+Note that the following env vars must be set for the `e2e` tests to work and pass:
+* **HYALINE_SSH_PEM** (with access to `github.com/appgardenstudios/hyaline-example`)
+* **HYALINE_GITHUB_PAT** (with access to `github.com/appgardenstudios/hyaline-example`)

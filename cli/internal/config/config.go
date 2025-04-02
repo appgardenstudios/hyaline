@@ -168,8 +168,16 @@ func Load(path string) (cfg *Config, err error) {
 // substitution does not mess up the yaml config file.
 func getEscapedEnv(key string) string {
 	val := os.Getenv(key)
+
+	// If the value contains the 2 character sequence "\"+"n", replace it with a newline character.
+	if strings.Contains(val, "\\n") {
+		val = strings.ReplaceAll(val, "\\n", "\n")
+	}
+
+	// If the value contains a newline character, escape the entire string and enclose it in "" so
+	// that the yaml parser interprets the \n as newline characters when parsing it.
 	if strings.Contains(val, "\n") {
-		// Strip out carriage returns
+		// Strip out carriage returns (just in case)
 		val = strings.ReplaceAll(val, "\r", "")
 		// Escape all newlines and double quotes
 		val = strings.ReplaceAll(val, "\"", "\\\"")
