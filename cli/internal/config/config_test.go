@@ -80,6 +80,7 @@ Line2`, `"Line1\nLine2"`},
 Line2`, `"Line1\"\nLine2"`},
 		{`Line1\nLine2`, `"Line1\nLine2"`},
 		{`Line1"\nLine2`, `"Line1\"\nLine2"`},
+		{"Line1\r\nLine2", `"Line1\nLine2"`},
 	}
 
 	for _, test := range tests {
