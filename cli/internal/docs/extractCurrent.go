@@ -25,12 +25,31 @@ func ExtractCurrent(system *config.System, db *sql.DB) (err error) {
 	// Process each docs source
 	for _, d := range system.Docs {
 		slog.Debug("docs.ExtractCurrent extracting docs", "system", system.ID, "docs", d.ID)
+
+		// Get document path
+		var path string
+		switch d.Extractor {
+		case config.ExtractorFs:
+			path = d.FsOptions.Path
+		case config.ExtractorGit:
+			path = d.GitOptions.Path
+			if path == "" {
+				path = d.GitOptions.Repo
+			}
+		case config.ExtractorHttp:
+			u, err := url.Parse(d.HttpOptions.Start)
+			if err != nil {
+				slog.Debug("docs.ExtractCurrent could not parse starting url", "system", system.ID, "docs", d.ID, "url", d.HttpOptions.Start)
+			}
+			path = fmt.Sprintf("%s://%s", u.Scheme, u.Host)
+		}
+
 		// Insert Documentation
 		err = sqlite.InsertDocumentation(sqlite.Documentation{
 			ID:       d.ID,
 			SystemID: system.ID,
 			Type:     d.Type.String(),
-			Path:     d.FsOptions.Path,
+			Path:     path,
 		}, db)
 		if err != nil {
 			slog.Debug("docs.ExtractCurrent could not insert docs", "error", err, "doc", d.ID)
