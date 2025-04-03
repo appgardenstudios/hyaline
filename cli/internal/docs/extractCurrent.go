@@ -252,7 +252,7 @@ func ExtractCurrentGit(systemID string, d *config.Doc, db *sql.DB) (err error) {
 }
 
 func ExtractCurrentHttp(systemID string, d *config.Doc, db *sql.DB) error {
-	// TODO collect errors into an array and check it at the end
+	// Collect encountered errors into an array and check it at the end
 	var errs []error
 
 	c := colly.NewCollector(
