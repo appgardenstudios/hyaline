@@ -355,6 +355,7 @@ func ExtractCurrentHttp(systemID string, d *config.Doc, db *sql.DB) error {
 		}
 	})
 
+	// Record any encountered errors
 	c.OnError(func(r *colly.Response, e error) {
 		errs = append(errs, e)
 	})
@@ -363,8 +364,9 @@ func ExtractCurrentHttp(systemID string, d *config.Doc, db *sql.DB) error {
 	c.Visit(d.HttpOptions.Start)
 	c.Wait()
 
+	// Log and handle any errors we encountered
 	if len(errs) > 0 {
-		err := errors.New("http extractor encountered " + fmt.Sprint(len(errs)))
+		err := errors.New("http extractor encountered " + fmt.Sprint(len(errs)) + " errors")
 		slog.Debug("docs.ExtractCurrentHttp encountered errors", "errors", errs, "error", err)
 		return err
 	}
