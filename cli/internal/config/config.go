@@ -74,7 +74,8 @@ type GitOptions struct {
 }
 
 type HttpOptions struct {
-	Start string `yaml:"start"`
+	Start   string            `yaml:"start"`
+	Headers map[string]string `yaml:"headers"`
 }
 
 type GitHTTPAuthOptions struct {

@@ -3,15 +3,17 @@ package docs
 import (
 	"database/sql"
 	"errors"
-	"fmt"
 	"hyaline/internal/config"
 	"hyaline/internal/repo"
 	"hyaline/internal/sqlite"
 	"io/fs"
 	"log/slog"
+	"net/url"
 	"os"
 	"path/filepath"
 	"strings"
+
+	"fmt"
 
 	"github.com/bmatcuk/doublestar/v4"
 	"github.com/go-git/go-git/v5"
@@ -99,16 +101,16 @@ func ExtractCurrentFs(systemID string, d *config.Doc, db *sql.DB) (err error) {
 
 		// Loop through docs and add those that aren't in our excludes
 		for _, doc := range matches {
-			// See if we have a match for at least one of our excludes
-			match := false
+			// See if we have a excludeMatch for at least one of our excludes
+			excludeMatch := false
 			for _, exclude := range d.Exclude {
-				match = doublestar.MatchUnvalidated(exclude, doc)
-				if match {
+				excludeMatch = doublestar.MatchUnvalidated(exclude, doc)
+				if excludeMatch {
 					slog.Debug("docs.ExtractCurrentFs doc excluded", "doc", doc, "exclude", exclude)
 					break
 				}
 			}
-			if !match {
+			if !excludeMatch {
 				docs[doc] = struct{}{}
 			}
 		}
@@ -249,29 +251,77 @@ func ExtractCurrentGit(systemID string, d *config.Doc, db *sql.DB) (err error) {
 	return
 }
 
-func ExtractCurrentHttp(systemID string, d *config.Doc, db *sql.DB) (err error) {
-	c := colly.NewCollector()
+func ExtractCurrentHttp(systemID string, d *config.Doc, db *sql.DB) error {
+	// TODO collect errors into an array and check it at the end
+	var errs []error
 
-	// c.Headers.Add()
-	// TODO
+	c := colly.NewCollector(
+		colly.Async(),
+	)
 
-	// Find and visit all links
-	c.OnHTML("a[href]", func(e *colly.HTMLElement) {
-		// TODO make sure we include and don't exclude this doc
-		e.Request.Visit(e.Attr("href"))
+	// Create our default limits
+	c.Limit(&colly.LimitRule{
+		DomainGlob:  "*",
+		Delay:       0,
+		Parallelism: 1,
 	})
 
+	// Add headers (if any)
+	for key, val := range d.HttpOptions.Headers {
+		c.Headers.Add(key, val)
+	}
+
+	// Find and visit all links in returned html
+	c.OnHTML("a[href]", func(e *colly.HTMLElement) {
+		// Get a resolved URL for the href relative to the base URL of the requested page
+		href := e.Attr("href")
+		raw, err := url.Parse(href)
+		if err != nil {
+			slog.Debug("docs.ExtractCurrentHttp unable to parse href", "href", href, "error", err)
+			errs = append(errs, err)
+			return
+		}
+		u := e.Request.URL.ResolveReference(raw)
+		slog.Debug("docs.ExtractCurrentHttp evaluating href", "href", href, "url", u.String())
+
+		// Only visit pages on this same host
+		if e.Request.URL.Host != u.Host {
+			slog.Debug("docs.ExtractCurrentHttp skipping external link", "href", href)
+			return
+		}
+
+		// Only visit if this path matches an include (and does not match an exclude)
+		for _, include := range d.Include {
+			if doublestar.MatchUnvalidated(include, u.Path) {
+				excludeMatch := false
+				for _, exclude := range d.Exclude {
+					excludeMatch = doublestar.MatchUnvalidated(exclude, u.Path)
+					if excludeMatch {
+						slog.Debug("docs.ExtractCurrentHttp URL excluded", "href", href, "url", u.String(), "exclude", exclude)
+						break
+					}
+				}
+				if !excludeMatch {
+					e.Request.Visit(e.Attr("href"))
+					return
+				}
+			}
+		}
+	})
+
+	// Save documents we scrape
 	c.OnResponse(func(r *colly.Response) {
-		// fmt.Println(string(r.Body)) // TODO
 		path := r.Request.URL.Path
 
 		// Extract and clean data (trim whitespace and remove carriage returns)
 		var extractedData string
+		var err error
 		switch d.Type {
 		case config.DocTypeHTML:
 			extractedData, err = extractHTMLDocument(string(r.Body), d.HTML.Selector)
 			if err != nil {
 				slog.Debug("docs.ExtractCurrentGit could not extract html document", "error", err, "doc", path)
+				errs = append(errs, err)
 				return
 			}
 		default:
@@ -291,6 +341,7 @@ func ExtractCurrentHttp(systemID string, d *config.Doc, db *sql.DB) (err error) 
 		}, db)
 		if err != nil {
 			slog.Debug("docs.ExtractCurrentGit could not insert document", "error", err)
+			errs = append(errs, err)
 			return
 		}
 
@@ -299,14 +350,26 @@ func ExtractCurrentHttp(systemID string, d *config.Doc, db *sql.DB) (err error) 
 		err = insertMarkdownSectionAndChildren(sections, 0, path, d.ID, systemID, db)
 		if err != nil {
 			slog.Debug("docs.ExtractCurrentGit could not insert section", "error", err)
+			errs = append(errs, err)
 			return
 		}
 	})
 
-	c.Visit(d.HttpOptions.Start)
+	c.OnError(func(r *colly.Response, e error) {
+		errs = append(errs, e)
+	})
 
-	fmt.Println("Extracting http")
-	return
+	// Visit and wait for all routines to return
+	c.Visit(d.HttpOptions.Start)
+	c.Wait()
+
+	if len(errs) > 0 {
+		err := errors.New("http extractor encountered " + fmt.Sprint(len(errs)))
+		slog.Debug("docs.ExtractCurrentHttp encountered errors", "errors", errs, "error", err)
+		return err
+	}
+
+	return nil
 }
 
 func insertMarkdownSectionAndChildren(s *section, order int, documentId string, documentationId string, systemId string, db *sql.DB) error {

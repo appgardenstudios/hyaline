@@ -128,10 +128,8 @@ systems:
           selector: main
         extractor: http
         http:
-          domain: http://localhost:8080
-          path: /docs
           start: http://localhost:8080/docs
         include:
-          - "docs/*"
+          - "/**/*"
         exclude:
-          - "docs/irrelevant"
+          - "/docs/irrelevant"
