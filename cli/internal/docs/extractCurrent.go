@@ -3,6 +3,7 @@ package docs
 import (
 	"database/sql"
 	"errors"
+	"fmt"
 	"hyaline/internal/config"
 	"hyaline/internal/repo"
 	"hyaline/internal/sqlite"
@@ -15,6 +16,7 @@ import (
 	"github.com/bmatcuk/doublestar/v4"
 	"github.com/go-git/go-git/v5"
 	"github.com/go-git/go-git/v5/plumbing/object"
+	"github.com/gocolly/colly/v2"
 )
 
 func ExtractCurrent(system *config.System, db *sql.DB) (err error) {
@@ -45,6 +47,12 @@ func ExtractCurrent(system *config.System, db *sql.DB) (err error) {
 			err = ExtractCurrentGit(system.ID, &d, db)
 			if err != nil {
 				slog.Debug("docs.ExtractCurrent could not extract docs using git extractor", "error", err, "doc", d.ID)
+				return
+			}
+		case config.ExtractorHttp:
+			err = ExtractCurrentHttp(system.ID, &d, db)
+			if err != nil {
+				slog.Debug("docs.ExtractCurrent could not extract docs using http extractor", "error", err, "doc", d.ID)
 				return
 			}
 		default:
@@ -238,6 +246,66 @@ func ExtractCurrentGit(systemID string, d *config.Doc, db *sql.DB) (err error) {
 		return
 	}
 
+	return
+}
+
+func ExtractCurrentHttp(systemID string, d *config.Doc, db *sql.DB) (err error) {
+	c := colly.NewCollector()
+
+	// c.Headers.Add()
+	// TODO
+
+	// Find and visit all links
+	c.OnHTML("a[href]", func(e *colly.HTMLElement) {
+		// TODO make sure we include and don't exclude this doc
+		e.Request.Visit(e.Attr("href"))
+	})
+
+	c.OnResponse(func(r *colly.Response) {
+		// fmt.Println(string(r.Body)) // TODO
+		path := r.Request.URL.Path
+
+		// Extract and clean data (trim whitespace and remove carriage returns)
+		var extractedData string
+		switch d.Type {
+		case config.DocTypeHTML:
+			extractedData, err = extractHTMLDocument(string(r.Body), d.HTML.Selector)
+			if err != nil {
+				slog.Debug("docs.ExtractCurrentGit could not extract html document", "error", err, "doc", path)
+				return
+			}
+		default:
+			extractedData = strings.TrimSpace(string(r.Body))
+		}
+		extractedData = strings.ReplaceAll(extractedData, "\r", "")
+
+		// Insert our document
+		err = sqlite.InsertDocument(sqlite.Document{
+			ID:              path,
+			DocumentationID: d.ID,
+			SystemID:        systemID,
+			Type:            d.Type.String(),
+			Action:          "",
+			RawData:         string(r.Body),
+			ExtractedData:   extractedData,
+		}, db)
+		if err != nil {
+			slog.Debug("docs.ExtractCurrentGit could not insert document", "error", err)
+			return
+		}
+
+		// Get and insert sections
+		sections := getMarkdownSections(strings.Split(extractedData, "\n"))
+		err = insertMarkdownSectionAndChildren(sections, 0, path, d.ID, systemID, db)
+		if err != nil {
+			slog.Debug("docs.ExtractCurrentGit could not insert section", "error", err)
+			return
+		}
+	})
+
+	c.Visit(d.HttpOptions.Start)
+
+	fmt.Println("Extracting http")
 	return
 }
 

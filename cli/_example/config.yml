@@ -120,3 +120,18 @@ systems:
             password: ${HYALINE_GITHUB_PAT}
         include:
           - "**/*.md"
+  - id: http
+    docs:
+      - id: http-docs
+        type: html
+        html:
+          selector: main
+        extractor: http
+        http:
+          domain: http://localhost:8080
+          path: /docs
+          start: http://localhost:8080/docs
+        include:
+          - "docs/*"
+        exclude:
+          - "docs/irrelevant"
