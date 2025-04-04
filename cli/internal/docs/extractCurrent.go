@@ -10,6 +10,7 @@ import (
 	"log/slog"
 	"net/url"
 	"os"
+	"path"
 	"path/filepath"
 	"strings"
 
@@ -274,6 +275,37 @@ func ExtractCurrentHttp(systemID string, d *config.Doc, db *sql.DB) error {
 	// Collect encountered errors into an array and check it at the end
 	var errs []error
 
+	// Use baseURL to calculate includes/excludes
+	baseUrl, err := url.Parse(d.HttpOptions.BaseURL)
+	if err != nil {
+		slog.Debug("docs.ExtractCurrentHttp could not parse baseUrl", "baseUrl", d.HttpOptions.BaseURL, "error", err)
+		return err
+	}
+	var includes []string
+	for _, include := range d.Include {
+		includes = append(includes, path.Join(baseUrl.Path, include))
+	}
+	var excludes []string
+	for _, exclude := range d.Exclude {
+		excludes = append(excludes, path.Join(baseUrl.Path, exclude))
+	}
+	slog.Debug("docs.ExtractCurrentHttp includes/excludes", "includes", includes, "excludes", excludes, "basePath", baseUrl.Path)
+
+	// Determine start URL
+	var startUrl *url.URL
+	if d.HttpOptions.Start != "" {
+		startUrl, err = url.Parse(d.HttpOptions.Start)
+		if err != nil {
+			slog.Debug("docs.ExtractCurrentHttp could not parse start", "start", d.HttpOptions.Start, "error", err)
+			return err
+		}
+		startUrl = baseUrl.ResolveReference(startUrl)
+	} else {
+		startUrl = baseUrl
+	}
+	slog.Debug("docs.ExtractCurrentHttp startUrl", "startUrl", startUrl, "start", d.HttpOptions.Start, "baseUrl", baseUrl.String())
+
+	// Initialize our collector
 	c := colly.NewCollector(
 		colly.Async(),
 	)
@@ -310,10 +342,10 @@ func ExtractCurrentHttp(systemID string, d *config.Doc, db *sql.DB) error {
 		}
 
 		// Only visit if this path matches an include (and does not match an exclude)
-		for _, include := range d.Include {
+		for _, include := range includes {
 			if doublestar.MatchUnvalidated(include, u.Path) {
 				excludeMatch := false
-				for _, exclude := range d.Exclude {
+				for _, exclude := range excludes {
 					excludeMatch = doublestar.MatchUnvalidated(exclude, u.Path)
 					if excludeMatch {
 						slog.Debug("docs.ExtractCurrentHttp URL excluded", "href", href, "url", u.String(), "exclude", exclude)
@@ -380,7 +412,7 @@ func ExtractCurrentHttp(systemID string, d *config.Doc, db *sql.DB) error {
 	})
 
 	// Visit and wait for all routines to return
-	c.Visit(d.HttpOptions.Start)
+	c.Visit(startUrl.String())
 	c.Wait()
 
 	// Log and handle any errors we encountered
