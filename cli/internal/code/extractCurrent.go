@@ -20,11 +20,24 @@ func ExtractCurrent(system *config.System, db *sql.DB) (err error) {
 	// Process each code source
 	for _, c := range system.Code {
 		slog.Debug("code.ExtractCurrent extracting code", "system", system.ID, "code", c.ID)
+
+		// Get document path
+		var path string
+		switch c.Extractor {
+		case config.ExtractorFs:
+			path = c.FsOptions.Path
+		case config.ExtractorGit:
+			path = c.GitOptions.Path
+			if path == "" {
+				path = c.GitOptions.Repo
+			}
+		}
+
 		// Insert Code
 		err = sqlite.InsertCode(sqlite.Code{
 			ID:       c.ID,
 			SystemID: system.ID,
-			Path:     c.FsOptions.Path,
+			Path:     path,
 		}, db)
 		if err != nil {
 			slog.Debug("code.ExtractCurrent could not insert code", "error", err, "code", c.ID)

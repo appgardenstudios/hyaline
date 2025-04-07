@@ -36,7 +36,7 @@ func (e Extractor) String() string {
 	return string(e)
 }
 
-func (e Extractor) IsValid() bool {
+func (e Extractor) IsValidCodeExtractor() bool {
 	switch e {
 	case ExtractorFs, ExtractorGit:
 		return true
@@ -45,9 +45,19 @@ func (e Extractor) IsValid() bool {
 	}
 }
 
+func (e Extractor) IsValidDocExtractor() bool {
+	switch e {
+	case ExtractorFs, ExtractorGit, ExtractorHttp:
+		return true
+	default:
+		return false
+	}
+}
+
 const (
-	ExtractorFs  Extractor = "fs"
-	ExtractorGit Extractor = "git"
+	ExtractorFs   Extractor = "fs"
+	ExtractorGit  Extractor = "git"
+	ExtractorHttp Extractor = "http"
 )
 
 type FsOptions struct {
@@ -61,6 +71,12 @@ type GitOptions struct {
 	Clone    bool               `yaml:"clone"`
 	HTTPAuth GitHTTPAuthOptions `yaml:"httpAuth"`
 	SSHAuth  GitSSHAuthOptions  `yaml:"sshAuth"`
+}
+
+type HttpOptions struct {
+	BaseURL string            `yaml:"baseUrl"`
+	Start   string            `yaml:"start"`
+	Headers map[string]string `yaml:"headers"`
 }
 
 type GitHTTPAuthOptions struct {
@@ -84,14 +100,15 @@ type Code struct {
 }
 
 type Doc struct {
-	ID         string         `yaml:"id"`
-	Type       DocType        `yaml:"type"`
-	HTML       DocHTMLOptions `yaml:"html"`
-	Extractor  Extractor      `yaml:"extractor"`
-	FsOptions  FsOptions      `yaml:"fs"`
-	GitOptions GitOptions     `yaml:"git"`
-	Include    []string       `yaml:"include"`
-	Exclude    []string       `yaml:"exclude"`
+	ID          string         `yaml:"id"`
+	Type        DocType        `yaml:"type"`
+	HTML        DocHTMLOptions `yaml:"html"`
+	Extractor   Extractor      `yaml:"extractor"`
+	FsOptions   FsOptions      `yaml:"fs"`
+	GitOptions  GitOptions     `yaml:"git"`
+	HttpOptions HttpOptions    `yaml:"http"`
+	Include     []string       `yaml:"include"`
+	Exclude     []string       `yaml:"exclude"`
 }
 
 type DocType string
@@ -204,7 +221,7 @@ func validate(cfg *Config) (err error) {
 			codeIDs[code.ID] = struct{}{}
 
 			// Ensure extractor is valid
-			if !code.Extractor.IsValid() {
+			if !code.Extractor.IsValidCodeExtractor() {
 				err = errors.New("invalid code extractor detected: " + system.ID + " > " + code.ID + " > " + code.Extractor.String())
 				slog.Debug("config.Validate found invalid code extractor", "extractor", code.Extractor.String(), "system", system.ID, "code", code.ID, "error", err)
 				return
@@ -248,7 +265,7 @@ func validate(cfg *Config) (err error) {
 			}
 
 			// Ensure extractor is valid
-			if !doc.Extractor.IsValid() {
+			if !doc.Extractor.IsValidDocExtractor() {
 				err = errors.New("invalid doc extractor detected: " + system.ID + " > " + doc.ID + " > " + doc.Extractor.String())
 				slog.Debug("config.Validate found invalid doc extractor", "extractor", doc.Extractor.String(), "system", system.ID, "doc", doc.ID, "error", err)
 				return

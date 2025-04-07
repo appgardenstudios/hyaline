@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-func TestExtractGitCurrent(t *testing.T) {
+func TestExtractCurrentGit(t *testing.T) {
 	outputPath := fmt.Sprintf("./_output/extract-current-git-%d.db", time.Now().UnixMilli())
 	args := []string{
 		"extract", "current",
