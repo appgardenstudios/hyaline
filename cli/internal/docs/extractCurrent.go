@@ -353,7 +353,8 @@ func ExtractCurrentHttp(systemID string, d *config.Doc, db *sql.DB) error {
 					}
 				}
 				if !excludeMatch {
-					e.Request.Visit(e.Attr("href"))
+					slog.Debug("docs.ExtractCurrentHttp visiting URL", "href", href, "url", u.String(), "currentPage", e.Request.URL.String())
+					e.Request.Visit(href)
 					return
 				}
 			}
