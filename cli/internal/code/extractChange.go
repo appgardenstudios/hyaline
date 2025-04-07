@@ -70,7 +70,7 @@ func ExtractChange(system *config.System, head string, base string, db *sql.DB) 
 			case merkletrie.Insert:
 				fallthrough
 			case merkletrie.Modify:
-				if isIncluded(change.To.Name, c.Include, c.Exclude) {
+				if config.PathIsIncluded(change.To.Name, c.Include, c.Exclude) {
 					slog.Debug("code.ExtractChange inserting file", "file", change.To.Name, "action", action)
 					bytes, err := repo.GetBlobBytes(to.Blob)
 					if err != nil {
@@ -90,7 +90,7 @@ func ExtractChange(system *config.System, head string, base string, db *sql.DB) 
 					}
 				}
 			case merkletrie.Delete:
-				if isIncluded(change.To.Name, c.Include, c.Exclude) {
+				if config.PathIsIncluded(change.To.Name, c.Include, c.Exclude) {
 					slog.Debug("code.ExtractChange inserting file", "file", change.From.Name, "action", action)
 					err = sqlite.InsertFile(sqlite.File{
 						ID:       change.From.Name,

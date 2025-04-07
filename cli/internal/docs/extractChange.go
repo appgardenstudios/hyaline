@@ -8,7 +8,6 @@ import (
 	"log/slog"
 	"strings"
 
-	"github.com/bmatcuk/doublestar/v4"
 	"github.com/go-git/go-git/v5"
 	"github.com/go-git/go-git/v5/utils/merkletrie"
 )
@@ -73,7 +72,7 @@ func ExtractChange(system *config.System, head string, base string, db *sql.DB) 
 			case merkletrie.Insert:
 				fallthrough
 			case merkletrie.Modify:
-				if isIncluded(change.To.Name, d.Include, d.Exclude) {
+				if config.PathIsIncluded(change.To.Name, d.Include, d.Exclude) {
 					slog.Debug("docs.ExtractChange inserting document", "document", change.To.Name, "action", action)
 					bytes, err := repo.GetBlobBytes(to.Blob)
 					if err != nil {
@@ -118,7 +117,7 @@ func ExtractChange(system *config.System, head string, base string, db *sql.DB) 
 					}
 				}
 			case merkletrie.Delete:
-				if isIncluded(change.To.Name, d.Include, d.Exclude) {
+				if config.PathIsIncluded(change.To.Name, d.Include, d.Exclude) {
 					slog.Debug("docs.ExtractChange inserting document", "document", change.From.Name, "action", action)
 					err = sqlite.InsertDocument(sqlite.Document{
 						ID:              change.From.Name,
@@ -139,52 +138,3 @@ func ExtractChange(system *config.System, head string, base string, db *sql.DB) 
 
 	return
 }
-
-func isIncluded(name string, includes []string, excludes []string) bool {
-	for _, include := range includes {
-		if doublestar.MatchUnvalidated(include, name) {
-			for _, exclude := range excludes {
-				if doublestar.MatchUnvalidated(exclude, name) {
-					return false
-				}
-			}
-			return true
-		}
-	}
-
-	return false
-}
-
-// func insertChangeSectionAndChildren(s *section, order int, documentId string, documentationId string, systemId string, format string, db *sql.DB) error {
-// 	// Insert this section
-// 	parentSectionId := ""
-// 	if s.Parent != nil {
-// 		parentSectionId = documentId + "#" + s.Parent.Name
-// 	}
-// 	err := sqlite.InsertChangeSection(sqlite.ChangeSection{
-// 		ID:              documentId + "#" + s.Name,
-// 		DocumentID:      documentId,
-// 		DocumentationID: documentationId,
-// 		SystemID:        systemId,
-// 		ParentSectionID: parentSectionId,
-// 		Order:           order,
-// 		Title:           s.Name,
-// 		Format:          format,
-// 		RawData:         strings.TrimSpace(s.Content),
-// 		ExtractedText:   extractMarkdownText([]byte(s.Content)),
-// 	}, db)
-// 	if err != nil {
-// 		slog.Debug("docs.insertChangeSectionAndChildren could not insert section", "error", err)
-// 		return err
-// 	}
-
-// 	// Insert children
-// 	for i, child := range s.Children {
-// 		err = insertChangeSectionAndChildren(child, i, documentId, documentationId, systemId, format, db)
-// 		if err != nil {
-// 			return err
-// 		}
-// 	}
-
-// 	return nil
-// }
