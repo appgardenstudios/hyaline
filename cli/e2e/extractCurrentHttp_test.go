@@ -10,7 +10,7 @@ import (
 )
 
 func TestExtractCurrentHttp(t *testing.T) {
-	// Start server on 8081
+	// Start server on 8081 instead of an ephemeral port
 	l, err := net.Listen("tcp", "127.0.0.1:8081")
 	if err != nil {
 		t.Fatal(err)
