@@ -38,9 +38,9 @@ func ExtractCurrent(system *config.System, db *sql.DB) (err error) {
 				path = d.GitOptions.Repo
 			}
 		case config.ExtractorHttp:
-			u, err := url.Parse(d.HttpOptions.Start)
+			u, err := url.Parse(d.HttpOptions.BaseURL)
 			if err != nil {
-				slog.Debug("docs.ExtractCurrent could not parse starting url", "system", system.ID, "docs", d.ID, "url", d.HttpOptions.Start)
+				slog.Debug("docs.ExtractCurrent could not parse base url", "system", system.ID, "docs", d.ID, "baseUrl", d.HttpOptions.BaseURL)
 			}
 			path = fmt.Sprintf("%s://%s", u.Scheme, u.Host)
 		}
