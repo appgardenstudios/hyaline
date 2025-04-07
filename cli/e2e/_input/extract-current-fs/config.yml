@@ -4,7 +4,7 @@ systems:
       - id: app
         extractor: fs
         fs:
-          path: ./_input/extract-current/
+          path: ./_input/extract-current-fs/
         include:
           - package.json
           - "**/*.js"
@@ -15,6 +15,6 @@ systems:
         type: md
         extractor: fs
         fs:
-          path: ./_input/extract-current/
+          path: ./_input/extract-current-fs/
         include:
           - "**/*.md"
