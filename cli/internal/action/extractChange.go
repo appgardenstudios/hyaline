@@ -59,7 +59,7 @@ func ExtractChange(args *ExtractChangeArgs) error {
 		return err
 	}
 	defer db.Close()
-	err = sqlite.CreateChangeSchema(db)
+	err = sqlite.CreateSchema(db)
 	if err != nil {
 		slog.Debug("action.ExtractChange could not create the current schema", "error", err)
 		return err
@@ -71,7 +71,7 @@ func ExtractChange(args *ExtractChangeArgs) error {
 		slog.Debug("action.ExtractChange could not locate the system", "system", args.System, "error", err)
 		return err
 	}
-	err = sqlite.InsertChangeSystem(sqlite.ChangeSystem{
+	err = sqlite.InsertSystem(sqlite.System{
 		ID: system.ID,
 	}, db)
 	if err != nil {
