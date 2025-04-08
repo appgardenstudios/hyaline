@@ -6,6 +6,7 @@ import (
 	"hyaline/internal/code"
 	"hyaline/internal/config"
 	"hyaline/internal/docs"
+	"hyaline/internal/github"
 	"hyaline/internal/sqlite"
 	"log/slog"
 	"os"
@@ -15,11 +16,12 @@ import (
 )
 
 type ExtractChangeArgs struct {
-	Config string
-	System string
-	Base   string
-	Head   string
-	Output string
+	Config      string
+	System      string
+	Base        string
+	Head        string
+	PullRequest string
+	Output      string
 }
 
 func ExtractChange(args *ExtractChangeArgs) error {
@@ -79,6 +81,19 @@ func ExtractChange(args *ExtractChangeArgs) error {
 		return err
 	}
 	slog.Debug("action.ExtractChange system inserted")
+
+	// Extract/Insert Pull Request (if present)
+	if args.PullRequest != "" {
+		if cfg.GitHub.Token == "" {
+			return errors.New("github token required to retrieve pull-request information")
+		}
+		err = github.InsertPullRequest(args.PullRequest, cfg.GitHub.Token, system.ID, db)
+		if err != nil {
+			slog.Debug("action.ExtractChange could not insert the system", "error", err)
+			return err
+		}
+		slog.Debug("action.ExtractChange pull request inserted")
+	}
 
 	// Extract/Insert Code
 	err = code.ExtractChange(system, args.Head, args.Base, db)

@@ -117,6 +117,11 @@ func main() {
 								Usage:    "Head branch (which changes will be applied)",
 							},
 							&cli.StringFlag{
+								Name:     "pull-request",
+								Required: false,
+								Usage:    "GitHub Pull Request to include in the change (OWNER/REPO/PR_NUMBER)",
+							},
+							&cli.StringFlag{
 								Name:     "output",
 								Required: true,
 								Usage:    "Path of the sqlite database to create",
@@ -130,11 +135,12 @@ func main() {
 
 							// Execute action
 							err := action.ExtractChange(&action.ExtractChangeArgs{
-								Config: cCtx.String("config"),
-								System: cCtx.String("system"),
-								Base:   cCtx.String("base"),
-								Head:   cCtx.String("head"),
-								Output: cCtx.String("output"),
+								Config:      cCtx.String("config"),
+								System:      cCtx.String("system"),
+								Base:        cCtx.String("base"),
+								Head:        cCtx.String("head"),
+								PullRequest: cCtx.String("pull-request"),
+								Output:      cCtx.String("output"),
 							})
 							if err != nil {
 								return cli.Exit(err.Error(), 1)

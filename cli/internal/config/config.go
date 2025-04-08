@@ -14,6 +14,7 @@ import (
 
 type Config struct {
 	LLM     LLM      `yaml:"llm"`
+	GitHub  GitHub   `yaml:"github"`
 	Systems []System `yaml:"systems"`
 }
 
@@ -21,6 +22,10 @@ type LLM struct {
 	Provider string `yaml:"provider"`
 	Model    string `yaml:"model"`
 	Key      string `yaml:"key"`
+}
+
+type GitHub struct {
+	Token string `yaml:"token"`
 }
 
 type System struct {

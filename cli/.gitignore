@@ -5,7 +5,7 @@ hyaline
 *.db
 
 # Testing artifacts
-hyaline-coverage
+hyaline-e2e
 .coverdata/
 
 # Developer environment variables used for debugging

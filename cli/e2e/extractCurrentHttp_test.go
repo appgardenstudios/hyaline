@@ -22,6 +22,7 @@ func TestExtractCurrentHttp(t *testing.T) {
 	server.Start()
 	defer server.Close()
 
+	goldenPath := "./_golden/extract-current-http.sqlite"
 	outputPath := fmt.Sprintf("./_output/extract-current-http-%d.db", time.Now().UnixMilli())
 	args := []string{
 		"--debug",
@@ -37,5 +38,9 @@ func TestExtractCurrentHttp(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	compareDBs("./_golden/extract-current-http.sqlite", outputPath, t)
+	if *update {
+		updateGolden(goldenPath, outputPath, t)
+	}
+
+	compareDBs(goldenPath, outputPath, t)
 }

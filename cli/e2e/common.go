@@ -2,6 +2,8 @@ package e2e
 
 import (
 	"database/sql"
+	"flag"
+	"io"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -12,14 +14,16 @@ import (
 	_ "modernc.org/sqlite"
 )
 
-// runBinary will run the ../hyaline-coverage using _this_ directory as the working directory (i.e. cli/e2e)
+var update = flag.Bool("update", false, "Update golden files")
+
+// runBinary will run the ../hyaline-e2e using _this_ directory as the working directory (i.e. cli/e2e)
 func runBinary(args []string, t *testing.T) ([]byte, error) {
 	dir, err := os.Getwd()
 	if err != nil {
 		t.Fatalf("could not get current dir: %v", err)
 	}
 
-	binaryPath := filepath.Join(dir, "../hyaline-coverage")
+	binaryPath := filepath.Join(dir, "../hyaline-e2e")
 	workingDir := dir
 	t.Log("binaryPath", binaryPath)
 	t.Log("workingDir", workingDir)
@@ -28,6 +32,30 @@ func runBinary(args []string, t *testing.T) ([]byte, error) {
 	cmd.Env = append(os.Environ(), "GOCOVERDIR=../.coverdata")
 	cmd.Dir = workingDir
 	return cmd.CombinedOutput()
+}
+
+func updateGolden(goldenPath string, outputPath string, t *testing.T) {
+	srcFile, err := os.Open(outputPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer srcFile.Close()
+
+	destFile, err := os.Create(goldenPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer destFile.Close()
+
+	_, err = io.Copy(destFile, srcFile)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	err = destFile.Sync()
+	if err != nil {
+		t.Fatal(err)
+	}
 }
 
 func compareDBs(path1 string, path2 string, t *testing.T) {
