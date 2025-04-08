@@ -7,6 +7,7 @@ import (
 )
 
 func TestExtractChange(t *testing.T) {
+	goldenPath := "./_golden/extract-change.sqlite"
 	outputPath := fmt.Sprintf("./_output/extract-change-%d.db", time.Now().UnixMilli())
 	args := []string{
 		"extract", "change",
@@ -23,5 +24,9 @@ func TestExtractChange(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	compareDBs("./_golden/extract-change.sqlite", outputPath, t)
+	if *update {
+		updateGolden(goldenPath, outputPath, t)
+	}
+
+	compareDBs(goldenPath, outputPath, t)
 }

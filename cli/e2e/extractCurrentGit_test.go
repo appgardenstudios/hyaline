@@ -7,6 +7,7 @@ import (
 )
 
 func TestExtractCurrentGit(t *testing.T) {
+	goldenPath := "./_golden/extract-current-git.sqlite"
 	outputPath := fmt.Sprintf("./_output/extract-current-git-%d.db", time.Now().UnixMilli())
 	args := []string{
 		"extract", "current",
@@ -21,5 +22,9 @@ func TestExtractCurrentGit(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	compareDBs("./_golden/extract-current-git.sqlite", outputPath, t)
+	if *update {
+		updateGolden(goldenPath, outputPath, t)
+	}
+
+	compareDBs(goldenPath, outputPath, t)
 }

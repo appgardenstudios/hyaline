@@ -13,9 +13,15 @@ e2e:
 	rm -rf ./e2e/_output/*
 	rm -rf .coverdata
 	mkdir -p .coverdata
-	go build -o ./hyaline-coverage -ldflags="-X 'main.Version=development'" -cover ./cmd/hyaline.go
+	go build -o ./hyaline-e2e -ldflags="-X 'main.Version=development'" -cover ./cmd/hyaline.go
 	go test ./e2e/...
 	go tool covdata percent -i=.coverdata
+
+.PHONY: e2e-update
+e2e-update:
+	rm -rf ./e2e/_output/*
+	go build -o ./hyaline-e2e -ldflags="-X 'main.Version=development'" ./cmd/hyaline.go
+	go test ./e2e/... -update
 
 .PHONY: extract-current
 extract-current:
