@@ -53,7 +53,7 @@ func ExtractCurrent(system *config.System, db *sql.DB) (err error) {
 			Path:     path,
 		}, db)
 		if err != nil {
-			slog.Debug("docs.ExtractCurrent could not insert docs", "error", err, "doc", d.ID)
+			slog.Debug("docs.ExtractCurrent could not insert documentation", "error", err, "doc", d.ID)
 			return err
 		}
 
