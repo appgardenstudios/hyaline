@@ -15,6 +15,9 @@ func TestExtractChange(t *testing.T) {
 		"--system", "my-app",
 		"--base", "main",
 		"--head", "origin/feat-1",
+		"--pull-request", "appgardenstudios/hyaline-example/1",
+		"--issue", "appgardenstudios/hyaline-example/2",
+		"--issue", "appgardenstudios/hyaline-example/3",
 		"--output", outputPath,
 	}
 
