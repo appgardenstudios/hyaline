@@ -15,6 +15,7 @@ CREATE TABLE DOCUMENTATION(ID, SYSTEM_ID, TYPE, PATH);
 CREATE TABLE DOCUMENT(ID, DOCUMENTATION_ID, SYSTEM_ID, TYPE, ACTION, RAW_DATA, EXTRACTED_DATA);
 CREATE TABLE SECTION(ID, DOCUMENT_ID, DOCUMENTATION_ID, SYSTEM_ID, NAME, PARENT_ID, PEER_ORDER, EXTRACTED_DATA);
 CREATE TABLE PULL_REQUEST(ID, SYSTEM_ID, TITLE, BODY);
+CREATE TABLE ISSUE(ID, SYSTEM_ID, TITLE, BODY);
 `)
 
 	slog.Debug("sqlite.CreateSchema schema creation complete")
@@ -175,6 +176,28 @@ VALUES
 		return
 	}
 	stmt.Exec(pullRequest.ID, pullRequest.SystemID, pullRequest.Title, pullRequest.Body)
+
+	return
+}
+
+type Issue struct {
+	ID       string
+	SystemID string
+	Title    string
+	Body     string
+}
+
+func InsertIssue(issue Issue, db *sql.DB) (err error) {
+	stmt, err := db.Prepare(`
+INSERT INTO ISSUE
+  (ID, SYSTEM_ID, TITLE, BODY)
+VALUES
+	(?, ?, ?, ?)
+`)
+	if err != nil {
+		return
+	}
+	stmt.Exec(issue.ID, issue.SystemID, issue.Title, issue.Body)
 
 	return
 }

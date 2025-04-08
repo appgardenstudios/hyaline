@@ -50,7 +50,7 @@ extract-change:
 	rm -f ./change.db
 	make build
 	echo "---"
-	./hyaline --debug extract change --config ./_example/config.yml --system git --base main --head origin/feat-1 --pull-request appgardenstudios/hyaline-example/1 --output ./change.db
+	./hyaline --debug extract change --config ./_example/config.yml --system git --base main --head origin/feat-1 --pull-request appgardenstudios/hyaline-example/1 --issue appgardenstudios/hyaline-example/2 --issue appgardenstudios/hyaline-example/3  --output ./change.db
 
 .PHONY: check-current
 check-current:

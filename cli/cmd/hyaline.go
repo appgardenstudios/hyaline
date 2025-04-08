@@ -121,6 +121,11 @@ func main() {
 								Required: false,
 								Usage:    "GitHub Pull Request to include in the change (OWNER/REPO/PR_NUMBER)",
 							},
+							&cli.StringSliceFlag{
+								Name:     "issue",
+								Required: false,
+								Usage:    "GitHub Issue to include in the change (OWNER/REPO/PR_NUMBER). Accepts multiple issues by setting multiple times.",
+							},
 							&cli.StringFlag{
 								Name:     "output",
 								Required: true,
@@ -140,6 +145,7 @@ func main() {
 								Base:        cCtx.String("base"),
 								Head:        cCtx.String("head"),
 								PullRequest: cCtx.String("pull-request"),
+								Issues:      cCtx.StringSlice("issue"),
 								Output:      cCtx.String("output"),
 							})
 							if err != nil {
