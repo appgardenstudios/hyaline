@@ -21,6 +21,7 @@ type ExtractChangeArgs struct {
 	Base        string
 	Head        string
 	PullRequest string
+	Issues      []string
 	Output      string
 }
 
@@ -31,6 +32,8 @@ func ExtractChange(args *ExtractChangeArgs) error {
 		"system", args.System,
 		"base", args.Base,
 		"head", args.Head,
+		"pullRequest", args.PullRequest,
+		"issues", args.Issues,
 		"output", args.Output,
 	))
 
@@ -93,6 +96,21 @@ func ExtractChange(args *ExtractChangeArgs) error {
 			return err
 		}
 		slog.Debug("action.ExtractChange pull request inserted")
+	}
+
+	// Extract/Insert Issues
+	if len(args.Issues) > 0 {
+		if cfg.GitHub.Token == "" {
+			return errors.New("github token required to retrieve issue information")
+		}
+		for _, issue := range args.Issues {
+			err = github.InsertIssue(issue, cfg.GitHub.Token, system.ID, db)
+			if err != nil {
+				slog.Debug("action.ExtractChange could not insert the system", "error", err)
+				return err
+			}
+		}
+		slog.Debug("action.ExtractChange issues inserted")
 	}
 
 	// Extract/Insert Code

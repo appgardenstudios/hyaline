@@ -1,3 +1,6 @@
+github:
+  token: ${HYALINE_GITHUB_PAT}
+
 systems:
   - id: my-app
     code:
