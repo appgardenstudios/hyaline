@@ -12,6 +12,10 @@ import (
 
 var Version = "unknown"
 
+var usage = "Maintain Your Documentation - Find, Fix, and Prevent Documentation Issues."
+
+var betaNote = "Note: Hyaline is currently in an open beta. As such, this software is only licensed for evaluation and use until the open beta period ends."
+
 func main() {
 	var logLevel = new(slog.LevelVar)
 	h := slog.NewTextHandler(os.Stderr, &slog.HandlerOptions{Level: logLevel})
@@ -19,9 +23,9 @@ func main() {
 
 	app := &cli.App{
 		Name:  "hyaline",
-		Usage: "Maintain Your Documentation - Find, Fix, and Prevent Documentation Issues",
+		Usage: fmt.Sprintf("%s\n%s", usage, betaNote),
 		Action: func(*cli.Context) error {
-			fmt.Println("hello world")
+			fmt.Printf("%s\n%s\n", usage, betaNote)
 			return nil
 		},
 		Flags: []cli.Flag{
@@ -35,7 +39,7 @@ func main() {
 				Name:  "version",
 				Usage: "Print out the current version",
 				Action: func(cCtx *cli.Context) error {
-					fmt.Println(Version)
+					fmt.Printf("%s\n%s\n", Version, betaNote)
 					return nil
 				},
 			},
