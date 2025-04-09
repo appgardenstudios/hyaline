@@ -36,7 +36,41 @@ VALUES
 	if err != nil {
 		return
 	}
-	stmt.Exec(system.ID)
+	_, err = stmt.Exec(system.ID)
+	if err != nil {
+		return
+	}
+
+	return
+}
+
+func GetAllSystem(db *sql.DB) (arr []*System, err error) {
+	stmt, err := db.Prepare(`
+SELECT
+  ID
+FROM
+  SYSTEM
+`)
+	if err != nil {
+		return
+	}
+
+	rows, err := stmt.Query()
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var row System
+		if err := rows.Scan(&row.ID); err != nil {
+			return arr, err
+		}
+		arr = append(arr, &row)
+	}
+	if err = rows.Err(); err != nil {
+		return arr, err
+	}
 
 	return
 }
@@ -57,7 +91,68 @@ VALUES
 	if err != nil {
 		return
 	}
-	stmt.Exec(code.ID, code.SystemID, code.Path)
+	_, err = stmt.Exec(code.ID, code.SystemID, code.Path)
+	if err != nil {
+		return
+	}
+
+	return
+}
+
+func GetCode(codeID string, systemID string, db *sql.DB) (*Code, error) {
+	stmt, err := db.Prepare(`
+SELECT
+  ID, SYSTEM_ID, PATH
+FROM
+  CODE
+WHERE
+  ID = ? AND SYSTEM_ID = ?
+LIMIT 1
+`)
+	if err != nil {
+		return nil, err
+	}
+
+	var code Code
+	row := stmt.QueryRow(codeID, systemID)
+	err = row.Scan(&code.ID, &code.SystemID, &code.Path)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil
+		}
+		return nil, err
+	}
+
+	return &code, nil
+}
+
+func GetAllCode(systemID string, db *sql.DB) (arr []*Code, err error) {
+	stmt, err := db.Prepare(`
+SELECT
+  ID, SYSTEM_ID, PATH
+FROM
+  CODE
+`)
+	if err != nil {
+		return
+	}
+
+	rows, err := stmt.Query()
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var row Code
+		if err := rows.Scan(&row.ID, &row.SystemID, &row.Path); err != nil {
+			return arr, err
+		}
+		arr = append(arr, &row)
+	}
+	if err = rows.Err(); err != nil {
+		return arr, err
+	}
 
 	return
 }
@@ -80,7 +175,41 @@ VALUES
 	if err != nil {
 		return
 	}
-	stmt.Exec(file.ID, file.CodeID, file.SystemID, file.Action, file.RawData)
+	_, err = stmt.Exec(file.ID, file.CodeID, file.SystemID, file.Action, file.RawData)
+	if err != nil {
+		return
+	}
+
+	return
+}
+
+func GetAllFiles(systemID string, db *sql.DB) (arr []*File, err error) {
+	stmt, err := db.Prepare(`
+SELECT
+  ID, CODE_ID, SYSTEM_ID, ACTION, RAW_DATA
+FROM
+  FILE
+`)
+	if err != nil {
+		return
+	}
+
+	rows, err := stmt.Query()
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var row File
+		if err := rows.Scan(&row.ID, &row.CodeID, &row.SystemID, &row.Action, &row.RawData); err != nil {
+			return arr, err
+		}
+		arr = append(arr, &row)
+	}
+	if err = rows.Err(); err != nil {
+		return arr, err
+	}
 
 	return
 }
@@ -102,7 +231,10 @@ VALUES
 	if err != nil {
 		return
 	}
-	stmt.Exec(doc.ID, doc.SystemID, doc.Type, doc.Path)
+	_, err = stmt.Exec(doc.ID, doc.SystemID, doc.Type, doc.Path)
+	if err != nil {
+		return
+	}
 
 	return
 }
@@ -127,7 +259,10 @@ VALUES
 	if err != nil {
 		return
 	}
-	stmt.Exec(doc.ID, doc.DocumentationID, doc.SystemID, doc.Type, doc.Action, doc.RawData, doc.ExtractedData)
+	_, err = stmt.Exec(doc.ID, doc.DocumentationID, doc.SystemID, doc.Type, doc.Action, doc.RawData, doc.ExtractedData)
+	if err != nil {
+		return
+	}
 
 	return
 }
@@ -153,7 +288,10 @@ VALUES
 	if err != nil {
 		return
 	}
-	stmt.Exec(section.ID, section.DocumentID, section.DocumentationID, section.SystemID, section.Name, section.ParentID, section.PeerOrder, section.ExtractedData)
+	_, err = stmt.Exec(section.ID, section.DocumentID, section.DocumentationID, section.SystemID, section.Name, section.ParentID, section.PeerOrder, section.ExtractedData)
+	if err != nil {
+		return
+	}
 
 	return
 }
@@ -175,7 +313,10 @@ VALUES
 	if err != nil {
 		return
 	}
-	stmt.Exec(pullRequest.ID, pullRequest.SystemID, pullRequest.Title, pullRequest.Body)
+	_, err = stmt.Exec(pullRequest.ID, pullRequest.SystemID, pullRequest.Title, pullRequest.Body)
+	if err != nil {
+		return
+	}
 
 	return
 }
@@ -197,7 +338,10 @@ VALUES
 	if err != nil {
 		return
 	}
-	stmt.Exec(issue.ID, issue.SystemID, issue.Title, issue.Body)
+	_, err = stmt.Exec(issue.ID, issue.SystemID, issue.Title, issue.Body)
+	if err != nil {
+		return
+	}
 
 	return
 }

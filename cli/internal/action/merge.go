@@ -69,15 +69,18 @@ func Merge(args *MergeArgs) error {
 		defer inputDB.Close()
 
 		// Get systems
-		systems, err := sqlite.GetSystems(inputDB)
+		systems, err := sqlite.GetAllSystem(inputDB)
 		if err != nil {
 			slog.Debug("action.Merge could not get systems", "input", input, "error", err)
 			return err
 		}
 
 		// Merge each system
-		for _, system := range *systems {
+		for _, system := range systems {
 			slog.Info(fmt.Sprintf("Merging system %s from %s", system.ID, input))
+
+			// Upsert system
+			// TODO
 
 			err = code.Merge(system.ID, inputDB, outputDB)
 			if err != nil {

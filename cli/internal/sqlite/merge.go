@@ -1,36 +1,46 @@
 package sqlite
 
-import "database/sql"
+import (
+	"database/sql"
+	"log/slog"
+)
 
-func GetSystems(db *sql.DB) (*[]System, error) {
+func DeleteCodeAndFiles(codeID string, systemID string, db *sql.DB) error {
 	stmt, err := db.Prepare(`
-SELECT
-	ID
-FROM
-	SYSTEM
-ORDER BY
-	ID
-	`)
+DELETE FROM
+  CODE
+WHERE
+  ID = ?
+	AND SYSTEM_ID = ? 
+`)
 	if err != nil {
-		return nil, err
-	}
-	var rows []System
-	rawRows, err := stmt.Query()
-	if err != nil {
-		return nil, err
-	}
-	defer rawRows.Close()
-
-	for rawRows.Next() {
-		var row System
-		if err := rawRows.Scan(&row.ID); err != nil {
-			return &rows, err
-		}
-		rows = append(rows, row)
-	}
-	if err = rawRows.Err(); err != nil {
-		return &rows, err
+		slog.Debug("sqlite.DeleteCodeAndFiles delete code statement failure")
+		return err
 	}
 
-	return &rows, nil
+	_, err = stmt.Exec(codeID, systemID)
+	if err != nil {
+		slog.Debug("sqlite.DeleteCodeAndFiles delete code exec failure")
+		return err
+	}
+
+	stmt, err = db.Prepare(`
+DELETE FROM
+  FILE
+WHERE
+  CODE_ID = ?
+	AND SYSTEM_ID = ? 
+`)
+	if err != nil {
+		slog.Debug("sqlite.DeleteCodeAndFiles delete file statement failure")
+		return err
+	}
+
+	_, err = stmt.Exec(codeID, systemID)
+	if err != nil {
+		slog.Debug("sqlite.DeleteCodeAndFiles delete file exec failure")
+		return err
+	}
+
+	return nil
 }
