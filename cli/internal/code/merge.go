@@ -31,7 +31,7 @@ func Merge(systemID string, from *sql.DB, to *sql.DB) error {
 		}
 
 		// Copy FILEs
-		files, err := sqlite.GetAllFiles(systemID, from)
+		files, err := sqlite.GetAllFiles(code.ID, systemID, from)
 		if err != nil {
 			return err
 		}

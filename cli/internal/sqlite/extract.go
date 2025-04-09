@@ -132,12 +132,14 @@ SELECT
   ID, SYSTEM_ID, PATH
 FROM
   CODE
+WHERE
+  SYSTEM_ID = ?
 `)
 	if err != nil {
 		return
 	}
 
-	rows, err := stmt.Query()
+	rows, err := stmt.Query(systemID)
 	if err != nil {
 		return nil, err
 	}
@@ -183,18 +185,21 @@ VALUES
 	return
 }
 
-func GetAllFiles(systemID string, db *sql.DB) (arr []*File, err error) {
+func GetAllFiles(codeID string, systemID string, db *sql.DB) (arr []*File, err error) {
 	stmt, err := db.Prepare(`
 SELECT
   ID, CODE_ID, SYSTEM_ID, ACTION, RAW_DATA
 FROM
   FILE
+WHERE
+  CODE_ID = ?
+  AND SYSTEM_ID = ?
 `)
 	if err != nil {
 		return
 	}
 
-	rows, err := stmt.Query()
+	rows, err := stmt.Query(codeID, systemID)
 	if err != nil {
 		return nil, err
 	}
