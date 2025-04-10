@@ -8,7 +8,7 @@ import (
 func CreateSchema(db *sql.DB) (err error) {
 	slog.Debug("sqlite.CreateSchema schema creation started")
 	_, err = db.Exec(`
-CREATE TABLE SYSTEM(ID);
+CREATE TABLE SYSTEM(ID TEXT PRIMARY KEY);
 CREATE TABLE CODE(ID, SYSTEM_ID, PATH);
 CREATE TABLE FILE(ID, CODE_ID, SYSTEM_ID, ACTION, RAW_DATA);
 CREATE TABLE DOCUMENTATION(ID, SYSTEM_ID, TYPE, PATH);
@@ -32,6 +32,25 @@ INSERT INTO SYSTEM
 	(ID)
 VALUES
 	(?)
+`)
+	if err != nil {
+		return
+	}
+	_, err = stmt.Exec(system.ID)
+	if err != nil {
+		return
+	}
+
+	return
+}
+
+func UpsertSystem(system System, db *sql.DB) (err error) {
+	stmt, err := db.Prepare(`
+INSERT INTO SYSTEM
+	(ID)
+VALUES
+	(?)
+ON CONFLICT DO NOTHING
 `)
 	if err != nil {
 		return
@@ -99,31 +118,24 @@ VALUES
 	return
 }
 
-func GetCode(codeID string, systemID string, db *sql.DB) (*Code, error) {
+func DeleteCode(codeID string, systemID string, db *sql.DB) error {
 	stmt, err := db.Prepare(`
-SELECT
-  ID, SYSTEM_ID, PATH
-FROM
+DELETE FROM
   CODE
 WHERE
-  ID = ? AND SYSTEM_ID = ?
-LIMIT 1
+  ID = ?
+	AND SYSTEM_ID = ? 
 `)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	var code Code
-	row := stmt.QueryRow(codeID, systemID)
-	err = row.Scan(&code.ID, &code.SystemID, &code.Path)
+	_, err = stmt.Exec(codeID, systemID)
 	if err != nil {
-		if err == sql.ErrNoRows {
-			return nil, nil
-		}
-		return nil, err
+		return err
 	}
 
-	return &code, nil
+	return nil
 }
 
 func GetAllCode(systemID string, db *sql.DB) (arr []*Code, err error) {
@@ -185,6 +197,26 @@ VALUES
 	return
 }
 
+func DeleteFile(codeID string, systemID string, db *sql.DB) error {
+	stmt, err := db.Prepare(`
+DELETE FROM
+  FILE
+WHERE
+  CODE_ID = ?
+	AND SYSTEM_ID = ?
+`)
+	if err != nil {
+		return err
+	}
+
+	_, err = stmt.Exec(codeID, systemID)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func GetAllFiles(codeID string, systemID string, db *sql.DB) (arr []*File, err error) {
 	stmt, err := db.Prepare(`
 SELECT
@@ -244,6 +276,59 @@ VALUES
 	return
 }
 
+func DeleteDocumentation(documentationID string, systemID string, db *sql.DB) error {
+	stmt, err := db.Prepare(`
+DELETE FROM
+  DOCUMENTATION
+WHERE
+  ID = ?
+	AND SYSTEM_ID = ? 
+`)
+	if err != nil {
+		return err
+	}
+
+	_, err = stmt.Exec(documentationID, systemID)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func GetAllDocumentation(systemID string, db *sql.DB) (arr []*Documentation, err error) {
+	stmt, err := db.Prepare(`
+SELECT
+  ID, SYSTEM_ID, TYPE, PATH
+FROM
+  DOCUMENTATION
+WHERE
+  SYSTEM_ID = ?
+`)
+	if err != nil {
+		return
+	}
+
+	rows, err := stmt.Query(systemID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var row Documentation
+		if err := rows.Scan(&row.ID, &row.SystemID, &row.Type, &row.Path); err != nil {
+			return arr, err
+		}
+		arr = append(arr, &row)
+	}
+	if err = rows.Err(); err != nil {
+		return arr, err
+	}
+
+	return
+}
+
 type Document struct {
 	ID              string
 	DocumentationID string
@@ -267,6 +352,60 @@ VALUES
 	_, err = stmt.Exec(doc.ID, doc.DocumentationID, doc.SystemID, doc.Type, doc.Action, doc.RawData, doc.ExtractedData)
 	if err != nil {
 		return
+	}
+
+	return
+}
+
+func DeleteDocument(documentationID string, systemID string, db *sql.DB) error {
+	stmt, err := db.Prepare(`
+DELETE FROM
+  DOCUMENT
+WHERE
+  DOCUMENTATION_ID = ?
+	AND SYSTEM_ID = ? 
+`)
+	if err != nil {
+		return err
+	}
+
+	_, err = stmt.Exec(documentationID, systemID)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func GetAllDocument(documentationID string, systemID string, db *sql.DB) (arr []*Document, err error) {
+	stmt, err := db.Prepare(`
+SELECT
+  ID, DOCUMENTATION_ID, SYSTEM_ID, TYPE, ACTION, RAW_DATA, EXTRACTED_DATA
+FROM
+  DOCUMENT
+WHERE
+  DOCUMENTATION_ID = ?
+  AND SYSTEM_ID = ?
+`)
+	if err != nil {
+		return
+	}
+
+	rows, err := stmt.Query(documentationID, systemID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var row Document
+		if err := rows.Scan(&row.ID, &row.DocumentationID, &row.SystemID, &row.Type, &row.Action, &row.RawData, &row.ExtractedData); err != nil {
+			return arr, err
+		}
+		arr = append(arr, &row)
+	}
+	if err = rows.Err(); err != nil {
+		return arr, err
 	}
 
 	return
@@ -301,6 +440,60 @@ VALUES
 	return
 }
 
+func DeleteSection(documentationID string, systemID string, db *sql.DB) error {
+	stmt, err := db.Prepare(`
+DELETE FROM
+  SECTION
+WHERE
+  DOCUMENTATION_ID = ?
+	AND SYSTEM_ID = ? 
+`)
+	if err != nil {
+		return err
+	}
+
+	_, err = stmt.Exec(documentationID, systemID)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func GetAllSection(documentationID string, systemID string, db *sql.DB) (arr []*Section, err error) {
+	stmt, err := db.Prepare(`
+SELECT
+  ID, DOCUMENT_ID, DOCUMENTATION_ID, SYSTEM_ID, NAME, PARENT_ID, PEER_ORDER, EXTRACTED_DATA
+FROM
+  SECTION
+WHERE
+  DOCUMENTATION_ID = ?
+  AND SYSTEM_ID = ?
+`)
+	if err != nil {
+		return
+	}
+
+	rows, err := stmt.Query(documentationID, systemID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var row Section
+		if err := rows.Scan(&row.ID, &row.DocumentID, &row.DocumentationID, &row.SystemID, &row.Name, &row.ParentID, &row.PeerOrder, &row.ExtractedData); err != nil {
+			return arr, err
+		}
+		arr = append(arr, &row)
+	}
+	if err = rows.Err(); err != nil {
+		return arr, err
+	}
+
+	return
+}
+
 type PullRequest struct {
 	ID       string
 	SystemID string
@@ -326,6 +519,59 @@ VALUES
 	return
 }
 
+func DeletePullRequest(pullRequestID string, systemID string, db *sql.DB) error {
+	stmt, err := db.Prepare(`
+DELETE FROM
+  PULL_REQUEST
+WHERE
+  ID = ?
+	AND SYSTEM_ID = ? 
+`)
+	if err != nil {
+		return err
+	}
+
+	_, err = stmt.Exec(pullRequestID, systemID)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func GetAllPullRequest(systemID string, db *sql.DB) (arr []*PullRequest, err error) {
+	stmt, err := db.Prepare(`
+SELECT
+  ID, SYSTEM_ID, TITLE, BODY
+FROM
+  PULL_REQUEST
+WHERE
+  SYSTEM_ID = ?
+`)
+	if err != nil {
+		return
+	}
+
+	rows, err := stmt.Query(systemID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var row PullRequest
+		if err := rows.Scan(&row.ID, &row.SystemID, &row.Title, &row.Body); err != nil {
+			return arr, err
+		}
+		arr = append(arr, &row)
+	}
+	if err = rows.Err(); err != nil {
+		return arr, err
+	}
+
+	return
+}
+
 type Issue struct {
 	ID       string
 	SystemID string
@@ -346,6 +592,59 @@ VALUES
 	_, err = stmt.Exec(issue.ID, issue.SystemID, issue.Title, issue.Body)
 	if err != nil {
 		return
+	}
+
+	return
+}
+
+func DeleteIssue(issueID string, systemID string, db *sql.DB) error {
+	stmt, err := db.Prepare(`
+DELETE FROM
+  ISSUE
+WHERE
+  ID = ?
+	AND SYSTEM_ID = ? 
+`)
+	if err != nil {
+		return err
+	}
+
+	_, err = stmt.Exec(issueID, systemID)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func GetAllIssue(systemID string, db *sql.DB) (arr []*Issue, err error) {
+	stmt, err := db.Prepare(`
+SELECT
+  ID, SYSTEM_ID, TITLE, BODY
+FROM
+  PULL_REQUEST
+WHERE
+  SYSTEM_ID = ?
+`)
+	if err != nil {
+		return
+	}
+
+	rows, err := stmt.Query(systemID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var row Issue
+		if err := rows.Scan(&row.ID, &row.SystemID, &row.Title, &row.Body); err != nil {
+			return arr, err
+		}
+		arr = append(arr, &row)
+	}
+	if err = rows.Err(); err != nil {
+		return arr, err
 	}
 
 	return

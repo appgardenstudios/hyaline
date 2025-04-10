@@ -80,7 +80,11 @@ func Merge(args *MergeArgs) error {
 			slog.Info(fmt.Sprintf("Merging system %s from %s", system.ID, input))
 
 			// Upsert system
-			// TODO
+			err = sqlite.UpsertSystem(*system, outputDB)
+			if err != nil {
+				slog.Debug("action.Merge could not upsert system", "input", input, "error", err)
+				return err
+			}
 
 			err = code.Merge(system.ID, inputDB, outputDB)
 			if err != nil {

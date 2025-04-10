@@ -5,38 +5,38 @@ import (
 	"hyaline/internal/sqlite"
 )
 
-func Merge(systemID string, from *sql.DB, to *sql.DB) error {
-	codeToCopy, err := sqlite.GetAllCode(systemID, from)
+func Merge(systemID string, source *sql.DB, dest *sql.DB) error {
+	// Get all CODE entries from the source we will be copying
+	codeToCopy, err := sqlite.GetAllCode(systemID, source)
 	if err != nil {
 		return err
 	}
 
-	for _, code := range codeToCopy {
+	// Copy each CODE/FILE(s) from source to dest
+	for _, c := range codeToCopy {
 		// Delete any existing CODE and FILE entries
-		err := sqlite.DeleteCodeAndFiles(code.ID, systemID, to)
+		err := sqlite.DeleteCode(c.ID, systemID, dest)
+		if err != nil {
+			return err
+		}
+		err = sqlite.DeleteFile(c.ID, systemID, dest)
 		if err != nil {
 			return err
 		}
 
 		// Copy CODE
-		code, err := sqlite.GetCode(code.ID, systemID, from)
+		err = sqlite.InsertCode(*c, dest)
 		if err != nil {
 			return err
 		}
-		if code != nil {
-			err = sqlite.InsertCode(*code, to)
-			if err != nil {
-				return err
-			}
-		}
 
 		// Copy FILEs
-		files, err := sqlite.GetAllFiles(code.ID, systemID, from)
+		files, err := sqlite.GetAllFiles(c.ID, systemID, source)
 		if err != nil {
 			return err
 		}
 		for _, file := range files {
-			err = sqlite.InsertFile(*file, to)
+			err = sqlite.InsertFile(*file, dest)
 			if err != nil {
 				return err
 			}
