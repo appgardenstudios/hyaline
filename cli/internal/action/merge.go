@@ -86,24 +86,28 @@ func Merge(args *MergeArgs) error {
 				return err
 			}
 
+			// Merge code
 			err = code.Merge(system.ID, inputDB, outputDB)
 			if err != nil {
 				slog.Debug("action.Merge could not merge code", "input", input, "error", err)
 				return err
 			}
 
+			// Merge docs
 			err = docs.Merge(system.ID, inputDB, outputDB)
 			if err != nil {
 				slog.Debug("action.Merge could not merge code", "input", input, "error", err)
 				return err
 			}
 
+			// Merge pull requests
 			err = github.MergePullRequests(system.ID, inputDB, outputDB)
 			if err != nil {
 				slog.Debug("action.Merge could not merge pull requests", "input", input, "error", err)
 				return err
 			}
 
+			// Merge issues
 			err = github.MergeIssues(system.ID, inputDB, outputDB)
 			if err != nil {
 				slog.Debug("action.Merge could not merge issues", "input", input, "error", err)
