@@ -44,7 +44,6 @@ extract-current-http:
 	echo "---"
 	./hyaline --debug extract current --config ./_example/config.yml --system http --output ./current.db
 
-
 .PHONY: extract-change
 extract-change:
 	rm -f ./change.db
@@ -75,3 +74,10 @@ recommend-change:
 	make build
 	echo "---"
 	./hyaline --debug check --config ./_example/config.yml --current ./current.db --change ./change.db --system local --recommend
+
+.PHONY: merge
+merge:
+	rm -f ./merged.db
+	make build
+	echo "---"
+	./hyaline --debug merge --input ./current.db --input ./current-copy.db --input ./change.db --output ./merged.db
