@@ -4,6 +4,7 @@ type Config struct {
 	LLM     LLM      `yaml:"llm"`
 	GitHub  GitHub   `yaml:"github"`
 	Systems []System `yaml:"systems"`
+	Rules   []Rule   `yaml:"rules"`
 }
 
 type LLM struct {
@@ -133,4 +134,25 @@ type Check struct {
 	Description string                 `yaml:"description"`
 	Rule        string                 `yaml:"rule"`
 	Options     map[string]interface{} `yaml:"options"`
+}
+
+type Rule struct {
+	ID        string         `yaml:"id"`
+	Documents []RuleDocument `yaml:"documents"`
+}
+
+type RuleDocument struct {
+	Path     string                `yaml:"path"`
+	Purpose  string                `yaml:"purpose"`
+	Required bool                  `yaml:"required"`
+	Ignore   bool                  `yaml:"ignore"`
+	Sections []RuleDocumentSection `yaml:"sections"`
+}
+
+type RuleDocumentSection struct {
+	ID       string                `yaml:"id"`
+	Purpose  string                `yaml:"purpose"`
+	Required bool                  `yaml:"required"`
+	Ignore   bool                  `yaml:"ignore"`
+	Sections []RuleDocumentSection `yaml:"sections"`
 }

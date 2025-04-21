@@ -1,6 +1,7 @@
 package action
 
 import (
+	"fmt"
 	"hyaline/internal/config"
 	"log/slog"
 )
@@ -24,11 +25,21 @@ func GenerateConfig(args *GenerateConfigArgs) error {
 	))
 
 	// Load Config
-	_, err := config.Load(args.Config)
+	cfg, err := config.Load(args.Config)
 	if err != nil {
 		slog.Debug("action.GenerateConfig could not load the config", "error", err)
 		return err
 	}
+
+	// Get System
+	system, err := config.GetSystem(args.System, cfg)
+	if err != nil {
+		slog.Debug("action.GenerateConfig could not locate the system", "system", args.System, "error", err)
+		return err
+	}
+
+	fmt.Println("system", system)
+	fmt.Println("rules", cfg.Rules)
 
 	return nil
 }

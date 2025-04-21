@@ -160,5 +160,9 @@ func validate(cfg *Config) (err error) {
 			}
 		}
 	}
+
+	// Validate rules
+	// TODO ensure that no rules have the same ID
+
 	return
 }
