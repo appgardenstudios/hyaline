@@ -1,9 +1,14 @@
 package action
 
 import (
+	"database/sql"
 	"fmt"
 	"hyaline/internal/config"
+	"hyaline/internal/sqlite"
 	"log/slog"
+	"path/filepath"
+
+	_ "modernc.org/sqlite"
 )
 
 type GenerateConfigArgs struct {
@@ -32,7 +37,18 @@ func GenerateConfig(args *GenerateConfigArgs) error {
 	}
 
 	// Open current db
-	// TODO
+	currentAbsPath, err := filepath.Abs(args.Current)
+	if err != nil {
+		slog.Debug("action.Check could not get an absolute path for current", "current", args.Current, "error", err)
+		return err
+	}
+	currentDB, err := sql.Open("sqlite", currentAbsPath)
+	if err != nil {
+		slog.Debug("action.Check could not open current SQLite DB", "dataSourceName", currentAbsPath, "error", err)
+		return err
+	}
+	slog.Debug("action.Check opened current database", "current", args.Current, "path", currentAbsPath)
+	defer currentDB.Close()
 
 	// Get System
 	system, err := config.GetSystem(args.System, cfg)
@@ -42,26 +58,29 @@ func GenerateConfig(args *GenerateConfigArgs) error {
 	}
 
 	// Make a copy of the rules so we don't overwrite anything
-	rules := cfg.Rules
+	// TODO rules := cfg.Rules
 
 	// Loop through docs in our current system and generate a config for each
 	for _, d := range system.Docs {
 		// Get a list of Documents from the db for this doc ID
-		// TODO
+		documents, err := sqlite.GetAllDocument(d.ID, system.ID, currentDB)
+		if err != nil {
+			slog.Debug("action.GenerateConfig could not get documents from current db", "document", d.ID, "system", system.ID, "error", err)
+			return err
+		}
 
 		// Loop through each document to generate rules for it
-		// TODO
+		for _, doc := range documents {
+			// Get the corresponding rules for this document
+			// TODO
 
-		// // Get the corresponding rule for this document
-		// // TODO
+			// TODO if rule does not exist, create it
+			// TODO check sections against the rule and create sections that don't exist
+			// TODO handle adding document to new rule set or updating existing document in rules
 
-		// // TODO if rule does not exist, create it
-		// // TODO check sections against the rule and create sections that don't exist
-		// // TODO handle adding document to new rule set or updating existing document in rules
+		}
+
 	}
-
-	// Get documentation for system
-	// TODO
 
 	fmt.Println("system", system)
 	fmt.Println("rules", cfg.Rules)
