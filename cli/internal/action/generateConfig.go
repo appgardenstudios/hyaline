@@ -1,6 +1,9 @@
 package action
 
-import "log/slog"
+import (
+	"hyaline/internal/config"
+	"log/slog"
+)
 
 type GenerateConfigArgs struct {
 	Config         string
@@ -19,6 +22,13 @@ func GenerateConfig(args *GenerateConfigArgs) error {
 		"output", args.Output,
 		"include-purpose", args.IncludePurpose,
 	))
+
+	// Load Config
+	_, err := config.Load(args.Config)
+	if err != nil {
+		slog.Debug("action.GenerateConfig could not load the config", "error", err)
+		return err
+	}
 
 	return nil
 }
