@@ -163,6 +163,7 @@ func validate(cfg *Config) (err error) {
 
 	// Validate rules
 	// TODO ensure that no rules have the same ID
+	// TODO ensure that 2 documents in different rule sets don't have the same path if they are both referenced by the same system.doc (i.e. no overlap)
 
 	return
 }
