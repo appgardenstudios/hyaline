@@ -8,28 +8,52 @@ import (
 	"hyaline/internal/sqlite"
 	"io/fs"
 	"log/slog"
+	"net/url"
 	"os"
+	"path"
 	"path/filepath"
 	"strings"
+
+	"fmt"
 
 	"github.com/bmatcuk/doublestar/v4"
 	"github.com/go-git/go-git/v5"
 	"github.com/go-git/go-git/v5/plumbing/object"
+	"github.com/gocolly/colly/v2"
 )
 
 func ExtractCurrent(system *config.System, db *sql.DB) (err error) {
 	// Process each docs source
 	for _, d := range system.Docs {
 		slog.Debug("docs.ExtractCurrent extracting docs", "system", system.ID, "docs", d.ID)
+
+		// Get document path
+		var path string
+		switch d.Extractor {
+		case config.ExtractorFs:
+			path = d.FsOptions.Path
+		case config.ExtractorGit:
+			path = d.GitOptions.Path
+			if path == "" {
+				path = d.GitOptions.Repo
+			}
+		case config.ExtractorHttp:
+			u, err := url.Parse(d.HttpOptions.BaseURL)
+			if err != nil {
+				slog.Debug("docs.ExtractCurrent could not parse base url", "system", system.ID, "docs", d.ID, "baseUrl", d.HttpOptions.BaseURL)
+			}
+			path = fmt.Sprintf("%s://%s", u.Scheme, u.Host)
+		}
+
 		// Insert Documentation
 		err = sqlite.InsertDocumentation(sqlite.Documentation{
 			ID:       d.ID,
 			SystemID: system.ID,
 			Type:     d.Type.String(),
-			Path:     d.FsOptions.Path,
+			Path:     path,
 		}, db)
 		if err != nil {
-			slog.Debug("docs.ExtractCurrent could not insert docs", "error", err, "doc", d.ID)
+			slog.Debug("docs.ExtractCurrent could not insert documentation", "error", err, "doc", d.ID)
 			return err
 		}
 
@@ -45,6 +69,12 @@ func ExtractCurrent(system *config.System, db *sql.DB) (err error) {
 			err = ExtractCurrentGit(system.ID, &d, db)
 			if err != nil {
 				slog.Debug("docs.ExtractCurrent could not extract docs using git extractor", "error", err, "doc", d.ID)
+				return
+			}
+		case config.ExtractorHttp:
+			err = ExtractCurrentHttp(system.ID, &d, db)
+			if err != nil {
+				slog.Debug("docs.ExtractCurrent could not extract docs using http extractor", "error", err, "doc", d.ID)
 				return
 			}
 		default:
@@ -91,16 +121,16 @@ func ExtractCurrentFs(systemID string, d *config.Doc, db *sql.DB) (err error) {
 
 		// Loop through docs and add those that aren't in our excludes
 		for _, doc := range matches {
-			// See if we have a match for at least one of our excludes
-			match := false
+			// See if we have a excludeMatch for at least one of our excludes
+			excludeMatch := false
 			for _, exclude := range d.Exclude {
-				match = doublestar.MatchUnvalidated(exclude, doc)
-				if match {
+				excludeMatch = doublestar.MatchUnvalidated(exclude, doc)
+				if excludeMatch {
 					slog.Debug("docs.ExtractCurrentFs doc excluded", "doc", doc, "exclude", exclude)
 					break
 				}
 			}
-			if !match {
+			if !excludeMatch {
 				docs[doc] = struct{}{}
 			}
 		}
@@ -239,6 +269,161 @@ func ExtractCurrentGit(systemID string, d *config.Doc, db *sql.DB) (err error) {
 	}
 
 	return
+}
+
+func ExtractCurrentHttp(systemID string, d *config.Doc, db *sql.DB) error {
+	// Collect encountered errors into an array and check it at the end
+	var errs []error
+
+	// Use baseURL to calculate includes/excludes
+	baseUrl, err := url.Parse(d.HttpOptions.BaseURL)
+	if err != nil {
+		slog.Debug("docs.ExtractCurrentHttp could not parse baseUrl", "baseUrl", d.HttpOptions.BaseURL, "error", err)
+		return err
+	}
+	var includes []string
+	for _, include := range d.Include {
+		includes = append(includes, path.Join(baseUrl.Path, include))
+	}
+	var excludes []string
+	for _, exclude := range d.Exclude {
+		excludes = append(excludes, path.Join(baseUrl.Path, exclude))
+	}
+	slog.Debug("docs.ExtractCurrentHttp includes/excludes", "includes", includes, "excludes", excludes, "basePath", baseUrl.Path)
+
+	// Determine start URL
+	var startUrl *url.URL
+	if d.HttpOptions.Start != "" {
+		startUrl, err = url.Parse(d.HttpOptions.Start)
+		if err != nil {
+			slog.Debug("docs.ExtractCurrentHttp could not parse start", "start", d.HttpOptions.Start, "error", err)
+			return err
+		}
+		startUrl = baseUrl.ResolveReference(startUrl)
+	} else {
+		startUrl = baseUrl
+	}
+	slog.Debug("docs.ExtractCurrentHttp startUrl", "startUrl", startUrl, "start", d.HttpOptions.Start, "baseUrl", baseUrl.String())
+
+	// Initialize our collector
+	c := colly.NewCollector(
+		colly.Async(),
+	)
+
+	// Create our default limits
+	c.Limit(&colly.LimitRule{
+		DomainGlob:  "*",
+		Delay:       0,
+		Parallelism: 1,
+	})
+
+	// Add headers (if any)
+	for key, val := range d.HttpOptions.Headers {
+		c.Headers.Add(key, val)
+	}
+
+	// Find and visit all links in returned html
+	c.OnHTML("a[href]", func(e *colly.HTMLElement) {
+		// Get a resolved URL for the href relative to the base URL of the requested page
+		href := e.Attr("href")
+		raw, err := url.Parse(href)
+		if err != nil {
+			slog.Debug("docs.ExtractCurrentHttp unable to parse href", "href", href, "error", err)
+			errs = append(errs, err)
+			return
+		}
+		u := e.Request.URL.ResolveReference(raw)
+		slog.Debug("docs.ExtractCurrentHttp evaluating href", "href", href, "url", u.String())
+
+		// Only visit pages on this same host
+		if e.Request.URL.Host != u.Host {
+			slog.Debug("docs.ExtractCurrentHttp skipping external link", "href", href)
+			return
+		}
+
+		// Only visit if this path matches an include (and does not match an exclude)
+		for _, include := range includes {
+			if doublestar.MatchUnvalidated(include, u.Path) {
+				excludeMatch := false
+				for _, exclude := range excludes {
+					excludeMatch = doublestar.MatchUnvalidated(exclude, u.Path)
+					if excludeMatch {
+						slog.Debug("docs.ExtractCurrentHttp URL excluded", "href", href, "url", u.String(), "exclude", exclude)
+						break
+					}
+				}
+				if !excludeMatch {
+					slog.Debug("docs.ExtractCurrentHttp visiting URL", "href", href, "url", u.String(), "currentPage", e.Request.URL.String())
+					e.Request.Visit(href)
+					return
+				}
+			}
+		}
+	})
+
+	// Save documents we scrape
+	c.OnResponse(func(r *colly.Response) {
+		path := r.Request.URL.Path
+
+		// Extract and clean data (trim whitespace and remove carriage returns)
+		var extractedData string
+		var err error
+		switch d.Type {
+		case config.DocTypeHTML:
+			extractedData, err = extractHTMLDocument(string(r.Body), d.HTML.Selector)
+			if err != nil {
+				slog.Debug("docs.ExtractCurrentGit could not extract html document", "error", err, "doc", path)
+				errs = append(errs, err)
+				return
+			}
+		default:
+			extractedData = strings.TrimSpace(string(r.Body))
+		}
+		extractedData = strings.ReplaceAll(extractedData, "\r", "")
+
+		// Insert our document
+		err = sqlite.InsertDocument(sqlite.Document{
+			ID:              path,
+			DocumentationID: d.ID,
+			SystemID:        systemID,
+			Type:            d.Type.String(),
+			Action:          "",
+			RawData:         string(r.Body),
+			ExtractedData:   extractedData,
+		}, db)
+		if err != nil {
+			slog.Debug("docs.ExtractCurrentGit could not insert document", "error", err)
+			errs = append(errs, err)
+			return
+		}
+
+		// Get and insert sections
+		sections := getMarkdownSections(strings.Split(extractedData, "\n"))
+		err = insertMarkdownSectionAndChildren(sections, 0, path, d.ID, systemID, db)
+		if err != nil {
+			slog.Debug("docs.ExtractCurrentGit could not insert section", "error", err)
+			errs = append(errs, err)
+			return
+		}
+	})
+
+	// Record any encountered errors
+	c.OnError(func(r *colly.Response, e error) {
+		errs = append(errs, e)
+	})
+
+	// Visit and wait for all routines to return
+	c.Visit(startUrl.String())
+	c.Wait()
+
+	// Log and handle any errors we encountered
+	if len(errs) > 0 {
+		err := errors.New("http extractor encountered " + fmt.Sprint(len(errs)) + " errors")
+		slog.Debug("docs.ExtractCurrentHttp encountered errors", "errors", errs, "error", err)
+		return err
+	}
+
+	return nil
 }
 
 func insertMarkdownSectionAndChildren(s *section, order int, documentId string, documentationId string, systemId string, db *sql.DB) error {

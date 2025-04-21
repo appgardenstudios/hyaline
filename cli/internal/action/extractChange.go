@@ -6,6 +6,7 @@ import (
 	"hyaline/internal/code"
 	"hyaline/internal/config"
 	"hyaline/internal/docs"
+	"hyaline/internal/github"
 	"hyaline/internal/sqlite"
 	"log/slog"
 	"os"
@@ -15,11 +16,13 @@ import (
 )
 
 type ExtractChangeArgs struct {
-	Config string
-	System string
-	Base   string
-	Head   string
-	Output string
+	Config      string
+	System      string
+	Base        string
+	Head        string
+	PullRequest string
+	Issues      []string
+	Output      string
 }
 
 func ExtractChange(args *ExtractChangeArgs) error {
@@ -29,6 +32,8 @@ func ExtractChange(args *ExtractChangeArgs) error {
 		"system", args.System,
 		"base", args.Base,
 		"head", args.Head,
+		"pullRequest", args.PullRequest,
+		"issues", args.Issues,
 		"output", args.Output,
 	))
 
@@ -59,7 +64,7 @@ func ExtractChange(args *ExtractChangeArgs) error {
 		return err
 	}
 	defer db.Close()
-	err = sqlite.CreateChangeSchema(db)
+	err = sqlite.CreateSchema(db)
 	if err != nil {
 		slog.Debug("action.ExtractChange could not create the current schema", "error", err)
 		return err
@@ -71,7 +76,7 @@ func ExtractChange(args *ExtractChangeArgs) error {
 		slog.Debug("action.ExtractChange could not locate the system", "system", args.System, "error", err)
 		return err
 	}
-	err = sqlite.InsertChangeSystem(sqlite.ChangeSystem{
+	err = sqlite.InsertSystem(sqlite.System{
 		ID: system.ID,
 	}, db)
 	if err != nil {
@@ -79,6 +84,34 @@ func ExtractChange(args *ExtractChangeArgs) error {
 		return err
 	}
 	slog.Debug("action.ExtractChange system inserted")
+
+	// Extract/Insert Pull Request (if present)
+	if args.PullRequest != "" {
+		if cfg.GitHub.Token == "" {
+			return errors.New("github token required to retrieve pull-request information")
+		}
+		err = github.InsertPullRequest(args.PullRequest, cfg.GitHub.Token, system.ID, db)
+		if err != nil {
+			slog.Debug("action.ExtractChange could not insert the system", "error", err)
+			return err
+		}
+		slog.Debug("action.ExtractChange pull request inserted")
+	}
+
+	// Extract/Insert Issues
+	if len(args.Issues) > 0 {
+		if cfg.GitHub.Token == "" {
+			return errors.New("github token required to retrieve issue information")
+		}
+		for _, issue := range args.Issues {
+			err = github.InsertIssue(issue, cfg.GitHub.Token, system.ID, db)
+			if err != nil {
+				slog.Debug("action.ExtractChange could not insert the system", "error", err)
+				return err
+			}
+		}
+		slog.Debug("action.ExtractChange issues inserted")
+	}
 
 	// Extract/Insert Code
 	err = code.ExtractChange(system, args.Head, args.Base, db)

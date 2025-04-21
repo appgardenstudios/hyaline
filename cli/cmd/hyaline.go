@@ -12,6 +12,10 @@ import (
 
 var Version = "unknown"
 
+var usage = "Maintain Your Documentation - Find, Fix, and Prevent Documentation Issues."
+
+var betaNote = "Note: Hyaline is currently in an open beta. As such, this software is only licensed for evaluation and use until the open beta period ends."
+
 func main() {
 	var logLevel = new(slog.LevelVar)
 	h := slog.NewTextHandler(os.Stderr, &slog.HandlerOptions{Level: logLevel})
@@ -19,9 +23,9 @@ func main() {
 
 	app := &cli.App{
 		Name:  "hyaline",
-		Usage: "Maintain Your Documentation - Find, Fix, and Prevent Documentation Issues",
+		Usage: fmt.Sprintf("%s\n%s", usage, betaNote),
 		Action: func(*cli.Context) error {
-			fmt.Println("hello world")
+			fmt.Printf("%s\n%s\n", usage, betaNote)
 			return nil
 		},
 		Flags: []cli.Flag{
@@ -35,7 +39,7 @@ func main() {
 				Name:  "version",
 				Usage: "Print out the current version",
 				Action: func(cCtx *cli.Context) error {
-					fmt.Println(Version)
+					fmt.Printf("%s\n%s\n", Version, betaNote)
 					return nil
 				},
 			},
@@ -117,6 +121,16 @@ func main() {
 								Usage:    "Head branch (which changes will be applied)",
 							},
 							&cli.StringFlag{
+								Name:     "pull-request",
+								Required: false,
+								Usage:    "GitHub Pull Request to include in the change (OWNER/REPO/PR_NUMBER)",
+							},
+							&cli.StringSliceFlag{
+								Name:     "issue",
+								Required: false,
+								Usage:    "GitHub Issue to include in the change (OWNER/REPO/PR_NUMBER). Accepts multiple issues by setting multiple times.",
+							},
+							&cli.StringFlag{
 								Name:     "output",
 								Required: true,
 								Usage:    "Path of the sqlite database to create",
@@ -130,11 +144,13 @@ func main() {
 
 							// Execute action
 							err := action.ExtractChange(&action.ExtractChangeArgs{
-								Config: cCtx.String("config"),
-								System: cCtx.String("system"),
-								Base:   cCtx.String("base"),
-								Head:   cCtx.String("head"),
-								Output: cCtx.String("output"),
+								Config:      cCtx.String("config"),
+								System:      cCtx.String("system"),
+								Base:        cCtx.String("base"),
+								Head:        cCtx.String("head"),
+								PullRequest: cCtx.String("pull-request"),
+								Issues:      cCtx.StringSlice("issue"),
+								Output:      cCtx.String("output"),
 							})
 							if err != nil {
 								return cli.Exit(err.Error(), 1)
@@ -180,6 +196,38 @@ func main() {
 							return nil
 						},
 					},
+				},
+			},
+			{
+				Name:  "merge",
+				Usage: "Merge 2 or more data sets into a single output database",
+				Flags: []cli.Flag{
+					&cli.StringSliceFlag{
+						Name:     "input",
+						Required: true,
+						Usage:    "Path of the sqlite database to merge",
+					},
+					&cli.StringFlag{
+						Name:     "output",
+						Required: true,
+						Usage:    "Path of the sqlite database to create",
+					},
+				},
+				Action: func(cCtx *cli.Context) error {
+					// Set log level
+					if cCtx.Bool("debug") {
+						logLevel.Set(slog.LevelDebug)
+					}
+
+					// Execute action
+					err := action.Merge(&action.MergeArgs{
+						Inputs: cCtx.StringSlice("input"),
+						Output: cCtx.String("output"),
+					})
+					if err != nil {
+						return cli.Exit(err.Error(), 1)
+					}
+					return nil
 				},
 			},
 		},

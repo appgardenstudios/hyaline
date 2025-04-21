@@ -1,0 +1,15 @@
+systems:
+  - id: my-app
+    docs:
+      - id: http-docs
+        type: html
+        html:
+          selector: main
+        extractor: http
+        http:
+          baseUrl: http://127.0.0.1:8081/
+          start: "./docs"
+        include:
+          - "docs/**/*"
+        exclude:
+          - "docs/irrelevant.html"

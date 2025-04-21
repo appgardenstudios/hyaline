@@ -6,13 +6,14 @@ import (
 	"time"
 )
 
-func TestExtractCurrentGit(t *testing.T) {
-	goldenPath := "./_golden/extract-current-git.sqlite"
-	outputPath := fmt.Sprintf("./_output/extract-current-git-%d.db", time.Now().UnixMilli())
+func TestMerge(t *testing.T) {
+	goldenPath := "./_golden/merge.sqlite"
+	outputPath := fmt.Sprintf("./_output/merge-%d.db", time.Now().UnixMilli())
 	args := []string{
-		"extract", "current",
-		"--config", "./_input/extract-current-git/config.yml",
-		"--system", "my-app",
+		"merge",
+		"--input", "./_input/merge/current.sqlite",
+		"--input", "./_input/merge/current-copy.sqlite",
+		"--input", "./_input/merge/change.sqlite",
 		"--output", outputPath,
 	}
 
