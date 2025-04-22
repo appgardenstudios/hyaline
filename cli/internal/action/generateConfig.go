@@ -2,11 +2,12 @@ package action
 
 import (
 	"database/sql"
-	"fmt"
+	"errors"
 	"hyaline/internal/config"
 	"hyaline/internal/llm"
 	"hyaline/internal/sqlite"
 	"log/slog"
+	"os"
 	"path/filepath"
 
 	"gopkg.in/yaml.v3"
@@ -40,20 +41,29 @@ func GenerateConfig(args *GenerateConfigArgs) error {
 	}
 
 	// Ensure output location does not exist
-	// TODO
+	outputAbsPath, err := filepath.Abs(args.Output)
+	if err != nil {
+		slog.Debug("action.GenerateConfig could not get an absolute path for output", "output", args.Output, "error", err)
+		return err
+	}
+	_, err = os.Stat(outputAbsPath)
+	if err == nil {
+		slog.Debug("action.GenerateConfig detected that output already exists", "absPath", outputAbsPath)
+		return errors.New("output file already exists")
+	}
 
 	// Open current db
 	currentAbsPath, err := filepath.Abs(args.Current)
 	if err != nil {
-		slog.Debug("action.Check could not get an absolute path for current", "current", args.Current, "error", err)
+		slog.Debug("action.GenerateConfig could not get an absolute path for current", "current", args.Current, "error", err)
 		return err
 	}
 	currentDB, err := sql.Open("sqlite", currentAbsPath)
 	if err != nil {
-		slog.Debug("action.Check could not open current SQLite DB", "dataSourceName", currentAbsPath, "error", err)
+		slog.Debug("action.GenerateConfig could not open current SQLite DB", "dataSourceName", currentAbsPath, "error", err)
 		return err
 	}
-	slog.Debug("action.Check opened current database", "current", args.Current, "path", currentAbsPath)
+	slog.Debug("action.GenerateConfig opened current database", "current", args.Current, "path", currentAbsPath)
 	defer currentDB.Close()
 
 	// Get System
@@ -83,41 +93,41 @@ func GenerateConfig(args *GenerateConfigArgs) error {
 
 		// Loop through each document to generate rules for it
 		for _, doc := range documents {
-			// Get the rule for this document (if any)
-			// TODO
+			// Get the ruleDoc for this document (if any)
+			ruleDocFound, ruleDoc := config.GetRuleDocument(cfg.Rules, d.Rules, doc.ID)
 
 			// If there is no rule, create it
-			// TODO
-			// If IncludePurpose flag is set, get purpose
-			purpose := ""
-			if args.IncludePurpose {
-				purpose, err = llm.GetPurpose()
+			if !ruleDocFound {
+				// If IncludePurpose flag is set, get purpose
+				purpose := ""
+				if args.IncludePurpose {
+					purpose, err = llm.GetPurpose()
+					if err != nil {
+						slog.Debug("action.GenerateConfig could not get purpose for document", "document", doc.ID, "doc", d.ID, "system", system.ID, "error", err)
+						return err
+					}
+				}
+
+				// Create rule for the document
+				ruleDoc = config.RuleDocument{
+					Path:     doc.ID,
+					Purpose:  purpose,
+					Required: true,
+				}
+
+				// Get and add sections for this document
+				sections, err := sqlite.GetAllSectionsForDocument(doc.ID, d.ID, system.ID, currentDB)
 				if err != nil {
-					slog.Debug("action.GenerateConfig could not get purpose for document", "document", doc.ID, "doc", d.ID, "system", system.ID, "error", err)
+					slog.Debug("action.GenerateConfig could not get sections for a document from current db", "document", doc.ID, "doc", d.ID, "system", system.ID, "error", err)
 					return err
 				}
+				newSections, err := createRuleSections(sections, "", args.IncludePurpose)
+				if err != nil {
+					slog.Debug("action.GenerateConfig could not generate sections for a document from current db", "document", doc.ID, "doc", d.ID, "system", system.ID, "error", err)
+					return err
+				}
+				ruleDoc.Sections = append(ruleDoc.Sections, newSections...)
 			}
-
-			// Create rule for the document
-			ruleDoc := config.RuleDocument{
-				Path:     doc.ID,
-				Purpose:  purpose,
-				Required: true,
-			}
-
-			// Get and add sections for this document
-			sections, err := sqlite.GetAllSectionsForDocument(doc.ID, d.ID, system.ID, currentDB)
-			if err != nil {
-				slog.Debug("action.GenerateConfig could not get sections for a document from current db", "document", doc.ID, "doc", d.ID, "system", system.ID, "error", err)
-				return err
-			}
-			newSections, err := createRuleSections(sections, "", args.IncludePurpose)
-			if err != nil {
-				slog.Debug("action.GenerateConfig could not generate sections for a document from current db", "document", doc.ID, "doc", d.ID, "system", system.ID, "error", err)
-				return err
-			}
-			ruleDoc.Sections = append(ruleDoc.Sections, newSections...)
-
 			// Add ruleDoc to rule
 			rule.Documents = append(rule.Documents, ruleDoc)
 		}
@@ -132,8 +142,19 @@ func GenerateConfig(args *GenerateConfigArgs) error {
 		slog.Debug("action.GenerateConfig could not marshal yaml", "error", err)
 		return err
 	}
-	// TODO write to output file
-	fmt.Println(string(yml))
+	outputFile, err := os.Create(outputAbsPath)
+	if err != nil {
+		slog.Debug("action.GenerateConfig could not open output file", "error", err)
+		return err
+	}
+	defer outputFile.Close() // Ensure file is closed after function returns
+
+	// Write the byte slice to the file
+	_, err = outputFile.Write(yml)
+	if err != nil {
+		slog.Debug("action.GenerateConfig could not write output file", "error", err)
+		return err
+	}
 
 	return nil
 }

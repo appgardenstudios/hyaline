@@ -103,6 +103,7 @@ type Doc struct {
 	HttpOptions HttpOptions    `yaml:"http,omitempty"`
 	Include     []string       `yaml:"include,omitempty"`
 	Exclude     []string       `yaml:"exclude,omitempty"`
+	Rules       []string       `yaml:"rules,omitempty"`
 }
 
 type DocType string

@@ -77,8 +77,9 @@ recommend-change:
 
 .PHONY: generate-config
 generate-config:
-	rm -f ./generated-config.yml
+	rm -f ./current.db ./generated-config.yml
 	make build
+	./hyaline --debug extract current --config ./_example/config.yml --system generate-config --output ./current.db
 	echo "---"
 	./hyaline --debug generate config --config ./_example/config.yml --current ./current.db --system generate-config --output ./generated-config.yml
 
