@@ -2,6 +2,57 @@
 title: "Purpose"
 ---
 
+# The Purpose of Documentation
+An explanation of why every piece of documentation needs a purpose
+
+# Introduction
+If you are a developer you have undoubtedly either heard or uttered the words "don't forget to update the documentation".
+We as developers understand the usefulness of good documentation, and enjoy it when it is present. Likewise we feel the sting of a lack of documentation, especially when the human counterpart for that information is missing or otherwise unavailable.
+For the most part engineers and companies agree that documentation is good, and that we need more of it. But just like having "more |food| isn't necessarily goot when we're hungry, just creating more documentation isn't necessarily good either. We need to create the _right kind(s)_ of documentation. And how do we do that? By understanding the purpose of our documentation and creating/writing our documentation to fit that purpose.
+
+# Purpose
+TODO image here
+Put simply, the purpose of documentation is to enable a person to accomplish their objective. That's it. So let's break that down.
+
+### Objective
+Let's start with the objective. There is something that needs to get done. This could be as straightforward as setting the interest rate in a bank back office system to change on a specific day, or as nebulous as a product manager trying to figure out how feasible it is to add a new feature by some deadline TODO pick better examples.
+Usually we will be able to identify groups of objectives that naturally go together, like the objective of understanding the meaning and context of field X in API endpoint |alpha| can be grouped with the objective of understanding the meaning and context of field Y in API endpoint |alpha|. And it would make sense that those objectives would be closely tied with the objective of calling API endpoint |alpha|.
+Once useful thing to do with objectives is to group them under a higher, more abstract title. For the example above the more abstract objective could be "understand the request and response context and format so someone can call API endpoint |alpha|.
+And you will immediately notice that we need to understand who that someone could be, which leads us to...
+
+### Person(a)s
+Once we have an understanding of our objectives, we need to understand the person or persons that will be attempting to complete that objective. Who are they? What do they know? How deep is their understanding of the objective and how to complete it? Do they already know how to complete it? etc...
+Taking these people and grouping them together into common buckets is called creating a Persona. A Persona is TODO |definition and citation|. And once you have a set of personas for each (group of) objectives you can start thinking about what documentation they need.
+
+### Documentation
+Now that we have a set of objectives and a list of persona(s) for each objective, we can begin to think about what documentation should/needs to exist. We can ask ourselves the question "What does person(a) X need to know to accomplish objective Y"? That's it. The answer to that question is what you need to include in your documentation.
+
+
+# Creating Documentation
+You may have noticed that there are almost infinite people and objectives for which we _could_ create documentation for, so how do we choose what to create?
+The tldr is that you need to perform a cost and risk analysis comparing the cost to create and update the documentation with the cost of any and all alternatives as compared to the risk(s) posed by each alternative. What do we mean by alternatives? Let's take for example the scenario where a manager needs to update the interest rate for a product in a back-office system. Option 1 is creating a very granular how-to document that goes step-by-step of exactly what to do, including screenshots. Option 2 is to rely on the experience of the manager to know generally what to do and provide documentation that provides a simple high-level check-list and a link to the back-office documentation. Option 3 (not recommended) is to have no documentation or written procedure, and rely on the internal knowledge of the manager to complete the task. Each of these options comes with costs, both to create the documentation and the cost(s) associated with a failure to meet the objective.
+
+* Option 1 - Cost: Higher initial cost to create the documentation and a higher cost to update if the back-office system is changed. Risk: Relatively low as long as the documentation is complete, accurate, and is followed exactly.
+* Option 2 - Cost: Lower initial cost to create and much lower cost to maintain. Risk: The likelihood of a mistake (especially for a manager with less experience or knowledge) is higher.
+* Option 3 - Cost: The lowest possible cost. Risk: The highest risk among the 3 options.
+
+Also note that if we have more than one Persona we would need to do this for each Persona (the risk in the example above will be lower for an experienced expert vs a new employee completing this task for the first time). Sometimes it is worth accepting the risk for a set of Personas to decrease the cost of documentation, or by preventing certain personas from attempting to complete the objective by themselves or at all (until they gain experience and then fit the persona the documentation is created for)
+
+This might sound onerous, but once you have a set of high-level personas and objectives compiled the addition of another persona and/or objective is relatively low. And this also does not have to be highly rigorous or detailed. It could be as straightforward as using the roles already within the company and focusing on a small set of high-level or abstract objectives. The main purpose and use is to provide the context and framework for having productive discussions around what to document (or not) within an organization. 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 * Context
   * People are just trying to do things, and they have (or need to have) the know how of how to do it
   * How do we acquire the know how? experience or external, for external, people, bots, or docs
@@ -21,21 +72,6 @@ title: "Purpose"
     * What are your objectives
     * What are your personas
     * What documentation do you need
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
