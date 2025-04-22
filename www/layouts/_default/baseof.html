@@ -5,24 +5,24 @@
   {{ partialCached "css.html" . }}
 </head>
 <body class="h-full">
-	<div class="flex flex-col min-h-full items-stretch">
-		<nav class="bg-blue-600">
-			<div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-				<div class="flex h-16 justify-between">
-					<div class="flex shrink-0 items-center">
-						<a href="/">
-							<img class="block h-8 w-auto" src="/img/logo.svg" alt="Hyaline">
+	<div class="flex flex-col min-h-full items-stretch ">
+		<nav class="bg-blue-200 text-blue-900">
+			<div class="mx-auto max-w-[90rem] px-4 sm:px-6 lg:px-8">
+				<div class="flex h-16 justify-between items-center">
+					<div class="shrink-0">
+						<a class="flex items-center" href="/">
+							<h1 class="text-2xl text-gray-800">hyaline</h1>
 						</a>
 					</div>
 					<div class="flex">
-						<div class="hidden sm:-my-px sm:ml-6 sm:flex sm:space-x-8">
-							<a href="/docs" class="inline-flex items-center border-b-4 border-transparent px-1 pt-1 text-sm font-medium text-gray-100 hover:border-gray-50 hover:text-gray-50">Documentation</a>
-							<a href="/articles" class="inline-flex items-center border-b-4 border-transparent px-1 pt-1 text-sm font-medium text-gray-100 hover:border-gray-50 hover:text-gray-50">Articles</a>
-							<a href="/download" class="inline-flex items-center border-b-4 border-transparent px-1 pt-1 text-sm font-medium text-gray-100 hover:border-gray-50 hover:text-gray-50">Download</a>
+						<div class="hidden sm:-my-px sm:ml-6 sm:flex sm:space-x-8 text-gray-800">
+							<a href="/docs" class="inline-flex items-center border-b-2 border-transparent px-1 pt-1 text-sm font-medium hover:border-blue-600">Documentation</a>
+							<a href="/articles" class="inline-flex items-center border-b-2 border-transparent px-1 pt-1 text-sm font-medium hover:border-blue-600">Articles</a>
+							<a href="/download" class="inline-flex items-center border-b-2 border-transparent px-1 pt-1 text-sm font-medium hover:border-blue-600">Download</a>
 						</div>
 						<div class="-mr-2 flex items-center sm:hidden">
 							<!-- Mobile menu button -->
-							<button id="mobile-menu-button" type="button" class="relative inline-flex items-center justify-center rounded-md p-2 text-gray-100 hover:text-gray-50 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:outline-hidden" aria-controls="mobile-menu" aria-expanded="false" >
+							<button id="mobile-menu-button" type="button" class="relative inline-flex items-center justify-center rounded-md p-2 hover:bg-gray-100 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:outline-hidden cursor-pointer" aria-controls="mobile-menu" aria-expanded="false" >
 								<span class="absolute -inset-0.5"></span>
 								<span class="sr-only">Open main menu</span>
 								<!-- Menu open: "hidden", Menu closed: "block" -->
@@ -49,11 +49,9 @@
 			</div>
 		</nav>
 	
-		<main class="flex-1 bg-gray-100">
-			<div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-				{{ block "main" . }}
-				{{ end }}
-			</div>
+		<main>
+			{{ block "main" . }}
+			{{ end }}
 		</main>
 
 		<footer class="flex h-16 items-center justify-center">
