@@ -494,6 +494,7 @@ WHERE
 	return
 }
 
+// NOTE that this function MUST return sections in PEER_ORDER as that guarantee is used by the caller
 func GetAllSectionsForDocument(documentID string, documentationID string, systemID string, db *sql.DB) (arr []*Section, err error) {
 	stmt, err := db.Prepare(`
 SELECT

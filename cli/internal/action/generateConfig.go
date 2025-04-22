@@ -83,6 +83,11 @@ func GenerateConfig(args *GenerateConfigArgs) error {
 
 		// Loop through each document to generate rules for it
 		for _, doc := range documents {
+			// Get the rule for this document (if any)
+			// TODO
+
+			// If there is no rule, create it
+			// TODO
 			// If IncludePurpose flag is set, get purpose
 			purpose := ""
 			if args.IncludePurpose {
@@ -111,7 +116,6 @@ func GenerateConfig(args *GenerateConfigArgs) error {
 				slog.Debug("action.GenerateConfig could not generate sections for a document from current db", "document", doc.ID, "doc", d.ID, "system", system.ID, "error", err)
 				return err
 			}
-
 			ruleDoc.Sections = append(ruleDoc.Sections, newSections...)
 
 			// Add ruleDoc to rule
