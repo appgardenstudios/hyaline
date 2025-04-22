@@ -27,7 +27,6 @@ Taking these people and grouping them together into common buckets is called cre
 ### Documentation
 Now that we have a set of objectives and a list of persona(s) for each objective, we can begin to think about what documentation should/needs to exist. We can ask ourselves the question "What does person(a) X need to know to accomplish objective Y"? That's it. The answer to that question is what you need to include in your documentation.
 
-
 # Creating Documentation
 You may have noticed that there are almost infinite people and objectives for which we _could_ create documentation for, so how do we choose what to create?
 The tldr is that you need to perform a cost and risk analysis comparing the cost to create and update the documentation with the cost of any and all alternatives as compared to the risk(s) posed by each alternative. What do we mean by alternatives? Let's take for example the scenario where a manager needs to update the interest rate for a product in a back-office system. Option 1 is creating a very granular how-to document that goes step-by-step of exactly what to do, including screenshots. Option 2 is to rely on the experience of the manager to know generally what to do and provide documentation that provides a simple high-level check-list and a link to the back-office documentation. Option 3 (not recommended) is to have no documentation or written procedure, and rely on the internal knowledge of the manager to complete the task. Each of these options comes with costs, both to create the documentation and the cost(s) associated with a failure to meet the objective.
@@ -40,9 +39,10 @@ Also note that if we have more than one Persona we would need to do this for eac
 
 This might sound onerous, but once you have a set of high-level personas and objectives compiled the addition of another persona and/or objective is relatively low. And this also does not have to be highly rigorous or detailed. It could be as straightforward as using the roles already within the company and focusing on a small set of high-level or abstract objectives. The main purpose and use is to provide the context and framework for having productive discussions around what to document (or not) within an organization. 
 
+# Bringing it all together
+We've talked about what documentation is and how to go about deciding what documentation to create. Now let's touch on the original purpose of this article: why does every piece of documentation need a purpose. Again, the answer is two-fold: 1) to help those creating/maintaining create documentation that actually helps the persona(s) achieve their objective(s), and 2) to provide the context necessary to get the granularity correct based on the cost(s) of maintaining the documentation and the risks that the documentation is working to address.
 
-
-
+So when you hear the words "don't forget to update the documentation", you should hopefully be able to understand what documentation they are referring to, and you should be equipped with the ability to talk about the purpose of that documentation to make sure it is updated to meet that purpose.
 
 
 
