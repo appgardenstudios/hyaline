@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"hyaline/internal/config"
+	"hyaline/internal/llm"
 	"hyaline/internal/sqlite"
 	"log/slog"
 	"path/filepath"
@@ -82,14 +83,22 @@ func GenerateConfig(args *GenerateConfigArgs) error {
 
 		// Loop through each document to generate rules for it
 		for _, doc := range documents {
+			// If IncludePurpose flag is set, get purpose
+			purpose := ""
+			if args.IncludePurpose {
+				purpose, err = llm.GetPurpose()
+				if err != nil {
+					slog.Debug("action.GenerateConfig could not get purpose for document", "document", doc.ID, "doc", d.ID, "system", system.ID, "error", err)
+					return err
+				}
+			}
+
 			// Create rule for the document
 			ruleDoc := config.RuleDocument{
 				Path:     doc.ID,
+				Purpose:  purpose,
 				Required: true,
 			}
-
-			// If IncludePurpose flag is set, generate purpose
-			// TODO
 
 			// Get and add sections for this document
 			sections, err := sqlite.GetAllSectionsForDocument(doc.ID, d.ID, system.ID, currentDB)
@@ -97,7 +106,13 @@ func GenerateConfig(args *GenerateConfigArgs) error {
 				slog.Debug("action.GenerateConfig could not get sections for a document from current db", "document", doc.ID, "doc", d.ID, "system", system.ID, "error", err)
 				return err
 			}
-			ruleDoc.Sections = append(ruleDoc.Sections, createRuleSections(sections, "")...)
+			newSections, err := createRuleSections(sections, "", args.IncludePurpose)
+			if err != nil {
+				slog.Debug("action.GenerateConfig could not generate sections for a document from current db", "document", doc.ID, "doc", d.ID, "system", system.ID, "error", err)
+				return err
+			}
+
+			ruleDoc.Sections = append(ruleDoc.Sections, newSections...)
 
 			// Add ruleDoc to rule
 			rule.Documents = append(rule.Documents, ruleDoc)
@@ -108,38 +123,46 @@ func GenerateConfig(args *GenerateConfigArgs) error {
 	}
 
 	// Output new config
-	fmt.Println("system", system)
-	fmt.Println("rules", newCfg.Rules)
-
 	yml, err := yaml.Marshal(newCfg)
 	if err != nil {
 		slog.Debug("action.GenerateConfig could not marshal yaml", "error", err)
 		return err
 	}
-	fmt.Println("config", string(yml))
+	// TODO write to output file
+	fmt.Println(string(yml))
 
 	return nil
 }
 
-func createRuleSections(sections []*sqlite.Section, parentID string) []config.RuleDocumentSection {
-	docSections := []config.RuleDocumentSection{}
-
+func createRuleSections(sections []*sqlite.Section, parentID string, includePurpose bool) (docSections []config.RuleDocumentSection, err error) {
 	for _, section := range sections {
 		// TODO guard against circular issues by ensuring that no ID is the same as its parent ID
 
 		if section.ParentID == parentID {
-			// If IncludePurpose flag is set, generate purpose
-			// TODO
+			// If IncludePurpose flag is set, get purpose
 			purpose := ""
+			if includePurpose {
+				purpose, err = llm.GetPurpose()
+				if err != nil {
+					slog.Debug("action.GenerateConfig could not get purpose for section", "section", section.ID, "error", err)
+					return
+				}
+			}
+
+			var childDocSections []config.RuleDocumentSection
+			childDocSections, err = createRuleSections(sections, section.ID, includePurpose)
+			if err != nil {
+				return
+			}
 
 			docSections = append(docSections, config.RuleDocumentSection{
 				ID:       section.Name,
 				Purpose:  purpose,
 				Required: true,
-				Sections: createRuleSections(sections, section.ID),
+				Sections: childDocSections,
 			})
 		}
 	}
 
-	return docSections
+	return docSections, nil
 }

@@ -82,6 +82,13 @@ generate-config:
 	echo "---"
 	./hyaline --debug generate config --config ./_example/config.yml --current ./current.db --system generate-config --output ./generated-config.yml
 
+.PHONY: generate-config-with-purpose
+ generate-config-with-purpose:
+	rm -f ./generated-config.yml
+	make build
+	echo "---"
+	./hyaline --debug generate config --config ./_example/config.yml --current ./current.db --system generate-config --output ./generated-config.yml --include-purpose
+
 .PHONY: merge
 merge:
 	rm -f ./merged.db
