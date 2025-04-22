@@ -1,6 +1,44 @@
 ---
 title: "Purpose"
 ---
+
+* Context
+  * People are just trying to do things, and they have (or need to have) the know how of how to do it
+  * How do we acquire the know how? experience or external, for external, people, bots, or docs
+* Documentation
+  * Show diagram
+  * > (for the sake of our purposes here) In tech, the purpose of documentation is the asynchronous transmission of the knowledge a person needs to accomplish their objective.
+  * Knowledge
+    * Define knowledge (via >)
+    * Point out that you may already have that knowledge, can acquire it through experience/trial/error, can acquire it via other people, or can acquire it via documentation
+  * Person(a)
+    * Define persona (via >)
+  * Objective
+    * Define objective (via >)
+* Create(ing) Your Documentation with Purpose
+  * You can create documentation however you want, but it helps to start with a purpose and build from there
+  * Purpose
+    * What are your objectives
+    * What are your personas
+    * What documentation do you need
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # Purpose
 * Have you ever witnessed a conversation where someone says “make sure to update the documentation”, and then …
 * Purpose is defined as "the reason for which something is done or created or for which something exists". (Oxford Languages)
