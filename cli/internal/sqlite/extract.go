@@ -494,6 +494,43 @@ WHERE
 	return
 }
 
+func GetAllSectionsForDocument(documentID string, documentationID string, systemID string, db *sql.DB) (arr []*Section, err error) {
+	stmt, err := db.Prepare(`
+SELECT
+  ID, DOCUMENT_ID, DOCUMENTATION_ID, SYSTEM_ID, NAME, PARENT_ID, PEER_ORDER, EXTRACTED_DATA
+FROM
+  SECTION
+WHERE
+  DOCUMENT_ID = ?
+  AND DOCUMENTATION_ID = ?
+  AND SYSTEM_ID = ?
+ORDER BY
+  ID, DOCUMENT_ID, DOCUMENTATION_ID, SYSTEM_ID, PARENT_ID, PEER_ORDER
+`)
+	if err != nil {
+		return
+	}
+
+	rows, err := stmt.Query(documentID, documentationID, systemID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var row Section
+		if err := rows.Scan(&row.ID, &row.DocumentID, &row.DocumentationID, &row.SystemID, &row.Name, &row.ParentID, &row.PeerOrder, &row.ExtractedData); err != nil {
+			return arr, err
+		}
+		arr = append(arr, &row)
+	}
+	if err = rows.Err(); err != nil {
+		return arr, err
+	}
+
+	return
+}
+
 type PullRequest struct {
 	ID       string
 	SystemID string

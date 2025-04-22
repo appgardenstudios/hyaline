@@ -1,27 +1,27 @@
 package config
 
 type Config struct {
-	LLM     LLM      `yaml:"llm"`
-	GitHub  GitHub   `yaml:"github"`
-	Systems []System `yaml:"systems"`
-	Rules   []Rule   `yaml:"rules"`
+	LLM     LLM      `yaml:"llm,omitempty"`
+	GitHub  GitHub   `yaml:"github,omitempty"`
+	Systems []System `yaml:"systems,omitempty"`
+	Rules   []Rule   `yaml:"rules,omitempty"`
 }
 
 type LLM struct {
-	Provider string `yaml:"provider"`
-	Model    string `yaml:"model"`
-	Key      string `yaml:"key"`
+	Provider string `yaml:"provider,omitempty"`
+	Model    string `yaml:"model,omitempty"`
+	Key      string `yaml:"key,omitempty"`
 }
 
 type GitHub struct {
-	Token string `yaml:"token"`
+	Token string `yaml:"token,omitempty"`
 }
 
 type System struct {
-	ID     string  `yaml:"id"`
-	Code   []Code  `yaml:"code"`
-	Docs   []Doc   `yaml:"docs"`
-	Checks []Check `yaml:"checks"`
+	ID     string  `yaml:"id,omitempty"`
+	Code   []Code  `yaml:"code,omitempty"`
+	Docs   []Doc   `yaml:"docs,omitempty"`
+	Checks []Check `yaml:"checks,omitempty"`
 }
 
 type Extractor string
@@ -55,54 +55,54 @@ const (
 )
 
 type FsOptions struct {
-	Path string `yaml:"path"`
+	Path string `yaml:"path,omitempty"`
 }
 
 type GitOptions struct {
-	Repo     string             `yaml:"repo"`
-	Branch   string             `yaml:"branch"`
-	Path     string             `yaml:"path"`
-	Clone    bool               `yaml:"clone"`
-	HTTPAuth GitHTTPAuthOptions `yaml:"httpAuth"`
-	SSHAuth  GitSSHAuthOptions  `yaml:"sshAuth"`
+	Repo     string             `yaml:"repo,omitempty"`
+	Branch   string             `yaml:"branch,omitempty"`
+	Path     string             `yaml:"path,omitempty"`
+	Clone    bool               `yaml:"clone,omitempty"`
+	HTTPAuth GitHTTPAuthOptions `yaml:"httpAuth,omitempty"`
+	SSHAuth  GitSSHAuthOptions  `yaml:"sshAuth,omitempty"`
 }
 
 type HttpOptions struct {
-	BaseURL string            `yaml:"baseUrl"`
-	Start   string            `yaml:"start"`
-	Headers map[string]string `yaml:"headers"`
+	BaseURL string            `yaml:"baseUrl,omitempty"`
+	Start   string            `yaml:"start,omitempty"`
+	Headers map[string]string `yaml:"headers,omitempty"`
 }
 
 type GitHTTPAuthOptions struct {
-	Username string `yaml:"username"`
-	Password string `yaml:"password"`
+	Username string `yaml:"username,omitempty"`
+	Password string `yaml:"password,omitempty"`
 }
 
 type GitSSHAuthOptions struct {
-	User     string `yaml:"user"`
-	PEM      string `yaml:"pem"`
-	Password string `yaml:"password"`
+	User     string `yaml:"user,omitempty"`
+	PEM      string `yaml:"pem,omitempty"`
+	Password string `yaml:"password,omitempty"`
 }
 
 type Code struct {
-	ID         string     `yaml:"id"`
-	Extractor  Extractor  `yaml:"extractor"`
-	FsOptions  FsOptions  `yaml:"fs"`
-	GitOptions GitOptions `yaml:"git"`
-	Include    []string   `yaml:"include"`
-	Exclude    []string   `yaml:"exclude"`
+	ID         string     `yaml:"id,omitempty"`
+	Extractor  Extractor  `yaml:"extractor,omitempty"`
+	FsOptions  FsOptions  `yaml:"fs,omitempty"`
+	GitOptions GitOptions `yaml:"git,omitempty"`
+	Include    []string   `yaml:"include,omitempty"`
+	Exclude    []string   `yaml:"exclude,omitempty"`
 }
 
 type Doc struct {
-	ID          string         `yaml:"id"`
-	Type        DocType        `yaml:"type"`
-	HTML        DocHTMLOptions `yaml:"html"`
-	Extractor   Extractor      `yaml:"extractor"`
-	FsOptions   FsOptions      `yaml:"fs"`
-	GitOptions  GitOptions     `yaml:"git"`
-	HttpOptions HttpOptions    `yaml:"http"`
-	Include     []string       `yaml:"include"`
-	Exclude     []string       `yaml:"exclude"`
+	ID          string         `yaml:"id,omitempty"`
+	Type        DocType        `yaml:"type,omitempty"`
+	HTML        DocHTMLOptions `yaml:"html,omitempty"`
+	Extractor   Extractor      `yaml:"extractor,omitempty"`
+	FsOptions   FsOptions      `yaml:"fs,omitempty"`
+	GitOptions  GitOptions     `yaml:"git,omitempty"`
+	HttpOptions HttpOptions    `yaml:"http,omitempty"`
+	Include     []string       `yaml:"include,omitempty"`
+	Exclude     []string       `yaml:"exclude,omitempty"`
 }
 
 type DocType string
@@ -126,33 +126,33 @@ const (
 )
 
 type DocHTMLOptions struct {
-	Selector string `yaml:"selector"`
+	Selector string `yaml:"selector,omitempty"`
 }
 
 type Check struct {
-	ID          string                 `yaml:"id"`
-	Description string                 `yaml:"description"`
-	Rule        string                 `yaml:"rule"`
-	Options     map[string]interface{} `yaml:"options"`
+	ID          string                 `yaml:"id,omitempty"`
+	Description string                 `yaml:"description,omitempty"`
+	Rule        string                 `yaml:"rule,omitempty"`
+	Options     map[string]interface{} `yaml:"options,omitempty"`
 }
 
 type Rule struct {
-	ID        string         `yaml:"id"`
-	Documents []RuleDocument `yaml:"documents"`
+	ID        string         `yaml:"id,omitempty"`
+	Documents []RuleDocument `yaml:"documents,omitempty"`
 }
 
 type RuleDocument struct {
-	Path     string                `yaml:"path"`
-	Purpose  string                `yaml:"purpose"`
-	Required bool                  `yaml:"required"`
-	Ignore   bool                  `yaml:"ignore"`
-	Sections []RuleDocumentSection `yaml:"sections"`
+	Path     string                `yaml:"path,omitempty"`
+	Purpose  string                `yaml:"purpose,omitempty"`
+	Required bool                  `yaml:"required,omitempty"`
+	Ignore   bool                  `yaml:"ignore,omitempty"`
+	Sections []RuleDocumentSection `yaml:"sections,omitempty"`
 }
 
 type RuleDocumentSection struct {
-	ID       string                `yaml:"id"`
-	Purpose  string                `yaml:"purpose"`
-	Required bool                  `yaml:"required"`
-	Ignore   bool                  `yaml:"ignore"`
-	Sections []RuleDocumentSection `yaml:"sections"`
+	ID       string                `yaml:"id,omitempty"`
+	Purpose  string                `yaml:"purpose,omitempty"`
+	Required bool                  `yaml:"required,omitempty"`
+	Ignore   bool                  `yaml:"ignore,omitempty"`
+	Sections []RuleDocumentSection `yaml:"sections,omitempty"`
 }

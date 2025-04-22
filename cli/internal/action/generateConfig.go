@@ -8,6 +8,8 @@ import (
 	"log/slog"
 	"path/filepath"
 
+	"gopkg.in/yaml.v3"
+
 	_ "modernc.org/sqlite"
 )
 
@@ -36,6 +38,9 @@ func GenerateConfig(args *GenerateConfigArgs) error {
 		return err
 	}
 
+	// Ensure output location does not exist
+	// TODO
+
 	// Open current db
 	currentAbsPath, err := filepath.Abs(args.Current)
 	if err != nil {
@@ -57,33 +62,84 @@ func GenerateConfig(args *GenerateConfigArgs) error {
 		return err
 	}
 
-	// Make a copy of the rules so we don't overwrite anything
-	// TODO rules := cfg.Rules
+	// New config
+	newCfg := config.Config{}
 
 	// Loop through docs in our current system and generate a config for each
 	for _, d := range system.Docs {
+		// Create a rule for this documentation
+		rule := config.Rule{
+			ID:        d.ID,
+			Documents: []config.RuleDocument{},
+		}
+
 		// Get a list of Documents from the db for this doc ID
 		documents, err := sqlite.GetAllDocument(d.ID, system.ID, currentDB)
 		if err != nil {
-			slog.Debug("action.GenerateConfig could not get documents from current db", "document", d.ID, "system", system.ID, "error", err)
+			slog.Debug("action.GenerateConfig could not get documents from current db", "doc", d.ID, "system", system.ID, "error", err)
 			return err
 		}
 
 		// Loop through each document to generate rules for it
 		for _, doc := range documents {
-			// Get the corresponding rules for this document
+			// Create rule for the document
+			ruleDoc := config.RuleDocument{
+				Path:     doc.ID,
+				Required: true,
+			}
+
+			// If IncludePurpose flag is set, generate purpose
 			// TODO
 
-			// TODO if rule does not exist, create it
-			// TODO check sections against the rule and create sections that don't exist
-			// TODO handle adding document to new rule set or updating existing document in rules
+			// Get and add sections for this document
+			sections, err := sqlite.GetAllSectionsForDocument(doc.ID, d.ID, system.ID, currentDB)
+			if err != nil {
+				slog.Debug("action.GenerateConfig could not get sections for a document from current db", "document", doc.ID, "doc", d.ID, "system", system.ID, "error", err)
+				return err
+			}
+			ruleDoc.Sections = append(ruleDoc.Sections, createRuleSections(sections, "")...)
 
+			// Add ruleDoc to rule
+			rule.Documents = append(rule.Documents, ruleDoc)
 		}
 
+		// Add rule to config
+		newCfg.Rules = append(newCfg.Rules, rule)
 	}
 
+	// Output new config
 	fmt.Println("system", system)
-	fmt.Println("rules", cfg.Rules)
+	fmt.Println("rules", newCfg.Rules)
+
+	yml, err := yaml.Marshal(newCfg)
+	if err != nil {
+		slog.Debug("action.GenerateConfig could not marshal yaml", "error", err)
+		return err
+	}
+	fmt.Println("config", string(yml))
 
 	return nil
+}
+
+func createRuleSections(sections []*sqlite.Section, parentID string) []config.RuleDocumentSection {
+	docSections := []config.RuleDocumentSection{}
+
+	for _, section := range sections {
+		// TODO guard against circular issues by ensuring that no ID is the same as its parent ID
+
+		if section.ParentID == parentID {
+			// If IncludePurpose flag is set, generate purpose
+			// TODO
+			purpose := ""
+
+			docSections = append(docSections, config.RuleDocumentSection{
+				ID:       section.Name,
+				Purpose:  purpose,
+				Required: true,
+				Sections: createRuleSections(sections, section.ID),
+			})
+		}
+	}
+
+	return docSections
 }
