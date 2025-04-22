@@ -101,7 +101,7 @@ func GenerateConfig(args *GenerateConfigArgs) error {
 				// If IncludePurpose flag is set, get purpose
 				purpose := ""
 				if args.IncludePurpose {
-					purpose, err = llm.GetPurpose()
+					purpose, err = llm.GetDocumentPurpose(doc.ID, doc.ExtractedData)
 					if err != nil {
 						slog.Debug("action.GenerateConfig could not get purpose for document", "document", doc.ID, "doc", d.ID, "system", system.ID, "error", err)
 						return err
@@ -167,7 +167,7 @@ func createRuleSections(sections []*sqlite.Section, parentID string, includePurp
 			// If IncludePurpose flag is set, get purpose
 			purpose := ""
 			if includePurpose {
-				purpose, err = llm.GetPurpose()
+				purpose, err = llm.GetSectionPurpose()
 				if err != nil {
 					slog.Debug("action.GenerateConfig could not get purpose for section", "section", section.ID, "error", err)
 					return
