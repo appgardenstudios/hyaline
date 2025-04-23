@@ -8,12 +8,30 @@ type Config struct {
 }
 
 type LLM struct {
-	Provider string `yaml:"provider,omitempty"`
-	Model    string `yaml:"model,omitempty"`
-	Key      string `yaml:"key,omitempty"`
+	Provider LLMProvider `yaml:"provider,omitempty"`
+	Model    string      `yaml:"model,omitempty"`
+	Key      string      `yaml:"key,omitempty"`
 }
 
-// TODO add provider enum and validation of the provider (if set)
+type LLMProvider string
+
+func (p LLMProvider) String() string {
+	return string(p)
+}
+
+func (p LLMProvider) IsValidLLMProvider() bool {
+	switch p {
+	case LLMAnthropic, LLMTesting:
+		return true
+	default:
+		return false
+	}
+}
+
+const (
+	LLMAnthropic LLMProvider = "anthropic"
+	LLMTesting   LLMProvider = "testing"
+)
 
 type GitHub struct {
 	Token string `yaml:"token,omitempty"`
