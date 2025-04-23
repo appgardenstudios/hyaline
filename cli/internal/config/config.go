@@ -13,6 +13,8 @@ type LLM struct {
 	Key      string `yaml:"key,omitempty"`
 }
 
+// TODO add provider enum and validation of the provider (if set)
+
 type GitHub struct {
 	Token string `yaml:"token,omitempty"`
 }

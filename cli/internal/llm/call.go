@@ -9,6 +9,8 @@ func callLLM(systemPrompt string, userPrompt string, cfg *config.LLM) (result st
 	switch cfg.Provider {
 	case "anthropic":
 		return callAnthropic(systemPrompt, userPrompt, cfg)
+	case "testing":
+		return "LLM TEST RESPONSE", nil
 	default:
 		err = fmt.Errorf("unsupported provider: %s", cfg.Provider)
 	}
