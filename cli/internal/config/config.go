@@ -21,7 +21,7 @@ func (p LLMProvider) String() string {
 
 func (p LLMProvider) IsValidLLMProvider() bool {
 	switch p {
-	case LLMAnthropic, LLMTesting:
+	case LLMProviderAnthropic, LLMProviderTesting:
 		return true
 	default:
 		return false
@@ -29,8 +29,8 @@ func (p LLMProvider) IsValidLLMProvider() bool {
 }
 
 const (
-	LLMAnthropic LLMProvider = "anthropic"
-	LLMTesting   LLMProvider = "testing"
+	LLMProviderAnthropic LLMProvider = "anthropic"
+	LLMProviderTesting   LLMProvider = "testing"
 )
 
 type GitHub struct {
