@@ -3,6 +3,7 @@ package action
 import (
 	"database/sql"
 	"errors"
+	"fmt"
 	"hyaline/internal/config"
 	"hyaline/internal/llm"
 	"hyaline/internal/sqlite"
@@ -162,7 +163,11 @@ func GenerateConfig(args *GenerateConfigArgs) error {
 
 func createRuleSections(sections []*sqlite.Section, parentID string, includePurpose bool, documentName string, documentPurpose string, cfg *config.LLM) (docSections []config.RuleDocumentSection, err error) {
 	for _, section := range sections {
-		// TODO guard against circular issues by ensuring that no ID is the same as its parent ID
+		// Guard against circular issues by ensuring that no ID is the same as its parent ID
+		if section.ID == section.ParentID {
+			err = fmt.Errorf("circular section found: %s", section.ID)
+			return
+		}
 
 		if section.ParentID == parentID {
 			// If IncludePurpose flag is set, get purpose

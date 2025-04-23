@@ -168,9 +168,16 @@ func validate(cfg *Config) (err error) {
 		}
 	}
 
-	// Validate rules
-	// TODO ensure that no rules have the same ID
-	// TODO ensure that 2 documents in different rule sets don't have the same path if they are both referenced by the same system.doc (i.e. no overlap)
+	// Validate Rules
+	ruleIDs := map[string]struct{}{}
+	for _, rule := range cfg.Rules {
+		if _, ok := ruleIDs[rule.ID]; ok {
+			err = errors.New("duplicate rule id detected: " + rule.ID)
+			slog.Debug("config.Validate found duplicate rule id", "rule", rule.ID, "error", err)
+			return
+		}
+		ruleIDs[rule.ID] = struct{}{}
+	}
 
 	return
 }

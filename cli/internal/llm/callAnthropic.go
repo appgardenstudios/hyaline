@@ -13,7 +13,7 @@ func callAnthropic(systemPrompt string, userPrompt string, cfg *config.LLM) (res
 		option.WithAPIKey(cfg.Key),
 	)
 	var message *anthropic.Message
-	message, err = client.Messages.New(context.TODO(), anthropic.MessageNewParams{
+	message, err = client.Messages.New(context.Background(), anthropic.MessageNewParams{
 		MaxTokens: 1024,
 		System: []anthropic.TextBlockParam{
 			{Text: systemPrompt},

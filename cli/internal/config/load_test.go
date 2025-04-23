@@ -190,27 +190,33 @@ func TestValidate(t *testing.T) {
 	invalidLLM := LLM{
 		Provider: "invalid",
 	}
+	rule := Rule{
+		ID: "test",
+	}
 
 	var tests = []struct {
 		llm         LLM
 		code        []Code
 		docs        []Doc
+		rules       []Rule
 		shouldError bool
 	}{
-		{LLM{}, []Code{}, []Doc{}, false},
-		{LLM{}, []Code{code}, []Doc{}, false},
-		{LLM{}, []Code{}, []Doc{doc}, false},
-		{LLM{}, []Code{code}, []Doc{doc}, false},
-		{LLM{}, []Code{code, code}, []Doc{doc}, true},
-		{LLM{}, []Code{code}, []Doc{doc, doc}, true},
-		{LLM{}, []Code{code}, []Doc{invalidDoc}, true},
-		{LLM{}, []Code{invalidCodeInclude}, []Doc{}, true},
-		{LLM{}, []Code{invalidCodeExclude}, []Doc{}, true},
-		{LLM{}, []Code{}, []Doc{invalidDocInclude}, true},
-		{LLM{}, []Code{}, []Doc{invalidDocExclude}, true},
-		{LLM{}, []Code{invalidCodeExtractor}, []Doc{}, true},
-		{LLM{}, []Code{}, []Doc{invalidDocExtractor}, true},
-		{invalidLLM, []Code{}, []Doc{}, true},
+		{LLM{}, []Code{}, []Doc{}, []Rule{}, false},
+		{LLM{}, []Code{code}, []Doc{}, []Rule{}, false},
+		{LLM{}, []Code{}, []Doc{doc}, []Rule{}, false},
+		{LLM{}, []Code{code}, []Doc{doc}, []Rule{}, false},
+		{LLM{}, []Code{code, code}, []Doc{doc}, []Rule{}, true},
+		{LLM{}, []Code{code}, []Doc{doc, doc}, []Rule{}, true},
+		{LLM{}, []Code{code}, []Doc{invalidDoc}, []Rule{}, true},
+		{LLM{}, []Code{invalidCodeInclude}, []Doc{}, []Rule{}, true},
+		{LLM{}, []Code{invalidCodeExclude}, []Doc{}, []Rule{}, true},
+		{LLM{}, []Code{}, []Doc{invalidDocInclude}, []Rule{}, true},
+		{LLM{}, []Code{}, []Doc{invalidDocExclude}, []Rule{}, true},
+		{LLM{}, []Code{invalidCodeExtractor}, []Doc{}, []Rule{}, true},
+		{LLM{}, []Code{}, []Doc{invalidDocExtractor}, []Rule{}, true},
+		{invalidLLM, []Code{}, []Doc{}, []Rule{}, true},
+		{LLM{}, []Code{}, []Doc{}, []Rule{rule}, false},
+		{LLM{}, []Code{}, []Doc{}, []Rule{rule, rule}, true},
 	}
 
 	for i, test := range tests {
@@ -221,6 +227,7 @@ func TestValidate(t *testing.T) {
 				Code: test.code,
 				Docs: test.docs,
 			}},
+			Rules: test.rules,
 		}
 
 		err := validate(cfg)
