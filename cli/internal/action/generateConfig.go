@@ -122,7 +122,7 @@ func GenerateConfig(args *GenerateConfigArgs) error {
 					slog.Debug("action.GenerateConfig could not get sections for a document from current db", "document", doc.ID, "doc", d.ID, "system", system.ID, "error", err)
 					return err
 				}
-				newSections, err := createRuleSections(sections, "", args.IncludePurpose)
+				newSections, err := createRuleSections(sections, "", args.IncludePurpose, doc.ID, purpose, &cfg.LLM)
 				if err != nil {
 					slog.Debug("action.GenerateConfig could not generate sections for a document from current db", "document", doc.ID, "doc", d.ID, "system", system.ID, "error", err)
 					return err
@@ -160,7 +160,7 @@ func GenerateConfig(args *GenerateConfigArgs) error {
 	return nil
 }
 
-func createRuleSections(sections []*sqlite.Section, parentID string, includePurpose bool) (docSections []config.RuleDocumentSection, err error) {
+func createRuleSections(sections []*sqlite.Section, parentID string, includePurpose bool, documentName string, documentPurpose string, cfg *config.LLM) (docSections []config.RuleDocumentSection, err error) {
 	for _, section := range sections {
 		// TODO guard against circular issues by ensuring that no ID is the same as its parent ID
 
@@ -168,7 +168,7 @@ func createRuleSections(sections []*sqlite.Section, parentID string, includePurp
 			// If IncludePurpose flag is set, get purpose
 			purpose := ""
 			if includePurpose {
-				purpose, err = llm.GetSectionPurpose()
+				purpose, err = llm.GetSectionPurpose(documentName, documentPurpose, section.Name, section.ExtractedData, cfg)
 				if err != nil {
 					slog.Debug("action.GenerateConfig could not get purpose for section", "section", section.ID, "error", err)
 					return
@@ -176,7 +176,7 @@ func createRuleSections(sections []*sqlite.Section, parentID string, includePurp
 			}
 
 			var childDocSections []config.RuleDocumentSection
-			childDocSections, err = createRuleSections(sections, section.ID, includePurpose)
+			childDocSections, err = createRuleSections(sections, section.ID, includePurpose, documentName, documentPurpose, cfg)
 			if err != nil {
 				return
 			}

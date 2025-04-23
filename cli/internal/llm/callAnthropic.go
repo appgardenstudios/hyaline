@@ -27,7 +27,7 @@ func callAnthropic(systemPrompt string, userPrompt string, cfg *config.LLM) (res
 		Model: cfg.Model,
 	})
 
-	if err != nil {
+	if err == nil {
 		result = message.Content[len(message.Content)-1].Text
 	}
 
