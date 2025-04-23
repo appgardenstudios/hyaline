@@ -187,29 +187,35 @@ func TestValidate(t *testing.T) {
 		Type:      "md",
 		Extractor: "invalid",
 	}
+	invalidLLM := LLM{
+		Provider: "invalid",
+	}
 
 	var tests = []struct {
+		llm         LLM
 		code        []Code
 		docs        []Doc
 		shouldError bool
 	}{
-		{[]Code{}, []Doc{}, false},
-		{[]Code{code}, []Doc{}, false},
-		{[]Code{}, []Doc{doc}, false},
-		{[]Code{code}, []Doc{doc}, false},
-		{[]Code{code, code}, []Doc{doc}, true},
-		{[]Code{code}, []Doc{doc, doc}, true},
-		{[]Code{code}, []Doc{invalidDoc}, true},
-		{[]Code{invalidCodeInclude}, []Doc{}, true},
-		{[]Code{invalidCodeExclude}, []Doc{}, true},
-		{[]Code{}, []Doc{invalidDocInclude}, true},
-		{[]Code{}, []Doc{invalidDocExclude}, true},
-		{[]Code{invalidCodeExtractor}, []Doc{}, true},
-		{[]Code{}, []Doc{invalidDocExtractor}, true},
+		{LLM{}, []Code{}, []Doc{}, false},
+		{LLM{}, []Code{code}, []Doc{}, false},
+		{LLM{}, []Code{}, []Doc{doc}, false},
+		{LLM{}, []Code{code}, []Doc{doc}, false},
+		{LLM{}, []Code{code, code}, []Doc{doc}, true},
+		{LLM{}, []Code{code}, []Doc{doc, doc}, true},
+		{LLM{}, []Code{code}, []Doc{invalidDoc}, true},
+		{LLM{}, []Code{invalidCodeInclude}, []Doc{}, true},
+		{LLM{}, []Code{invalidCodeExclude}, []Doc{}, true},
+		{LLM{}, []Code{}, []Doc{invalidDocInclude}, true},
+		{LLM{}, []Code{}, []Doc{invalidDocExclude}, true},
+		{LLM{}, []Code{invalidCodeExtractor}, []Doc{}, true},
+		{LLM{}, []Code{}, []Doc{invalidDocExtractor}, true},
+		{invalidLLM, []Code{}, []Doc{}, true},
 	}
 
-	for _, test := range tests {
+	for i, test := range tests {
 		cfg := &Config{
+			LLM: test.llm,
 			Systems: []System{{
 				ID:   "test-system",
 				Code: test.code,
@@ -219,6 +225,7 @@ func TestValidate(t *testing.T) {
 
 		err := validate(cfg)
 		if (err == nil && test.shouldError) || (err != nil && !test.shouldError) {
+			t.Logf("Error detected on test %d", i)
 			t.Errorf("got %v, want %t", err, test.shouldError)
 		}
 	}
