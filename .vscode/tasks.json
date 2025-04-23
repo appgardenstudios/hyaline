@@ -13,6 +13,16 @@
       "presentation":{
         "reveal": "silent"
       }
+    },{
+      "label": "cleanup-generate",
+      "type": "shell",
+      "command": "rm -f generated-config.yml",
+      "options":{
+        "cwd": "${workspaceFolder}/cli/"
+      },
+      "presentation":{
+        "reveal": "silent"
+      }
     }
   ]
 }

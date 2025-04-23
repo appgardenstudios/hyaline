@@ -1,19 +1,21 @@
 package llm
 
-import "fmt"
+import (
+	"fmt"
+	"hyaline/internal/config"
+)
 
-func GetDocumentPurpose(filename string, contents string) (string, error) {
+func GetDocumentPurpose(filename string, contents string, cfg *config.LLM) (result string, err error) {
 	systemPrompt := "You are a senior technical writer who writes clear and accurate system documentation."
-	prompt := fmt.Sprintf(`Write 1 to 2 sentences explaining the purpose of the document in <document>. The name of the document is %s. Be concise and accurate
+	userPrompt := fmt.Sprintf(`Write 1 to 2 sentences explaining the purpose of the document in <document>. The name of the document is %s. Be concise and accurate
 
 <document>
 %s
 </document>`, filename, contents)
 
-	fmt.Println(systemPrompt)
-	fmt.Println(prompt)
+	result, err = callLLM(systemPrompt, userPrompt, cfg)
 
-	return "PURPOSE", nil
+	return
 }
 
 func GetSectionPurpose() (string, error) {

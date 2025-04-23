@@ -93,6 +93,7 @@ func GenerateConfig(args *GenerateConfigArgs) error {
 
 		// Loop through each document to generate rules for it
 		for _, doc := range documents {
+			slog.Info("Processing document", "document", doc.ID)
 			// Get the ruleDoc for this document (if any)
 			ruleDocFound, ruleDoc := config.GetRuleDocument(cfg.Rules, d.Rules, doc.ID)
 
@@ -101,7 +102,7 @@ func GenerateConfig(args *GenerateConfigArgs) error {
 				// If IncludePurpose flag is set, get purpose
 				purpose := ""
 				if args.IncludePurpose {
-					purpose, err = llm.GetDocumentPurpose(doc.ID, doc.ExtractedData)
+					purpose, err = llm.GetDocumentPurpose(doc.ID, doc.ExtractedData, &cfg.LLM)
 					if err != nil {
 						slog.Debug("action.GenerateConfig could not get purpose for document", "document", doc.ID, "doc", d.ID, "system", system.ID, "error", err)
 						return err
