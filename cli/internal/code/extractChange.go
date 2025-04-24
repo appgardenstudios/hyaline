@@ -77,7 +77,6 @@ func ExtractChange(system *config.System, head string, base string, db *sql.DB) 
 						slog.Debug("code.ExtractChange could not retrieve blob from diff", "error", err)
 						return err
 					}
-
 					err = sqlite.InsertFile(sqlite.File{
 						ID:         change.To.Name,
 						CodeID:     c.ID,
