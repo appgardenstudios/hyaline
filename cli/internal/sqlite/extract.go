@@ -12,7 +12,7 @@ CREATE TABLE SYSTEM(ID TEXT PRIMARY KEY);
 CREATE TABLE CODE(ID, SYSTEM_ID, PATH);
 CREATE TABLE FILE(ID, CODE_ID, SYSTEM_ID, ACTION, RAW_DATA);
 CREATE TABLE DOCUMENTATION(ID, SYSTEM_ID, TYPE, PATH);
-CREATE TABLE DOCUMENT(ID, DOCUMENTATION_ID, SYSTEM_ID, TYPE, ACTION, RAW_DATA, EXTRACTED_DATA);
+CREATE TABLE DOCUMENT(ID, DOCUMENTATION_ID, SYSTEM_ID, TYPE, ACTION, ORIGINAL_ID, RAW_DATA, EXTRACTED_DATA);
 CREATE TABLE SECTION(ID, DOCUMENT_ID, DOCUMENTATION_ID, SYSTEM_ID, NAME, PARENT_ID, PEER_ORDER, EXTRACTED_DATA);
 CREATE TABLE PULL_REQUEST(ID, SYSTEM_ID, TITLE, BODY);
 CREATE TABLE ISSUE(ID, SYSTEM_ID, TITLE, BODY);
@@ -335,6 +335,7 @@ type Document struct {
 	SystemID        string
 	Type            string
 	Action          string
+	OriginalID      string
 	RawData         string
 	ExtractedData   string
 }
@@ -342,14 +343,14 @@ type Document struct {
 func InsertDocument(doc Document, db *sql.DB) (err error) {
 	stmt, err := db.Prepare(`
 INSERT INTO DOCUMENT
-	(ID, DOCUMENTATION_ID, SYSTEM_ID, TYPE, ACTION, RAW_DATA, EXTRACTED_DATA)
+	(ID, DOCUMENTATION_ID, SYSTEM_ID, TYPE, ACTION, ORIGINAL_ID, RAW_DATA, EXTRACTED_DATA)
 VALUES
-	(?, ?, ?, ?, ?, ?, ?)
+	(?, ?, ?, ?, ?, ?, ?, ?)
 `)
 	if err != nil {
 		return
 	}
-	_, err = stmt.Exec(doc.ID, doc.DocumentationID, doc.SystemID, doc.Type, doc.Action, doc.RawData, doc.ExtractedData)
+	_, err = stmt.Exec(doc.ID, doc.DocumentationID, doc.SystemID, doc.Type, doc.Action, doc.OriginalID, doc.RawData, doc.ExtractedData)
 	if err != nil {
 		return
 	}
@@ -380,7 +381,7 @@ WHERE
 func GetAllDocument(documentationID string, systemID string, db *sql.DB) (arr []*Document, err error) {
 	stmt, err := db.Prepare(`
 SELECT
-  ID, DOCUMENTATION_ID, SYSTEM_ID, TYPE, ACTION, RAW_DATA, EXTRACTED_DATA
+  ID, DOCUMENTATION_ID, SYSTEM_ID, TYPE, ACTION, ORIGINAL_ID, RAW_DATA, EXTRACTED_DATA
 FROM
   DOCUMENT
 WHERE
@@ -399,7 +400,7 @@ WHERE
 
 	for rows.Next() {
 		var row Document
-		if err := rows.Scan(&row.ID, &row.DocumentationID, &row.SystemID, &row.Type, &row.Action, &row.RawData, &row.ExtractedData); err != nil {
+		if err := rows.Scan(&row.ID, &row.DocumentationID, &row.SystemID, &row.Type, &row.Action, &row.OriginalID, &row.RawData, &row.ExtractedData); err != nil {
 			return arr, err
 		}
 		arr = append(arr, &row)

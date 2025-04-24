@@ -100,6 +100,7 @@ func ExtractChange(system *config.System, head string, base string, db *sql.DB) 
 						SystemID:        system.ID,
 						Type:            d.Type.String(),
 						Action:          action.String(),
+						OriginalID:      change.From.Name,
 						RawData:         string(bytes),
 						ExtractedData:   extractedData,
 					}, db)
@@ -125,6 +126,7 @@ func ExtractChange(system *config.System, head string, base string, db *sql.DB) 
 						SystemID:        system.ID,
 						Type:            d.Type.String(),
 						Action:          action.String(),
+						OriginalID:      "",
 						RawData:         "",
 					}, db)
 					if err != nil {

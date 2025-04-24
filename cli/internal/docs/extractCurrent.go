@@ -166,6 +166,7 @@ func ExtractCurrentFs(systemID string, d *config.Doc, db *sql.DB) (err error) {
 			SystemID:        systemID,
 			Type:            d.Type.String(),
 			Action:          "",
+			OriginalID:      "",
 			RawData:         string(rawData),
 			ExtractedData:   extractedData,
 		}, db)
@@ -244,6 +245,7 @@ func ExtractCurrentGit(systemID string, d *config.Doc, db *sql.DB) (err error) {
 					SystemID:        systemID,
 					Type:            d.Type.String(),
 					Action:          "",
+					OriginalID:      "",
 					RawData:         string(bytes),
 					ExtractedData:   extractedData,
 				}, db)
@@ -388,6 +390,7 @@ func ExtractCurrentHttp(systemID string, d *config.Doc, db *sql.DB) error {
 			SystemID:        systemID,
 			Type:            d.Type.String(),
 			Action:          "",
+			OriginalID:      "",
 			RawData:         string(r.Body),
 			ExtractedData:   extractedData,
 		}, db)
