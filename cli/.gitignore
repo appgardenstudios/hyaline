@@ -10,3 +10,8 @@ hyaline-e2e
 
 # Developer environment variables used for debugging
 .env
+
+# Other files used for testing
+e2e/_output/*.yml
+e2e/_output/*.db
+generated-config.yml

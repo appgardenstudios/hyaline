@@ -187,38 +187,52 @@ func TestValidate(t *testing.T) {
 		Type:      "md",
 		Extractor: "invalid",
 	}
-
-	var tests = []struct {
-		code        []Code
-		docs        []Doc
-		shouldError bool
-	}{
-		{[]Code{}, []Doc{}, false},
-		{[]Code{code}, []Doc{}, false},
-		{[]Code{}, []Doc{doc}, false},
-		{[]Code{code}, []Doc{doc}, false},
-		{[]Code{code, code}, []Doc{doc}, true},
-		{[]Code{code}, []Doc{doc, doc}, true},
-		{[]Code{code}, []Doc{invalidDoc}, true},
-		{[]Code{invalidCodeInclude}, []Doc{}, true},
-		{[]Code{invalidCodeExclude}, []Doc{}, true},
-		{[]Code{}, []Doc{invalidDocInclude}, true},
-		{[]Code{}, []Doc{invalidDocExclude}, true},
-		{[]Code{invalidCodeExtractor}, []Doc{}, true},
-		{[]Code{}, []Doc{invalidDocExtractor}, true},
+	invalidLLM := LLM{
+		Provider: "invalid",
+	}
+	rule := Rule{
+		ID: "test",
 	}
 
-	for _, test := range tests {
+	var tests = []struct {
+		llm         LLM
+		code        []Code
+		docs        []Doc
+		rules       []Rule
+		shouldError bool
+	}{
+		{LLM{}, []Code{}, []Doc{}, []Rule{}, false},
+		{LLM{}, []Code{code}, []Doc{}, []Rule{}, false},
+		{LLM{}, []Code{}, []Doc{doc}, []Rule{}, false},
+		{LLM{}, []Code{code}, []Doc{doc}, []Rule{}, false},
+		{LLM{}, []Code{code, code}, []Doc{doc}, []Rule{}, true},
+		{LLM{}, []Code{code}, []Doc{doc, doc}, []Rule{}, true},
+		{LLM{}, []Code{code}, []Doc{invalidDoc}, []Rule{}, true},
+		{LLM{}, []Code{invalidCodeInclude}, []Doc{}, []Rule{}, true},
+		{LLM{}, []Code{invalidCodeExclude}, []Doc{}, []Rule{}, true},
+		{LLM{}, []Code{}, []Doc{invalidDocInclude}, []Rule{}, true},
+		{LLM{}, []Code{}, []Doc{invalidDocExclude}, []Rule{}, true},
+		{LLM{}, []Code{invalidCodeExtractor}, []Doc{}, []Rule{}, true},
+		{LLM{}, []Code{}, []Doc{invalidDocExtractor}, []Rule{}, true},
+		{invalidLLM, []Code{}, []Doc{}, []Rule{}, true},
+		{LLM{}, []Code{}, []Doc{}, []Rule{rule}, false},
+		{LLM{}, []Code{}, []Doc{}, []Rule{rule, rule}, true},
+	}
+
+	for i, test := range tests {
 		cfg := &Config{
+			LLM: test.llm,
 			Systems: []System{{
 				ID:   "test-system",
 				Code: test.code,
 				Docs: test.docs,
 			}},
+			Rules: test.rules,
 		}
 
 		err := validate(cfg)
 		if (err == nil && test.shouldError) || (err != nil && !test.shouldError) {
+			t.Logf("Error detected on test %d", i)
 			t.Errorf("got %v, want %t", err, test.shouldError)
 		}
 	}

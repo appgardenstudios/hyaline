@@ -75,6 +75,22 @@ recommend-change:
 	echo "---"
 	./hyaline --debug check --config ./_example/config.yml --current ./current.db --change ./change.db --system local --recommend
 
+.PHONY: generate-config
+generate-config:
+	rm -f ./current.db ./generated-config.yml
+	make build
+	./hyaline --debug extract current --config ./_example/config.yml --system generate-config --output ./current.db
+	echo "---"
+	./hyaline --debug generate config --config ./_example/config.yml --current ./current.db --system generate-config --output ./generated-config.yml
+
+.PHONY: generate-config-with-purpose
+ generate-config-with-purpose:
+	rm -f ./current.db ./generated-config.yml
+	make build
+	./hyaline --debug extract current --config ./_example/config.yml --system generate-config --output ./current.db
+	echo "---"
+	./hyaline --debug generate config --config ./_example/config.yml --current ./current.db --system generate-config --output ./generated-config.yml --include-purpose
+
 .PHONY: merge
 merge:
 	rm -f ./merged.db

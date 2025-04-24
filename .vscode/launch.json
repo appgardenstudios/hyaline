@@ -14,7 +14,11 @@
       "program": "${workspaceFolder}/cli/cmd/hyaline.go",
       "envFile": "${workspaceFolder}/cli/.env",
       "args":[
-        "--debug", "extract", "current", "--config", "./_example/config.yml", "--system", "local", "--output", "./current.db"
+        "--debug",
+        "extract", "current",
+        "--config", "./_example/config.yml",
+        "--system", "local",
+        "--output", "./current.db"
       ]
     },{
       "name": "Extract Current (Git)",
@@ -26,9 +30,47 @@
       "program": "${workspaceFolder}/cli/cmd/hyaline.go",
       "envFile": "${workspaceFolder}/cli/.env",
       "args":[
-        "--debug", "extract", "current", "--config", "./_example/config.yml", "--system", "git", "--output", "./current.db"
+        "--debug",
+        "extract", "current",
+        "--config", "./_example/config.yml",
+        "--system", "git",
+        "--output", "./current.db"
+      ]
+    },{
+      "name": "Generate Config",
+      "type": "go",
+      "request": "launch",
+      "mode": "debug",
+      "preLaunchTask": "cleanup-generate",
+      "cwd": "${workspaceFolder}/cli/",
+      "program": "${workspaceFolder}/cli/cmd/hyaline.go",
+      "envFile": "${workspaceFolder}/cli/.env",
+      "args":[
+        "--debug",
+        "generate", "config",
+        "--config", "./_example/config.yml",
+        "--current", "./current.db",
+        "--system", "generate-config",
+        "--output", "./generated-config.yml"
+      ]
+    },{
+      "name": "Generate Config With Purpose",
+      "type": "go",
+      "request": "launch",
+      "mode": "debug",
+      "preLaunchTask": "cleanup-generate",
+      "cwd": "${workspaceFolder}/cli/",
+      "program": "${workspaceFolder}/cli/cmd/hyaline.go",
+      "envFile": "${workspaceFolder}/cli/.env",
+      "args":[
+        "--debug",
+        "generate", "config",
+        "--config", "./_example/config.yml",
+        "--current", "./current.db",
+        "--system", "generate-config",
+        "--output", "./generated-config.yml",
+        "--include-purpose"
       ]
     }
-    
   ]
 }
