@@ -10,7 +10,7 @@ func CreateSchema(db *sql.DB) (err error) {
 	_, err = db.Exec(`
 CREATE TABLE SYSTEM(ID TEXT PRIMARY KEY);
 CREATE TABLE CODE(ID, SYSTEM_ID, PATH);
-CREATE TABLE FILE(ID, CODE_ID, SYSTEM_ID, ACTION, RAW_DATA);
+CREATE TABLE FILE(ID, CODE_ID, SYSTEM_ID, ACTION, ORIGINAL_ID, RAW_DATA);
 CREATE TABLE DOCUMENTATION(ID, SYSTEM_ID, TYPE, PATH);
 CREATE TABLE DOCUMENT(ID, DOCUMENTATION_ID, SYSTEM_ID, TYPE, ACTION, ORIGINAL_ID, RAW_DATA, EXTRACTED_DATA);
 CREATE TABLE SECTION(ID, DOCUMENT_ID, DOCUMENTATION_ID, SYSTEM_ID, NAME, PARENT_ID, PEER_ORDER, EXTRACTED_DATA);
@@ -172,24 +172,25 @@ WHERE
 }
 
 type File struct {
-	ID       string
-	CodeID   string
-	SystemID string
-	Action   string
-	RawData  string
+	ID         string
+	CodeID     string
+	SystemID   string
+	Action     Action
+	OriginalID string
+	RawData    string
 }
 
 func InsertFile(file File, db *sql.DB) (err error) {
 	stmt, err := db.Prepare(`
 INSERT INTO FILE
-	(ID, CODE_ID, SYSTEM_ID, ACTION, RAW_DATA)
+	(ID, CODE_ID, SYSTEM_ID, ACTION, ORIGINAL_ID, RAW_DATA)
 VALUES
-	(?, ?, ?, ?, ?)
+	(?, ?, ?, ?, ?, ?)
 `)
 	if err != nil {
 		return
 	}
-	_, err = stmt.Exec(file.ID, file.CodeID, file.SystemID, file.Action, file.RawData)
+	_, err = stmt.Exec(file.ID, file.CodeID, file.SystemID, file.Action, file.OriginalID, file.RawData)
 	if err != nil {
 		return
 	}
@@ -220,7 +221,7 @@ WHERE
 func GetAllFiles(codeID string, systemID string, db *sql.DB) (arr []*File, err error) {
 	stmt, err := db.Prepare(`
 SELECT
-  ID, CODE_ID, SYSTEM_ID, ACTION, RAW_DATA
+  ID, CODE_ID, SYSTEM_ID, ACTION, ORIGINAL_ID, RAW_DATA
 FROM
   FILE
 WHERE
@@ -239,7 +240,7 @@ WHERE
 
 	for rows.Next() {
 		var row File
-		if err := rows.Scan(&row.ID, &row.CodeID, &row.SystemID, &row.Action, &row.RawData); err != nil {
+		if err := rows.Scan(&row.ID, &row.CodeID, &row.SystemID, &row.Action, &row.OriginalID, &row.RawData); err != nil {
 			return arr, err
 		}
 		arr = append(arr, &row)
@@ -334,7 +335,7 @@ type Document struct {
 	DocumentationID string
 	SystemID        string
 	Type            string
-	Action          string
+	Action          Action
 	OriginalID      string
 	RawData         string
 	ExtractedData   string
