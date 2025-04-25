@@ -24,6 +24,31 @@ func CheckChange(args *CheckChangeArgs) error {
 		"output", args.Output,
 	))
 
+	// Load Config
+	// TODO
+
+	// Open Current DB
+	// TODO
+
+	// Open Change DB
+	// TODO
+
+	// Get system
+	// TODO
+
+	// Ensure output file does not exist
+	// TODO
+
+	// Get the set of files that need to be updated for each code change
+	// TODO
+
+	// Merge sets of files into a master list
+	// TODO
+
+	// Loop through documents that have been updated and annotate those on the list
+	// TODO
+
+	// Output the results
 	// TODO
 
 	return nil
