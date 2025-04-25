@@ -1,5 +1,6 @@
 # The binary
 hyaline
+!hyaline/
 
 # Intermediate databases
 *.db
