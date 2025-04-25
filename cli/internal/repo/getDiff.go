@@ -1,6 +1,7 @@
 package repo
 
 import (
+	"context"
 	"log/slog"
 
 	"github.com/go-git/go-git/v5"
@@ -40,8 +41,7 @@ func GetDiff(r *git.Repository, head string, base string) (diff object.Changes, 
 		slog.Debug("repo.GetDiff could not get base tree", "error", err, "base", base)
 		return
 	}
-	// Note that we will eventually want to support renames via object.DiffTreeWithOptions
-	diff, err = object.DiffTree(baseTree, headTree)
+	diff, err = object.DiffTreeWithOptions(context.Background(), baseTree, headTree, object.DefaultDiffTreeOptions)
 	if err != nil {
 		slog.Debug("repo.GetDiff could not get diff", "error", err, "head", head, "base", base)
 		return

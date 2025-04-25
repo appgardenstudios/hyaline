@@ -99,7 +99,8 @@ func ExtractChange(system *config.System, head string, base string, db *sql.DB) 
 						DocumentationID: d.ID,
 						SystemID:        system.ID,
 						Type:            d.Type.String(),
-						Action:          action.String(),
+						Action:          sqlite.MapAction(action, change.From.Name, change.To.Name),
+						OriginalID:      change.From.Name,
 						RawData:         string(bytes),
 						ExtractedData:   extractedData,
 					}, db)
@@ -124,7 +125,8 @@ func ExtractChange(system *config.System, head string, base string, db *sql.DB) 
 						DocumentationID: d.ID,
 						SystemID:        system.ID,
 						Type:            d.Type.String(),
-						Action:          action.String(),
+						Action:          sqlite.ActionDelete,
+						OriginalID:      "",
 						RawData:         "",
 					}, db)
 					if err != nil {

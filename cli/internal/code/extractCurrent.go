@@ -126,10 +126,12 @@ func ExtractCurrentFs(systemID string, c *config.Code, db *sql.DB) (err error) {
 		}
 
 		err = sqlite.InsertFile(sqlite.File{
-			ID:       file,
-			CodeID:   c.ID,
-			SystemID: systemID,
-			RawData:  string(contents),
+			ID:         file,
+			CodeID:     c.ID,
+			SystemID:   systemID,
+			Action:     sqlite.ActionNone,
+			OriginalID: "",
+			RawData:    string(contents),
 		}, db)
 		if err != nil {
 			slog.Debug("code.ExtractCurrentFs could not insert file", "error", err)
@@ -177,10 +179,12 @@ func ExtractCurrentGit(systemID string, c *config.Code, db *sql.DB) (err error) 
 					return err
 				}
 				err = sqlite.InsertFile(sqlite.File{
-					ID:       f.Name,
-					CodeID:   c.ID,
-					SystemID: systemID,
-					RawData:  string(bytes),
+					ID:         f.Name,
+					CodeID:     c.ID,
+					SystemID:   systemID,
+					Action:     sqlite.ActionNone,
+					OriginalID: "",
+					RawData:    string(bytes),
 				}, db)
 				if err != nil {
 					slog.Debug("code.ExtractCurrentFs could not insert file", "error", err)

@@ -78,11 +78,12 @@ func ExtractChange(system *config.System, head string, base string, db *sql.DB) 
 						return err
 					}
 					err = sqlite.InsertFile(sqlite.File{
-						ID:       change.To.Name,
-						CodeID:   c.ID,
-						SystemID: system.ID,
-						Action:   action.String(),
-						RawData:  string(bytes),
+						ID:         change.To.Name,
+						CodeID:     c.ID,
+						SystemID:   system.ID,
+						Action:     sqlite.MapAction(action, change.From.Name, change.To.Name),
+						OriginalID: change.From.Name,
+						RawData:    string(bytes),
 					}, db)
 					if err != nil {
 						slog.Debug("code.ExtractChange could not insert file", "error", err)
@@ -93,11 +94,12 @@ func ExtractChange(system *config.System, head string, base string, db *sql.DB) 
 				if config.PathIsIncluded(change.To.Name, c.Include, c.Exclude) {
 					slog.Debug("code.ExtractChange inserting file", "file", change.From.Name, "action", action)
 					err = sqlite.InsertFile(sqlite.File{
-						ID:       change.From.Name,
-						CodeID:   c.ID,
-						SystemID: system.ID,
-						Action:   action.String(),
-						RawData:  "",
+						ID:         change.From.Name,
+						CodeID:     c.ID,
+						SystemID:   system.ID,
+						Action:     sqlite.ActionDelete,
+						OriginalID: "",
+						RawData:    "",
 					}, db)
 					if err != nil {
 						slog.Debug("code.ExtractChange could not insert file", "error", err)
