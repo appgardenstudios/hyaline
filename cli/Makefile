@@ -61,7 +61,7 @@ check-current:
 check-change:
 	make build
 	echo "---"
-	./hyaline --debug check change --config ./_example/config.yml --current ./current.db --change ./change.db --system local --output ./results.json
+	./hyaline --debug check change --config ./_example/config.yml --current ./current.db --change ./change.db --system git --output ./results.json
 
 .PHONY: recommend-current
 recommend-current:

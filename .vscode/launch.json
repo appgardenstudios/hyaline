@@ -71,6 +71,23 @@
         "--output", "./generated-config.yml",
         "--include-purpose"
       ]
+    },{
+      "name": "Check Change",
+      "type": "go",
+      "request": "launch",
+      "mode": "debug",
+      "cwd": "${workspaceFolder}/cli/",
+      "program": "${workspaceFolder}/cli/cmd/hyaline.go",
+      "envFile": "${workspaceFolder}/cli/.env",
+      "args":[
+        "--debug",
+        "check", "change",
+        "--config", "./_example/config.yml",
+        "--current", "./current.db",
+        "--change", "./change.db",
+        "--system", "git",
+        "--output", "./results.json"
+      ]
     }
   ]
 }

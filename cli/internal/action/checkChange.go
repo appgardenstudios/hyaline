@@ -2,13 +2,16 @@ package action
 
 import (
 	"database/sql"
+	"encoding/json"
 	"errors"
+	"fmt"
 	"hyaline/internal/check"
 	"hyaline/internal/config"
 	"hyaline/internal/sqlite"
 	"log/slog"
 	"os"
 	"path/filepath"
+	"strings"
 
 	_ "modernc.org/sqlite"
 )
@@ -19,6 +22,26 @@ type CheckChangeArgs struct {
 	Change  string
 	System  string
 	Output  string
+}
+
+type CheckChangeResultKey struct {
+	Documentation string
+	Document      string
+	Section       string
+}
+
+type CheckChangeOutput struct {
+	Recommendations []CheckChangeOutputEntry `json:"recommendations"`
+}
+
+type CheckChangeOutputEntry struct {
+	System         string `json:"system"`
+	Documentation  string `json:"documentation"`
+	Document       string `json:"document"`
+	Section        string `json:"section,omitempty"`
+	Recommendation string `json:"recommendation"`
+	Rationale      string `json:"rationale"`
+	Changed        bool   `json:"changed"`
 }
 
 func CheckChange(args *CheckChangeArgs) error {
@@ -88,8 +111,14 @@ func CheckChange(args *CheckChangeArgs) error {
 		return err
 	}
 
+	// Initialize our output
+	output := CheckChangeOutput{
+		Recommendations: []CheckChangeOutputEntry{},
+	}
+
 	// Get the full set of ruleDocuments that apply to this system
 	rules := map[string]*config.Rule{}
+	// TODO we need to know the documentation ID(s)? that this applies to
 	for _, doc := range system.Docs {
 		for _, ruleID := range doc.Rules {
 			rules[ruleID] = config.GetRule(cfg.Rules, ruleID)
@@ -100,31 +129,69 @@ func CheckChange(args *CheckChangeArgs) error {
 		ruleDocs = append(ruleDocs, rule.Documents...)
 	}
 
-	// Get the set of documents/sections that need to be updated for each code change
-	// TODO
+	// Get the set of documents/sections that need to be updated for each code change in each code source
 	for _, c := range system.Code {
+		results := []check.ChangeResult{}
+
+		// Get the set of files changed for this code source
 		files, err := sqlite.GetAllFiles(c.ID, system.ID, changeDB)
 		if err != nil {
 			slog.Debug("action.CheckChange could not get files for codeSource", "codeSource", c.ID, "system", args.System, "error", err)
 			return err
 		}
+
+		// Check each file against our full set of documentation
 		for _, file := range files {
-			// TODO add documents/sections back to our master list
-			check.Change(file, ruleDocs)
+			arr, err := check.Change(file, ruleDocs)
+			results = append(results, arr...)
+			if err != nil {
+				slog.Debug("action.CheckChange could not check change", "file", file.ID, "system", args.System, "error", err)
+				return err
+			}
+		}
+
+		// Merge results into a master list
+		resultsMap := make(map[CheckChangeResultKey]*check.ChangeResult)
+		for _, result := range results {
+			key := CheckChangeResultKey{
+				Documentation: result.Documentation,
+				Document:      result.Document,
+				Section:       result.Section,
+			}
+			_, ok := resultsMap[key]
+			if ok {
+				resultsMap[key].Reasons = append(resultsMap[key].Reasons, result.Reasons...)
+			} else {
+				resultsMap[key] = &result
+			}
+		}
+
+		// Create our entries
+		for _, result := range resultsMap {
+			output.Recommendations = append(output.Recommendations, CheckChangeOutputEntry{
+				System:        system.ID,
+				Documentation: result.Documentation,
+				Document:      result.Document,
+				Section:       result.Section,
+				Rationale:     strings.Join(result.Reasons, "\n"),
+			})
 		}
 	}
-
-	// Merge sets of files into a master list
-	// TODO
-
-	// Loop through rules and respect any updateIfs
-	// TODO
 
 	// Loop through documents that have been updated and annotate those on the list
 	// TODO
 
-	// Output the results
+	// Sort the output list
 	// TODO
+
+	// Output the results
+	jsonData, err := json.Marshal(output)
+	if err != nil {
+		slog.Debug("action.CheckChange could not marshal json", "error", err)
+		return err
+	}
+
+	fmt.Println(string(jsonData))
 
 	return nil
 }
