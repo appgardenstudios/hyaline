@@ -227,8 +227,9 @@ func CheckChange(args *CheckChangeArgs) error {
 			DocumentationSource: result.DocumentationSource,
 			Document:            result.Document,
 			Section:             result.Section,
-			Changed:             changed,
+			Recommendation:      "Consider reviewing and updating this documentation",
 			Reasons:             result.Reasons,
+			Changed:             changed,
 		})
 	}
 
