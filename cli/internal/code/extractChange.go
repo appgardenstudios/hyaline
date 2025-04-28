@@ -13,7 +13,7 @@ import (
 
 func ExtractChange(system *config.System, head string, base string, db *sql.DB) (err error) {
 	// Process each code source
-	for _, c := range system.Code {
+	for _, c := range system.CodeSources {
 		// Only extract changed code for git sources
 		if c.Extractor != config.ExtractorGit {
 			slog.Debug("code.ExtractChange skipping non-git code source", "system", system.ID, "code", c.ID)

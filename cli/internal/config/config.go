@@ -38,10 +38,10 @@ type GitHub struct {
 }
 
 type System struct {
-	ID     string  `yaml:"id,omitempty"`
-	Code   []Code  `yaml:"code,omitempty"`
-	Docs   []Doc   `yaml:"docs,omitempty"`
-	Checks []Check `yaml:"checks,omitempty"`
+	ID                   string                `yaml:"id,omitempty"`
+	CodeSources          []CodeSource          `yaml:"code,omitempty"`
+	DocumentationSources []DocumentationSource `yaml:"docs,omitempty"`
+	Checks               []Check               `yaml:"checks,omitempty"`
 }
 
 type Extractor string
@@ -104,7 +104,7 @@ type GitSSHAuthOptions struct {
 	Password string `yaml:"password,omitempty"`
 }
 
-type Code struct {
+type CodeSource struct {
 	ID         string     `yaml:"id,omitempty"`
 	Extractor  Extractor  `yaml:"extractor,omitempty"`
 	FsOptions  FsOptions  `yaml:"fs,omitempty"`
@@ -113,7 +113,7 @@ type Code struct {
 	Exclude    []string   `yaml:"exclude,omitempty"`
 }
 
-type Doc struct {
+type DocumentationSource struct {
 	ID          string         `yaml:"id,omitempty"`
 	Type        DocType        `yaml:"type,omitempty"`
 	HTML        DocHTMLOptions `yaml:"html,omitempty"`

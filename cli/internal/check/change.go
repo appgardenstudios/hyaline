@@ -14,7 +14,7 @@ type ChangeResult struct {
 	Reasons       []string
 }
 
-func Change(file *sqlite.File, ruleDocs []config.RuleDocument) (results []ChangeResult, err error) {
+func Change(file *sqlite.File, ruleDocsMap map[string][]config.RuleDocument) (results []ChangeResult, err error) {
 	// Calculate the diff and ignore whitespace only changes
 	switch file.Action {
 	case sqlite.ActionInsert:

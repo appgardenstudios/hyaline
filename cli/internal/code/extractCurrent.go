@@ -18,7 +18,7 @@ import (
 
 func ExtractCurrent(system *config.System, db *sql.DB) (err error) {
 	// Process each code source
-	for _, c := range system.Code {
+	for _, c := range system.CodeSources {
 		slog.Debug("code.ExtractCurrent extracting code", "system", system.ID, "code", c.ID)
 
 		// Get document path
@@ -67,7 +67,7 @@ func ExtractCurrent(system *config.System, db *sql.DB) (err error) {
 	return
 }
 
-func ExtractCurrentFs(systemID string, c *config.Code, db *sql.DB) (err error) {
+func ExtractCurrentFs(systemID string, c *config.CodeSource, db *sql.DB) (err error) {
 	// Get our absolute path
 	absPath, err := filepath.Abs(c.FsOptions.Path)
 	if err != nil {
@@ -142,7 +142,7 @@ func ExtractCurrentFs(systemID string, c *config.Code, db *sql.DB) (err error) {
 	return
 }
 
-func ExtractCurrentGit(systemID string, c *config.Code, db *sql.DB) (err error) {
+func ExtractCurrentGit(systemID string, c *config.CodeSource, db *sql.DB) (err error) {
 	// Initialize go-git repo (on disk or in mem)
 	var r *git.Repository
 	r, err = repo.GetRepo(c.GitOptions)

@@ -24,7 +24,7 @@ import (
 
 func ExtractCurrent(system *config.System, db *sql.DB) (err error) {
 	// Process each docs source
-	for _, d := range system.Docs {
+	for _, d := range system.DocumentationSources {
 		slog.Debug("docs.ExtractCurrent extracting docs", "system", system.ID, "docs", d.ID)
 
 		// Get document path
@@ -86,7 +86,7 @@ func ExtractCurrent(system *config.System, db *sql.DB) (err error) {
 	return
 }
 
-func ExtractCurrentFs(systemID string, d *config.Doc, db *sql.DB) (err error) {
+func ExtractCurrentFs(systemID string, d *config.DocumentationSource, db *sql.DB) (err error) {
 	// Get our absolute path
 	absPath, err := filepath.Abs(d.FsOptions.Path)
 	if err != nil {
@@ -187,7 +187,7 @@ func ExtractCurrentFs(systemID string, d *config.Doc, db *sql.DB) (err error) {
 	return
 }
 
-func ExtractCurrentGit(systemID string, d *config.Doc, db *sql.DB) (err error) {
+func ExtractCurrentGit(systemID string, d *config.DocumentationSource, db *sql.DB) (err error) {
 	// Initialize go-git repo (on disk or in mem)
 	var r *git.Repository
 	r, err = repo.GetRepo(d.GitOptions)
@@ -273,7 +273,7 @@ func ExtractCurrentGit(systemID string, d *config.Doc, db *sql.DB) (err error) {
 	return
 }
 
-func ExtractCurrentHttp(systemID string, d *config.Doc, db *sql.DB) error {
+func ExtractCurrentHttp(systemID string, d *config.DocumentationSource, db *sql.DB) error {
 	// Collect encountered errors into an array and check it at the end
 	var errs []error
 

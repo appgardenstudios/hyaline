@@ -88,7 +88,7 @@ func validate(cfg *Config) (err error) {
 
 		// Validate code block
 		codeIDs := map[string]struct{}{}
-		for _, code := range system.Code {
+		for _, code := range system.CodeSources {
 			// Ensure that system/code combinations are unique
 			if _, ok := codeIDs[code.ID]; ok {
 				err = errors.New("duplicate code id detected: " + system.ID + " > " + code.ID)
@@ -125,7 +125,7 @@ func validate(cfg *Config) (err error) {
 
 		// Validate docs block
 		docIDs := map[string]struct{}{}
-		for _, doc := range system.Docs {
+		for _, doc := range system.DocumentationSources {
 			// Ensure that system/docs combinations are unique
 			if _, ok := docIDs[doc.ID]; ok {
 				err = errors.New("duplicate docs id detected: " + system.ID + " > " + doc.ID)

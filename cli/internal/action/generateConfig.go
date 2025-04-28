@@ -78,7 +78,7 @@ func GenerateConfig(args *GenerateConfigArgs) error {
 	newCfg := config.Config{}
 
 	// Loop through docs in our current system and generate a config for each
-	for _, d := range system.Docs {
+	for _, d := range system.DocumentationSources {
 		// Create a rule for this documentation
 		rule := config.Rule{
 			ID:        d.ID,
