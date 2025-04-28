@@ -11,6 +11,7 @@ import (
 	"log/slog"
 	"os"
 	"path/filepath"
+	"sort"
 
 	_ "modernc.org/sqlite"
 )
@@ -41,6 +42,36 @@ type CheckChangeOutputEntry struct {
 	Recommendation      string   `json:"recommendation"`
 	Reasons             []string `json:"reasons"`
 	Changed             bool     `json:"changed"`
+}
+
+type CheckChangeOutputEntrySort []CheckChangeOutputEntry
+
+func (c CheckChangeOutputEntrySort) Len() int {
+	return len(c)
+}
+func (c CheckChangeOutputEntrySort) Swap(i, j int) {
+	c[i], c[j] = c[j], c[i]
+}
+func (c CheckChangeOutputEntrySort) Less(i, j int) bool {
+	if c[i].System < c[j].System {
+		return true
+	}
+	if c[i].System > c[j].System {
+		return false
+	}
+	if c[i].DocumentationSource < c[j].DocumentationSource {
+		return true
+	}
+	if c[i].DocumentationSource > c[j].DocumentationSource {
+		return false
+	}
+	if c[i].Document < c[j].Document {
+		return true
+	}
+	if c[i].Document > c[j].Document {
+		return false
+	}
+	return c[i].Section < c[j].Section
 }
 
 func CheckChange(args *CheckChangeArgs) error {
@@ -110,7 +141,7 @@ func CheckChange(args *CheckChangeArgs) error {
 		return err
 	}
 
-	// Initialize our output
+	// Initialize our output recommendations
 	output := CheckChangeOutput{
 		Recommendations: []CheckChangeOutputEntry{},
 	}
@@ -202,7 +233,7 @@ func CheckChange(args *CheckChangeArgs) error {
 	}
 
 	// Sort the output list
-	// TODO
+	sort.Sort(CheckChangeOutputEntrySort(output.Recommendations))
 
 	// Output the results
 	jsonData, err := json.MarshalIndent(output, "", "  ")
