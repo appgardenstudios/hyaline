@@ -17,7 +17,17 @@ type ChangeResult struct {
 // https://pkg.go.dev/github.com/sergi/go-diff#section-readme
 
 func Change(file *sqlite.File, codeSource config.CodeSource, ruleDocsMap map[string][]config.RuleDocument) (results []ChangeResult, err error) {
-	// Calculate the diff and ignore whitespace only changes
+	diff := ""
+	if file.Action == sqlite.ActionModify {
+		// Calculate the diff
+		// TODO
+	}
+	if file.Action == sqlite.ActionRename {
+		// Calculate the diff and ignore whitespace only changes
+		// TODO
+	}
+
+	// Ignore white space only changes?
 	// TODO
 
 	// Generate the user prompt
@@ -35,19 +45,53 @@ func Change(file *sqlite.File, codeSource config.CodeSource, ruleDocsMap map[str
 
 	switch file.Action {
 	case sqlite.ActionInsert:
-		// TODO add <file>
+		// Add <file>
+		userPrompt.WriteString("<file>\n")
+		userPrompt.WriteString(fmt.Sprintf("  <file_name>%s</file_name>\n", file.ID))
+		userPrompt.WriteString("  <file_content>\n")
+		userPrompt.WriteString(file.RawData)
+		userPrompt.WriteString("\n")
+		userPrompt.WriteString("  </file_content>\n")
+		userPrompt.WriteString("</file>\n")
+		userPrompt.WriteString("\n")
+		// Add prompt
 		userPrompt.WriteString(fmt.Sprintf("Given that the file %s was created, ", file.ID))
 		userPrompt.WriteString("and that the contents of the created file are in <file>, ")
 	case sqlite.ActionModify:
-		// TODO add <diff>
+		// Add <diff>
+		userPrompt.WriteString("<diff>\n")
+		userPrompt.WriteString(diff)
+		userPrompt.WriteString("\n")
+		userPrompt.WriteString("</diff>\n")
+		userPrompt.WriteString("\n")
+		// Add prompt
 		userPrompt.WriteString(fmt.Sprintf("Given that the file %s was modified, ", file.ID))
 		userPrompt.WriteString("and that a patch representing the changes to that file is in <diff>, ")
 	case sqlite.ActionRename:
-		// TODO add <diff> optionally
+		// Add <diff> optionally
+		if diff != "" {
+			userPrompt.WriteString("<diff>\n")
+			userPrompt.WriteString(diff)
+			userPrompt.WriteString("\n")
+			userPrompt.WriteString("</diff>\n")
+			userPrompt.WriteString("\n")
+		}
+		// Add prompt
 		userPrompt.WriteString(fmt.Sprintf("Given that the file %s was renamed to %s, ", file.OriginalID, file.ID))
-		// TODO handle a diff + rename by adding a reference to the patch
+		if diff != "" {
+			userPrompt.WriteString("and that a patch representing the changes to the renamed file is in <diff>, ")
+		}
 	case sqlite.ActionDelete:
-		// TODO add <file>
+		// Add <file>
+		userPrompt.WriteString("<file>\n")
+		userPrompt.WriteString(fmt.Sprintf("  <file_name>%s</file_name>\n", file.ID))
+		userPrompt.WriteString("  <file_content>\n")
+		userPrompt.WriteString(file.RawData)
+		userPrompt.WriteString("\n")
+		userPrompt.WriteString("  </file_content>\n")
+		userPrompt.WriteString("</file>\n")
+		userPrompt.WriteString("\n")
+		// Add prompt
 		userPrompt.WriteString(fmt.Sprintf("Given that the file %s was deleted, ", file.ID))
 		userPrompt.WriteString("and that the contents of the deleted file are in <file>, ")
 	default:
@@ -55,7 +99,7 @@ func Change(file *sqlite.File, codeSource config.CodeSource, ruleDocsMap map[str
 		// TODO log this
 		return
 	}
-	userPrompt.WriteString("look at the documentation sources provided in <sources> and determine which documents, if any, should be updated based on this change.")
+	userPrompt.WriteString("look at the documentation provided in <documents> and determine which documents, if any, should be updated based on this change.") // TODO call tool to update?
 	userPrompt.WriteString("\n\n")
 
 	fmt.Println(userPrompt.String())
