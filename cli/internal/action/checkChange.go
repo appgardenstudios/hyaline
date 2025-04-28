@@ -11,7 +11,6 @@ import (
 	"log/slog"
 	"os"
 	"path/filepath"
-	"strings"
 
 	_ "modernc.org/sqlite"
 )
@@ -35,13 +34,13 @@ type CheckChangeOutput struct {
 }
 
 type CheckChangeOutputEntry struct {
-	System         string `json:"system"`
-	Documentation  string `json:"documentation"`
-	Document       string `json:"document"`
-	Section        string `json:"section,omitempty"`
-	Recommendation string `json:"recommendation"`
-	Rationale      string `json:"rationale"`
-	Changed        bool   `json:"changed"`
+	System              string   `json:"system"`
+	DocumentationSource string   `json:"documentationSource"`
+	Document            string   `json:"document"`
+	Section             string   `json:"section,omitempty"`
+	Recommendation      string   `json:"recommendation"`
+	Reasons             []string `json:"reasons"`
+	Changed             bool     `json:"changed"`
 }
 
 func CheckChange(args *CheckChangeArgs) error {
@@ -127,6 +126,20 @@ func CheckChange(args *CheckChangeArgs) error {
 		ruleDocsMap[doc.ID] = ruleDocs
 	}
 
+	// Get a map of the documents that have been updated as a part of this change (by documentation source)
+	updatedDocumentMap := make(map[string][]*sqlite.Document)
+	for _, doc := range system.DocumentationSources {
+		documents, err := sqlite.GetAllDocument(doc.ID, system.ID, changeDB)
+		if err != nil {
+			slog.Debug("action.CheckChange could not get changed documents", "doc", doc.ID, "system", args.System, "error", err)
+			return err
+		}
+		updatedDocumentMap[doc.ID] = documents
+	}
+
+	// Initalize our results map used to collect results across all code sources
+	resultsMap := make(map[CheckChangeResultKey]*check.ChangeResult)
+
 	// Get the set of documents/sections that need to be updated for each code change in each code source
 	for _, c := range system.CodeSources {
 		results := []check.ChangeResult{}
@@ -140,7 +153,7 @@ func CheckChange(args *CheckChangeArgs) error {
 
 		// Check each file against our full set of documentation
 		for _, file := range files {
-			arr, err := check.Change(file, ruleDocsMap)
+			arr, err := check.Change(file, c, ruleDocsMap)
 			results = append(results, arr...)
 			if err != nil {
 				slog.Debug("action.CheckChange could not check change", "file", file.ID, "system", args.System, "error", err)
@@ -149,10 +162,9 @@ func CheckChange(args *CheckChangeArgs) error {
 		}
 
 		// Merge results into a master list
-		resultsMap := make(map[CheckChangeResultKey]*check.ChangeResult)
 		for _, result := range results {
 			key := CheckChangeResultKey{
-				Documentation: result.Documentation,
+				Documentation: result.DocumentationSource,
 				Document:      result.Document,
 				Section:       result.Section,
 			}
@@ -163,32 +175,43 @@ func CheckChange(args *CheckChangeArgs) error {
 				resultsMap[key] = &result
 			}
 		}
-
-		// Create our entries
-		for _, result := range resultsMap {
-			output.Recommendations = append(output.Recommendations, CheckChangeOutputEntry{
-				System:        system.ID,
-				Documentation: result.Documentation,
-				Document:      result.Document,
-				Section:       result.Section,
-				Rationale:     strings.Join(result.Reasons, "\n"),
-			})
-		}
 	}
 
-	// Loop through documents that have been updated and annotate those on the list
-	// TODO
+	// Create our entries
+	for _, result := range resultsMap {
+		// See if this document was already updated
+		changed := false
+		documents, ok := updatedDocumentMap[result.DocumentationSource]
+		if ok {
+			for _, document := range documents {
+				if result.Document == document.ID {
+					changed = true
+					break
+				}
+			}
+		}
+
+		output.Recommendations = append(output.Recommendations, CheckChangeOutputEntry{
+			System:              system.ID,
+			DocumentationSource: result.DocumentationSource,
+			Document:            result.Document,
+			Section:             result.Section,
+			Changed:             changed,
+			Reasons:             result.Reasons,
+		})
+	}
 
 	// Sort the output list
 	// TODO
 
 	// Output the results
-	jsonData, err := json.Marshal(output)
+	jsonData, err := json.MarshalIndent(output, "", "  ")
 	if err != nil {
 		slog.Debug("action.CheckChange could not marshal json", "error", err)
 		return err
 	}
 
+	// TODO output to output file
 	fmt.Println(string(jsonData))
 
 	return nil

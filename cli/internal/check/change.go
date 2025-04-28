@@ -1,6 +1,7 @@
 package check
 
 import (
+	"fmt"
 	"hyaline/internal/config"
 	"hyaline/internal/sqlite"
 )
@@ -8,13 +9,13 @@ import (
 // https://pkg.go.dev/github.com/sergi/go-diff#section-readme
 
 type ChangeResult struct {
-	Documentation string
-	Document      string
-	Section       string
-	Reasons       []string
+	DocumentationSource string
+	Document            string
+	Section             string
+	Reasons             []string
 }
 
-func Change(file *sqlite.File, ruleDocsMap map[string][]config.RuleDocument) (results []ChangeResult, err error) {
+func Change(file *sqlite.File, codeSource config.CodeSource, ruleDocsMap map[string][]config.RuleDocument) (results []ChangeResult, err error) {
 	// Calculate the diff and ignore whitespace only changes
 	switch file.Action {
 	case sqlite.ActionInsert:
@@ -30,12 +31,15 @@ func Change(file *sqlite.File, ruleDocsMap map[string][]config.RuleDocument) (re
 		// TODO
 	}
 
-	results = append(results, ChangeResult{
-		Documentation: "testDocumentation",
-		Document:      "testDocument",
-		Section:       "testSection",
-		Reasons:       []string{"testReason"},
-	})
+	for docSource, _ := range ruleDocsMap {
+		results = append(results, ChangeResult{
+			DocumentationSource: docSource,
+			Document:            "README.md",
+			Section:             "",
+			Reasons:             []string{fmt.Sprintf("testReason for file %s in %s", file.ID, codeSource.ID)},
+		})
+		break
+	}
 
 	// TODO respect updateIfs
 
