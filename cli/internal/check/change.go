@@ -144,9 +144,8 @@ func checkLLM(file *sqlite.File, codeSource config.CodeSource, ruleDocsMap map[s
 		slog.Warn("check.Change encountered an unknown action", "file", file.ID, "action", file.Action)
 		return
 	}
-	userPrompt.WriteString("look at the documentation provided in <documents> and determine which documents, if any, should be updated based on this change.\n") // TODO call tool to update?
+	userPrompt.WriteString("look at the documentation provided in <documents> and determine which documents, if any, should be updated based on this change.\n")
 	userPrompt.WriteString("Then, call the provided mark_for_update tool and pass in a list of the documents and/or sections that should be updated.")
-	// TODO respond with a tool call to update_documentation(list)
 
 	userPrompt.WriteString("\n\n")
 
@@ -163,6 +162,7 @@ func checkLLM(file *sqlite.File, codeSource config.CodeSource, ruleDocsMap map[s
 	}
 
 	// Call LLM
+	// TODO look at response
 	_, err = llm.CallLLM(systemPrompt, userPrompt.String(), []*llm.Tool{&tool}, cfg)
 	// TODO handle error
 

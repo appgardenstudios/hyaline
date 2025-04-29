@@ -43,6 +43,12 @@ func callAnthropic(systemPrompt string, userPrompt string, tools []*Tool, cfg *c
 			System:    []anthropic.TextBlockParam{{Text: systemPrompt}},
 			Messages:  messages,
 			Tools:     toolParams,
+			// TODO work on this and make it configurable
+			ToolChoice: anthropic.ToolChoiceUnionParam{
+				OfToolChoiceAny: &anthropic.ToolChoiceAnyParam{
+					DisableParallelToolUse: anthropic.Bool(true),
+				},
+			},
 		})
 		if err != nil {
 			slog.Debug("llm.callAnthropic errored when sending a new message", "error", err)
