@@ -117,10 +117,12 @@ func Change(file *sqlite.File, codeSource config.CodeSource, ruleDocsMap map[str
 		userPrompt.WriteString("and that the contents of the deleted file are in <file>, ")
 	default:
 		// Do nothing and return
-		// TODO log this
+		slog.Warn("check.Change encountered an unknown action", "file", file.ID, "action", file.Action)
 		return
 	}
 	userPrompt.WriteString("look at the documentation provided in <documents> and determine which documents, if any, should be updated based on this change.") // TODO call tool to update?
+	// TODO respond with a tool call to update_documentation(list)
+
 	userPrompt.WriteString("\n\n")
 
 	fmt.Println(userPrompt.String())
@@ -137,7 +139,6 @@ func Change(file *sqlite.File, codeSource config.CodeSource, ruleDocsMap map[str
 
 	// TODO respect updateIfs
 
-	// Prompt: given the set of system documentation in <documentation> and the change in <change>, what documentation should be updated? respond with a tool call to update_documentation(list)
 	return
 }
 
