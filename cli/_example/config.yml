@@ -236,3 +236,5 @@ rules:
                 required: true
           - id: Running Locally
             required: true
+            updateIf:
+              modified: [subdir/*.js]

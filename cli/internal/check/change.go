@@ -20,6 +20,7 @@ type ChangeResult struct {
 }
 
 func Change(file *sqlite.File, codeSource config.CodeSource, ruleDocsMap map[string][]config.RuleDocument, currentDB *sql.DB) (results []ChangeResult, err error) {
+	// TODO move this to checkLLM()
 	originalID := file.ID
 	originalContents := ""
 	if file.Action == sqlite.ActionModify {
@@ -323,6 +324,7 @@ func checkSectionUpdateIfs(id string, originalID string, action sqlite.Action, d
 				results = append(results, ChangeResult{
 					DocumentationSource: docSource,
 					Document:            document,
+					Section:             section.ID,
 					Reasons:             []string{fmt.Sprintf("Update this section if any files matching %s were touched (%s was renamed to %s)", glob, originalID, id)},
 				})
 			}
@@ -336,6 +338,7 @@ func checkSectionUpdateIfs(id string, originalID string, action sqlite.Action, d
 					results = append(results, ChangeResult{
 						DocumentationSource: docSource,
 						Document:            document,
+						Section:             section.ID,
 						Reasons:             []string{fmt.Sprintf("Update this section if any files matching %s were added", glob)},
 					})
 				}
@@ -347,6 +350,7 @@ func checkSectionUpdateIfs(id string, originalID string, action sqlite.Action, d
 					results = append(results, ChangeResult{
 						DocumentationSource: docSource,
 						Document:            document,
+						Section:             section.ID,
 						Reasons:             []string{fmt.Sprintf("Update this section if any files matching %s were modified", glob)},
 					})
 				}
@@ -358,6 +362,7 @@ func checkSectionUpdateIfs(id string, originalID string, action sqlite.Action, d
 					results = append(results, ChangeResult{
 						DocumentationSource: docSource,
 						Document:            document,
+						Section:             section.ID,
 						Reasons:             []string{fmt.Sprintf("Update this section if any files matching %s were renamed (%s was renamed to %s)", glob, id, originalID)},
 					})
 				}
@@ -369,6 +374,7 @@ func checkSectionUpdateIfs(id string, originalID string, action sqlite.Action, d
 					results = append(results, ChangeResult{
 						DocumentationSource: docSource,
 						Document:            document,
+						Section:             section.ID,
 						Reasons:             []string{fmt.Sprintf("Update this section if any files matching %s were deleted", glob)},
 					})
 				}
