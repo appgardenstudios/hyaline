@@ -167,6 +167,7 @@ type RuleDocument struct {
 	Purpose  string                `yaml:"purpose,omitempty"`
 	Required bool                  `yaml:"required,omitempty"`
 	Ignore   bool                  `yaml:"ignore,omitempty"`
+	UpdateIf UpdateIf              `yaml:"updateIf,omitempty"`
 	Sections []RuleDocumentSection `yaml:"sections,omitempty"`
 }
 
@@ -175,5 +176,14 @@ type RuleDocumentSection struct {
 	Purpose  string                `yaml:"purpose,omitempty"`
 	Required bool                  `yaml:"required,omitempty"`
 	Ignore   bool                  `yaml:"ignore,omitempty"`
+	UpdateIf UpdateIf              `yaml:"updateIf,omitempty"`
 	Sections []RuleDocumentSection `yaml:"sections,omitempty"`
+}
+
+type UpdateIf struct {
+	Touched  []string `yaml:"touched,omitempty"`
+	Added    []string `yaml:"added,omitempty"`
+	Modified []string `yaml:"modified,omitempty"`
+	Deleted  []string `yaml:"deleted,omitempty"`
+	Renamed  []string `yaml:"renamed,omitempty"`
 }
