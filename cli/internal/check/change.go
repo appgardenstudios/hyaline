@@ -18,6 +18,7 @@ type ChangeResult struct {
 }
 
 func Change(file *sqlite.File, codeSource config.CodeSource, ruleDocsMap map[string][]config.RuleDocument, currentDB *sql.DB) (results []ChangeResult, err error) {
+	originalID := file.ID
 	originalContents := ""
 	if file.Action == sqlite.ActionModify {
 		// Get original contents
@@ -37,10 +38,11 @@ func Change(file *sqlite.File, codeSource config.CodeSource, ruleDocsMap map[str
 			slog.Debug("check.Change could not get original file from rename", "file", file.ID, "error", err)
 			return
 		}
+		originalID = original.ID
 		originalContents = original.RawData
 	}
 	edits := diff.Strings(originalContents, file.RawData)
-	textDiff, err := diff.ToUnified("a/"+file.ID, "b/"+file.ID, originalContents, edits, 3)
+	textDiff, err := diff.ToUnified("a/"+originalID, "b/"+file.ID, originalContents, edits, 3)
 	if err != nil {
 		slog.Debug("check.Change could not generate diff", "file", file.ID, "error", err)
 		return
