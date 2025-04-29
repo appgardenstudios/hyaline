@@ -13,7 +13,7 @@ func GetDocumentPurpose(filename string, contents string, cfg *config.LLM) (resu
 %s
 </document>`, filename, contents)
 
-	result, err = callLLM(systemPrompt, userPrompt, []*Tool{}, cfg)
+	result, err = CallLLM(systemPrompt, userPrompt, []*Tool{}, cfg)
 
 	return
 }
@@ -26,7 +26,7 @@ func GetSectionPurpose(documentName string, documentPurpose string, sectionTitle
 %s
 </section>`, sectionTitle, documentName, documentPurpose, sectionContent)
 
-	result, err = callLLM(systemPrompt, userPrompt, []*Tool{}, cfg)
+	result, err = CallLLM(systemPrompt, userPrompt, []*Tool{}, cfg)
 
 	return
 }

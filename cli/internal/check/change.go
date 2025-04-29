@@ -5,11 +5,13 @@ import (
 	"fmt"
 	"hyaline/internal/config"
 	"hyaline/internal/diff"
+	"hyaline/internal/llm"
 	"hyaline/internal/sqlite"
 	"log/slog"
 	"strings"
 
 	"github.com/bmatcuk/doublestar/v4"
+	"github.com/invopop/jsonschema"
 )
 
 type ChangeResult struct {
@@ -19,8 +21,26 @@ type ChangeResult struct {
 	Reasons             []string
 }
 
-func Change(file *sqlite.File, codeSource config.CodeSource, ruleDocsMap map[string][]config.RuleDocument, currentDB *sql.DB) (results []ChangeResult, err error) {
-	// TODO move this to checkLLM()
+func Change(file *sqlite.File, codeSource config.CodeSource, ruleDocsMap map[string][]config.RuleDocument, currentDB *sql.DB, cfg *config.LLM) (results []ChangeResult, err error) {
+	// Check LLM
+	llmResults, err := checkLLM(file, codeSource, ruleDocsMap, currentDB, cfg)
+	if err != nil {
+		return
+	}
+	results = append(results, llmResults...)
+
+	// Check updateIfs
+	results = append(results, checkUpdateIfs(file.ID, file.OriginalID, file.Action, ruleDocsMap)...)
+
+	return
+}
+
+type checkLLMMarkForUpdate struct {
+	IDs []string `json:"ids" jsonschema:"title=the list of ids,description=The list of ids to mark for update,example=app.1,example=app.3,app.4"`
+}
+
+func checkLLM(file *sqlite.File, codeSource config.CodeSource, ruleDocsMap map[string][]config.RuleDocument, currentDB *sql.DB, cfg *config.LLM) (results []ChangeResult, err error) {
+	// Get original ID and contents so we can calculate a diff
 	originalID := file.ID
 	originalContents := ""
 	if file.Action == sqlite.ActionModify {
@@ -54,7 +74,8 @@ func Change(file *sqlite.File, codeSource config.CodeSource, ruleDocsMap map[str
 	// Ignore white space only changes?
 	// TODO
 
-	// Generate the user prompt
+	// Generate the system and user prompt
+	systemPrompt := "You are a senior technical writer who writes clear and accurate system documentation."
 	var userPrompt strings.Builder
 
 	// TODO give context
@@ -123,10 +144,27 @@ func Change(file *sqlite.File, codeSource config.CodeSource, ruleDocsMap map[str
 		slog.Warn("check.Change encountered an unknown action", "file", file.ID, "action", file.Action)
 		return
 	}
-	userPrompt.WriteString("look at the documentation provided in <documents> and determine which documents, if any, should be updated based on this change.") // TODO call tool to update?
+	userPrompt.WriteString("look at the documentation provided in <documents> and determine which documents, if any, should be updated based on this change.\n") // TODO call tool to update?
+	userPrompt.WriteString("Then, call the provided mark_for_update tool and pass in a list of the documents and/or sections that should be updated.")
 	// TODO respond with a tool call to update_documentation(list)
 
 	userPrompt.WriteString("\n\n")
+
+	// Create tool
+	schema := jsonschema.Reflect(&checkLLMMarkForUpdate{})
+	tool := llm.Tool{
+		Name:        "mark_for_update",
+		Description: "Accepts a list of document or section ids to mark those documents and/or sections as needing an update",
+		Schema:      schema,
+		Callback: func(params string) (bool, string, error) {
+			fmt.Println(params)
+			return true, "", nil
+		},
+	}
+
+	// Call LLM
+	_, err = llm.CallLLM(systemPrompt, userPrompt.String(), []*llm.Tool{&tool}, cfg)
+	// TODO handle error
 
 	// TODO actually prompt
 	fmt.Println(userPrompt.String())
@@ -140,9 +178,6 @@ func Change(file *sqlite.File, codeSource config.CodeSource, ruleDocsMap map[str
 		})
 		break
 	}
-
-	// Check updateIfs
-	results = append(results, checkUpdateIfs(file.ID, file.OriginalID, file.Action, ruleDocsMap)...)
 
 	return
 }
@@ -160,7 +195,7 @@ func formatDocuments(ruleDocsMap map[string][]config.RuleDocument) string {
 			id := fmt.Sprintf("%s.%d", docID, idx+1)
 
 			// <document>
-			documents.WriteString(fmt.Sprintf("%s<document uid=\"%s\">\n", strings.Repeat(" ", indent), id))
+			documents.WriteString(fmt.Sprintf("%s<document id=\"%s\">\n", strings.Repeat(" ", indent), id))
 			indent += 2
 
 			// <document_name>{{NAME}}<document_name>
@@ -203,7 +238,7 @@ func formatSections(sections []config.RuleDocumentSection, prefix string, indent
 	for idx, section := range sections {
 		id := fmt.Sprintf("%s.%d", prefix, idx+1)
 		// <section id="">
-		str.WriteString(fmt.Sprintf("%s<section uid=\"%s\">\n", strings.Repeat(" ", indent), id))
+		str.WriteString(fmt.Sprintf("%s<section id=\"%s\">\n", strings.Repeat(" ", indent), id))
 
 		indent += 2
 

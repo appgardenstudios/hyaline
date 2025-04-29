@@ -85,7 +85,7 @@
         "--config", "./_example/config.yml",
         "--current", "./current.db",
         "--change", "./change.db",
-        "--system", "git",
+        "--system", "check-change",
         "--output", "./results.json"
       ]
     }

@@ -10,12 +10,12 @@ import (
 type Tool struct {
 	Name        string
 	Description string
-	Schema      jsonschema.Schema
+	Schema      *jsonschema.Schema
 	// Take in JSON string, return stop, response, error
 	Callback func(string) (bool, string, error)
 }
 
-func callLLM(systemPrompt string, userPrompt string, tools []*Tool, cfg *config.LLM) (result string, err error) {
+func CallLLM(systemPrompt string, userPrompt string, tools []*Tool, cfg *config.LLM) (result string, err error) {
 	switch cfg.Provider {
 	case config.LLMProviderAnthropic:
 		return callAnthropic(systemPrompt, userPrompt, tools, cfg)
