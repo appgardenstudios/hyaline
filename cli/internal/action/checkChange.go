@@ -184,7 +184,7 @@ func CheckChange(args *CheckChangeArgs) error {
 
 		// Check each file against our full set of documentation
 		for _, file := range files {
-			arr, err := check.Change(file, c, ruleDocsMap)
+			arr, err := check.Change(file, c, ruleDocsMap, currentDB)
 			results = append(results, arr...)
 			if err != nil {
 				slog.Debug("action.CheckChange could not check change", "file", file.ID, "system", args.System, "error", err)

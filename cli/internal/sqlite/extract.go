@@ -218,6 +218,33 @@ WHERE
 	return nil
 }
 
+func GetFile(fileID string, codeID string, systemID string, db *sql.DB) (*File, error) {
+	stmt, err := db.Prepare(`
+SELECT
+  ID, CODE_ID, SYSTEM_ID, ACTION, ORIGINAL_ID, RAW_DATA
+FROM
+  FILE
+WHERE
+  ID = ?
+  AND CODE_ID = ?
+  AND SYSTEM_ID = ?
+`)
+	if err != nil {
+		return nil, err
+	}
+
+	var row File
+	err = stmt.QueryRow(fileID, codeID, systemID).Scan(&row.ID, &row.CodeID, &row.SystemID, &row.Action, &row.OriginalID, &row.RawData)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil
+		}
+		return nil, err
+	}
+
+	return &row, nil
+}
+
 func GetAllFiles(codeID string, systemID string, db *sql.DB) (arr []*File, err error) {
 	stmt, err := db.Prepare(`
 SELECT

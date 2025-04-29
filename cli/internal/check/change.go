@@ -1,9 +1,12 @@
 package check
 
 import (
+	"database/sql"
 	"fmt"
 	"hyaline/internal/config"
+	"hyaline/internal/diff"
 	"hyaline/internal/sqlite"
+	"log/slog"
 	"strings"
 )
 
@@ -14,17 +17,33 @@ type ChangeResult struct {
 	Reasons             []string
 }
 
-// https://pkg.go.dev/github.com/sergi/go-diff#section-readme
-
-func Change(file *sqlite.File, codeSource config.CodeSource, ruleDocsMap map[string][]config.RuleDocument) (results []ChangeResult, err error) {
-	diff := ""
+func Change(file *sqlite.File, codeSource config.CodeSource, ruleDocsMap map[string][]config.RuleDocument, currentDB *sql.DB) (results []ChangeResult, err error) {
+	originalContents := ""
 	if file.Action == sqlite.ActionModify {
-		// Calculate the diff
-		// TODO
+		// Get original contents
+		var original *sqlite.File
+		original, err = sqlite.GetFile(file.ID, file.CodeID, file.SystemID, currentDB)
+		if err != nil || original == nil {
+			slog.Debug("check.Change could not get original file from modification", "file", file.ID, "error", err)
+			return
+		}
+		originalContents = original.RawData
 	}
 	if file.Action == sqlite.ActionRename {
-		// Calculate the diff and ignore whitespace only changes
-		// TODO
+		// Get original contents
+		var original *sqlite.File
+		original, err = sqlite.GetFile(file.OriginalID, file.CodeID, file.SystemID, currentDB)
+		if err != nil || original == nil {
+			slog.Debug("check.Change could not get original file from rename", "file", file.ID, "error", err)
+			return
+		}
+		originalContents = original.RawData
+	}
+	edits := diff.Strings(originalContents, file.RawData)
+	textDiff, err := diff.ToUnified("a/"+file.ID, "b/"+file.ID, originalContents, edits, 3)
+	if err != nil {
+		slog.Debug("check.Change could not generate diff", "file", file.ID, "error", err)
+		return
 	}
 
 	// Ignore white space only changes?
@@ -60,7 +79,7 @@ func Change(file *sqlite.File, codeSource config.CodeSource, ruleDocsMap map[str
 	case sqlite.ActionModify:
 		// Add <diff>
 		userPrompt.WriteString("<diff>\n")
-		userPrompt.WriteString(diff)
+		userPrompt.WriteString(textDiff)
 		userPrompt.WriteString("\n")
 		userPrompt.WriteString("</diff>\n")
 		userPrompt.WriteString("\n")
@@ -69,16 +88,16 @@ func Change(file *sqlite.File, codeSource config.CodeSource, ruleDocsMap map[str
 		userPrompt.WriteString("and that a patch representing the changes to that file is in <diff>, ")
 	case sqlite.ActionRename:
 		// Add <diff> optionally
-		if diff != "" {
+		if textDiff != "" {
 			userPrompt.WriteString("<diff>\n")
-			userPrompt.WriteString(diff)
+			userPrompt.WriteString(textDiff)
 			userPrompt.WriteString("\n")
 			userPrompt.WriteString("</diff>\n")
 			userPrompt.WriteString("\n")
 		}
 		// Add prompt
 		userPrompt.WriteString(fmt.Sprintf("Given that the file %s was renamed to %s, ", file.OriginalID, file.ID))
-		if diff != "" {
+		if textDiff != "" {
 			userPrompt.WriteString("and that a patch representing the changes to the renamed file is in <diff>, ")
 		}
 	case sqlite.ActionDelete:
