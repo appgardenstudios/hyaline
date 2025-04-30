@@ -13,7 +13,6 @@ hyaline-e2e
 .env
 
 # Other files used for testing
-e2e/_output/*.yml
-e2e/_output/*.db
+e2e/_output/*
 generated-config.yml
 results.json
