@@ -208,6 +208,9 @@ rules:
             required: true
   - id: check-change
     documents:
+      - path: docs/subdir.md
+        purpose: The purpose of this document is to record any change to js files in the subdir directory, no matter how small
+        required: true
       - path: docs/docsDoc.md
         purpose: The docs/docsDoc.md file appears to be a test document used to verify basic document formatting and functionality. It contains simple test content and repeated test phrases.
         required: true

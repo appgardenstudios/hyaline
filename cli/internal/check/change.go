@@ -2,6 +2,7 @@ package check
 
 import (
 	"database/sql"
+	"encoding/json"
 	"fmt"
 	"hyaline/internal/config"
 	"hyaline/internal/diff"
@@ -35,11 +36,24 @@ func Change(file *sqlite.File, codeSource config.CodeSource, ruleDocsMap map[str
 	return
 }
 
-type checkLLMMarkForUpdate struct {
-	IDs []string `json:"ids" jsonschema:"title=the list of ids,description=The list of ids to mark for update,example=app.1,example=app.3,app.4"`
+const checkLLMNeedsUpdateName = "needs_update"
+const checkLLMNoUpdateNeededName = "no_update_needed"
+
+type checkLLMNeedsUpdateSchema struct {
+	Entries []checkLLMNeedsUpdateSchemaEntry `json:"entries" jsonschema:"title=The list of entries,description=The list of documents and/or sections that need to be updated along with the reason for each update"`
+}
+
+type checkLLMNeedsUpdateSchemaEntry struct {
+	ID     string `json:"id" jsonschema:"title=The document/section ID,description=The ID of the document and/or section that needs to be updated,example=app.1"`
+	Reason string `json:"reason" jsonschema:"title=The reason,description=The reason the document and/or section needs to be updated,example=This section needs to be updated because the change modifies a file that is mentioned in the reference to this section"`
+}
+
+type checkLLMNoUpdateNeededSchema struct {
+	IDs []string `json:"ids" jsonschema:"title=the list of document and/or section ids needing update,description=The list of document and/or ids that need to be updated,example=app.1,example=app.3,app.4"`
 }
 
 func checkLLM(file *sqlite.File, codeSource config.CodeSource, ruleDocsMap map[string][]config.RuleDocument, currentDB *sql.DB, cfg *config.LLM) (results []ChangeResult, err error) {
+	slog.Debug("check.checkLLM checking file", "file", file.ID)
 	// Get original ID and contents so we can calculate a diff
 	originalID := file.ID
 	originalContents := ""
@@ -76,114 +90,160 @@ func checkLLM(file *sqlite.File, codeSource config.CodeSource, ruleDocsMap map[s
 
 	// Generate the system and user prompt
 	systemPrompt := "You are a senior technical writer who writes clear and accurate system documentation."
-	var userPrompt strings.Builder
+	var prompt strings.Builder
 
 	// TODO give context
-	userPrompt.WriteString("The documentation for this system is given in the <documents> tag, which contains a list of documents and the sections contained within the document.") // TODO finish this description
-	userPrompt.WriteString("\n\n")
+	prompt.WriteString("The documentation for this system is given in the <documents> tag, which contains a list of documents and the sections contained within the document.") // TODO finish this description
+	prompt.WriteString("\n\n")
 
 	// https://docs.anthropic.com/en/docs/build-with-claude/prompt-engineering/long-context-tips#example-quote-extraction
 
 	// Build document structure for prompt
-	userPrompt.WriteString(formatDocuments(ruleDocsMap))
-	userPrompt.WriteString("\n\n")
+	documents, documentMap := formatDocuments(ruleDocsMap)
+	prompt.WriteString(documents)
+	prompt.WriteString("\n\n")
 
 	switch file.Action {
 	case sqlite.ActionInsert:
 		// Add <file>
-		userPrompt.WriteString("<file>\n")
-		userPrompt.WriteString(fmt.Sprintf("  <file_name>%s</file_name>\n", file.ID))
-		userPrompt.WriteString("  <file_content>\n")
-		userPrompt.WriteString(file.RawData)
-		userPrompt.WriteString("\n")
-		userPrompt.WriteString("  </file_content>\n")
-		userPrompt.WriteString("</file>\n")
-		userPrompt.WriteString("\n")
+		prompt.WriteString("<file>\n")
+		prompt.WriteString(fmt.Sprintf("  <file_name>%s</file_name>\n", file.ID))
+		prompt.WriteString("  <file_content>\n")
+		prompt.WriteString(file.RawData)
+		prompt.WriteString("\n")
+		prompt.WriteString("  </file_content>\n")
+		prompt.WriteString("</file>\n")
+		prompt.WriteString("\n")
 		// Add prompt
-		userPrompt.WriteString(fmt.Sprintf("Given that the file %s was created, ", file.ID))
-		userPrompt.WriteString("and that the contents of the created file are in <file>, ")
+		prompt.WriteString(fmt.Sprintf("Given that the file %s was created, ", file.ID))
+		prompt.WriteString("and that the contents of the created file are in <file>, ")
 	case sqlite.ActionModify:
 		// Add <diff>
-		userPrompt.WriteString("<diff>\n")
-		userPrompt.WriteString(textDiff)
-		userPrompt.WriteString("\n")
-		userPrompt.WriteString("</diff>\n")
-		userPrompt.WriteString("\n")
+		prompt.WriteString("<diff>\n")
+		prompt.WriteString(textDiff)
+		prompt.WriteString("\n")
+		prompt.WriteString("</diff>\n")
+		prompt.WriteString("\n")
 		// Add prompt
-		userPrompt.WriteString(fmt.Sprintf("Given that the file %s was modified, ", file.ID))
-		userPrompt.WriteString("and that a patch representing the changes to that file is in <diff>, ")
+		prompt.WriteString(fmt.Sprintf("Given that the file %s was modified, ", file.ID))
+		prompt.WriteString("and that a patch representing the changes to that file is in <diff>, ")
 	case sqlite.ActionRename:
 		// Add <diff> optionally
 		if textDiff != "" {
-			userPrompt.WriteString("<diff>\n")
-			userPrompt.WriteString(textDiff)
-			userPrompt.WriteString("\n")
-			userPrompt.WriteString("</diff>\n")
-			userPrompt.WriteString("\n")
+			prompt.WriteString("<diff>\n")
+			prompt.WriteString(textDiff)
+			prompt.WriteString("\n")
+			prompt.WriteString("</diff>\n")
+			prompt.WriteString("\n")
 		}
 		// Add prompt
-		userPrompt.WriteString(fmt.Sprintf("Given that the file %s was renamed to %s, ", file.OriginalID, file.ID))
+		prompt.WriteString(fmt.Sprintf("Given that the file %s was renamed to %s, ", file.OriginalID, file.ID))
 		if textDiff != "" {
-			userPrompt.WriteString("and that a patch representing the changes to the renamed file is in <diff>, ")
+			prompt.WriteString("and that a patch representing the changes to the renamed file is in <diff>, ")
 		}
 	case sqlite.ActionDelete:
 		// Add <file>
-		userPrompt.WriteString("<file>\n")
-		userPrompt.WriteString(fmt.Sprintf("  <file_name>%s</file_name>\n", file.ID))
-		userPrompt.WriteString("  <file_content>\n")
-		userPrompt.WriteString(file.RawData)
-		userPrompt.WriteString("\n")
-		userPrompt.WriteString("  </file_content>\n")
-		userPrompt.WriteString("</file>\n")
-		userPrompt.WriteString("\n")
+		prompt.WriteString("<file>\n")
+		prompt.WriteString(fmt.Sprintf("  <file_name>%s</file_name>\n", file.ID))
+		prompt.WriteString("  <file_content>\n")
+		prompt.WriteString(file.RawData)
+		prompt.WriteString("\n")
+		prompt.WriteString("  </file_content>\n")
+		prompt.WriteString("</file>\n")
+		prompt.WriteString("\n")
 		// Add prompt
-		userPrompt.WriteString(fmt.Sprintf("Given that the file %s was deleted, ", file.ID))
-		userPrompt.WriteString("and that the contents of the deleted file are in <file>, ")
+		prompt.WriteString(fmt.Sprintf("Given that the file %s was deleted, ", file.ID))
+		prompt.WriteString("and that the contents of the deleted file are in <file>, ")
 	default:
 		// Do nothing and return
 		slog.Warn("check.Change encountered an unknown action", "file", file.ID, "action", file.Action)
 		return
 	}
-	userPrompt.WriteString("look at the documentation provided in <documents> and determine which documents, if any, should be updated based on this change.\n")
-	userPrompt.WriteString("Then, call the provided mark_for_update tool and pass in a list of the documents and/or sections that should be updated.")
+	prompt.WriteString("look at the documentation provided in <documents> and determine which documents, if any, should be updated based on this change.\n")
+	prompt.WriteString("Then, call the provided mark_for_update tool and pass in a list of the documents and/or sections that should be updated.")
 
-	userPrompt.WriteString("\n\n")
+	prompt.WriteString("\n\n")
 
 	// Create tool
-	schema := jsonschema.Reflect(&checkLLMMarkForUpdate{})
-	tool := llm.Tool{
-		Name:        "mark_for_update",
-		Description: "Accepts a list of document or section ids to mark those documents and/or sections as needing an update",
-		Schema:      schema,
-		Callback: func(params string) (bool, string, error) {
-			fmt.Println(params)
-			return true, "", nil
+	reflector := jsonschema.Reflector{
+		AllowAdditionalProperties: false,
+		DoNotReference:            true,
+	}
+	tools := []*llm.Tool{
+		{
+			Name:        checkLLMNeedsUpdateName,
+			Description: "Identify a set of documents and/or sections that need to be updated for this change",
+			Schema:      reflector.Reflect(&checkLLMNeedsUpdateSchema{}),
+			Callback: func(input string) (bool, string, error) {
+				var needsUpdate checkLLMNeedsUpdateSchema
+				err := json.Unmarshal([]byte(input), &needsUpdate)
+				if err != nil {
+					// TODO
+				}
+
+				for _, update := range needsUpdate.Entries {
+					mapEntry, ok := documentMap[update.ID]
+					if !ok {
+						// TODO
+						continue
+					}
+
+					results = append(results, ChangeResult{
+						DocumentationSource: mapEntry.DocumentationSource,
+						Document:            mapEntry.Document,
+						Section:             mapEntry.Section,
+						Reasons:             []string{update.Reason},
+					})
+				}
+
+				fmt.Println(checkLLMNeedsUpdateName)
+				fmt.Println(input)
+				return true, "", nil
+			},
+		},
+		{
+			Name:        checkLLMNoUpdateNeededName,
+			Description: "Identify that there are no documents that need to be updated for this change",
+			Schema:      reflector.Reflect(&checkLLMNoUpdateNeededSchema{}),
+			Callback: func(params string) (bool, string, error) {
+				slog.Debug("check.Change - checkLLM determined no updates needed", "error", err)
+				return true, "", nil
+			},
 		},
 	}
 
 	// Call LLM
-	// TODO look at response
-	_, err = llm.CallLLM(systemPrompt, userPrompt.String(), []*llm.Tool{&tool}, cfg)
-	// TODO handle error
-
-	// TODO actually prompt
-	fmt.Println(userPrompt.String())
-
-	for docSource := range ruleDocsMap {
-		results = append(results, ChangeResult{
-			DocumentationSource: docSource,
-			Document:            "README.md",
-			Section:             "",
-			Reasons:             []string{fmt.Sprintf("testReason for file %s in %s", file.ID, codeSource.ID)},
-		})
-		break
+	userPrompt := prompt.String()
+	// fmt.Println(userPrompt)
+	// slog.Debug("check.Change calling the llm", "systemPrompt", systemPrompt, "userPrompt", userPrompt, "error", err)
+	_, err = llm.CallLLM(systemPrompt, userPrompt, tools, cfg)
+	if err != nil {
+		slog.Debug("check.Change encountered an error when calling the llm", "error", err)
+		return
 	}
+
+	// for docSource := range ruleDocsMap {
+	// 	results = append(results, ChangeResult{
+	// 		DocumentationSource: docSource,
+	// 		Document:            "README.md",
+	// 		Section:             "",
+	// 		Reasons:             []string{fmt.Sprintf("testReason for file %s in %s", file.ID, codeSource.ID)},
+	// 	})
+	// 	break
+	// }
 
 	return
 }
 
-func formatDocuments(ruleDocsMap map[string][]config.RuleDocument) string {
+type documentMapEntry struct {
+	DocumentationSource string
+	Document            string
+	Section             string
+}
+
+func formatDocuments(ruleDocsMap map[string][]config.RuleDocument) (string, map[string]documentMapEntry) {
 	var documents strings.Builder
+	documentMap := make(map[string]documentMapEntry)
 	indent := 0
 
 	documents.WriteString("<documents>\n")
@@ -193,6 +253,11 @@ func formatDocuments(ruleDocsMap map[string][]config.RuleDocument) string {
 	for docID, ruleDocs := range ruleDocsMap {
 		for idx, ruleDoc := range ruleDocs {
 			id := fmt.Sprintf("%s.%d", docID, idx+1)
+			documentMap[id] = documentMapEntry{
+				DocumentationSource: docID,
+				Document:            ruleDoc.Path,
+				Section:             "",
+			}
 
 			// <document>
 			documents.WriteString(fmt.Sprintf("%s<document id=\"%s\">\n", strings.Repeat(" ", indent), id))
@@ -208,7 +273,7 @@ func formatDocuments(ruleDocsMap map[string][]config.RuleDocument) string {
 
 			// <sections>
 			if len(ruleDoc.Sections) > 0 {
-				documents.WriteString(formatSections(ruleDoc.Sections, id, indent))
+				documents.WriteString(formatSections(ruleDoc.Sections, id, indent, docID, ruleDoc.Path, &documentMap))
 			}
 
 			indent -= 2
@@ -222,12 +287,12 @@ func formatDocuments(ruleDocsMap map[string][]config.RuleDocument) string {
 
 	documents.WriteString("<documents>\n")
 
-	return documents.String()
+	return documents.String(), documentMap
 }
 
 // Note: only call this if len(sections) > 0
 // TODO add assert?
-func formatSections(sections []config.RuleDocumentSection, prefix string, indent int) string {
+func formatSections(sections []config.RuleDocumentSection, prefix string, indent int, documentSource string, document string, documentMap *map[string]documentMapEntry) string {
 	var str strings.Builder
 
 	// <sections>
@@ -237,6 +302,12 @@ func formatSections(sections []config.RuleDocumentSection, prefix string, indent
 
 	for idx, section := range sections {
 		id := fmt.Sprintf("%s.%d", prefix, idx+1)
+		(*documentMap)[id] = documentMapEntry{
+			DocumentationSource: documentSource,
+			Document:            document,
+			Section:             section.ID,
+		}
+
 		// <section id="">
 		str.WriteString(fmt.Sprintf("%s<section id=\"%s\">\n", strings.Repeat(" ", indent), id))
 
@@ -252,7 +323,7 @@ func formatSections(sections []config.RuleDocumentSection, prefix string, indent
 
 		// <sections> if present
 		if len(section.Sections) > 0 {
-			str.WriteString(formatSections(section.Sections, id, indent))
+			str.WriteString(formatSections(section.Sections, id, indent, documentSource, document, documentMap))
 		}
 
 		indent -= 2
