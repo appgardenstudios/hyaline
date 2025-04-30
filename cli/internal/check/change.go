@@ -22,9 +22,9 @@ type ChangeResult struct {
 	Reasons             []string
 }
 
-func Change(file *sqlite.File, codeSource config.CodeSource, ruleDocsMap map[string][]config.RuleDocument, currentDB *sql.DB, cfg *config.LLM) (results []ChangeResult, err error) {
+func Change(file *sqlite.File, codeSource config.CodeSource, ruleDocsMap map[string][]config.RuleDocument, currentDB *sql.DB, changeDB *sql.DB, cfg *config.LLM) (results []ChangeResult, err error) {
 	// Check LLM
-	llmResults, err := checkLLM(file, codeSource, ruleDocsMap, currentDB, cfg)
+	llmResults, err := checkLLM(file, codeSource, ruleDocsMap, currentDB, changeDB, cfg)
 	if err != nil {
 		return
 	}
@@ -52,7 +52,7 @@ type checkLLMNoUpdateNeededSchema struct {
 	IDs []string `json:"ids" jsonschema:"title=the list of document and/or section ids needing update,description=The list of document and/or ids that need to be updated,example=app.1,example=app.3,app.4"`
 }
 
-func checkLLM(file *sqlite.File, codeSource config.CodeSource, ruleDocsMap map[string][]config.RuleDocument, currentDB *sql.DB, cfg *config.LLM) (results []ChangeResult, err error) {
+func checkLLM(file *sqlite.File, codeSource config.CodeSource, ruleDocsMap map[string][]config.RuleDocument, currentDB *sql.DB, changeDB *sql.DB, cfg *config.LLM) (results []ChangeResult, err error) {
 	slog.Debug("check.checkLLM checking file", "file", file.ID)
 
 	// Get original ID and contents so we can calculate a diff
@@ -103,11 +103,41 @@ func checkLLM(file *sqlite.File, codeSource config.CodeSource, ruleDocsMap map[s
 	prompt.WriteString(documents)
 	prompt.WriteString("\n\n")
 
-	// Add PR content (if any)
-	// TODO
+	// Add Pull Request (if any)
+	prs, err := sqlite.GetAllPullRequest(file.SystemID, changeDB)
+	if err != nil {
+		slog.Debug("check.Change could not get related pull requests", "error", err)
+		return
+	}
+	numPullRequests := len(prs)
+	for _, pr := range prs {
+		prompt.WriteString("<pull_request>\n")
+		prompt.WriteString(fmt.Sprintf("  <pull_request_title>%s</pull_request_title>\n", pr.Title))
+		prompt.WriteString("  <pull_request_content>\n")
+		prompt.WriteString(pr.Body)
+		prompt.WriteString("\n")
+		prompt.WriteString("  </pull_request_content>\n")
+		prompt.WriteString("</pull_request>\n")
+		prompt.WriteString("\n\n")
+	}
 
-	// Add ticket(s) (if any)
-	// TODO
+	// Add issue(s) (if any)
+	issues, err := sqlite.GetAllIssue(file.SystemID, changeDB)
+	if err != nil {
+		slog.Debug("check.Change could not get related issues", "error", err)
+		return
+	}
+	numIssues := len(issues)
+	for _, issue := range issues {
+		prompt.WriteString("<issue>\n")
+		prompt.WriteString(fmt.Sprintf("  <issue_title>%s</issue_title>\n", issue.Title))
+		prompt.WriteString("  <issue_content>\n")
+		prompt.WriteString(issue.Body)
+		prompt.WriteString("\n")
+		prompt.WriteString("  </issue_content>\n")
+		prompt.WriteString("</issue>\n")
+		prompt.WriteString("\n\n")
+	}
 
 	// Add type-of-change specific information
 	switch file.Action {
@@ -128,7 +158,6 @@ func checkLLM(file *sqlite.File, codeSource config.CodeSource, ruleDocsMap map[s
 		// Add <diff>
 		prompt.WriteString("<diff>\n")
 		prompt.WriteString(textDiff)
-		prompt.WriteString("\n")
 		prompt.WriteString("</diff>\n")
 		prompt.WriteString("\n")
 		// Add prompt
@@ -139,7 +168,6 @@ func checkLLM(file *sqlite.File, codeSource config.CodeSource, ruleDocsMap map[s
 		if textDiff != "" {
 			prompt.WriteString("<diff>\n")
 			prompt.WriteString(textDiff)
-			prompt.WriteString("\n")
 			prompt.WriteString("</diff>\n")
 			prompt.WriteString("\n")
 		}
@@ -167,9 +195,18 @@ func checkLLM(file *sqlite.File, codeSource config.CodeSource, ruleDocsMap map[s
 		return
 	}
 
+	// Add prompt instructions for pull requests and/or issue(s)
+	if numPullRequests > 0 {
+		prompt.WriteString("and that the contents of related pull request(s) are in <pull_request>, ")
+	}
+	if numIssues > 0 {
+		prompt.WriteString("and that the contents of related issue(s) are in <issue>, ")
+	}
+
 	// Add instructions
 	prompt.WriteString("look at the documentation provided in <documents> and determine which documents, if any, should be updated based on this change.\n")
-	prompt.WriteString("Then, call the provided mark_for_update tool and pass in a list of the documents and/or sections that should be updated.")
+	prompt.WriteString(fmt.Sprintf("Then, call the provided %s tool with a list of ids of the documents and/or sections that should be updated along with the reason they should be updated.\n", checkLLMNeedsUpdateName))
+	prompt.WriteString(fmt.Sprintf("If there are no documents that need to be updated call the %s tool instead.", checkLLMNoUpdateNeededName))
 
 	// Create tool
 	reflector := jsonschema.Reflector{
@@ -222,6 +259,7 @@ func checkLLM(file *sqlite.File, codeSource config.CodeSource, ruleDocsMap map[s
 
 	// Call LLM
 	userPrompt := prompt.String()
+	// fmt.Println(userPrompt)
 	slog.Debug("check.Change calling the llm")
 	// slog.Debug("check.Change calling the llm", "systemPrompt", systemPrompt, "userPrompt", userPrompt)
 	_, err = llm.CallLLM(systemPrompt, userPrompt, tools, cfg)

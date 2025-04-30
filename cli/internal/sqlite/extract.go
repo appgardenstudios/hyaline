@@ -689,7 +689,7 @@ func GetAllIssue(systemID string, db *sql.DB) (arr []*Issue, err error) {
 SELECT
   ID, SYSTEM_ID, TITLE, BODY
 FROM
-  PULL_REQUEST
+  ISSUE
 WHERE
   SYSTEM_ID = ?
 `)
