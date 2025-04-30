@@ -88,9 +88,6 @@ func checkLLM(file *sqlite.File, codeSource config.CodeSource, ruleDocsMap map[s
 		return
 	}
 
-	// Ignore white space only changes?
-	// TODO
-
 	// Generate the system and user prompt
 	systemPrompt := "You are a senior technical writer who writes clear and accurate system documentation."
 	var prompt strings.Builder
@@ -98,7 +95,7 @@ func checkLLM(file *sqlite.File, codeSource config.CodeSource, ruleDocsMap map[s
 	// Add documentation context
 	// https://docs.anthropic.com/en/docs/build-with-claude/prompt-engineering/long-context-tips#example-quote-extraction
 	documents, documentMap := formatDocuments(ruleDocsMap)
-	prompt.WriteString("The documentation for this system is given in the <documents> tag, which contains a list of documents and the sections contained within the document.") // TODO finish this description
+	prompt.WriteString("The documentation for this system is given in the <documents> tag, which contains a list of documents and the sections contained within each document.")
 	prompt.WriteString("\n\n")
 	prompt.WriteString(documents)
 	prompt.WriteString("\n\n")
@@ -208,7 +205,7 @@ func checkLLM(file *sqlite.File, codeSource config.CodeSource, ruleDocsMap map[s
 	prompt.WriteString(fmt.Sprintf("Then, call the provided %s tool with a list of ids of the documents and/or sections that should be updated along with the reason they should be updated.\n", checkLLMNeedsUpdateName))
 	prompt.WriteString(fmt.Sprintf("If there are no documents that need to be updated call the %s tool instead.", checkLLMNoUpdateNeededName))
 
-	// Create tool
+	// Create tool(s)
 	reflector := jsonschema.Reflector{
 		AllowAdditionalProperties: false,
 		DoNotReference:            true,
@@ -228,6 +225,7 @@ func checkLLM(file *sqlite.File, codeSource config.CodeSource, ruleDocsMap map[s
 					return true, "", err
 				}
 
+				// Loop through and handle each document/section identified by the llm
 				for _, update := range needsUpdate.Entries {
 					mapEntry, ok := documentMap[update.ID]
 					if !ok {
@@ -235,6 +233,7 @@ func checkLLM(file *sqlite.File, codeSource config.CodeSource, ruleDocsMap map[s
 						continue
 					}
 
+					// Add a result for this entry
 					results = append(results, ChangeResult{
 						DocumentationSource: mapEntry.DocumentationSource,
 						Document:            mapEntry.Document,
@@ -243,6 +242,7 @@ func checkLLM(file *sqlite.File, codeSource config.CodeSource, ruleDocsMap map[s
 					})
 				}
 
+				// Return with done = true so we stop
 				return true, "", nil
 			},
 		},
@@ -252,6 +252,7 @@ func checkLLM(file *sqlite.File, codeSource config.CodeSource, ruleDocsMap map[s
 			Schema:      reflector.Reflect(&checkLLMNoUpdateNeededSchema{}),
 			Callback: func(params string) (bool, string, error) {
 				slog.Debug("check.Change - checkLLM determined no updates needed", "error", err)
+				// Return with done = true so we stop
 				return true, "", nil
 			},
 		},
@@ -327,7 +328,6 @@ func formatDocuments(ruleDocsMap map[string][]config.RuleDocument) (string, map[
 }
 
 // Note: only call this if len(sections) > 0
-// TODO add assert?
 func formatSections(sections []config.RuleDocumentSection, prefix string, indent int, documentSource string, document string, documentMap *map[string]documentMapEntry) string {
 	var str strings.Builder
 
