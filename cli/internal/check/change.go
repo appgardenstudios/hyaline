@@ -54,6 +54,7 @@ type checkLLMNoUpdateNeededSchema struct {
 
 func checkLLM(file *sqlite.File, codeSource config.CodeSource, ruleDocsMap map[string][]config.RuleDocument, currentDB *sql.DB, cfg *config.LLM) (results []ChangeResult, err error) {
 	slog.Debug("check.checkLLM checking file", "file", file.ID)
+
 	// Get original ID and contents so we can calculate a diff
 	originalID := file.ID
 	originalContents := ""
@@ -92,17 +93,21 @@ func checkLLM(file *sqlite.File, codeSource config.CodeSource, ruleDocsMap map[s
 	systemPrompt := "You are a senior technical writer who writes clear and accurate system documentation."
 	var prompt strings.Builder
 
-	// TODO give context
+	// Add documentation context
+	// https://docs.anthropic.com/en/docs/build-with-claude/prompt-engineering/long-context-tips#example-quote-extraction
+	documents, documentMap := formatDocuments(ruleDocsMap)
 	prompt.WriteString("The documentation for this system is given in the <documents> tag, which contains a list of documents and the sections contained within the document.") // TODO finish this description
 	prompt.WriteString("\n\n")
-
-	// https://docs.anthropic.com/en/docs/build-with-claude/prompt-engineering/long-context-tips#example-quote-extraction
-
-	// Build document structure for prompt
-	documents, documentMap := formatDocuments(ruleDocsMap)
 	prompt.WriteString(documents)
 	prompt.WriteString("\n\n")
 
+	// Add PR content (if any)
+	// TODO
+
+	// Add ticket(s) (if any)
+	// TODO
+
+	// Add type-of-change specific information
 	switch file.Action {
 	case sqlite.ActionInsert:
 		// Add <file>
@@ -159,10 +164,10 @@ func checkLLM(file *sqlite.File, codeSource config.CodeSource, ruleDocsMap map[s
 		slog.Warn("check.Change encountered an unknown action", "file", file.ID, "action", file.Action)
 		return
 	}
+
+	// Add instructions
 	prompt.WriteString("look at the documentation provided in <documents> and determine which documents, if any, should be updated based on this change.\n")
 	prompt.WriteString("Then, call the provided mark_for_update tool and pass in a list of the documents and/or sections that should be updated.")
-
-	prompt.WriteString("\n\n")
 
 	// Create tool
 	reflector := jsonschema.Reflector{
