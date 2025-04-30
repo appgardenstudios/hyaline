@@ -175,16 +175,19 @@ func checkLLM(file *sqlite.File, codeSource config.CodeSource, ruleDocsMap map[s
 			Description: "Identify a set of documents and/or sections that need to be updated for this change",
 			Schema:      reflector.Reflect(&checkLLMNeedsUpdateSchema{}),
 			Callback: func(input string) (bool, string, error) {
+				slog.Debug("check.Change - checkLLM determined updates are needed")
+				// Parse the input
 				var needsUpdate checkLLMNeedsUpdateSchema
 				err := json.Unmarshal([]byte(input), &needsUpdate)
 				if err != nil {
-					// TODO
+					slog.Debug("check.Change - checkLLM could not parse tool call input, invalid json", "tool", checkLLMNeedsUpdateName, "input", input, "error", err)
+					return true, "", err
 				}
 
 				for _, update := range needsUpdate.Entries {
 					mapEntry, ok := documentMap[update.ID]
 					if !ok {
-						// TODO
+						slog.Debug("check.Change - checkLLM could not find referenced documentation ID", "tool", checkLLMNeedsUpdateName, "ID", update.ID, "error", err)
 						continue
 					}
 
@@ -196,8 +199,6 @@ func checkLLM(file *sqlite.File, codeSource config.CodeSource, ruleDocsMap map[s
 					})
 				}
 
-				fmt.Println(checkLLMNeedsUpdateName)
-				fmt.Println(input)
 				return true, "", nil
 			},
 		},
@@ -214,23 +215,13 @@ func checkLLM(file *sqlite.File, codeSource config.CodeSource, ruleDocsMap map[s
 
 	// Call LLM
 	userPrompt := prompt.String()
-	// fmt.Println(userPrompt)
-	// slog.Debug("check.Change calling the llm", "systemPrompt", systemPrompt, "userPrompt", userPrompt, "error", err)
+	slog.Debug("check.Change calling the llm")
+	// slog.Debug("check.Change calling the llm", "systemPrompt", systemPrompt, "userPrompt", userPrompt)
 	_, err = llm.CallLLM(systemPrompt, userPrompt, tools, cfg)
 	if err != nil {
 		slog.Debug("check.Change encountered an error when calling the llm", "error", err)
 		return
 	}
-
-	// for docSource := range ruleDocsMap {
-	// 	results = append(results, ChangeResult{
-	// 		DocumentationSource: docSource,
-	// 		Document:            "README.md",
-	// 		Section:             "",
-	// 		Reasons:             []string{fmt.Sprintf("testReason for file %s in %s", file.ID, codeSource.ID)},
-	// 	})
-	// 	break
-	// }
 
 	return
 }
