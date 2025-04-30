@@ -76,6 +76,7 @@
       "type": "go",
       "request": "launch",
       "mode": "debug",
+      "preLaunchTask": "cleanup-check",
       "cwd": "${workspaceFolder}/cli/",
       "program": "${workspaceFolder}/cli/cmd/hyaline.go",
       "envFile": "${workspaceFolder}/cli/.env",

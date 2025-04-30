@@ -23,6 +23,16 @@
       "presentation":{
         "reveal": "silent"
       }
+    },{
+      "label": "cleanup-check",
+      "type": "shell",
+      "command": "rm -f results.json",
+      "options":{
+        "cwd": "${workspaceFolder}/cli/"
+      },
+      "presentation":{
+        "reveal": "silent"
+      }
     }
   ]
 }
