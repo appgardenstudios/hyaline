@@ -150,7 +150,7 @@ func GenerateConfig(args *GenerateConfigArgs) error {
 		slog.Debug("action.GenerateConfig could not open output file", "error", err)
 		return err
 	}
-	defer outputFile.Close() // Ensure file is closed after function returns
+	defer outputFile.Close()
 
 	// Write the byte slice to the file
 	_, err = outputFile.Write(yml)

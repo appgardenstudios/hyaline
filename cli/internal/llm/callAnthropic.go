@@ -32,23 +32,27 @@ func callAnthropic(systemPrompt string, userPrompt string, tools []*Tool, cfg *c
 			},
 		}
 	}
+	var toolChoice anthropic.ToolChoiceUnionParam
+	if len(tools) > 0 {
+		toolChoice = anthropic.ToolChoiceUnionParam{
+			OfToolChoiceAny: &anthropic.ToolChoiceAnyParam{
+				DisableParallelToolUse: anthropic.Bool(true),
+			},
+		}
+	}
 
-	// Loop and call llm until we don't have anymore outstanding tool calls
+	// Loop and call llm until we don't have any outstanding tool calls left OR
+	// a tool call signals that we are done
 	for {
 		// Call anthropic with the message(s)
 		var message *anthropic.Message
-		message, err = client.Messages.New(context.TODO(), anthropic.MessageNewParams{
-			Model:     anthropic.ModelClaude3_7SonnetLatest,
-			MaxTokens: 1024,
-			System:    []anthropic.TextBlockParam{{Text: systemPrompt}},
-			Messages:  messages,
-			Tools:     toolParams,
-			// TODO work on this and make it configurable
-			ToolChoice: anthropic.ToolChoiceUnionParam{
-				OfToolChoiceAny: &anthropic.ToolChoiceAnyParam{
-					DisableParallelToolUse: anthropic.Bool(true),
-				},
-			},
+		message, err = client.Messages.New(context.Background(), anthropic.MessageNewParams{
+			Model:      cfg.Model,
+			MaxTokens:  1024,
+			System:     []anthropic.TextBlockParam{{Text: systemPrompt}},
+			Messages:   messages,
+			Tools:      toolParams,
+			ToolChoice: toolChoice,
 		})
 		if err != nil {
 			slog.Debug("llm.callAnthropic errored when sending a new message", "error", err)

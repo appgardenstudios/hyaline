@@ -16,3 +16,4 @@ hyaline-e2e
 e2e/_output/*.yml
 e2e/_output/*.db
 generated-config.yml
+results.json

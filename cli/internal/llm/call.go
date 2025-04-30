@@ -11,7 +11,7 @@ type Tool struct {
 	Name        string
 	Description string
 	Schema      *jsonschema.Schema
-	// Take in JSON string, return stop, response, error
+	// Take in JSON input string, return stop, response, error
 	Callback func(string) (bool, string, error)
 }
 

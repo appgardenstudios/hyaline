@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"hyaline/internal/check"
 	"hyaline/internal/config"
 	"hyaline/internal/sqlite"
@@ -242,9 +241,17 @@ func CheckChange(args *CheckChangeArgs) error {
 		slog.Debug("action.CheckChange could not marshal json", "error", err)
 		return err
 	}
-
-	// TODO output to output file
-	fmt.Println(string(jsonData))
+	outputFile, err := os.Create(outputAbsPath)
+	if err != nil {
+		slog.Debug("action.CheckChange could not open output file", "error", err)
+		return err
+	}
+	defer outputFile.Close()
+	_, err = outputFile.Write(jsonData)
+	if err != nil {
+		slog.Debug("action.GenerateConfig could not write output file", "error", err)
+		return err
+	}
 
 	return nil
 }
