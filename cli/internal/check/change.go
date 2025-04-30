@@ -79,6 +79,8 @@ func checkLLM(file *sqlite.File, codeSource config.CodeSource, ruleDocsMap map[s
 		originalID = original.ID
 		originalContents = original.RawData
 	}
+
+	// Calculate the diff
 	edits := diff.Strings(originalContents, file.RawData)
 	textDiff, err := diff.ToUnified("a/"+originalID, "b/"+file.ID, originalContents, edits, 3)
 	if err != nil {
