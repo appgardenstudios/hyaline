@@ -37,14 +37,15 @@ type CheckChangeOutput struct {
 }
 
 type CheckChangeOutputEntry struct {
-	System              string   `json:"system"`
-	DocumentationSource string   `json:"documentationSource"`
-	Document            string   `json:"document"`
-	Section             []string `json:"section,omitempty"`
-	Recommendation      string   `json:"recommendation"`
-	Reasons             []string `json:"reasons"`
-	Changed             bool     `json:"changed"`
-	Suggestion          string   `json:"suggestion,omitempty"`
+	System              string                        `json:"system"`
+	DocumentationSource string                        `json:"documentationSource"`
+	Document            string                        `json:"document"`
+	Section             []string                      `json:"section,omitempty"`
+	Recommendation      string                        `json:"recommendation"`
+	Reasons             []string                      `json:"reasons"`
+	Changed             bool                          `json:"changed"`
+	Suggestion          string                        `json:"suggestion,omitempty"`
+	_References         []check.ChangeResultReference // TODO omit this
 }
 
 type CheckChangeOutputEntrySort []CheckChangeOutputEntry
@@ -205,6 +206,7 @@ func CheckChange(args *CheckChangeArgs) error {
 			_, ok := resultsMap[key]
 			if ok {
 				resultsMap[key].Reasons = append(resultsMap[key].Reasons, result.Reasons...)
+				resultsMap[key].References = append(resultsMap[key].References, result.References...)
 			} else {
 				resultsMap[key] = &result
 			}
@@ -233,6 +235,7 @@ func CheckChange(args *CheckChangeArgs) error {
 			Recommendation:      "Consider reviewing and updating this documentation",
 			Reasons:             result.Reasons,
 			Changed:             changed,
+			_References:         result.References,
 		})
 	}
 
@@ -242,10 +245,11 @@ func CheckChange(args *CheckChangeArgs) error {
 	// Suggest change(s) (if flag is set)
 	if args.Suggest {
 		for idx, entry := range output.Recommendations {
-			suggestion, err := suggest.Change()
+			// TODO group up changes by document
+			suggestion, err := suggest.Change(entry.System, entry.DocumentationSource, entry.Document, entry.Section)
 			if err != nil {
 				slog.Debug("action.CheckChange could not get suggestion",
-					"system", args.System,
+					"system", entry.System,
 					"doc", entry.DocumentationSource,
 					"document", entry.Document,
 					"section", entry.Section,

@@ -20,48 +20,23 @@ type ChangeResult struct {
 	Document            string
 	Section             []string
 	Reasons             []string
+	References          []ChangeResultReference
 }
 
-type ChangeResultSource struct {
+type ChangeResultReference struct {
+	CodeID string
+	// TODO do we need original ID?
+	FileID string
+	Diff   string
 }
 
 func Change(file *sqlite.File, codeSource config.CodeSource, ruleDocsMap map[string][]config.RuleDocument, currentDB *sql.DB, changeDB *sql.DB, cfg *config.LLM) (results []ChangeResult, err error) {
-	// Check LLM
-	llmResults, err := checkLLM(file, codeSource, ruleDocsMap, currentDB, changeDB, cfg)
-	if err != nil {
-		return
-	}
-	results = append(results, llmResults...)
-
-	// Check updateIfs
-	results = append(results, checkUpdateIfs(file.ID, file.OriginalID, file.Action, ruleDocsMap)...)
-
-	return
-}
-
-const checkLLMNeedsUpdateName = "needs_update"
-const checkLLMNoUpdateNeededName = "no_update_needed"
-
-type checkLLMNeedsUpdateSchema struct {
-	Entries []checkLLMNeedsUpdateSchemaEntry `json:"entries" jsonschema:"title=The list of entries,description=The list of documents and/or sections that need to be updated along with the reason for each update"`
-}
-
-type checkLLMNeedsUpdateSchemaEntry struct {
-	ID     string `json:"id" jsonschema:"title=The document/section ID,description=The ID of the document and/or section that needs to be updated,example=app.1"`
-	Reason string `json:"reason" jsonschema:"title=The reason,description=The reason the document and/or section needs to be updated,example=This section needs to be updated because the change modifies a file that is mentioned in the reference to this section"`
-}
-
-type checkLLMNoUpdateNeededSchema struct {
-	IDs []string `json:"ids" jsonschema:"title=the list of document and/or section ids needing update,description=The list of document and/or ids that need to be updated,example=app.1,example=app.3,app.4"`
-}
-
-func checkLLM(file *sqlite.File, codeSource config.CodeSource, ruleDocsMap map[string][]config.RuleDocument, currentDB *sql.DB, changeDB *sql.DB, cfg *config.LLM) (results []ChangeResult, err error) {
-	slog.Debug("check.checkLLM checking file", "file", file.ID)
+	slog.Debug("check.Change checking file", "file", file.ID)
 
 	// Get original ID and contents so we can calculate a diff
 	originalID := file.ID
 	originalContents := ""
-	if file.Action == sqlite.ActionModify {
+	if file.Action == sqlite.ActionModify || file.Action == sqlite.ActionDelete {
 		// Get original contents
 		var original *sqlite.File
 		original, err = sqlite.GetFile(file.ID, file.CodeID, file.SystemID, currentDB)
@@ -90,6 +65,47 @@ func checkLLM(file *sqlite.File, codeSource config.CodeSource, ruleDocsMap map[s
 		slog.Debug("check.Change could not generate diff", "file", file.ID, "error", err)
 		return
 	}
+
+	// Check LLM
+	llmResults, err := checkLLM(file, codeSource, textDiff, ruleDocsMap, currentDB, changeDB, cfg)
+	if err != nil {
+		return
+	}
+	results = append(results, llmResults...)
+
+	// Check updateIfs
+	results = append(results, checkUpdateIfs(file.ID, file.OriginalID, file.Action, ruleDocsMap)...)
+
+	// Loop through and add reference
+	for idx := range results {
+		results[idx].References = []ChangeResultReference{{
+			CodeID: file.CodeID,
+			FileID: file.ID,
+			Diff:   textDiff,
+		}}
+	}
+
+	return
+}
+
+const checkLLMNeedsUpdateName = "needs_update"
+const checkLLMNoUpdateNeededName = "no_update_needed"
+
+type checkLLMNeedsUpdateSchema struct {
+	Entries []checkLLMNeedsUpdateSchemaEntry `json:"entries" jsonschema:"title=The list of entries,description=The list of documents and/or sections that need to be updated along with the reason for each update"`
+}
+
+type checkLLMNeedsUpdateSchemaEntry struct {
+	ID     string `json:"id" jsonschema:"title=The document/section ID,description=The ID of the document and/or section that needs to be updated,example=app.1"`
+	Reason string `json:"reason" jsonschema:"title=The reason,description=The reason the document and/or section needs to be updated,example=This section needs to be updated because the change modifies a file that is mentioned in the reference to this section"`
+}
+
+type checkLLMNoUpdateNeededSchema struct {
+	IDs []string `json:"ids" jsonschema:"title=the list of document and/or section ids needing update,description=The list of document and/or ids that need to be updated,example=app.1,example=app.3,app.4"`
+}
+
+func checkLLM(file *sqlite.File, codeSource config.CodeSource, textDiff string, ruleDocsMap map[string][]config.RuleDocument, currentDB *sql.DB, changeDB *sql.DB, cfg *config.LLM) (results []ChangeResult, err error) {
+	slog.Debug("check.checkLLM checking file", "file", file.ID)
 
 	// Generate the system and user prompt
 	systemPrompt := "You are a senior technical writer who writes clear and accurate system documentation."
