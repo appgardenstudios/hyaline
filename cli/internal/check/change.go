@@ -18,8 +18,11 @@ import (
 type ChangeResult struct {
 	DocumentationSource string
 	Document            string
-	Section             string
+	Section             []string
 	Reasons             []string
+}
+
+type ChangeResultSource struct {
 }
 
 func Change(file *sqlite.File, codeSource config.CodeSource, ruleDocsMap map[string][]config.RuleDocument, currentDB *sql.DB, changeDB *sql.DB, cfg *config.LLM) (results []ChangeResult, err error) {
@@ -275,7 +278,7 @@ func checkLLM(file *sqlite.File, codeSource config.CodeSource, ruleDocsMap map[s
 type documentMapEntry struct {
 	DocumentationSource string
 	Document            string
-	Section             string
+	Section             []string
 }
 
 func formatDocuments(ruleDocsMap map[string][]config.RuleDocument) (string, map[string]documentMapEntry) {
@@ -293,7 +296,7 @@ func formatDocuments(ruleDocsMap map[string][]config.RuleDocument) (string, map[
 			documentMap[id] = documentMapEntry{
 				DocumentationSource: docID,
 				Document:            ruleDoc.Path,
-				Section:             "",
+				Section:             []string{},
 			}
 
 			// <document>
@@ -310,7 +313,7 @@ func formatDocuments(ruleDocsMap map[string][]config.RuleDocument) (string, map[
 
 			// <sections>
 			if len(ruleDoc.Sections) > 0 {
-				documents.WriteString(formatSections(ruleDoc.Sections, id, indent, docID, ruleDoc.Path, &documentMap))
+				documents.WriteString(formatSections(ruleDoc.Sections, id, []string{}, indent, docID, ruleDoc.Path, &documentMap))
 			}
 
 			indent -= 2
@@ -328,7 +331,7 @@ func formatDocuments(ruleDocsMap map[string][]config.RuleDocument) (string, map[
 }
 
 // Note: only call this if len(sections) > 0
-func formatSections(sections []config.RuleDocumentSection, prefix string, indent int, documentSource string, document string, documentMap *map[string]documentMapEntry) string {
+func formatSections(sections []config.RuleDocumentSection, prefix string, parents []string, indent int, documentSource string, document string, documentMap *map[string]documentMapEntry) string {
 	var str strings.Builder
 
 	// <sections>
@@ -338,10 +341,13 @@ func formatSections(sections []config.RuleDocumentSection, prefix string, indent
 
 	for idx, section := range sections {
 		id := fmt.Sprintf("%s.%d", prefix, idx+1)
+		sectionArr := []string{}
+		sectionArr = append(sectionArr, parents...)
+		sectionArr = append(sectionArr, section.ID)
 		(*documentMap)[id] = documentMapEntry{
 			DocumentationSource: documentSource,
 			Document:            document,
-			Section:             section.ID,
+			Section:             sectionArr,
 		}
 
 		// <section id="">
@@ -359,7 +365,7 @@ func formatSections(sections []config.RuleDocumentSection, prefix string, indent
 
 		// <sections> if present
 		if len(section.Sections) > 0 {
-			str.WriteString(formatSections(section.Sections, id, indent, documentSource, document, documentMap))
+			str.WriteString(formatSections(section.Sections, id, sectionArr, indent, documentSource, document, documentMap))
 		}
 
 		indent -= 2
@@ -385,12 +391,14 @@ func checkUpdateIfs(id string, originalID string, action sqlite.Action, ruleDocs
 					results = append(results, ChangeResult{
 						DocumentationSource: docSource,
 						Document:            ruleDoc.Path,
+						Section:             []string{},
 						Reasons:             []string{fmt.Sprintf("Update this document if any files matching %s were touched", glob)},
 					})
 				} else if originalID != "" && doublestar.MatchUnvalidated(glob, originalID) {
 					results = append(results, ChangeResult{
 						DocumentationSource: docSource,
 						Document:            ruleDoc.Path,
+						Section:             []string{},
 						Reasons:             []string{fmt.Sprintf("Update this document if any files matching %s were touched (%s was renamed to %s)", glob, originalID, id)},
 					})
 				}
@@ -404,6 +412,7 @@ func checkUpdateIfs(id string, originalID string, action sqlite.Action, ruleDocs
 						results = append(results, ChangeResult{
 							DocumentationSource: docSource,
 							Document:            ruleDoc.Path,
+							Section:             []string{},
 							Reasons:             []string{fmt.Sprintf("Update this document if any files matching %s were added", glob)},
 						})
 					}
@@ -415,6 +424,7 @@ func checkUpdateIfs(id string, originalID string, action sqlite.Action, ruleDocs
 						results = append(results, ChangeResult{
 							DocumentationSource: docSource,
 							Document:            ruleDoc.Path,
+							Section:             []string{},
 							Reasons:             []string{fmt.Sprintf("Update this document if any files matching %s were modified", glob)},
 						})
 					}
@@ -426,6 +436,7 @@ func checkUpdateIfs(id string, originalID string, action sqlite.Action, ruleDocs
 						results = append(results, ChangeResult{
 							DocumentationSource: docSource,
 							Document:            ruleDoc.Path,
+							Section:             []string{},
 							Reasons:             []string{fmt.Sprintf("Update this document if any files matching %s were renamed (%s was renamed to %s)", glob, id, originalID)},
 						})
 					}
@@ -437,6 +448,7 @@ func checkUpdateIfs(id string, originalID string, action sqlite.Action, ruleDocs
 						results = append(results, ChangeResult{
 							DocumentationSource: docSource,
 							Document:            ruleDoc.Path,
+							Section:             []string{},
 							Reasons:             []string{fmt.Sprintf("Update this document if any files matching %s were deleted", glob)},
 						})
 					}
@@ -444,29 +456,33 @@ func checkUpdateIfs(id string, originalID string, action sqlite.Action, ruleDocs
 			}
 
 			// Check sections
-			results = append(results, checkSectionUpdateIfs(id, originalID, action, docSource, ruleDoc.Path, ruleDoc.Sections)...)
+			results = append(results, checkSectionUpdateIfs(id, originalID, action, docSource, ruleDoc.Path, ruleDoc.Sections, []string{})...)
 		}
 	}
 
 	return
 }
 
-func checkSectionUpdateIfs(id string, originalID string, action sqlite.Action, docSource string, document string, sections []config.RuleDocumentSection) (results []ChangeResult) {
+func checkSectionUpdateIfs(id string, originalID string, action sqlite.Action, docSource string, document string, sections []config.RuleDocumentSection, parents []string) (results []ChangeResult) {
 	for _, section := range sections {
+		sectionArr := []string{}
+		sectionArr = append(sectionArr, parents...)
+		sectionArr = append(sectionArr, section.ID)
+
 		// Check touched
 		for _, glob := range section.UpdateIf.Touched {
 			if doublestar.MatchUnvalidated(glob, id) {
 				results = append(results, ChangeResult{
 					DocumentationSource: docSource,
 					Document:            document,
-					Section:             section.ID,
+					Section:             sectionArr,
 					Reasons:             []string{fmt.Sprintf("Update this section if any files matching %s were touched", glob)},
 				})
 			} else if originalID != "" && doublestar.MatchUnvalidated(glob, originalID) {
 				results = append(results, ChangeResult{
 					DocumentationSource: docSource,
 					Document:            document,
-					Section:             section.ID,
+					Section:             sectionArr,
 					Reasons:             []string{fmt.Sprintf("Update this section if any files matching %s were touched (%s was renamed to %s)", glob, originalID, id)},
 				})
 			}
@@ -480,7 +496,7 @@ func checkSectionUpdateIfs(id string, originalID string, action sqlite.Action, d
 					results = append(results, ChangeResult{
 						DocumentationSource: docSource,
 						Document:            document,
-						Section:             section.ID,
+						Section:             sectionArr,
 						Reasons:             []string{fmt.Sprintf("Update this section if any files matching %s were added", glob)},
 					})
 				}
@@ -492,7 +508,7 @@ func checkSectionUpdateIfs(id string, originalID string, action sqlite.Action, d
 					results = append(results, ChangeResult{
 						DocumentationSource: docSource,
 						Document:            document,
-						Section:             section.ID,
+						Section:             sectionArr,
 						Reasons:             []string{fmt.Sprintf("Update this section if any files matching %s were modified", glob)},
 					})
 				}
@@ -504,7 +520,7 @@ func checkSectionUpdateIfs(id string, originalID string, action sqlite.Action, d
 					results = append(results, ChangeResult{
 						DocumentationSource: docSource,
 						Document:            document,
-						Section:             section.ID,
+						Section:             sectionArr,
 						Reasons:             []string{fmt.Sprintf("Update this section if any files matching %s were renamed (%s was renamed to %s)", glob, id, originalID)},
 					})
 				}
@@ -516,7 +532,7 @@ func checkSectionUpdateIfs(id string, originalID string, action sqlite.Action, d
 					results = append(results, ChangeResult{
 						DocumentationSource: docSource,
 						Document:            document,
-						Section:             section.ID,
+						Section:             sectionArr,
 						Reasons:             []string{fmt.Sprintf("Update this section if any files matching %s were deleted", glob)},
 					})
 				}
@@ -524,7 +540,7 @@ func checkSectionUpdateIfs(id string, originalID string, action sqlite.Action, d
 		}
 
 		// Check sections
-		results = append(results, checkSectionUpdateIfs(id, originalID, action, docSource, document, section.Sections)...)
+		results = append(results, checkSectionUpdateIfs(id, originalID, action, docSource, document, section.Sections, sectionArr)...)
 	}
 
 	return

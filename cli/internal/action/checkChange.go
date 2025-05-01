@@ -7,10 +7,12 @@ import (
 	"hyaline/internal/check"
 	"hyaline/internal/config"
 	"hyaline/internal/sqlite"
+	"hyaline/internal/suggest"
 	"log/slog"
 	"os"
 	"path/filepath"
 	"sort"
+	"strings"
 
 	_ "modernc.org/sqlite"
 )
@@ -21,6 +23,7 @@ type CheckChangeArgs struct {
 	Change  string
 	System  string
 	Output  string
+	Suggest bool
 }
 
 type CheckChangeResultKey struct {
@@ -37,10 +40,11 @@ type CheckChangeOutputEntry struct {
 	System              string   `json:"system"`
 	DocumentationSource string   `json:"documentationSource"`
 	Document            string   `json:"document"`
-	Section             string   `json:"section,omitempty"`
+	Section             []string `json:"section,omitempty"`
 	Recommendation      string   `json:"recommendation"`
 	Reasons             []string `json:"reasons"`
 	Changed             bool     `json:"changed"`
+	Suggestion          string   `json:"suggestion,omitempty"`
 }
 
 type CheckChangeOutputEntrySort []CheckChangeOutputEntry
@@ -70,7 +74,7 @@ func (c CheckChangeOutputEntrySort) Less(i, j int) bool {
 	if c[i].Document > c[j].Document {
 		return false
 	}
-	return c[i].Section < c[j].Section
+	return strings.Join(c[i].Section, "#") < strings.Join(c[j].Section, "#")
 }
 
 func CheckChange(args *CheckChangeArgs) error {
@@ -196,7 +200,7 @@ func CheckChange(args *CheckChangeArgs) error {
 			key := CheckChangeResultKey{
 				Documentation: result.DocumentationSource,
 				Document:      result.Document,
-				Section:       result.Section,
+				Section:       strings.Join(result.Section, "#"),
 			}
 			_, ok := resultsMap[key]
 			if ok {
@@ -234,6 +238,23 @@ func CheckChange(args *CheckChangeArgs) error {
 
 	// Sort the output list
 	sort.Sort(CheckChangeOutputEntrySort(output.Recommendations))
+
+	// Suggest change(s) (if flag is set)
+	if args.Suggest {
+		for idx, entry := range output.Recommendations {
+			suggestion, err := suggest.Change()
+			if err != nil {
+				slog.Debug("action.CheckChange could not get suggestion",
+					"system", args.System,
+					"doc", entry.DocumentationSource,
+					"document", entry.Document,
+					"section", entry.Section,
+					"error", err)
+				return err
+			}
+			output.Recommendations[idx].Suggestion = suggestion
+		}
+	}
 
 	// Output the results
 	jsonData, err := json.MarshalIndent(output, "", "  ")
