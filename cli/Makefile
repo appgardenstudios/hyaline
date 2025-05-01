@@ -57,11 +57,18 @@ check-current:
 	echo "---"
 	./hyaline --debug check --config ./_example/config.yml --current ./current.db --system local
 
+.PHONY: pre-check-change
+pre-check-change:
+	rm -f ./current.db ./change.db
+	make build
+	./hyaline --debug extract current --config ./_example/config.yml --system check-change --output ./current.db
+	./hyaline --debug extract change --config ./_example/config.yml --system check-change --base main --head origin/feat-1 --pull-request appgardenstudios/hyaline-example/1 --issue appgardenstudios/hyaline-example/2 --issue appgardenstudios/hyaline-example/3  --output ./change.db
+
 .PHONY: check-change
 check-change:
 	make build
 	echo "---"
-	./hyaline --debug check --config ./_example/config.yml --current ./current.db --change ./change.db --system local
+	./hyaline --debug check change --config ./_example/config.yml --current ./current.db --change ./change.db --system check-change --output ./results.json
 
 .PHONY: recommend-current
 recommend-current:

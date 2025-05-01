@@ -1,0 +1,3 @@
+Copied from https://github.com/golang/tools (internal/diff) on 2025-04-29 commit 6a96d1d1cba8645be588e49ebb6e2aa3d54f2542
+
+The reason for this is that the popular libraries that generate a unified diff (such as https://github.com/hexops/gotextdiff) pull from golang tools as well, but haven't been updated in quite some time. Pulling this in also allows us to change the function signature at some point to modify how many context lines are placed in the diff.

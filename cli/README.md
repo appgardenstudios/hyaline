@@ -6,6 +6,7 @@
 
 * `make`
 * `go` (v1.24+)
+* `diff` (gnu version) for testing (`brew install diffutils`)
 
 ## Running Locally
 ```sh

@@ -18,7 +18,7 @@ func TestLoad(t *testing.T) {
 		},
 		Systems: []System{{
 			ID: "my-app",
-			Code: []Code{{
+			CodeSources: []CodeSource{{
 				ID:        "app",
 				Extractor: "fs",
 				FsOptions: FsOptions{
@@ -42,7 +42,7 @@ func TestLoad(t *testing.T) {
 				Include: []string{"package.json", "./**/*.js"},
 				Exclude: []string{"./**/*.test.js"},
 			}},
-			Docs: []Doc{{
+			DocumentationSources: []DocumentationSource{{
 				ID:        "md-docs",
 				Type:      "md",
 				Extractor: "fs",
@@ -138,51 +138,51 @@ Line2`, `"Line1\"\nLine2"`},
 }
 
 func TestValidate(t *testing.T) {
-	code := Code{
+	code := CodeSource{
 		ID:        "1234",
 		Extractor: "fs",
 		Include:   []string{"**/*.js"},
 		Exclude:   []string{"**/*.test.js"},
 	}
-	invalidCodeInclude := Code{
+	invalidCodeInclude := CodeSource{
 		ID:        "1234",
 		Extractor: "fs",
 		Include:   []string{"{a"},
 	}
-	invalidCodeExclude := Code{
+	invalidCodeExclude := CodeSource{
 		ID:        "1234",
 		Extractor: "fs",
 		Exclude:   []string{"{a"},
 	}
-	invalidCodeExtractor := Code{
+	invalidCodeExtractor := CodeSource{
 		ID:        "1234",
 		Extractor: "invalid",
 	}
-	doc := Doc{
+	doc := DocumentationSource{
 		ID:        "1234",
 		Type:      "md",
 		Extractor: "fs",
 		Include:   []string{"**/*.md"},
 		Exclude:   []string{"random.md"},
 	}
-	invalidDoc := Doc{
+	invalidDoc := DocumentationSource{
 		ID:        "1234",
 		Type:      "invalid",
 		Extractor: "fs",
 	}
-	invalidDocInclude := Doc{
+	invalidDocInclude := DocumentationSource{
 		ID:        "1234",
 		Type:      "md",
 		Extractor: "fs",
 		Include:   []string{"{a"},
 	}
-	invalidDocExclude := Doc{
+	invalidDocExclude := DocumentationSource{
 		ID:        "1234",
 		Type:      "md",
 		Extractor: "fs",
 		Include:   []string{"{a"},
 	}
-	invalidDocExtractor := Doc{
+	invalidDocExtractor := DocumentationSource{
 		ID:        "1234",
 		Type:      "md",
 		Extractor: "invalid",
@@ -196,36 +196,36 @@ func TestValidate(t *testing.T) {
 
 	var tests = []struct {
 		llm         LLM
-		code        []Code
-		docs        []Doc
+		code        []CodeSource
+		docs        []DocumentationSource
 		rules       []Rule
 		shouldError bool
 	}{
-		{LLM{}, []Code{}, []Doc{}, []Rule{}, false},
-		{LLM{}, []Code{code}, []Doc{}, []Rule{}, false},
-		{LLM{}, []Code{}, []Doc{doc}, []Rule{}, false},
-		{LLM{}, []Code{code}, []Doc{doc}, []Rule{}, false},
-		{LLM{}, []Code{code, code}, []Doc{doc}, []Rule{}, true},
-		{LLM{}, []Code{code}, []Doc{doc, doc}, []Rule{}, true},
-		{LLM{}, []Code{code}, []Doc{invalidDoc}, []Rule{}, true},
-		{LLM{}, []Code{invalidCodeInclude}, []Doc{}, []Rule{}, true},
-		{LLM{}, []Code{invalidCodeExclude}, []Doc{}, []Rule{}, true},
-		{LLM{}, []Code{}, []Doc{invalidDocInclude}, []Rule{}, true},
-		{LLM{}, []Code{}, []Doc{invalidDocExclude}, []Rule{}, true},
-		{LLM{}, []Code{invalidCodeExtractor}, []Doc{}, []Rule{}, true},
-		{LLM{}, []Code{}, []Doc{invalidDocExtractor}, []Rule{}, true},
-		{invalidLLM, []Code{}, []Doc{}, []Rule{}, true},
-		{LLM{}, []Code{}, []Doc{}, []Rule{rule}, false},
-		{LLM{}, []Code{}, []Doc{}, []Rule{rule, rule}, true},
+		{LLM{}, []CodeSource{}, []DocumentationSource{}, []Rule{}, false},
+		{LLM{}, []CodeSource{code}, []DocumentationSource{}, []Rule{}, false},
+		{LLM{}, []CodeSource{}, []DocumentationSource{doc}, []Rule{}, false},
+		{LLM{}, []CodeSource{code}, []DocumentationSource{doc}, []Rule{}, false},
+		{LLM{}, []CodeSource{code, code}, []DocumentationSource{doc}, []Rule{}, true},
+		{LLM{}, []CodeSource{code}, []DocumentationSource{doc, doc}, []Rule{}, true},
+		{LLM{}, []CodeSource{code}, []DocumentationSource{invalidDoc}, []Rule{}, true},
+		{LLM{}, []CodeSource{invalidCodeInclude}, []DocumentationSource{}, []Rule{}, true},
+		{LLM{}, []CodeSource{invalidCodeExclude}, []DocumentationSource{}, []Rule{}, true},
+		{LLM{}, []CodeSource{}, []DocumentationSource{invalidDocInclude}, []Rule{}, true},
+		{LLM{}, []CodeSource{}, []DocumentationSource{invalidDocExclude}, []Rule{}, true},
+		{LLM{}, []CodeSource{invalidCodeExtractor}, []DocumentationSource{}, []Rule{}, true},
+		{LLM{}, []CodeSource{}, []DocumentationSource{invalidDocExtractor}, []Rule{}, true},
+		{invalidLLM, []CodeSource{}, []DocumentationSource{}, []Rule{}, true},
+		{LLM{}, []CodeSource{}, []DocumentationSource{}, []Rule{rule}, false},
+		{LLM{}, []CodeSource{}, []DocumentationSource{}, []Rule{rule, rule}, true},
 	}
 
 	for i, test := range tests {
 		cfg := &Config{
 			LLM: test.llm,
 			Systems: []System{{
-				ID:   "test-system",
-				Code: test.code,
-				Docs: test.docs,
+				ID:                   "test-system",
+				CodeSources:          test.code,
+				DocumentationSources: test.docs,
 			}},
 			Rules: test.rules,
 		}
