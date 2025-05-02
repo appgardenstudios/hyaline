@@ -30,7 +30,7 @@ type ChangeResultReference struct {
 	Diff   string
 }
 
-func Change(file *sqlite.File, codeSource config.CodeSource, ruleDocsMap map[string][]config.RuleDocument, currentDB *sql.DB, changeDB *sql.DB, cfg *config.LLM) (results []ChangeResult, err error) {
+func Change(file *sqlite.File, codeSource config.CodeSource, ruleDocsMap map[string][]config.RuleDocument, pullRequests []*sqlite.PullRequest, issues []*sqlite.Issue, currentDB *sql.DB, changeDB *sql.DB, cfg *config.LLM) (results []ChangeResult, err error) {
 	slog.Debug("check.Change checking file", "file", file.ID)
 
 	// Get original ID and contents so we can calculate a diff
@@ -67,7 +67,7 @@ func Change(file *sqlite.File, codeSource config.CodeSource, ruleDocsMap map[str
 	}
 
 	// Check LLM
-	llmResults, err := checkLLM(file, codeSource, textDiff, ruleDocsMap, currentDB, changeDB, cfg)
+	llmResults, err := checkLLM(file, codeSource, textDiff, ruleDocsMap, pullRequests, issues, currentDB, changeDB, cfg)
 	if err != nil {
 		return
 	}
@@ -104,7 +104,7 @@ type checkLLMNoUpdateNeededSchema struct {
 	IDs []string `json:"ids" jsonschema:"title=the list of document and/or section ids needing update,description=The list of document and/or ids that need to be updated,example=app.1,example=app.3,app.4"`
 }
 
-func checkLLM(file *sqlite.File, codeSource config.CodeSource, textDiff string, ruleDocsMap map[string][]config.RuleDocument, currentDB *sql.DB, changeDB *sql.DB, cfg *config.LLM) (results []ChangeResult, err error) {
+func checkLLM(file *sqlite.File, codeSource config.CodeSource, textDiff string, ruleDocsMap map[string][]config.RuleDocument, pullRequests []*sqlite.PullRequest, issues []*sqlite.Issue, currentDB *sql.DB, changeDB *sql.DB, cfg *config.LLM) (results []ChangeResult, err error) {
 	slog.Debug("check.checkLLM checking file", "file", file.ID)
 
 	// Generate the system and user prompt
@@ -120,13 +120,8 @@ func checkLLM(file *sqlite.File, codeSource config.CodeSource, textDiff string, 
 	prompt.WriteString("\n\n")
 
 	// Add Pull Request (if any)
-	prs, err := sqlite.GetAllPullRequest(file.SystemID, changeDB)
-	if err != nil {
-		slog.Debug("check.Change could not get related pull requests", "error", err)
-		return
-	}
-	numPullRequests := len(prs)
-	for _, pr := range prs {
+	numPullRequests := len(pullRequests)
+	for _, pr := range pullRequests {
 		prompt.WriteString("<pull_request>\n")
 		prompt.WriteString(fmt.Sprintf("  <pull_request_title>%s</pull_request_title>\n", pr.Title))
 		prompt.WriteString("  <pull_request_content>\n")
@@ -138,11 +133,6 @@ func checkLLM(file *sqlite.File, codeSource config.CodeSource, textDiff string, 
 	}
 
 	// Add issue(s) (if any)
-	issues, err := sqlite.GetAllIssue(file.SystemID, changeDB)
-	if err != nil {
-		slog.Debug("check.Change could not get related issues", "error", err)
-		return
-	}
 	numIssues := len(issues)
 	for _, issue := range issues {
 		prompt.WriteString("<issue>\n")

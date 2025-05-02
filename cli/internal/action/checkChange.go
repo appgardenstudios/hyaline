@@ -145,6 +145,20 @@ func CheckChange(args *CheckChangeArgs) error {
 		return err
 	}
 
+	// Get Pull Requests
+	pullRequests, err := sqlite.GetAllPullRequest(system.ID, changeDB)
+	if err != nil {
+		slog.Debug("action.CheckChange could not get related pull requests", "error", err)
+		return err
+	}
+
+	// Get Issues
+	issues, err := sqlite.GetAllIssue(system.ID, changeDB)
+	if err != nil {
+		slog.Debug("action.CheckChange could not get related issues", "error", err)
+		return err
+	}
+
 	// Initialize our output recommendations
 	output := CheckChangeOutput{
 		Recommendations: []CheckChangeOutputEntry{},
@@ -188,7 +202,7 @@ func CheckChange(args *CheckChangeArgs) error {
 
 		// Check each file against our full set of documentation
 		for _, file := range files {
-			arr, err := check.Change(file, c, ruleDocsMap, currentDB, changeDB, &cfg.LLM)
+			arr, err := check.Change(file, c, ruleDocsMap, pullRequests, issues, currentDB, changeDB, &cfg.LLM)
 			results = append(results, arr...)
 			if err != nil {
 				slog.Debug("action.CheckChange could not check change", "file", file.ID, "system", args.System, "error", err)
@@ -245,8 +259,10 @@ func CheckChange(args *CheckChangeArgs) error {
 	// Suggest change(s) (if flag is set)
 	if args.Suggest {
 		for idx, entry := range output.Recommendations {
-			// TODO group up changes by document
-			suggestion, err := suggest.Change(entry.System, entry.DocumentationSource, entry.Document, entry.Section)
+			// TODO group up changes by document (later)
+			// TODO pass in _References and use them in the prompt
+			// TODO pass in the Reasons as well
+			suggestion, err := suggest.Change(entry.System, entry.DocumentationSource, entry.Document, entry.Section, entry.Reasons, entry._References, pullRequests, issues)
 			if err != nil {
 				slog.Debug("action.CheckChange could not get suggestion",
 					"system", entry.System,
