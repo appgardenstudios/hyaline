@@ -1,14 +1,26 @@
 package suggest
 
 import (
+	"encoding/json"
 	"fmt"
 	"hyaline/internal/check"
+	"hyaline/internal/config"
+	"hyaline/internal/llm"
 	"hyaline/internal/sqlite"
+	"log/slog"
 	"strings"
+
+	"github.com/invopop/jsonschema"
 )
 
+type changeUpdateSchema struct {
+	Content string `json:"content" jsonschema:"title=content,description=The full content of the updated document or section"`
+}
+type changeNoUpdateNeededSchema struct {
+}
+
 // Eventually we should group this up and handle a document and section updates in the same call
-func Change(systemID string, documentationSource string, document string, section []string, reasons []string, references []check.ChangeResultReference, pullRequests []*sqlite.PullRequest, issues []*sqlite.Issue) (string, error) {
+func Change(systemID string, documentationSource string, document string, section []string, reasons []string, references []check.ChangeResultReference, pullRequests []*sqlite.PullRequest, issues []*sqlite.Issue, cfg *config.LLM) (suggestion string, err error) {
 	systemPrompt := "You are a senior technical writer who writes clear and accurate system documentation."
 	var prompt strings.Builder
 
@@ -79,6 +91,7 @@ func Change(systemID string, documentationSource string, document string, sectio
 	// Add prompt
 	var tagName string
 	var toolName string
+	const noUpdateNeededName = "no_update_needed"
 	if isSection {
 		tagName = "section"
 		toolName = "update_section"
@@ -95,6 +108,7 @@ func Change(systemID string, documentationSource string, document string, sectio
 	}
 	prompt.WriteString(fmt.Sprintf("determine what changes need to be made to the %s contained in <%s>. ", tagName, tagName))
 	prompt.WriteString("Be concise and accurate. ")
+	// TODO add the purpose of this document/section
 	prompt.WriteString(fmt.Sprintf("Take into account the following reasons that this %s needs to be updated:\n", tagName))
 	for _, reason := range reasons {
 		prompt.WriteString(fmt.Sprintf("* %s\n", reason))
@@ -104,9 +118,54 @@ func Change(systemID string, documentationSource string, document string, sectio
 	if existingContent != "" {
 		prompt.WriteString(fmt.Sprintf("Match the voice and style of the existing %s content where possible. ", tagName))
 	}
+	// TODO add out to call the "i don't know" tool?
 
-	fmt.Println(systemPrompt)
-	fmt.Println(prompt.String())
+	// Add tool(s)
+	reflector := jsonschema.Reflector{
+		AllowAdditionalProperties: false,
+		DoNotReference:            true,
+	}
+	tools := []*llm.Tool{
+		{
+			Name:        toolName,
+			Description: fmt.Sprintf("Update the contents of the %s", tagName),
+			Schema:      reflector.Reflect(&changeUpdateSchema{}),
+			Callback: func(input string) (bool, string, error) {
+				slog.Debug("suggest.Change - checkLLM made an update")
+				// Parse the input
+				var update changeUpdateSchema
+				err := json.Unmarshal([]byte(input), &update)
+				if err != nil {
+					slog.Debug("suggest.Change - checkLLM could not parse tool call input, invalid json", "tool", toolName, "input", input, "error", err)
+					return true, "", err
+				}
+				suggestion = update.Content
 
-	return "", nil
+				return true, "", nil
+			},
+		},
+		{
+			Name:        noUpdateNeededName,
+			Description: fmt.Sprintf("Identify that the %s does not need to be updated.", tagName),
+			Schema:      reflector.Reflect(&changeNoUpdateNeededSchema{}),
+			Callback: func(params string) (bool, string, error) {
+				slog.Debug("suggest.Change - checkLLM determined no updates needed")
+				// Return with done = true so we stop
+				return true, "", nil
+			},
+		},
+	}
+
+	// Call LLM
+	userPrompt := prompt.String()
+	// fmt.Println(userPrompt)
+	slog.Debug("suggest.Change calling the llm")
+	// slog.Debug("suggest.Change calling the llm", "systemPrompt", systemPrompt, "userPrompt", userPrompt)
+	_, err = llm.CallLLM(systemPrompt, userPrompt, tools, cfg)
+	if err != nil {
+		slog.Debug("suggest.Change encountered an error when calling the llm", "error", err)
+		return
+	}
+
+	return
 }

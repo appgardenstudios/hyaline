@@ -262,7 +262,7 @@ func CheckChange(args *CheckChangeArgs) error {
 			// TODO group up changes by document (later)
 			// TODO pass in _References and use them in the prompt
 			// TODO pass in the Reasons as well
-			suggestion, err := suggest.Change(entry.System, entry.DocumentationSource, entry.Document, entry.Section, entry.Reasons, entry._References, pullRequests, issues)
+			suggestion, err := suggest.Change(entry.System, entry.DocumentationSource, entry.Document, entry.Section, entry.Reasons, entry._References, pullRequests, issues, &cfg.LLM)
 			if err != nil {
 				slog.Debug("action.CheckChange could not get suggestion",
 					"system", entry.System,

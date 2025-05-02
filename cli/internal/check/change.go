@@ -101,7 +101,6 @@ type checkLLMNeedsUpdateSchemaEntry struct {
 }
 
 type checkLLMNoUpdateNeededSchema struct {
-	IDs []string `json:"ids" jsonschema:"title=the list of document and/or section ids needing update,description=The list of document and/or ids that need to be updated,example=app.1,example=app.3,app.4"`
 }
 
 func checkLLM(file *sqlite.File, codeSource config.CodeSource, textDiff string, ruleDocsMap map[string][]config.RuleDocument, pullRequests []*sqlite.PullRequest, issues []*sqlite.Issue, currentDB *sql.DB, changeDB *sql.DB, cfg *config.LLM) (results []ChangeResult, err error) {
@@ -260,7 +259,7 @@ func checkLLM(file *sqlite.File, codeSource config.CodeSource, textDiff string, 
 			Description: "Identify that there are no documents that need to be updated for this change",
 			Schema:      reflector.Reflect(&checkLLMNoUpdateNeededSchema{}),
 			Callback: func(params string) (bool, string, error) {
-				slog.Debug("check.Change - checkLLM determined no updates needed", "error", err)
+				slog.Debug("check.Change - checkLLM determined no updates needed")
 				// Return with done = true so we stop
 				return true, "", nil
 			},
