@@ -139,6 +139,7 @@ func Change(systemID string, documentationSource string, document string, sectio
 					slog.Debug("suggest.Change - checkLLM could not parse tool call input, invalid json", "tool", toolName, "input", input, "error", err)
 					return true, "", err
 				}
+				// Record the suggestion
 				suggestion = update.Content
 
 				return true, "", nil
@@ -150,6 +151,9 @@ func Change(systemID string, documentationSource string, document string, sectio
 			Schema:      reflector.Reflect(&changeNoUpdateNeededSchema{}),
 			Callback: func(params string) (bool, string, error) {
 				slog.Debug("suggest.Change - checkLLM determined no updates needed")
+
+				// Do nothing so that we pass back a blank suggestion with no error
+
 				// Return with done = true so we stop
 				return true, "", nil
 			},

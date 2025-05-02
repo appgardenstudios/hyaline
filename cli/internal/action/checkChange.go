@@ -241,6 +241,7 @@ func CheckChange(args *CheckChangeArgs) error {
 			}
 		}
 
+		// Add the recommendation
 		output.Recommendations = append(output.Recommendations, CheckChangeOutputEntry{
 			System:              system.ID,
 			DocumentationSource: result.DocumentationSource,
@@ -259,9 +260,10 @@ func CheckChange(args *CheckChangeArgs) error {
 	// Suggest change(s) (if flag is set)
 	if args.Suggest {
 		for idx, entry := range output.Recommendations {
+			// Get purpose from ruleDoc
+			// purpose, _ := config.GetPurpose(entry.System, entry.DocumentationSource, entry.Document, entry.Section, cfg)
+			// TODO
 			// TODO group up changes by document (later)
-			// TODO pass in _References and use them in the prompt
-			// TODO pass in the Reasons as well
 			suggestion, err := suggest.Change(entry.System, entry.DocumentationSource, entry.Document, entry.Section, entry.Reasons, entry._References, pullRequests, issues, &cfg.LLM)
 			if err != nil {
 				slog.Debug("action.CheckChange could not get suggestion",
@@ -272,7 +274,11 @@ func CheckChange(args *CheckChangeArgs) error {
 					"error", err)
 				return err
 			}
-			output.Recommendations[idx].Suggestion = suggestion
+			if suggestion != "" {
+				output.Recommendations[idx].Suggestion = suggestion
+			} else {
+				output.Recommendations[idx].Suggestion = "(none)"
+			}
 		}
 	}
 
