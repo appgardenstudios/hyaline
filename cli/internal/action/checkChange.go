@@ -45,7 +45,7 @@ type CheckChangeOutputEntry struct {
 	Reasons             []string                      `json:"reasons"`
 	Changed             bool                          `json:"changed"`
 	Suggestion          string                        `json:"suggestion,omitempty"`
-	_References         []check.ChangeResultReference // TODO omit this
+	_References         []check.ChangeResultReference `json:"-"` // Always omit this as it is for internal purposes only
 }
 
 type CheckChangeOutputEntrySort []CheckChangeOutputEntry
