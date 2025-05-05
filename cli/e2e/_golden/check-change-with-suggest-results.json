@@ -11,7 +11,8 @@
       "reasons": [
         "Update this section if any files matching subdir/*.js were modified"
       ],
-      "changed": true
+      "changed": true,
+      "suggestion": "(none)"
     }
   ]
 }

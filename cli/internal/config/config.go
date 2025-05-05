@@ -7,6 +7,16 @@ type Config struct {
 	Rules   []Rule   `yaml:"rules,omitempty"`
 }
 
+func (c *Config) GetSystem(id string) (system System, found bool) {
+	for _, s := range c.Systems {
+		if s.ID == id {
+			return s, true
+		}
+	}
+
+	return
+}
+
 type LLM struct {
 	Provider LLMProvider `yaml:"provider,omitempty"`
 	Model    string      `yaml:"model,omitempty"`
@@ -42,6 +52,16 @@ type System struct {
 	CodeSources          []CodeSource          `yaml:"code,omitempty"`
 	DocumentationSources []DocumentationSource `yaml:"docs,omitempty"`
 	Checks               []Check               `yaml:"checks,omitempty"`
+}
+
+func (s *System) GetDocumentationSource(id string) (doc DocumentationSource, found bool) {
+	for _, d := range s.DocumentationSources {
+		if d.ID == id {
+			return d, true
+		}
+	}
+
+	return
 }
 
 type Extractor string

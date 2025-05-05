@@ -406,6 +406,33 @@ WHERE
 	return nil
 }
 
+func GetDocument(documentID string, documentationID string, systemID string, db *sql.DB) (*Document, error) {
+	stmt, err := db.Prepare(`
+SELECT
+  ID, DOCUMENTATION_ID, SYSTEM_ID, TYPE, ACTION, ORIGINAL_ID, RAW_DATA, EXTRACTED_DATA
+FROM
+  DOCUMENT
+WHERE
+  ID = ?
+	AND DOCUMENTATION_ID = ?
+  AND SYSTEM_ID = ?
+`)
+	if err != nil {
+		return nil, err
+	}
+
+	var row Document
+	err = stmt.QueryRow(documentID, documentationID, systemID).Scan(&row.ID, &row.DocumentationID, &row.SystemID, &row.Type, &row.Action, &row.OriginalID, &row.RawData, &row.ExtractedData)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil
+		}
+		return nil, err
+	}
+
+	return &row, nil
+}
+
 func GetAllDocument(documentationID string, systemID string, db *sql.DB) (arr []*Document, err error) {
 	stmt, err := db.Prepare(`
 SELECT
@@ -487,6 +514,34 @@ WHERE
 	}
 
 	return nil
+}
+
+func GetSection(sectionID string, documentID string, documentationID string, systemID string, db *sql.DB) (*Section, error) {
+	stmt, err := db.Prepare(`
+SELECT
+  ID, DOCUMENT_ID, DOCUMENTATION_ID, SYSTEM_ID, NAME, PARENT_ID, PEER_ORDER, EXTRACTED_DATA
+FROM
+  SECTION
+WHERE
+  ID = ?
+  AND DOCUMENT_ID = ?
+	AND DOCUMENTATION_ID = ?
+  AND SYSTEM_ID = ?
+`)
+	if err != nil {
+		return nil, err
+	}
+
+	var row Section
+	err = stmt.QueryRow(sectionID, documentID, documentationID, systemID).Scan(&row.ID, &row.DocumentID, &row.DocumentationID, &row.SystemID, &row.Name, &row.ParentID, &row.PeerOrder, &row.ExtractedData)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil
+		}
+		return nil, err
+	}
+
+	return &row, nil
 }
 
 func GetAllSection(documentationID string, systemID string, db *sql.DB) (arr []*Section, err error) {

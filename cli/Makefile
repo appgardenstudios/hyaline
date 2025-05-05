@@ -70,6 +70,12 @@ check-change:
 	echo "---"
 	./hyaline --debug check change --config ./_example/config.yml --current ./current.db --change ./change.db --system check-change --output ./results.json
 
+.PHONY: check-change-suggest
+check-change-suggest:
+	make build
+	echo "---"
+	./hyaline --debug check change --config ./_example/config.yml --current ./current.db --change ./change.db --system check-change --output ./results.json --suggest
+
 .PHONY: recommend-current
 recommend-current:
 	make build

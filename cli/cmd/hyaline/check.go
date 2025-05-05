@@ -41,6 +41,10 @@ func Check(logLevel *slog.LevelVar) *cli.Command {
 						Required: true,
 						Usage:    "Path to write the results to",
 					},
+					&cli.BoolFlag{
+						Name:  "suggest",
+						Usage: "Call the llm to suggest what edits to make to the documentation for each recommended update",
+					},
 				},
 				Action: func(cCtx *cli.Context) error {
 					// Set log level
@@ -55,6 +59,7 @@ func Check(logLevel *slog.LevelVar) *cli.Command {
 						Change:  cCtx.String("change"),
 						System:  cCtx.String("system"),
 						Output:  cCtx.String("output"),
+						Suggest: cCtx.Bool("suggest"),
 					})
 					if err != nil {
 						return cli.Exit(err.Error(), 1)

@@ -96,7 +96,7 @@ func GenerateConfig(args *GenerateConfigArgs) error {
 		for _, doc := range documents {
 			slog.Info("Processing document", "document", doc.ID)
 			// Get the ruleDoc for this document (if any)
-			ruleDocFound, ruleDoc := config.GetRuleDocument(cfg.Rules, d.Rules, doc.ID)
+			ruleDoc, ruleDocFound := config.GetRuleDocument(cfg.Rules, d.Rules, doc.ID)
 
 			// If there is no rule, create it
 			if !ruleDocFound {

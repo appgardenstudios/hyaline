@@ -7,10 +7,12 @@ import (
 	"hyaline/internal/check"
 	"hyaline/internal/config"
 	"hyaline/internal/sqlite"
+	"hyaline/internal/suggest"
 	"log/slog"
 	"os"
 	"path/filepath"
 	"sort"
+	"strings"
 
 	_ "modernc.org/sqlite"
 )
@@ -21,6 +23,7 @@ type CheckChangeArgs struct {
 	Change  string
 	System  string
 	Output  string
+	Suggest bool
 }
 
 type CheckChangeResultKey struct {
@@ -34,13 +37,15 @@ type CheckChangeOutput struct {
 }
 
 type CheckChangeOutputEntry struct {
-	System              string   `json:"system"`
-	DocumentationSource string   `json:"documentationSource"`
-	Document            string   `json:"document"`
-	Section             string   `json:"section,omitempty"`
-	Recommendation      string   `json:"recommendation"`
-	Reasons             []string `json:"reasons"`
-	Changed             bool     `json:"changed"`
+	System              string                        `json:"system"`
+	DocumentationSource string                        `json:"documentationSource"`
+	Document            string                        `json:"document"`
+	Section             []string                      `json:"section,omitempty"`
+	Recommendation      string                        `json:"recommendation"`
+	Reasons             []string                      `json:"reasons"`
+	Changed             bool                          `json:"changed"`
+	Suggestion          string                        `json:"suggestion,omitempty"`
+	_References         []check.ChangeResultReference `json:"-"` // Always omit this as it is for internal purposes only
 }
 
 type CheckChangeOutputEntrySort []CheckChangeOutputEntry
@@ -70,7 +75,7 @@ func (c CheckChangeOutputEntrySort) Less(i, j int) bool {
 	if c[i].Document > c[j].Document {
 		return false
 	}
-	return c[i].Section < c[j].Section
+	return strings.Join(c[i].Section, "#") < strings.Join(c[j].Section, "#")
 }
 
 func CheckChange(args *CheckChangeArgs) error {
@@ -140,6 +145,20 @@ func CheckChange(args *CheckChangeArgs) error {
 		return err
 	}
 
+	// Get Pull Requests
+	pullRequests, err := sqlite.GetAllPullRequest(system.ID, changeDB)
+	if err != nil {
+		slog.Debug("action.CheckChange could not get related pull requests", "error", err)
+		return err
+	}
+
+	// Get Issues
+	issues, err := sqlite.GetAllIssue(system.ID, changeDB)
+	if err != nil {
+		slog.Debug("action.CheckChange could not get related issues", "error", err)
+		return err
+	}
+
 	// Initialize our output recommendations
 	output := CheckChangeOutput{
 		Recommendations: []CheckChangeOutputEntry{},
@@ -183,7 +202,7 @@ func CheckChange(args *CheckChangeArgs) error {
 
 		// Check each file against our full set of documentation
 		for _, file := range files {
-			arr, err := check.Change(file, c, ruleDocsMap, currentDB, changeDB, &cfg.LLM)
+			arr, err := check.Change(file, c, ruleDocsMap, pullRequests, issues, currentDB, changeDB, &cfg.LLM)
 			results = append(results, arr...)
 			if err != nil {
 				slog.Debug("action.CheckChange could not check change", "file", file.ID, "system", args.System, "error", err)
@@ -196,11 +215,12 @@ func CheckChange(args *CheckChangeArgs) error {
 			key := CheckChangeResultKey{
 				Documentation: result.DocumentationSource,
 				Document:      result.Document,
-				Section:       result.Section,
+				Section:       strings.Join(result.Section, "#"),
 			}
 			_, ok := resultsMap[key]
 			if ok {
 				resultsMap[key].Reasons = append(resultsMap[key].Reasons, result.Reasons...)
+				resultsMap[key].References = append(resultsMap[key].References, result.References...)
 			} else {
 				resultsMap[key] = &result
 			}
@@ -221,6 +241,7 @@ func CheckChange(args *CheckChangeArgs) error {
 			}
 		}
 
+		// Add the recommendation
 		output.Recommendations = append(output.Recommendations, CheckChangeOutputEntry{
 			System:              system.ID,
 			DocumentationSource: result.DocumentationSource,
@@ -229,11 +250,35 @@ func CheckChange(args *CheckChangeArgs) error {
 			Recommendation:      "Consider reviewing and updating this documentation",
 			Reasons:             result.Reasons,
 			Changed:             changed,
+			_References:         result.References,
 		})
 	}
 
 	// Sort the output list
 	sort.Sort(CheckChangeOutputEntrySort(output.Recommendations))
+
+	// Suggest change(s) (if flag is set)
+	if args.Suggest {
+		for idx, entry := range output.Recommendations {
+			// Get purpose from ruleDoc
+			purpose, _ := config.GetPurpose(entry.System, entry.DocumentationSource, entry.Document, entry.Section, cfg)
+			suggestion, err := suggest.Change(entry.System, entry.DocumentationSource, entry.Document, entry.Section, purpose, entry.Reasons, entry._References, pullRequests, issues, &cfg.LLM, currentDB)
+			if err != nil {
+				slog.Debug("action.CheckChange could not get suggestion",
+					"system", entry.System,
+					"doc", entry.DocumentationSource,
+					"document", entry.Document,
+					"section", entry.Section,
+					"error", err)
+				return err
+			}
+			if suggestion != "" {
+				output.Recommendations[idx].Suggestion = suggestion
+			} else {
+				output.Recommendations[idx].Suggestion = "(none)"
+			}
+		}
+	}
 
 	// Output the results
 	jsonData, err := json.MarshalIndent(output, "", "  ")
