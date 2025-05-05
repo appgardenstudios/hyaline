@@ -53,9 +53,10 @@ extract-change:
 
 .PHONY: check-current
 check-current:
+	rm -f ./results.json
 	make build
 	echo "---"
-	./hyaline --debug check --config ./_example/config.yml --current ./current.db --system local
+	./hyaline --debug check current --config ./_example/config.yml --current ./current.db --system local --output ./results.json
 
 .PHONY: pre-check-change
 pre-check-change:
@@ -66,12 +67,14 @@ pre-check-change:
 
 .PHONY: check-change
 check-change:
+	rm -f ./results.json
 	make build
 	echo "---"
 	./hyaline --debug check change --config ./_example/config.yml --current ./current.db --change ./change.db --system check-change --output ./results.json
 
 .PHONY: check-change-suggest
 check-change-suggest:
+	rm -f ./results.json
 	make build
 	echo "---"
 	./hyaline --debug check change --config ./_example/config.yml --current ./current.db --change ./change.db --system check-change --output ./results.json --suggest

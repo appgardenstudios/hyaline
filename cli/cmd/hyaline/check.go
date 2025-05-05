@@ -14,7 +14,7 @@ func Check(logLevel *slog.LevelVar) *cli.Command {
 		Subcommands: []*cli.Command{
 			{
 				Name:  "change",
-				Usage: "Extract and create a change data set",
+				Usage: "Check a change data set for issues",
 				Flags: []cli.Flag{
 					&cli.StringFlag{
 						Name:     "config",
@@ -60,6 +60,49 @@ func Check(logLevel *slog.LevelVar) *cli.Command {
 						System:  cCtx.String("system"),
 						Output:  cCtx.String("output"),
 						Suggest: cCtx.Bool("suggest"),
+					})
+					if err != nil {
+						return cli.Exit(err.Error(), 1)
+					}
+					return nil
+				},
+			}, {
+				Name:  "current",
+				Usage: "Check the current data set for issues",
+				Flags: []cli.Flag{
+					&cli.StringFlag{
+						Name:     "config",
+						Required: true,
+						Usage:    "Path to the config file",
+					},
+					&cli.StringFlag{
+						Name:     "current",
+						Required: true,
+						Usage:    "Path to the current data set",
+					},
+					&cli.StringFlag{
+						Name:     "system",
+						Required: true,
+						Usage:    "ID of the system to check",
+					},
+					&cli.StringFlag{
+						Name:     "output",
+						Required: true,
+						Usage:    "Path to write the results to",
+					},
+				},
+				Action: func(cCtx *cli.Context) error {
+					// Set log level
+					if cCtx.Bool("debug") {
+						logLevel.Set(slog.LevelDebug)
+					}
+
+					// Execute action
+					err := action.CheckCurrent(&action.CheckCurrentArgs{
+						Config:  cCtx.String("config"),
+						Current: cCtx.String("current"),
+						System:  cCtx.String("system"),
+						Output:  cCtx.String("output"),
 					})
 					if err != nil {
 						return cli.Exit(err.Error(), 1)
