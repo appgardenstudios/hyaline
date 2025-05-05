@@ -61,7 +61,6 @@ type System struct {
 	ID                   string                `yaml:"id,omitempty"`
 	CodeSources          []CodeSource          `yaml:"code,omitempty"`
 	DocumentationSources []DocumentationSource `yaml:"docs,omitempty"`
-	Checks               []Check               `yaml:"checks,omitempty"`
 }
 
 func (s *System) GetDocumentationSource(id string) (doc DocumentationSource, found bool) {
@@ -178,13 +177,6 @@ const (
 
 type DocHTMLOptions struct {
 	Selector string `yaml:"selector,omitempty"`
-}
-
-type Check struct {
-	ID          string                 `yaml:"id,omitempty"`
-	Description string                 `yaml:"description,omitempty"`
-	Rule        string                 `yaml:"rule,omitempty"`
-	Options     map[string]interface{} `yaml:"options,omitempty"`
 }
 
 type RuleSet struct {

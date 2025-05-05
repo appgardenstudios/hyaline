@@ -35,15 +35,6 @@ systems:
           path: ./_example/
         include:
           - "**/*.html"
-    checks:
-      - id: run-locally
-        description: Ensure that instructions on how to run the system locally for development exist. 
-        rule: section-exists
-        options:
-          document: README.md
-          section: Running Locally
-          severity: ERROR
-          allowTodos: false
   - id: git
     code:
       - id: app-path
