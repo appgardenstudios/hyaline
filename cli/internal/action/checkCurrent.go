@@ -248,15 +248,13 @@ func CheckCurrent(args *CheckCurrentArgs) error {
 				System:              system.ID,
 				DocumentationSource: docSource.ID,
 				Document:            sec.ID,
-				Section:             arr[1:],
+				Section:             arr[1:], // Split document off of the ID and take what is left, e.g. doc#sec1#sec1.1
 				Rule:                correspondingRuleID,
 				Check:               "RULE_EXISTS",
 				Result:              result,
 				Message:             message,
 			})
 		}
-
-		// TODO
 	}
 
 	// Sort output
