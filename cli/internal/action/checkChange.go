@@ -262,7 +262,7 @@ func CheckChange(args *CheckChangeArgs) error {
 		for idx, entry := range output.Recommendations {
 			// Get purpose from ruleDoc
 			purpose, _ := config.GetPurpose(entry.System, entry.DocumentationSource, entry.Document, entry.Section, cfg)
-			suggestion, err := suggest.Change(entry.System, entry.DocumentationSource, entry.Document, entry.Section, purpose, entry.Reasons, entry._References, pullRequests, issues, &cfg.LLM)
+			suggestion, err := suggest.Change(entry.System, entry.DocumentationSource, entry.Document, entry.Section, purpose, entry.Reasons, entry._References, pullRequests, issues, &cfg.LLM, currentDB)
 			if err != nil {
 				slog.Debug("action.CheckChange could not get suggestion",
 					"system", entry.System,

@@ -1,6 +1,7 @@
 package suggest
 
 import (
+	"database/sql"
 	"encoding/json"
 	"fmt"
 	"hyaline/internal/check"
@@ -20,7 +21,7 @@ type changeNoUpdateNeededSchema struct {
 }
 
 // Eventually we should group this up and handle a document and section updates in the same call
-func Change(systemID string, documentationSource string, document string, section []string, purpose string, reasons []string, references []check.ChangeResultReference, pullRequests []*sqlite.PullRequest, issues []*sqlite.Issue, cfg *config.LLM) (suggestion string, err error) {
+func Change(systemID string, documentationSource string, document string, section []string, purpose string, reasons []string, references []check.ChangeResultReference, pullRequests []*sqlite.PullRequest, issues []*sqlite.Issue, cfg *config.LLM, currentDB *sql.DB) (suggestion string, err error) {
 	systemPrompt := "You are a senior technical writer who writes clear and accurate system documentation."
 	var prompt strings.Builder
 
@@ -63,11 +64,20 @@ func Change(systemID string, documentationSource string, document string, sectio
 
 	// Add document/section
 	isSection := len(section) > 0
-	// TODO get existing document/section content
 	existingContent := ""
 	if isSection {
-		// TODO Get section contents
-		// TODO consider adding document info
+		// Get current section content
+		sectionID := fmt.Sprintf("%s#%s", document, strings.Join(section, "#"))
+		var originalSection *sqlite.Section
+		originalSection, err = sqlite.GetSection(sectionID, document, documentationSource, systemID, currentDB)
+		if err != nil {
+			slog.Debug("suggest.Change could not retrieve section", "sectionID", sectionID, "error", err)
+			return
+		}
+		if originalSection != nil {
+			existingContent = originalSection.ExtractedData
+		}
+		// Add section
 		title := section[len(section)-1]
 		prompt.WriteString("<section>\n")
 		prompt.WriteString(fmt.Sprintf("  <section_title>%s</section_title>\n", title))
@@ -78,6 +88,17 @@ func Change(systemID string, documentationSource string, document string, sectio
 		prompt.WriteString("</section>\n")
 		prompt.WriteString("\n")
 	} else {
+		// Get current document content
+		var originalDocument *sqlite.Document
+		originalDocument, err = sqlite.GetDocument(document, documentationSource, systemID, currentDB)
+		if err != nil {
+			slog.Debug("suggest.Change could not retrieve document", "document", document, "error", err)
+			return
+		}
+		if originalDocument != nil {
+			existingContent = originalDocument.ExtractedData
+		}
+		// Add document
 		prompt.WriteString("<document>\n")
 		prompt.WriteString(fmt.Sprintf("  <document_name>%s</document_name>\n", document))
 		prompt.WriteString("  <document_content>\n")

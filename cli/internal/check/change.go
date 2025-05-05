@@ -25,7 +25,6 @@ type ChangeResult struct {
 
 type ChangeResultReference struct {
 	CodeID string
-	// TODO do we need original ID?
 	FileID string
 	Diff   string
 }
