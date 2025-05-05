@@ -1,6 +1,6 @@
 package config
 
-func GetPurpose(systemID string, documentationSourceID string, documentID string, section []string, cfg *Config) (purpose string, found bool) {
+func GetPurpose(systemID string, documentationSourceID string, documentID string, sectionIDs []string, cfg *Config) (purpose string, found bool) {
 	// Get system
 	system, found := cfg.GetSystem(systemID)
 	if !found {
@@ -20,16 +20,38 @@ func GetPurpose(systemID string, documentationSourceID string, documentID string
 	}
 
 	// If this is a document, return
-	if len(section) == 0 {
+	if len(sectionIDs) == 0 {
 		return ruleDoc.Purpose, true
 	}
 
-	// Recurse through sections
-	// var sectionPtr *RuleDocumentSection
-	// for {
+	// Otherwise, get purpose from section
+	return getPurposeFromSection(ruleDoc.Sections, sectionIDs)
+}
 
-	// }
-	// TODO
+func getPurposeFromSection(sections []RuleDocumentSection, sectionIDs []string) (purpose string, found bool) {
+	var currentID string
+	var remainder []string
+
+	switch len(sectionIDs) {
+	case 0:
+		return
+	case 1:
+		currentID = sectionIDs[0]
+		remainder = []string{}
+	default:
+		currentID = sectionIDs[0]
+		remainder = sectionIDs[1:]
+	}
+
+	for _, sec := range sections {
+		if sec.ID == currentID {
+			if len(remainder) == 0 {
+				return sec.Purpose, true
+			} else {
+				return getPurposeFromSection(sec.Sections, remainder)
+			}
+		}
+	}
 
 	return
 }

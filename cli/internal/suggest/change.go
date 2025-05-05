@@ -20,12 +20,12 @@ type changeNoUpdateNeededSchema struct {
 }
 
 // Eventually we should group this up and handle a document and section updates in the same call
-func Change(systemID string, documentationSource string, document string, section []string, reasons []string, references []check.ChangeResultReference, pullRequests []*sqlite.PullRequest, issues []*sqlite.Issue, cfg *config.LLM) (suggestion string, err error) {
+func Change(systemID string, documentationSource string, document string, section []string, purpose string, reasons []string, references []check.ChangeResultReference, pullRequests []*sqlite.PullRequest, issues []*sqlite.Issue, cfg *config.LLM) (suggestion string, err error) {
 	systemPrompt := "You are a senior technical writer who writes clear and accurate system documentation."
 	var prompt strings.Builder
 
 	// Diff(s)
-	// TODO describe the structure of diffs?
+	prompt.WriteString("The contents of the <diffs> tag contain a list of unified diffs for files that were changed.\n")
 	prompt.WriteString("<diffs>\n")
 	for _, ref := range references {
 		prompt.WriteString("  <diff>\n")
@@ -108,7 +108,9 @@ func Change(systemID string, documentationSource string, document string, sectio
 	}
 	prompt.WriteString(fmt.Sprintf("determine what changes need to be made to the %s contained in <%s>. ", tagName, tagName))
 	prompt.WriteString("Be concise and accurate. ")
-	// TODO add the purpose of this document/section
+	if purpose != "" {
+		prompt.WriteString(fmt.Sprintf("The purpose of this %s is \"%s\". ", tagName, purpose))
+	}
 	prompt.WriteString(fmt.Sprintf("Take into account the following reasons that this %s needs to be updated:\n", tagName))
 	for _, reason := range reasons {
 		prompt.WriteString(fmt.Sprintf("* %s\n", reason))
@@ -118,7 +120,7 @@ func Change(systemID string, documentationSource string, document string, sectio
 	if existingContent != "" {
 		prompt.WriteString(fmt.Sprintf("Match the voice and style of the existing %s content where possible. ", tagName))
 	}
-	// TODO add out to call the "i don't know" tool?
+	prompt.WriteString(fmt.Sprintf("If no changes need to be made call the tool %s.", noUpdateNeededName))
 
 	// Add tool(s)
 	reflector := jsonschema.Reflector{
