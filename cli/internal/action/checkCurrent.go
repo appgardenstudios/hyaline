@@ -2,12 +2,16 @@ package action
 
 import (
 	"database/sql"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"hyaline/internal/config"
+	"hyaline/internal/sqlite"
 	"log/slog"
 	"os"
 	"path/filepath"
+	"sort"
+	"strings"
 
 	_ "modernc.org/sqlite"
 )
@@ -17,6 +21,63 @@ type CheckCurrentArgs struct {
 	Current string
 	System  string
 	Output  string
+}
+
+type CheckCurrentOutput struct {
+	Results []CheckCurrentOutputEntry `json:"results"`
+}
+
+type CheckCurrentOutputEntry struct {
+	System              string   `json:"system"`
+	DocumentationSource string   `json:"documentationSource"`
+	Document            string   `json:"document"`
+	Section             []string `json:"section,omitempty"`
+	Rule                string   `json:"rule"`
+	Check               string   `json:"check"`
+	Result              string   `json:"result"`
+	Message             string   `json:"message"`
+}
+
+type CheckCurrentOutputEntrySort []CheckCurrentOutputEntry
+
+func (c CheckCurrentOutputEntrySort) Len() int {
+	return len(c)
+}
+func (c CheckCurrentOutputEntrySort) Swap(i, j int) {
+	c[i], c[j] = c[j], c[i]
+}
+func (c CheckCurrentOutputEntrySort) Less(i, j int) bool {
+	if c[i].System < c[j].System {
+		return true
+	}
+	if c[i].System > c[j].System {
+		return false
+	}
+	if c[i].DocumentationSource < c[j].DocumentationSource {
+		return true
+	}
+	if c[i].DocumentationSource > c[j].DocumentationSource {
+		return false
+	}
+	if c[i].Document < c[j].Document {
+		return true
+	}
+	if c[i].Document > c[j].Document {
+		return false
+	}
+	if strings.Join(c[i].Section, "#") < strings.Join(c[j].Section, "#") {
+		return true
+	}
+	if strings.Join(c[i].Section, "#") > strings.Join(c[j].Section, "#") {
+		return false
+	}
+	if c[i].Rule < c[j].Rule {
+		return true
+	}
+	if c[i].Rule > c[j].Rule {
+		return false
+	}
+	return c[i].Check < c[j].Check
 }
 
 func CheckCurrent(args *CheckCurrentArgs) error {
@@ -62,13 +123,153 @@ func CheckCurrent(args *CheckCurrentArgs) error {
 	defer currentDB.Close()
 
 	// Get system
-	system, err := config.GetSystem(args.System, cfg)
-	if err != nil {
+	system, found := cfg.GetSystem(args.System)
+	if !found {
+		err = fmt.Errorf("system not found: %s", args.System)
 		slog.Debug("action.CheckChange could not locate the system", "system", args.System, "error", err)
 		return err
 	}
 
-	fmt.Println(system.ID)
+	// Initialize our output
+	output := CheckCurrentOutput{
+		Results: []CheckCurrentOutputEntry{},
+	}
+
+	// Process each documentation source in the system
+	for _, docSource := range system.DocumentationSources {
+		// Initialize our processed documents map
+		processedMap := make(map[string]struct{})
+
+		// Get all documents for system and put them into a map
+		docMap := make(map[string]*sqlite.Document)
+		docs, err := sqlite.GetAllDocument(docSource.ID, system.ID, currentDB)
+		if err != nil {
+			slog.Debug("action.CheckChange could not get documents for documentationSource", "documentationSource", docSource.ID, "system", args.System, "error", err)
+			return err
+		}
+		for _, doc := range docs {
+			docMap[doc.ID] = doc
+		}
+
+		// Loop through docRules
+		for _, ruleID := range docSource.Rules {
+			// Get rule set
+			ruleSet, _ := cfg.GetRuleSet(ruleID)
+
+			// Loop through documents
+			for _, ruleDoc := range ruleSet.Documents {
+				// Check REQUIRED
+				if ruleDoc.Required {
+					result := "PASS"
+					message := ""
+					_, found := docMap[ruleDoc.Path]
+					if !found {
+						result = "ERROR"
+						message = "This document is marked as required"
+					}
+					if ruleDoc.Ignore {
+						result = "SKIPPED"
+					}
+					output.Results = append(output.Results, CheckCurrentOutputEntry{
+						System:              system.ID,
+						DocumentationSource: docSource.ID,
+						Document:            ruleDoc.Path,
+						Rule:                ruleID,
+						Check:               "REQUIRED",
+						Result:              result,
+						Message:             message,
+					})
+				}
+
+				// Check sections (if not skipped)
+				if !ruleDoc.Ignore {
+					// Get section map
+					sectionMap := make(map[string]*sqlite.Section)
+					sections, err := sqlite.GetAllSectionsForDocument(ruleDoc.Path, docSource.ID, system.ID, currentDB)
+					if err != nil {
+						slog.Debug("action.CheckChange could not get sections for document", "document", ruleDoc.Path, "documentationSource", docSource.ID, "system", args.System, "error", err)
+						return err
+					}
+					for _, sec := range sections {
+						sectionMap[sec.ID] = sec
+					}
+
+					// Check section
+					output.Results = append(output.Results, checkCurrentSections(ruleID, system.ID, docSource.ID, ruleDoc.Path, []string{}, ruleDoc.Sections, &sectionMap)...)
+				}
+
+				// Loop through and make sure each section has a corresponding entry in the ruleDoc
+				// TODO
+
+				// Mark doc as processed
+				processedMap[ruleDoc.Path] = struct{}{}
+			}
+		}
+	}
+
+	// Sort output
+	sort.Sort(CheckCurrentOutputEntrySort(output.Results))
+
+	// Output
+	jsonData, err := json.MarshalIndent(output, "", "  ")
+	if err != nil {
+		slog.Debug("action.CheckChange could not marshal json", "error", err)
+		return err
+	}
+	outputFile, err := os.Create(outputAbsPath)
+	if err != nil {
+		slog.Debug("action.CheckChange could not open output file", "error", err)
+		return err
+	}
+	defer outputFile.Close()
+	_, err = outputFile.Write(jsonData)
+	if err != nil {
+		slog.Debug("action.GenerateConfig could not write output file", "error", err)
+		return err
+	}
 
 	return nil
+}
+
+func checkCurrentSections(ruleID string, system string, documentationSource string, document string, section []string, ruleDocSections []config.RuleDocumentSection, sectionMap *map[string]*sqlite.Section) (results []CheckCurrentOutputEntry) {
+	for _, ruleDocSection := range ruleDocSections {
+		currentSection := []string{}
+		currentSection = append(currentSection, section...)
+		currentSection = append(currentSection, ruleDocSection.ID)
+		sectionID := fmt.Sprintf("%s#%s", document, strings.Join(currentSection, "#"))
+
+		// Check REQUIRED
+		if ruleDocSection.Required {
+			result := "PASS"
+			message := ""
+			_, found := (*sectionMap)[sectionID]
+			if !found {
+				result = "ERROR"
+				message = "This section is marked as required"
+			}
+			if ruleDocSection.Ignore {
+				result = "SKIPPED"
+			}
+			results = append(results, CheckCurrentOutputEntry{
+				System:              system,
+				DocumentationSource: documentationSource,
+				Document:            document,
+				Section:             currentSection,
+				Rule:                ruleID,
+				Check:               "REQUIRED",
+				Result:              result,
+				Message:             message,
+			})
+		}
+
+		// Check sections (if not skipped)
+		if !ruleDocSection.Ignore {
+			results = append(results, checkCurrentSections(ruleID, system, documentationSource, document, currentSection, ruleDocSection.Sections, sectionMap)...)
+		}
+
+		// Mark section as processed
+		// TODO
+	}
+
+	return
 }
