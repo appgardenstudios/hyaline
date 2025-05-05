@@ -279,20 +279,9 @@ rules:
       - path: docs/subdir.md
         purpose: The purpose of this document is to record any change to js files in the subdir directory, no matter how small
         required: true
-      - path: docs/docsDoc.md
-        purpose: The docs/docsDoc.md file appears to be a test document used to verify basic document formatting and functionality. It contains simple test content and repeated test phrases.
-        required: true
-        sections:
-          - id: This is a test
-            purpose: This section demonstrates basic test content through repetitive test phrases, serving as a simple verification of document formatting and display capabilities.
-            required: true
       - path: docs/preDoc.md
         purpose: The document docs/preDoc.md appears to be a markdown file containing preliminary text and a sample heading section with placeholder content. Its purpose seems to be demonstrating document structure rather than providing actual documentation content.
         required: true
-        sections:
-          - id: A Random Heading
-            purpose: This placeholder section contains sample text to demonstrate document structure and formatting, aligning with the preliminary nature of the preDoc.md file.
-            required: true
       - path: README.md
         purpose: The purpose of the document
         required: true

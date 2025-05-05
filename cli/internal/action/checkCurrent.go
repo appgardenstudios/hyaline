@@ -137,8 +137,9 @@ func CheckCurrent(args *CheckCurrentArgs) error {
 
 	// Process each documentation source in the system
 	for _, docSource := range system.DocumentationSources {
-		// Initialize our processed documents map
-		processedMap := make(map[string]struct{})
+		// Initialize our processed documents/section map
+		processedDocumentMap := make(map[string]string)
+		processedSectionMap := make(map[string]string)
 
 		// Get all documents for system and put them into a map
 		docMap := make(map[string]*sqlite.Document)
@@ -195,16 +196,67 @@ func CheckCurrent(args *CheckCurrentArgs) error {
 					}
 
 					// Check section
-					output.Results = append(output.Results, checkCurrentSections(ruleID, system.ID, docSource.ID, ruleDoc.Path, []string{}, ruleDoc.Sections, &sectionMap)...)
+					output.Results = append(output.Results, checkCurrentSections(ruleID, system.ID, docSource.ID, ruleDoc.Path, []string{}, ruleDoc.Sections, &sectionMap, &processedSectionMap)...)
 				}
 
-				// Loop through and make sure each section has a corresponding entry in the ruleDoc
-				// TODO
-
 				// Mark doc as processed
-				processedMap[ruleDoc.Path] = struct{}{}
+				processedDocumentMap[ruleDoc.Path] = ruleID
 			}
 		}
+
+		// Loop through docs and make sure each had a corresponding rule
+		for _, doc := range docs {
+			result := "PASS"
+			message := ""
+			correspondingRuleID, found := processedDocumentMap[doc.ID]
+			if !found {
+				result = "ERROR"
+				message = fmt.Sprintf("Document %s does not have a corresponding rule", doc.ID)
+			}
+			output.Results = append(output.Results, CheckCurrentOutputEntry{
+				System:              system.ID,
+				DocumentationSource: docSource.ID,
+				Document:            doc.ID,
+				Rule:                correspondingRuleID,
+				Check:               "RULE_EXISTS",
+				Result:              result,
+				Message:             message,
+			})
+		}
+
+		// Loop through sections and make sure each has a corresponding rule
+		allSections, err := sqlite.GetAllSection(docSource.ID, system.ID, currentDB)
+		if err != nil {
+			slog.Debug("action.CheckChange could not get sections for documentationSource", "documentationSource", docSource.ID, "system", args.System, "error", err)
+			return err
+		}
+		for _, sec := range allSections {
+			arr := strings.Split(sec.ID, "#")
+			// Skip root sections
+			if len(arr) < 2 {
+				continue
+			}
+
+			result := "PASS"
+			message := ""
+			correspondingRuleID, found := processedSectionMap[sec.ID]
+			if !found {
+				result = "ERROR"
+				message = fmt.Sprintf("Section %s does not have a corresponding rule", sec.ID)
+			}
+			output.Results = append(output.Results, CheckCurrentOutputEntry{
+				System:              system.ID,
+				DocumentationSource: docSource.ID,
+				Document:            sec.ID,
+				Section:             arr[1:],
+				Rule:                correspondingRuleID,
+				Check:               "RULE_EXISTS",
+				Result:              result,
+				Message:             message,
+			})
+		}
+
+		// TODO
 	}
 
 	// Sort output
@@ -231,7 +283,7 @@ func CheckCurrent(args *CheckCurrentArgs) error {
 	return nil
 }
 
-func checkCurrentSections(ruleID string, system string, documentationSource string, document string, section []string, ruleDocSections []config.RuleDocumentSection, sectionMap *map[string]*sqlite.Section) (results []CheckCurrentOutputEntry) {
+func checkCurrentSections(ruleID string, system string, documentationSource string, document string, section []string, ruleDocSections []config.RuleDocumentSection, sectionMap *map[string]*sqlite.Section, processedSectionMap *map[string]string) (results []CheckCurrentOutputEntry) {
 	for _, ruleDocSection := range ruleDocSections {
 		currentSection := []string{}
 		currentSection = append(currentSection, section...)
@@ -264,11 +316,11 @@ func checkCurrentSections(ruleID string, system string, documentationSource stri
 
 		// Check sections (if not skipped)
 		if !ruleDocSection.Ignore {
-			results = append(results, checkCurrentSections(ruleID, system, documentationSource, document, currentSection, ruleDocSection.Sections, sectionMap)...)
+			results = append(results, checkCurrentSections(ruleID, system, documentationSource, document, currentSection, ruleDocSection.Sections, sectionMap, processedSectionMap)...)
 		}
 
 		// Mark section as processed
-		// TODO
+		(*processedSectionMap)[sectionID] = ruleID
 	}
 
 	return
