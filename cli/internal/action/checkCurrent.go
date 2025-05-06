@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"hyaline/internal/check"
 	"hyaline/internal/config"
 	"hyaline/internal/sqlite"
 	"log/slog"
@@ -192,7 +193,17 @@ func CheckCurrent(args *CheckCurrentArgs) error {
 						result = "SKIPPED"
 					} else {
 						if ruleDoc.Purpose != "" {
-							// TODO check document purpose
+							matches, reason, err := check.Purpose()
+							if err != nil {
+								slog.Debug("action.CheckChange could not check purpose for document", "document", ruleDoc.Path, "documentationSource", docSource.ID, "system", args.System, "error", err)
+								return err
+							}
+							if !matches {
+								result = "ERROR"
+								message = fmt.Sprintf("This document does not match it's purpose. %s", reason)
+							} else {
+								message = fmt.Sprintf("This document does match it's purpose. %s", reason)
+							}
 						} else {
 							result = "WARN"
 							message = "This document does not have a purpose"
@@ -224,7 +235,12 @@ func CheckCurrent(args *CheckCurrentArgs) error {
 					}
 
 					// Check section
-					output.Results = append(output.Results, checkCurrentSections(ruleID, system.ID, docSource.ID, ruleDoc.Path, []string{}, ruleDoc.Sections, &sectionMap, &processedSectionMap, args.CheckPurpose)...)
+					addtlResults, err := checkCurrentSections(ruleID, system.ID, docSource.ID, ruleDoc.Path, []string{}, ruleDoc.Sections, &sectionMap, &processedSectionMap, args.CheckPurpose)
+					if err != nil {
+						slog.Debug("action.CheckChange could not check current sections for document", "document", ruleDoc.Path, "documentationSource", docSource.ID, "system", args.System, "error", err)
+						return err
+					}
+					output.Results = append(output.Results, addtlResults...)
 				}
 
 				// Mark doc as processed
@@ -309,7 +325,7 @@ func CheckCurrent(args *CheckCurrentArgs) error {
 	return nil
 }
 
-func checkCurrentSections(ruleID string, system string, documentationSource string, document string, section []string, ruleDocSections []config.RuleDocumentSection, sectionMap *map[string]*sqlite.Section, processedSectionMap *map[string]string, checkPurpose bool) (results []CheckCurrentOutputEntry) {
+func checkCurrentSections(ruleID string, system string, documentationSource string, document string, section []string, ruleDocSections []config.RuleDocumentSection, sectionMap *map[string]*sqlite.Section, processedSectionMap *map[string]string, checkPurpose bool) (results []CheckCurrentOutputEntry, err error) {
 	for _, ruleDocSection := range ruleDocSections {
 		currentSection := []string{}
 		currentSection = append(currentSection, section...)
@@ -348,11 +364,21 @@ func checkCurrentSections(ruleID string, system string, documentationSource stri
 				result = "SKIPPED"
 			} else {
 				if ruleDocSection.Purpose != "" {
-					// matches, err := check.Purpose()
-					// TODO check document purpose
+					var matches bool
+					var reason string
+					matches, reason, err = check.Purpose()
+					if err != nil {
+						return
+					}
+					if !matches {
+						result = "ERROR"
+						message = fmt.Sprintf("This section does not match it's purpose. %s", reason)
+					} else {
+						message = fmt.Sprintf("This section does match it's purpose. %s", reason)
+					}
 				} else {
 					result = "WARN"
-					message = "This document does not have a purpose"
+					message = "This section does not have a purpose"
 				}
 			}
 
@@ -370,7 +396,12 @@ func checkCurrentSections(ruleID string, system string, documentationSource stri
 
 		// Check sections (if not skipped)
 		if !ruleDocSection.Ignore {
-			results = append(results, checkCurrentSections(ruleID, system, documentationSource, document, currentSection, ruleDocSection.Sections, sectionMap, processedSectionMap, checkPurpose)...)
+			var addtlResults []CheckCurrentOutputEntry
+			addtlResults, err = checkCurrentSections(ruleID, system, documentationSource, document, currentSection, ruleDocSection.Sections, sectionMap, processedSectionMap, checkPurpose)
+			if err != nil {
+				return
+			}
+			results = append(results, addtlResults...)
 		}
 
 		// Mark section as processed
