@@ -2,7 +2,7 @@ package config
 
 // Note: If there are multiple ruleDocuments in different rule sets, this function
 // will return the last one found based on the order of the passed in rule IDs.
-func GetRuleDocument(rules []Rule, ruleIDs []string, path string) (ruleDoc RuleDocument, found bool) {
+func GetRuleDocument(rules []RuleSet, ruleIDs []string, path string) (ruleDoc RuleDocument, found bool) {
 	for i := len(ruleIDs) - 1; i >= 0; i-- {
 		rule := GetRule(rules, ruleIDs[i])
 		if rule != nil {
@@ -18,7 +18,7 @@ func GetRuleDocument(rules []Rule, ruleIDs []string, path string) (ruleDoc RuleD
 }
 
 // Return the rule identified by the id, or nil if not found
-func GetRule(rules []Rule, ruleID string) *Rule {
+func GetRule(rules []RuleSet, ruleID string) *RuleSet {
 	for _, rule := range rules {
 		if rule.ID == ruleID {
 			return &rule

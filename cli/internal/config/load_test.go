@@ -190,7 +190,7 @@ func TestValidate(t *testing.T) {
 	invalidLLM := LLM{
 		Provider: "invalid",
 	}
-	rule := Rule{
+	rule := RuleSet{
 		ID: "test",
 	}
 
@@ -198,25 +198,25 @@ func TestValidate(t *testing.T) {
 		llm         LLM
 		code        []CodeSource
 		docs        []DocumentationSource
-		rules       []Rule
+		rules       []RuleSet
 		shouldError bool
 	}{
-		{LLM{}, []CodeSource{}, []DocumentationSource{}, []Rule{}, false},
-		{LLM{}, []CodeSource{code}, []DocumentationSource{}, []Rule{}, false},
-		{LLM{}, []CodeSource{}, []DocumentationSource{doc}, []Rule{}, false},
-		{LLM{}, []CodeSource{code}, []DocumentationSource{doc}, []Rule{}, false},
-		{LLM{}, []CodeSource{code, code}, []DocumentationSource{doc}, []Rule{}, true},
-		{LLM{}, []CodeSource{code}, []DocumentationSource{doc, doc}, []Rule{}, true},
-		{LLM{}, []CodeSource{code}, []DocumentationSource{invalidDoc}, []Rule{}, true},
-		{LLM{}, []CodeSource{invalidCodeInclude}, []DocumentationSource{}, []Rule{}, true},
-		{LLM{}, []CodeSource{invalidCodeExclude}, []DocumentationSource{}, []Rule{}, true},
-		{LLM{}, []CodeSource{}, []DocumentationSource{invalidDocInclude}, []Rule{}, true},
-		{LLM{}, []CodeSource{}, []DocumentationSource{invalidDocExclude}, []Rule{}, true},
-		{LLM{}, []CodeSource{invalidCodeExtractor}, []DocumentationSource{}, []Rule{}, true},
-		{LLM{}, []CodeSource{}, []DocumentationSource{invalidDocExtractor}, []Rule{}, true},
-		{invalidLLM, []CodeSource{}, []DocumentationSource{}, []Rule{}, true},
-		{LLM{}, []CodeSource{}, []DocumentationSource{}, []Rule{rule}, false},
-		{LLM{}, []CodeSource{}, []DocumentationSource{}, []Rule{rule, rule}, true},
+		{LLM{}, []CodeSource{}, []DocumentationSource{}, []RuleSet{}, false},
+		{LLM{}, []CodeSource{code}, []DocumentationSource{}, []RuleSet{}, false},
+		{LLM{}, []CodeSource{}, []DocumentationSource{doc}, []RuleSet{}, false},
+		{LLM{}, []CodeSource{code}, []DocumentationSource{doc}, []RuleSet{}, false},
+		{LLM{}, []CodeSource{code, code}, []DocumentationSource{doc}, []RuleSet{}, true},
+		{LLM{}, []CodeSource{code}, []DocumentationSource{doc, doc}, []RuleSet{}, true},
+		{LLM{}, []CodeSource{code}, []DocumentationSource{invalidDoc}, []RuleSet{}, true},
+		{LLM{}, []CodeSource{invalidCodeInclude}, []DocumentationSource{}, []RuleSet{}, true},
+		{LLM{}, []CodeSource{invalidCodeExclude}, []DocumentationSource{}, []RuleSet{}, true},
+		{LLM{}, []CodeSource{}, []DocumentationSource{invalidDocInclude}, []RuleSet{}, true},
+		{LLM{}, []CodeSource{}, []DocumentationSource{invalidDocExclude}, []RuleSet{}, true},
+		{LLM{}, []CodeSource{invalidCodeExtractor}, []DocumentationSource{}, []RuleSet{}, true},
+		{LLM{}, []CodeSource{}, []DocumentationSource{invalidDocExtractor}, []RuleSet{}, true},
+		{invalidLLM, []CodeSource{}, []DocumentationSource{}, []RuleSet{}, true},
+		{LLM{}, []CodeSource{}, []DocumentationSource{}, []RuleSet{rule}, false},
+		{LLM{}, []CodeSource{}, []DocumentationSource{}, []RuleSet{rule, rule}, true},
 	}
 
 	for i, test := range tests {

@@ -86,6 +86,7 @@ func CheckChange(args *CheckChangeArgs) error {
 		"change", args.Change,
 		"system", args.System,
 		"output", args.Output,
+		"suggest", args.Suggest,
 	))
 
 	// Load Config

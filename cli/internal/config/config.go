@@ -1,16 +1,26 @@
 package config
 
 type Config struct {
-	LLM     LLM      `yaml:"llm,omitempty"`
-	GitHub  GitHub   `yaml:"github,omitempty"`
-	Systems []System `yaml:"systems,omitempty"`
-	Rules   []Rule   `yaml:"rules,omitempty"`
+	LLM     LLM       `yaml:"llm,omitempty"`
+	GitHub  GitHub    `yaml:"github,omitempty"`
+	Systems []System  `yaml:"systems,omitempty"`
+	Rules   []RuleSet `yaml:"rules,omitempty"`
 }
 
 func (c *Config) GetSystem(id string) (system System, found bool) {
 	for _, s := range c.Systems {
 		if s.ID == id {
 			return s, true
+		}
+	}
+
+	return
+}
+
+func (c *Config) GetRuleSet(id string) (ruleSet RuleSet, found bool) {
+	for _, r := range c.Rules {
+		if r.ID == id {
+			return r, true
 		}
 	}
 
@@ -51,7 +61,6 @@ type System struct {
 	ID                   string                `yaml:"id,omitempty"`
 	CodeSources          []CodeSource          `yaml:"code,omitempty"`
 	DocumentationSources []DocumentationSource `yaml:"docs,omitempty"`
-	Checks               []Check               `yaml:"checks,omitempty"`
 }
 
 func (s *System) GetDocumentationSource(id string) (doc DocumentationSource, found bool) {
@@ -170,14 +179,7 @@ type DocHTMLOptions struct {
 	Selector string `yaml:"selector,omitempty"`
 }
 
-type Check struct {
-	ID          string                 `yaml:"id,omitempty"`
-	Description string                 `yaml:"description,omitempty"`
-	Rule        string                 `yaml:"rule,omitempty"`
-	Options     map[string]interface{} `yaml:"options,omitempty"`
-}
-
-type Rule struct {
+type RuleSet struct {
 	ID        string         `yaml:"id,omitempty"`
 	Documents []RuleDocument `yaml:"documents,omitempty"`
 }

@@ -44,18 +44,25 @@ extract-current-http:
 	echo "---"
 	./hyaline --debug extract current --config ./_example/config.yml --system http --output ./current.db
 
+.PHONY: pre-check-current
+pre-check-current:
+	rm -f ./current.db
+	make build
+	./hyaline --debug extract current --config ./_example/config.yml --system check-current --output ./current.db
+
+.PHONY: check-current
+check-current:
+	rm -f ./results.json
+	make build
+	echo "---"
+	./hyaline --debug check current --config ./_example/config.yml --current ./current.db --system check-current --output ./results.json
+
 .PHONY: extract-change
 extract-change:
 	rm -f ./change.db
 	make build
 	echo "---"
 	./hyaline --debug extract change --config ./_example/config.yml --system git --base main --head origin/feat-1 --pull-request appgardenstudios/hyaline-example/1 --issue appgardenstudios/hyaline-example/2 --issue appgardenstudios/hyaline-example/3  --output ./change.db
-
-.PHONY: check-current
-check-current:
-	make build
-	echo "---"
-	./hyaline --debug check --config ./_example/config.yml --current ./current.db --system local
 
 .PHONY: pre-check-change
 pre-check-change:
@@ -66,12 +73,14 @@ pre-check-change:
 
 .PHONY: check-change
 check-change:
+	rm -f ./results.json
 	make build
 	echo "---"
 	./hyaline --debug check change --config ./_example/config.yml --current ./current.db --change ./change.db --system check-change --output ./results.json
 
 .PHONY: check-change-suggest
 check-change-suggest:
+	rm -f ./results.json
 	make build
 	echo "---"
 	./hyaline --debug check change --config ./_example/config.yml --current ./current.db --change ./change.db --system check-change --output ./results.json --suggest

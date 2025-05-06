@@ -80,7 +80,7 @@ func GenerateConfig(args *GenerateConfigArgs) error {
 	// Loop through docs in our current system and generate a config for each
 	for _, d := range system.DocumentationSources {
 		// Create a rule for this documentation
-		rule := config.Rule{
+		rule := config.RuleSet{
 			ID:        d.ID,
 			Documents: []config.RuleDocument{},
 		}
