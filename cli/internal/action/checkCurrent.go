@@ -17,10 +17,11 @@ import (
 )
 
 type CheckCurrentArgs struct {
-	Config  string
-	Current string
-	System  string
-	Output  string
+	Config       string
+	Current      string
+	System       string
+	Output       string
+	CheckPurpose bool
 }
 
 type CheckCurrentOutput struct {
@@ -87,6 +88,7 @@ func CheckCurrent(args *CheckCurrentArgs) error {
 		"current", args.Current,
 		"system", args.System,
 		"output", args.Output,
+		"check-purpose", args.CheckPurpose,
 	))
 
 	// Load Config
@@ -182,6 +184,32 @@ func CheckCurrent(args *CheckCurrentArgs) error {
 					})
 				}
 
+				// Check MATCHES_PURPOSE
+				if args.CheckPurpose {
+					result := "PASS"
+					message := ""
+					if ruleDoc.Ignore {
+						result = "SKIPPED"
+					} else {
+						if ruleDoc.Purpose != "" {
+							// TODO check document purpose
+						} else {
+							result = "WARN"
+							message = "This document does not have a purpose"
+						}
+					}
+
+					output.Results = append(output.Results, CheckCurrentOutputEntry{
+						System:              system.ID,
+						DocumentationSource: docSource.ID,
+						Document:            ruleDoc.Path,
+						Rule:                ruleID,
+						Check:               "MATCHES_PURPOSE",
+						Result:              result,
+						Message:             message,
+					})
+				}
+
 				// Check sections (if not skipped)
 				if !ruleDoc.Ignore {
 					// Get section map
@@ -196,7 +224,7 @@ func CheckCurrent(args *CheckCurrentArgs) error {
 					}
 
 					// Check section
-					output.Results = append(output.Results, checkCurrentSections(ruleID, system.ID, docSource.ID, ruleDoc.Path, []string{}, ruleDoc.Sections, &sectionMap, &processedSectionMap)...)
+					output.Results = append(output.Results, checkCurrentSections(ruleID, system.ID, docSource.ID, ruleDoc.Path, []string{}, ruleDoc.Sections, &sectionMap, &processedSectionMap, args.CheckPurpose)...)
 				}
 
 				// Mark doc as processed
@@ -281,7 +309,7 @@ func CheckCurrent(args *CheckCurrentArgs) error {
 	return nil
 }
 
-func checkCurrentSections(ruleID string, system string, documentationSource string, document string, section []string, ruleDocSections []config.RuleDocumentSection, sectionMap *map[string]*sqlite.Section, processedSectionMap *map[string]string) (results []CheckCurrentOutputEntry) {
+func checkCurrentSections(ruleID string, system string, documentationSource string, document string, section []string, ruleDocSections []config.RuleDocumentSection, sectionMap *map[string]*sqlite.Section, processedSectionMap *map[string]string, checkPurpose bool) (results []CheckCurrentOutputEntry) {
 	for _, ruleDocSection := range ruleDocSections {
 		currentSection := []string{}
 		currentSection = append(currentSection, section...)
@@ -312,9 +340,37 @@ func checkCurrentSections(ruleID string, system string, documentationSource stri
 			})
 		}
 
+		// Check MATCHES_PURPOSE
+		if checkPurpose {
+			result := "PASS"
+			message := ""
+			if ruleDocSection.Ignore {
+				result = "SKIPPED"
+			} else {
+				if ruleDocSection.Purpose != "" {
+					// matches, err := check.Purpose()
+					// TODO check document purpose
+				} else {
+					result = "WARN"
+					message = "This document does not have a purpose"
+				}
+			}
+
+			results = append(results, CheckCurrentOutputEntry{
+				System:              system,
+				DocumentationSource: documentationSource,
+				Document:            document,
+				Section:             currentSection,
+				Rule:                ruleID,
+				Check:               "MATCHES_PURPOSE",
+				Result:              result,
+				Message:             message,
+			})
+		}
+
 		// Check sections (if not skipped)
 		if !ruleDocSection.Ignore {
-			results = append(results, checkCurrentSections(ruleID, system, documentationSource, document, currentSection, ruleDocSection.Sections, sectionMap, processedSectionMap)...)
+			results = append(results, checkCurrentSections(ruleID, system, documentationSource, document, currentSection, ruleDocSection.Sections, sectionMap, processedSectionMap, checkPurpose)...)
 		}
 
 		// Mark section as processed
