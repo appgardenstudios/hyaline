@@ -11,8 +11,8 @@ func TestCheckCurrentWithPurpose(t *testing.T) {
 	outputPath := fmt.Sprintf("./_output/check-current-with-purpose-%d.json", time.Now().UnixMilli())
 	args := []string{
 		"check", "current",
-		"--config", "./_input/check-current/config.yml",
-		"--current", "./_input/check-current/current.sqlite",
+		"--config", "./_input/check-current-with-purpose/config.yml",
+		"--current", "./_input/check-current-with-purpose/current.sqlite",
 		"--system", "check-current",
 		"--output", outputPath,
 		"--check-purpose",

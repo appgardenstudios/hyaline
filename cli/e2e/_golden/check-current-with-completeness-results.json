@@ -1,0 +1,222 @@
+{
+  "results": [
+    {
+      "system": "check-current",
+      "documentationSource": "app",
+      "document": "README.md",
+      "rule": "check-current",
+      "check": "COMPLETE",
+      "result": "ERROR",
+      "message": "This document is not complete. "
+    },
+    {
+      "system": "check-current",
+      "documentationSource": "app",
+      "document": "README.md",
+      "rule": "check-current",
+      "check": "REQUIRED",
+      "result": "PASS",
+      "message": ""
+    },
+    {
+      "system": "check-current",
+      "documentationSource": "app",
+      "document": "README.md",
+      "rule": "check-current",
+      "check": "RULE_EXISTS",
+      "result": "PASS",
+      "message": ""
+    },
+    {
+      "system": "check-current",
+      "documentationSource": "app",
+      "document": "README.md",
+      "section": [
+        "Example"
+      ],
+      "rule": "check-current",
+      "check": "COMPLETE",
+      "result": "ERROR",
+      "message": "This section is not complete. "
+    },
+    {
+      "system": "check-current",
+      "documentationSource": "app",
+      "document": "README.md",
+      "section": [
+        "Example",
+        "Subsection 1"
+      ],
+      "rule": "check-current",
+      "check": "COMPLETE",
+      "result": "SKIPPED",
+      "message": ""
+    },
+    {
+      "system": "check-current",
+      "documentationSource": "app",
+      "document": "README.md",
+      "section": [
+        "Example",
+        "Subsection 2"
+      ],
+      "rule": "check-current",
+      "check": "COMPLETE",
+      "result": "ERROR",
+      "message": "This section is not complete. "
+    },
+    {
+      "system": "check-current",
+      "documentationSource": "app",
+      "document": "README.md",
+      "section": [
+        "Example",
+        "Subsection 2"
+      ],
+      "rule": "check-current",
+      "check": "REQUIRED",
+      "result": "PASS",
+      "message": ""
+    },
+    {
+      "system": "check-current",
+      "documentationSource": "app",
+      "document": "README.md",
+      "section": [
+        "Running Locally"
+      ],
+      "rule": "check-current",
+      "check": "COMPLETE",
+      "result": "ERROR",
+      "message": "This section does not exist"
+    },
+    {
+      "system": "check-current",
+      "documentationSource": "app",
+      "document": "README.md",
+      "section": [
+        "Running Locally"
+      ],
+      "rule": "check-current",
+      "check": "REQUIRED",
+      "result": "ERROR",
+      "message": "This section is marked as required"
+    },
+    {
+      "system": "check-current",
+      "documentationSource": "app",
+      "document": "README.md#Example",
+      "section": [
+        "Example"
+      ],
+      "rule": "check-current",
+      "check": "RULE_EXISTS",
+      "result": "PASS",
+      "message": ""
+    },
+    {
+      "system": "check-current",
+      "documentationSource": "app",
+      "document": "README.md#Example#Subsection 1",
+      "section": [
+        "Example",
+        "Subsection 1"
+      ],
+      "rule": "check-current",
+      "check": "RULE_EXISTS",
+      "result": "PASS",
+      "message": ""
+    },
+    {
+      "system": "check-current",
+      "documentationSource": "app",
+      "document": "README.md#Example#Subsection 2",
+      "section": [
+        "Example",
+        "Subsection 2"
+      ],
+      "rule": "check-current",
+      "check": "RULE_EXISTS",
+      "result": "PASS",
+      "message": ""
+    },
+    {
+      "system": "check-current",
+      "documentationSource": "app",
+      "document": "docs/docsDoc.md",
+      "rule": "",
+      "check": "RULE_EXISTS",
+      "result": "ERROR",
+      "message": "Document docs/docsDoc.md does not have a corresponding rule"
+    },
+    {
+      "system": "check-current",
+      "documentationSource": "app",
+      "document": "docs/docsDoc.md#This is a test",
+      "section": [
+        "This is a test"
+      ],
+      "rule": "",
+      "check": "RULE_EXISTS",
+      "result": "ERROR",
+      "message": "Section docs/docsDoc.md#This is a test does not have a corresponding rule"
+    },
+    {
+      "system": "check-current",
+      "documentationSource": "app",
+      "document": "docs/preDoc.md",
+      "rule": "check-current",
+      "check": "COMPLETE",
+      "result": "ERROR",
+      "message": "This document is not complete. "
+    },
+    {
+      "system": "check-current",
+      "documentationSource": "app",
+      "document": "docs/preDoc.md",
+      "rule": "check-current",
+      "check": "REQUIRED",
+      "result": "PASS",
+      "message": ""
+    },
+    {
+      "system": "check-current",
+      "documentationSource": "app",
+      "document": "docs/preDoc.md",
+      "rule": "check-current",
+      "check": "RULE_EXISTS",
+      "result": "PASS",
+      "message": ""
+    },
+    {
+      "system": "check-current",
+      "documentationSource": "app",
+      "document": "docs/preDoc.md#A Random Heading",
+      "section": [
+        "A Random Heading"
+      ],
+      "rule": "",
+      "check": "RULE_EXISTS",
+      "result": "ERROR",
+      "message": "Section docs/preDoc.md#A Random Heading does not have a corresponding rule"
+    },
+    {
+      "system": "check-current",
+      "documentationSource": "app",
+      "document": "docs/subdir.md",
+      "rule": "check-current",
+      "check": "COMPLETE",
+      "result": "ERROR",
+      "message": "This document does not exist"
+    },
+    {
+      "system": "check-current",
+      "documentationSource": "app",
+      "document": "docs/subdir.md",
+      "rule": "check-current",
+      "check": "REQUIRED",
+      "result": "ERROR",
+      "message": "This document is marked as required"
+    }
+  ]
+}

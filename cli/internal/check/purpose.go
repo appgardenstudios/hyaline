@@ -117,7 +117,7 @@ func Purpose(systemID string, documentationID string, document string, section [
 
 	// Call LLM
 	userPrompt := prompt.String()
-	fmt.Println(userPrompt)
+	// fmt.Println(userPrompt)
 	slog.Debug("check.Purpose calling the llm")
 	// slog.Debug("check.Purpose calling the llm", "systemPrompt", systemPrompt, "userPrompt", userPrompt)
 	_, err = llm.CallLLM(systemPrompt, userPrompt, tools, cfg)
