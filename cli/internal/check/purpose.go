@@ -31,6 +31,10 @@ func Purpose(systemID string, documentationID string, document string, section [
 	var prompt strings.Builder
 
 	// Document/Section Info/Contents
+
+	// Note that the document name has the documentationID prepended to
+	// make it unique across documentation sources for the system.
+	// The common tools in the `tools` package expect this syntax as well.
 	documentName := fmt.Sprintf("%s/%s", documentationID, document)
 	tagName := "document"
 	name := documentName
