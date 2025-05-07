@@ -18,11 +18,12 @@ import (
 )
 
 type CheckCurrentArgs struct {
-	Config       string
-	Current      string
-	System       string
-	Output       string
-	CheckPurpose bool
+	Config            string
+	Current           string
+	System            string
+	Output            string
+	CheckPurpose      bool
+	CheckCompleteness bool
 }
 
 type CheckCurrentOutput struct {
@@ -224,6 +225,45 @@ func CheckCurrent(args *CheckCurrentArgs) error {
 					})
 				}
 
+				// Check COMPLETE
+				if args.CheckCompleteness {
+					result := "PASS"
+					message := ""
+					if ruleDoc.Ignore {
+						result = "SKIPPED"
+					} else if !found {
+						result = "ERROR"
+						message = "This document does not exist"
+					} else {
+						if ruleDoc.Purpose != "" {
+							complete, reason, err := check.Completeness(system.ID, docSource.ID, ruleDoc.Path, []string{}, ruleDoc.Purpose, doc.ExtractedData, &cfg.LLM, currentDB)
+							if err != nil {
+								slog.Debug("action.CheckChange could not check completeness for document", "document", ruleDoc.Path, "documentationSource", docSource.ID, "system", args.System, "error", err)
+								return err
+							}
+							if !complete {
+								result = "ERROR"
+								message = fmt.Sprintf("This document is not complete. %s", reason)
+							} else {
+								message = fmt.Sprintf("This document is complete. %s", reason)
+							}
+						} else {
+							result = "WARN"
+							message = "This document does not have a purpose"
+						}
+					}
+
+					output.Results = append(output.Results, CheckCurrentOutputEntry{
+						System:              system.ID,
+						DocumentationSource: docSource.ID,
+						Document:            ruleDoc.Path,
+						Rule:                ruleID,
+						Check:               "COMPLETE",
+						Result:              result,
+						Message:             message,
+					})
+				}
+
 				// Check sections (if not skipped)
 				if !ruleDoc.Ignore {
 					// Get section map
@@ -238,7 +278,7 @@ func CheckCurrent(args *CheckCurrentArgs) error {
 					}
 
 					// Check section
-					addtlResults, err := checkCurrentSections(ruleID, system.ID, docSource.ID, ruleDoc.Path, []string{}, ruleDoc.Sections, &sectionMap, &processedSectionMap, args.CheckPurpose, &cfg.LLM, currentDB)
+					addtlResults, err := checkCurrentSections(ruleID, system.ID, docSource.ID, ruleDoc.Path, []string{}, ruleDoc.Sections, &sectionMap, &processedSectionMap, args.CheckPurpose, args.CheckCompleteness, &cfg.LLM, currentDB)
 					if err != nil {
 						slog.Debug("action.CheckChange could not check current sections for document", "document", ruleDoc.Path, "documentationSource", docSource.ID, "system", args.System, "error", err)
 						return err
@@ -328,7 +368,7 @@ func CheckCurrent(args *CheckCurrentArgs) error {
 	return nil
 }
 
-func checkCurrentSections(ruleID string, system string, documentationSource string, document string, sectionArr []string, ruleDocSections []config.RuleDocumentSection, sectionMap *map[string]*sqlite.Section, processedSectionMap *map[string]string, checkPurpose bool, cfg *config.LLM, currentDB *sql.DB) (results []CheckCurrentOutputEntry, err error) {
+func checkCurrentSections(ruleID string, system string, documentationSource string, document string, sectionArr []string, ruleDocSections []config.RuleDocumentSection, sectionMap *map[string]*sqlite.Section, processedSectionMap *map[string]string, checkPurpose bool, checkComplete bool, cfg *config.LLM, currentDB *sql.DB) (results []CheckCurrentOutputEntry, err error) {
 	for _, ruleDocSection := range ruleDocSections {
 		currentSection := []string{}
 		currentSection = append(currentSection, sectionArr...)
@@ -401,10 +441,51 @@ func checkCurrentSections(ruleID string, system string, documentationSource stri
 			})
 		}
 
+		// Check COMPLETE
+		if checkComplete {
+			result := "PASS"
+			message := ""
+			if ruleDocSection.Ignore {
+				result = "SKIPPED"
+			} else if !found {
+				result = "ERROR"
+				message = "This section does not exist"
+			} else {
+				if ruleDocSection.Purpose != "" {
+					var matches bool
+					var reason string
+					matches, reason, err = check.Completeness(system, documentationSource, document, currentSection, ruleDocSection.Purpose, section.ExtractedData, cfg, currentDB)
+					if err != nil {
+						return
+					}
+					if !matches {
+						result = "ERROR"
+						message = fmt.Sprintf("This section is not complete. %s", reason)
+					} else {
+						message = fmt.Sprintf("This section is complete. %s", reason)
+					}
+				} else {
+					result = "WARN"
+					message = "This section does not have a purpose"
+				}
+			}
+
+			results = append(results, CheckCurrentOutputEntry{
+				System:              system,
+				DocumentationSource: documentationSource,
+				Document:            document,
+				Section:             currentSection,
+				Rule:                ruleID,
+				Check:               "COMPLETE",
+				Result:              result,
+				Message:             message,
+			})
+		}
+
 		// Check sections (if not skipped)
 		if !ruleDocSection.Ignore {
 			var addtlResults []CheckCurrentOutputEntry
-			addtlResults, err = checkCurrentSections(ruleID, system, documentationSource, document, currentSection, ruleDocSection.Sections, sectionMap, processedSectionMap, checkPurpose, cfg, currentDB)
+			addtlResults, err = checkCurrentSections(ruleID, system, documentationSource, document, currentSection, ruleDocSection.Sections, sectionMap, processedSectionMap, checkPurpose, checkComplete, cfg, currentDB)
 			if err != nil {
 				return
 			}

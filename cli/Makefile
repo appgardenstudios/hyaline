@@ -64,6 +64,13 @@ check-current-purpose:
 	echo "---"
 	./hyaline --debug check current --config ./_example/config.yml --current ./current.db --system check-current --output ./results.json --check-purpose
 
+.PHONY: check-current-completeness
+check-current-completeness:
+	rm -f ./results.json
+	make build
+	echo "---"
+	./hyaline --debug check current --config ./_example/config.yml --current ./current.db --system check-current --output ./results.json --check-completeness
+
 .PHONY: extract-change
 extract-change:
 	rm -f ./change.db

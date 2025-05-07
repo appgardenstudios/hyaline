@@ -109,6 +109,23 @@
         "--suggest"
       ]
     },{
+      "name": "Check Current",
+      "type": "go",
+      "request": "launch",
+      "mode": "debug",
+      "preLaunchTask": "cleanup-check",
+      "cwd": "${workspaceFolder}/cli/",
+      "program": "${workspaceFolder}/cli/cmd/hyaline.go",
+      "envFile": "${workspaceFolder}/cli/.env",
+      "args":[
+        "--debug",
+        "check", "current",
+        "--config", "./_example/config.yml",
+        "--current", "./current.db",
+        "--system", "check-current",
+        "--output", "./results.json"
+      ]
+    },{
       "name": "Check Current with Purpose",
       "type": "go",
       "request": "launch",
@@ -125,6 +142,24 @@
         "--system", "check-current",
         "--output", "./results.json",
         "--check-purpose"
+      ]
+    },{
+      "name": "Check Current with Completeness",
+      "type": "go",
+      "request": "launch",
+      "mode": "debug",
+      "preLaunchTask": "cleanup-check",
+      "cwd": "${workspaceFolder}/cli/",
+      "program": "${workspaceFolder}/cli/cmd/hyaline.go",
+      "envFile": "${workspaceFolder}/cli/.env",
+      "args":[
+        "--debug",
+        "check", "current",
+        "--config", "./_example/config.yml",
+        "--current", "./current.db",
+        "--system", "check-current",
+        "--output", "./results.json",
+        "--check-completeness"
       ]
     }
   ]
