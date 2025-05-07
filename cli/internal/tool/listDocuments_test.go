@@ -41,8 +41,10 @@ func TestListDocuments(t *testing.T) {
 		ExtractedData:   "doc3 extracted data",
 	}, db)
 
+	// Initialize our tool
 	listDocuments := tool.ListDocuments("system1", db)
 
+	// Test(s)
 	expected := `<documents>
   <document name="app/doc1">
   <document name="app/doc2">

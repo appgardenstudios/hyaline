@@ -35,8 +35,10 @@ func TestGetFile(t *testing.T) {
 		RawData:  "file3 contents",
 	}, db)
 
+	// Initialize our tool
 	listFiles := tool.GetFile("system1", db)
 
+	// Test(s)
 	expected := `<file>
   <file_name>app/file1</file_name>
   <file_content>
