@@ -11,8 +11,6 @@ import (
 	"strings"
 )
 
-// TODO type PurposeResult struct
-
 const checkPurposeMatch = "purpose_match"
 
 type checkPurposeMatchSchema struct {
@@ -32,26 +30,24 @@ func Purpose(systemID string, documentationID string, document string, section [
 	systemPrompt := "You are a senior technical writer who writes clear and accurate system documentation."
 	var prompt strings.Builder
 
-	// Document/Section Contents
+	// Document/Section Info/Contents
+	documentName := fmt.Sprintf("%s/%s", documentationID, document)
 	tagName := "document"
-	name := document
+	name := documentName
 	if len(section) > 0 {
 		tagName = "section"
 		name = section[len(section)-1]
+		prompt.WriteString(fmt.Sprintf("This section belongs to the document %s.\n", documentName))
 	}
-	if len(section) == 0 {
-		prompt.WriteString(fmt.Sprintf("The contents of the %s are give in <%s>", tagName, tagName))
-		prompt.WriteString(fmt.Sprintf("<%s>\n", tagName))
-		prompt.WriteString(fmt.Sprintf("  <%s_name>%s</%s_name>\n", tagName, name, tagName))
-		prompt.WriteString(fmt.Sprintf("  <%s_content>\n", tagName))
-		prompt.WriteString(contents)
-		prompt.WriteString("\n")
-		prompt.WriteString(fmt.Sprintf("  </%s_content>\n", tagName))
-		prompt.WriteString(fmt.Sprintf("</%s>\n", tagName))
-		prompt.WriteString("\n\n")
-	}
-	// If section, list what document it is a part of
-	// TODO
+	prompt.WriteString(fmt.Sprintf("The contents of the %s are give in <%s>.\n\n", tagName, tagName))
+	prompt.WriteString(fmt.Sprintf("<%s>\n", tagName))
+	prompt.WriteString(fmt.Sprintf("  <%s_name>%s</%s_name>\n", tagName, name, tagName))
+	prompt.WriteString(fmt.Sprintf("  <%s_content>\n", tagName))
+	prompt.WriteString(contents)
+	prompt.WriteString("\n")
+	prompt.WriteString(fmt.Sprintf("  </%s_content>\n", tagName))
+	prompt.WriteString(fmt.Sprintf("</%s>\n", tagName))
+	prompt.WriteString("\n\n")
 
 	// Purpose
 	prompt.WriteString(fmt.Sprintf("The purpose of this %s should be \"%s\".\n\n", tagName, purpose))
@@ -117,7 +113,7 @@ func Purpose(systemID string, documentationID string, document string, section [
 
 	// Call LLM
 	userPrompt := prompt.String()
-	// fmt.Println(userPrompt)
+	fmt.Println(userPrompt)
 	slog.Debug("check.Purpose calling the llm")
 	// slog.Debug("check.Purpose calling the llm", "systemPrompt", systemPrompt, "userPrompt", userPrompt)
 	_, err = llm.CallLLM(systemPrompt, userPrompt, tools, cfg)
