@@ -279,6 +279,41 @@ WHERE
 	return
 }
 
+func GetAllSystemFiles(systemID string, db *sql.DB) (arr []*File, err error) {
+	stmt, err := db.Prepare(`
+SELECT
+  ID, CODE_ID, SYSTEM_ID, ACTION, ORIGINAL_ID, RAW_DATA
+FROM
+  FILE
+WHERE
+  SYSTEM_ID = ?
+ORDER BY
+  CODE_ID, ID
+`)
+	if err != nil {
+		return
+	}
+
+	rows, err := stmt.Query(systemID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var row File
+		if err := rows.Scan(&row.ID, &row.CodeID, &row.SystemID, &row.Action, &row.OriginalID, &row.RawData); err != nil {
+			return arr, err
+		}
+		arr = append(arr, &row)
+	}
+	if err = rows.Err(); err != nil {
+		return arr, err
+	}
+
+	return
+}
+
 type Documentation struct {
 	ID       string
 	SystemID string
@@ -448,6 +483,41 @@ WHERE
 	}
 
 	rows, err := stmt.Query(documentationID, systemID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var row Document
+		if err := rows.Scan(&row.ID, &row.DocumentationID, &row.SystemID, &row.Type, &row.Action, &row.OriginalID, &row.RawData, &row.ExtractedData); err != nil {
+			return arr, err
+		}
+		arr = append(arr, &row)
+	}
+	if err = rows.Err(); err != nil {
+		return arr, err
+	}
+
+	return
+}
+
+func GetAllSystemDocuments(systemID string, db *sql.DB) (arr []*Document, err error) {
+	stmt, err := db.Prepare(`
+SELECT
+  ID, DOCUMENTATION_ID, SYSTEM_ID, TYPE, ACTION, ORIGINAL_ID, RAW_DATA, EXTRACTED_DATA
+FROM
+  DOCUMENT
+WHERE
+  SYSTEM_ID = ?
+ORDER BY
+  DOCUMENTATION_ID, ID
+`)
+	if err != nil {
+		return
+	}
+
+	rows, err := stmt.Query(systemID)
 	if err != nil {
 		return nil, err
 	}

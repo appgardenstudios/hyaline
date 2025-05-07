@@ -162,11 +162,11 @@ func CheckCurrent(args *CheckCurrentArgs) error {
 
 			// Loop through documents
 			for _, ruleDoc := range ruleSet.Documents {
+				doc, found := docMap[ruleDoc.Path]
 				// Check REQUIRED
 				if ruleDoc.Required {
 					result := "PASS"
 					message := ""
-					_, found := docMap[ruleDoc.Path]
 					if !found {
 						result = "ERROR"
 						message = "This document is marked as required"
@@ -191,9 +191,12 @@ func CheckCurrent(args *CheckCurrentArgs) error {
 					message := ""
 					if ruleDoc.Ignore {
 						result = "SKIPPED"
+					} else if !found {
+						result = "ERROR"
+						message = "This document does not exist"
 					} else {
 						if ruleDoc.Purpose != "" {
-							matches, reason, err := check.Purpose()
+							matches, reason, err := check.Purpose(system.ID, docSource.ID, ruleDoc.Path, []string{}, ruleDoc.Purpose, doc.ExtractedData, &cfg.LLM, currentDB)
 							if err != nil {
 								slog.Debug("action.CheckChange could not check purpose for document", "document", ruleDoc.Path, "documentationSource", docSource.ID, "system", args.System, "error", err)
 								return err
@@ -235,7 +238,7 @@ func CheckCurrent(args *CheckCurrentArgs) error {
 					}
 
 					// Check section
-					addtlResults, err := checkCurrentSections(ruleID, system.ID, docSource.ID, ruleDoc.Path, []string{}, ruleDoc.Sections, &sectionMap, &processedSectionMap, args.CheckPurpose)
+					addtlResults, err := checkCurrentSections(ruleID, system.ID, docSource.ID, ruleDoc.Path, []string{}, ruleDoc.Sections, &sectionMap, &processedSectionMap, args.CheckPurpose, &cfg.LLM, currentDB)
 					if err != nil {
 						slog.Debug("action.CheckChange could not check current sections for document", "document", ruleDoc.Path, "documentationSource", docSource.ID, "system", args.System, "error", err)
 						return err
@@ -325,18 +328,19 @@ func CheckCurrent(args *CheckCurrentArgs) error {
 	return nil
 }
 
-func checkCurrentSections(ruleID string, system string, documentationSource string, document string, section []string, ruleDocSections []config.RuleDocumentSection, sectionMap *map[string]*sqlite.Section, processedSectionMap *map[string]string, checkPurpose bool) (results []CheckCurrentOutputEntry, err error) {
+func checkCurrentSections(ruleID string, system string, documentationSource string, document string, sectionArr []string, ruleDocSections []config.RuleDocumentSection, sectionMap *map[string]*sqlite.Section, processedSectionMap *map[string]string, checkPurpose bool, cfg *config.LLM, currentDB *sql.DB) (results []CheckCurrentOutputEntry, err error) {
 	for _, ruleDocSection := range ruleDocSections {
 		currentSection := []string{}
-		currentSection = append(currentSection, section...)
+		currentSection = append(currentSection, sectionArr...)
 		currentSection = append(currentSection, ruleDocSection.ID)
 		sectionID := fmt.Sprintf("%s#%s", document, strings.Join(currentSection, "#"))
+
+		section, found := (*sectionMap)[sectionID]
 
 		// Check REQUIRED
 		if ruleDocSection.Required {
 			result := "PASS"
 			message := ""
-			_, found := (*sectionMap)[sectionID]
 			if !found {
 				result = "ERROR"
 				message = "This section is marked as required"
@@ -362,11 +366,14 @@ func checkCurrentSections(ruleID string, system string, documentationSource stri
 			message := ""
 			if ruleDocSection.Ignore {
 				result = "SKIPPED"
+			} else if !found {
+				result = "ERROR"
+				message = "This section does not exist"
 			} else {
 				if ruleDocSection.Purpose != "" {
 					var matches bool
 					var reason string
-					matches, reason, err = check.Purpose()
+					matches, reason, err = check.Purpose(system, documentationSource, document, currentSection, ruleDocSection.Purpose, section.ExtractedData, cfg, currentDB)
 					if err != nil {
 						return
 					}
@@ -397,7 +404,7 @@ func checkCurrentSections(ruleID string, system string, documentationSource stri
 		// Check sections (if not skipped)
 		if !ruleDocSection.Ignore {
 			var addtlResults []CheckCurrentOutputEntry
-			addtlResults, err = checkCurrentSections(ruleID, system, documentationSource, document, currentSection, ruleDocSection.Sections, sectionMap, processedSectionMap, checkPurpose)
+			addtlResults, err = checkCurrentSections(ruleID, system, documentationSource, document, currentSection, ruleDocSection.Sections, sectionMap, processedSectionMap, checkPurpose, cfg, currentDB)
 			if err != nil {
 				return
 			}
