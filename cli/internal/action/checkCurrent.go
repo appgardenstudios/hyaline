@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"hyaline/internal/check"
 	"hyaline/internal/config"
 	"hyaline/internal/sqlite"
 	"log/slog"
@@ -17,10 +18,11 @@ import (
 )
 
 type CheckCurrentArgs struct {
-	Config  string
-	Current string
-	System  string
-	Output  string
+	Config       string
+	Current      string
+	System       string
+	Output       string
+	CheckPurpose bool
 }
 
 type CheckCurrentOutput struct {
@@ -87,6 +89,7 @@ func CheckCurrent(args *CheckCurrentArgs) error {
 		"current", args.Current,
 		"system", args.System,
 		"output", args.Output,
+		"check-purpose", args.CheckPurpose,
 	))
 
 	// Load Config
@@ -159,11 +162,11 @@ func CheckCurrent(args *CheckCurrentArgs) error {
 
 			// Loop through documents
 			for _, ruleDoc := range ruleSet.Documents {
+				doc, found := docMap[ruleDoc.Path]
 				// Check REQUIRED
 				if ruleDoc.Required {
 					result := "PASS"
 					message := ""
-					_, found := docMap[ruleDoc.Path]
 					if !found {
 						result = "ERROR"
 						message = "This document is marked as required"
@@ -177,6 +180,45 @@ func CheckCurrent(args *CheckCurrentArgs) error {
 						Document:            ruleDoc.Path,
 						Rule:                ruleID,
 						Check:               "REQUIRED",
+						Result:              result,
+						Message:             message,
+					})
+				}
+
+				// Check MATCHES_PURPOSE
+				if args.CheckPurpose {
+					result := "PASS"
+					message := ""
+					if ruleDoc.Ignore {
+						result = "SKIPPED"
+					} else if !found {
+						result = "ERROR"
+						message = "This document does not exist"
+					} else {
+						if ruleDoc.Purpose != "" {
+							matches, reason, err := check.Purpose(system.ID, docSource.ID, ruleDoc.Path, []string{}, ruleDoc.Purpose, doc.ExtractedData, &cfg.LLM, currentDB)
+							if err != nil {
+								slog.Debug("action.CheckChange could not check purpose for document", "document", ruleDoc.Path, "documentationSource", docSource.ID, "system", args.System, "error", err)
+								return err
+							}
+							if !matches {
+								result = "ERROR"
+								message = fmt.Sprintf("This document does not match it's purpose. %s", reason)
+							} else {
+								message = fmt.Sprintf("This document does match it's purpose. %s", reason)
+							}
+						} else {
+							result = "WARN"
+							message = "This document does not have a purpose"
+						}
+					}
+
+					output.Results = append(output.Results, CheckCurrentOutputEntry{
+						System:              system.ID,
+						DocumentationSource: docSource.ID,
+						Document:            ruleDoc.Path,
+						Rule:                ruleID,
+						Check:               "MATCHES_PURPOSE",
 						Result:              result,
 						Message:             message,
 					})
@@ -196,7 +238,12 @@ func CheckCurrent(args *CheckCurrentArgs) error {
 					}
 
 					// Check section
-					output.Results = append(output.Results, checkCurrentSections(ruleID, system.ID, docSource.ID, ruleDoc.Path, []string{}, ruleDoc.Sections, &sectionMap, &processedSectionMap)...)
+					addtlResults, err := checkCurrentSections(ruleID, system.ID, docSource.ID, ruleDoc.Path, []string{}, ruleDoc.Sections, &sectionMap, &processedSectionMap, args.CheckPurpose, &cfg.LLM, currentDB)
+					if err != nil {
+						slog.Debug("action.CheckChange could not check current sections for document", "document", ruleDoc.Path, "documentationSource", docSource.ID, "system", args.System, "error", err)
+						return err
+					}
+					output.Results = append(output.Results, addtlResults...)
 				}
 
 				// Mark doc as processed
@@ -281,18 +328,19 @@ func CheckCurrent(args *CheckCurrentArgs) error {
 	return nil
 }
 
-func checkCurrentSections(ruleID string, system string, documentationSource string, document string, section []string, ruleDocSections []config.RuleDocumentSection, sectionMap *map[string]*sqlite.Section, processedSectionMap *map[string]string) (results []CheckCurrentOutputEntry) {
+func checkCurrentSections(ruleID string, system string, documentationSource string, document string, sectionArr []string, ruleDocSections []config.RuleDocumentSection, sectionMap *map[string]*sqlite.Section, processedSectionMap *map[string]string, checkPurpose bool, cfg *config.LLM, currentDB *sql.DB) (results []CheckCurrentOutputEntry, err error) {
 	for _, ruleDocSection := range ruleDocSections {
 		currentSection := []string{}
-		currentSection = append(currentSection, section...)
+		currentSection = append(currentSection, sectionArr...)
 		currentSection = append(currentSection, ruleDocSection.ID)
 		sectionID := fmt.Sprintf("%s#%s", document, strings.Join(currentSection, "#"))
+
+		section, found := (*sectionMap)[sectionID]
 
 		// Check REQUIRED
 		if ruleDocSection.Required {
 			result := "PASS"
 			message := ""
-			_, found := (*sectionMap)[sectionID]
 			if !found {
 				result = "ERROR"
 				message = "This section is marked as required"
@@ -312,9 +360,55 @@ func checkCurrentSections(ruleID string, system string, documentationSource stri
 			})
 		}
 
+		// Check MATCHES_PURPOSE
+		if checkPurpose {
+			result := "PASS"
+			message := ""
+			if ruleDocSection.Ignore {
+				result = "SKIPPED"
+			} else if !found {
+				result = "ERROR"
+				message = "This section does not exist"
+			} else {
+				if ruleDocSection.Purpose != "" {
+					var matches bool
+					var reason string
+					matches, reason, err = check.Purpose(system, documentationSource, document, currentSection, ruleDocSection.Purpose, section.ExtractedData, cfg, currentDB)
+					if err != nil {
+						return
+					}
+					if !matches {
+						result = "ERROR"
+						message = fmt.Sprintf("This section does not match it's purpose. %s", reason)
+					} else {
+						message = fmt.Sprintf("This section does match it's purpose. %s", reason)
+					}
+				} else {
+					result = "WARN"
+					message = "This section does not have a purpose"
+				}
+			}
+
+			results = append(results, CheckCurrentOutputEntry{
+				System:              system,
+				DocumentationSource: documentationSource,
+				Document:            document,
+				Section:             currentSection,
+				Rule:                ruleID,
+				Check:               "MATCHES_PURPOSE",
+				Result:              result,
+				Message:             message,
+			})
+		}
+
 		// Check sections (if not skipped)
 		if !ruleDocSection.Ignore {
-			results = append(results, checkCurrentSections(ruleID, system, documentationSource, document, currentSection, ruleDocSection.Sections, sectionMap, processedSectionMap)...)
+			var addtlResults []CheckCurrentOutputEntry
+			addtlResults, err = checkCurrentSections(ruleID, system, documentationSource, document, currentSection, ruleDocSection.Sections, sectionMap, processedSectionMap, checkPurpose, cfg, currentDB)
+			if err != nil {
+				return
+			}
+			results = append(results, addtlResults...)
 		}
 
 		// Mark section as processed

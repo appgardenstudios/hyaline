@@ -90,6 +90,10 @@ func Check(logLevel *slog.LevelVar) *cli.Command {
 						Required: true,
 						Usage:    "Path to write the results to",
 					},
+					&cli.BoolFlag{
+						Name:  "check-purpose",
+						Usage: "Call the llm to check that the purpose of the document/section matches the content",
+					},
 				},
 				Action: func(cCtx *cli.Context) error {
 					// Set log level
@@ -99,10 +103,11 @@ func Check(logLevel *slog.LevelVar) *cli.Command {
 
 					// Execute action
 					err := action.CheckCurrent(&action.CheckCurrentArgs{
-						Config:  cCtx.String("config"),
-						Current: cCtx.String("current"),
-						System:  cCtx.String("system"),
-						Output:  cCtx.String("output"),
+						Config:       cCtx.String("config"),
+						Current:      cCtx.String("current"),
+						System:       cCtx.String("system"),
+						Output:       cCtx.String("output"),
+						CheckPurpose: cCtx.Bool("check-purpose"),
 					})
 					if err != nil {
 						return cli.Exit(err.Error(), 1)
