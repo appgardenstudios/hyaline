@@ -24,18 +24,15 @@ The following concepts are important to understand before talking about Hyaline.
 
 ### Product
 A product is any discrete set of features delivered to a set of users. It is defined recursively so that a product may be made up of one or more products, and a product may belong to a larger product.
-TODO look up definition
 
 ### System
 A system is any discrete set of components, either built in-house, purchased, or otherwise used by an organization to deliver one or more products. It is defined recursively such that a system can be composed of one or more systems, and a system may belong to a larger system.
-TODO look up definition
-
-### Process
-A process is any discrete set of tasks that are completed to TODO
-TODO look up definition 
 
 ### Person/People
 A person is any individual within the organization. People is a discrete set of persons within an organization.
+
+### Process
+A process is any discrete set of tasks that are completed to accomplish a goal. Processes are used by people to build and maintain products and systems.
 
 ### Team
 A team is a set of people that use processes to build, maintain, and ship one or more products and/or systems.
