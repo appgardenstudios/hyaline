@@ -2,6 +2,8 @@
 title: Hyaline
 purpose: Explain the overall data flow and architecture of Hyaline
 ---
+TODO: figure out Use/Update documentation verbiage and consider dropping create/read
+
 # Introduction
 Hyaline is intended to help software development teams establish? and use documentation to build and maintain their products. To that end Hyaline has two primary objectives: 1) help teams create, update, and maintain their documentation so that they can 2) use their documentation to create, maintain, and ship their products.
 
@@ -17,32 +19,90 @@ And now consider the following use cases that Hyaline is not intended to support
 * Creating and/or updating documentation without human involvement - Hyaline is intended to _augment_ team members, not replace them.
 * TODO other use cases?
 
+## Concepts
+The following concepts are important to understand before talking about Hyaline.
 
+### Product
+A product is any discrete set of features delivered to a set of users. It is defined recursively so that a product may be made up of one or more products, and a product may belong to a larger product.
+TODO look up definition
 
+### System
+A system is any discrete set of components, either built in-house, purchased, or otherwise used by an organization to deliver one or more products. It is defined recursively such that a system can be composed of one or more systems, and a system may belong to a larger system.
+TODO look up definition
 
+### Process
+A process is any discrete set of tasks that are completed to TODO
+TODO look up definition 
 
+### Person/People
+A person is any individual within the organization. People is a discrete set of persons within an organization.
 
+### Team
+A team is a set of people that use processes to build, maintain, and ship one or more products and/or systems.
 
+TODO image
 
-* Introduction - The purpose of hyaline, what Hyaline is and is not
-* Use Cases - What use cases Hyaline is and is not intended to support
-* Concepts - The Concepts and terminology used by Hyaline
-  * System
-  * Product
-  * Process
-  * Person
-  * Team
-* Data Flow - Conceptual data flow(s) supported by Hyaline
-  * User/AI -> Updates -> Documentation -> Reads -> User/AI
-  * Update Documentation (extract current, extract/check change)
-  * Use Documentation (extract current, merge, MCP server)
-* Components - Document the core components of Hyaline
-  * Image on top and then (1) style references to documentation below for each component. More detailed than the 3 data flows above.
-  * Components
-    * Documentation
-    * Code
-    * Metadata
-    * Extract
-    * Data Set (Current & Change)
-    * Config
-    * Results of check
+# Workflow
+Hyaline is built to support the conceptual workflow as follows:
+
+TODO image: User/AI -> Updates -> Documentation -> Reads -> User/AI
+
+In this workflow people, assisted by AI, build products and systems. While doing so they create and update Documentation. That documentation is then read and used by people to build products and systems, and the cycle continues. Hyaline sits in between People/AI and Documentation, and is intended to assist in both creating/updating documentation and reading/using documentation to build products and systems.
+
+## Use Documentation
+Zooming in a bit on the People/AU using Documentation part of the diagram above, we see the following:
+
+TODO image
+
+IM the image above you can see the Hyaline extracts code, documentation, and other metadata from a variety of sources. Each system can have multiple code and documentation sources, and Hyaline supports an unlimited number of systems. In the future Hyaline will also support pulling product, process, and team documentation and metadata.
+
+The result of this extraction is a current data set containing the organization's code, documentation, and other metadata. This current data set is stored as a single sqlite database, making it useful for Hyaline as well as other organizational uses.
+
+Hyaline then has the ability to use this current data source to provide an MCP server. This MCP server provides a set of tools that can be used by AI assistants to read, search, and enumerate documentation and other organizational metadata. That means that you can setup Hyaline to extract all of your organization's documentation and provide an MCP server to your organization that always has the laters internal documentation and metadata.
+
+## Update Documentation
+Zooming in a bit on the People/AI updating Documentation part of the diagram above, we see the following:
+
+TODO image
+
+In the image above you can see that Hyaline looks at system changes to determine what documentation should be updated. It does this by extracting the change and associated metadata (tickets, issues, PRs, etc.) and then determining what documentation in your current documentation needs to be updated. It then makes those results available in your existing processes (usually via a comment on your PR) and helps both people and AI make the appropriate changes to the appropriate documentation both inside and outside the repository.
+
+# Components
+The following items are components of Hyaline:
+
+TODO Image on top and then (1) style references to documentation below for each component. More detailed than the 3 data flows above.
+
+## Documentation
+Your organization's documentation. It can be plain text, markdown, or html, and can be extracted from a file system, git repo, or HTTP(s) server.
+
+## Code
+Your organization's code. It can be extracted from a file system or git repo.
+
+## Metadata
+Your organization's metadata, such as issues and pull requests. They can be extracted from GitHub at the moment, but there are plans to support a wider range of sources in the future.
+
+## System
+A conceptual boundary or unit that can contain any number of code and documentation sources. A system is the primary unit of operation within Hyaline, and there are no limits to the number of systems you can have. It is up to you and your team to split up your code and documentation in a way that makes the most sense to you.
+
+## Extract
+The process of extracting code, documentation, and other metadata from their respective sources. This extraction process results in a Data Set stored in an SQLite database that can be used by Hyaline or other processes that need access to the code, documentation, and other metadata. TODO link to `hyaline extract current` and `hyaline extract change`
+
+## Data Set (Current & Change)
+The result of an extraction, the Data Set holds all of the extracted code, documentation, and other metadata. It consists of a single SQLite database. TODO link to Data Set reference.
+
+## Config
+The configuration that Hyaline uses. It is currently supplied via a yaml file. TODO link to config reference
+
+## Check
+The process of checking either a specific change or an entire set of documentation for issues, recommendations, or suggestions. This produces one or more results with information specific to the actual check that was performed.
+
+* TODO link to `hyaline check current`
+* TODO link to `hyaline check change`
+
+## Result(s)
+The outcome of a check, the result holds actionable information on what was found and how to address it.
+
+* TODO link to results reference(s)
+
+# Next Steps
+Continue reading about various Hyaline concepts such as TODO link to Explanation of Extract Current, or get started by TODO link to How To Install CLI
