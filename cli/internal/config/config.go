@@ -257,9 +257,14 @@ type DocumentSection struct {
 }
 
 type UpdateIf struct {
-	Touched  []string `yaml:"touched,omitempty"`
-	Added    []string `yaml:"added,omitempty"`
-	Modified []string `yaml:"modified,omitempty"`
-	Deleted  []string `yaml:"deleted,omitempty"`
-	Renamed  []string `yaml:"renamed,omitempty"`
+	Touched  []UpdateIfOptions `yaml:"touched,omitempty"`
+	Added    []UpdateIfOptions `yaml:"added,omitempty"`
+	Modified []UpdateIfOptions `yaml:"modified,omitempty"`
+	Deleted  []UpdateIfOptions `yaml:"deleted,omitempty"`
+	Renamed  []UpdateIfOptions `yaml:"renamed,omitempty"`
+}
+
+type UpdateIfOptions struct {
+	CodeSource string `yaml:"codeID,omitempty"`
+	Glob       string `yaml:"glob,omitempty"`
 }

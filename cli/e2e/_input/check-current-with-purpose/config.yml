@@ -71,4 +71,5 @@ commonDocuments:
           - id: Running Locally
             required: true
             updateIf:
-              modified: [subdir/*.js]
+              modified:
+                - glob: subdir/*.js

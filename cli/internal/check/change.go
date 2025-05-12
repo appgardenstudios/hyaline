@@ -73,7 +73,7 @@ func Change(file *sqlite.File, codeSource config.CodeSource, desiredDocsMap map[
 	results = append(results, llmResults...)
 
 	// Check updateIfs
-	results = append(results, checkUpdateIfs(file.ID, file.OriginalID, file.Action, desiredDocsMap)...)
+	results = append(results, checkUpdateIfs(file.ID, file.OriginalID, file.Action, file.CodeID, desiredDocsMap)...)
 
 	// Loop through and add reference
 	for idx := range results {
@@ -386,24 +386,29 @@ func formatSections(sections []config.DocumentSection, prefix string, parents []
 	return str.String()
 }
 
-func checkUpdateIfs(id string, originalID string, action sqlite.Action, desiredDocsMap map[string][]config.Document) (results []ChangeResult) {
+func checkUpdateIfs(id string, originalID string, action sqlite.Action, codeID string, desiredDocsMap map[string][]config.Document) (results []ChangeResult) {
 	for docSource, desiredDocs := range desiredDocsMap {
 		for _, desiredDoc := range desiredDocs {
 			// Check touched
-			for _, glob := range desiredDoc.UpdateIf.Touched {
-				if doublestar.MatchUnvalidated(glob, id) {
+			for _, updateIf := range desiredDoc.UpdateIf.Touched {
+				// Skip if codeID is not a match
+				if !updateIfCodeSourceMatch(updateIf.CodeSource, codeID) {
+					continue
+				}
+
+				if doublestar.MatchUnvalidated(updateIf.Glob, id) {
 					results = append(results, ChangeResult{
 						DocumentationSource: docSource,
 						Document:            desiredDoc.Path,
 						Section:             []string{},
-						Reasons:             []string{fmt.Sprintf("Update this document if any files matching %s were touched", glob)},
+						Reasons:             []string{fmt.Sprintf("Update this document if any files matching %s were touched", updateIf.Glob)},
 					})
-				} else if originalID != "" && doublestar.MatchUnvalidated(glob, originalID) {
+				} else if originalID != "" && doublestar.MatchUnvalidated(updateIf.Glob, originalID) {
 					results = append(results, ChangeResult{
 						DocumentationSource: docSource,
 						Document:            desiredDoc.Path,
 						Section:             []string{},
-						Reasons:             []string{fmt.Sprintf("Update this document if any files matching %s were touched (%s was renamed to %s)", glob, originalID, id)},
+						Reasons:             []string{fmt.Sprintf("Update this document if any files matching %s were touched (%s was renamed to %s)", updateIf.Glob, originalID, id)},
 					})
 				}
 			}
@@ -411,83 +416,105 @@ func checkUpdateIfs(id string, originalID string, action sqlite.Action, desiredD
 			switch action {
 			case sqlite.ActionInsert:
 				// Check added
-				for _, glob := range desiredDoc.UpdateIf.Added {
-					if doublestar.MatchUnvalidated(glob, id) {
+				for _, updateIf := range desiredDoc.UpdateIf.Added {
+					// Skip if codeID is not a match
+					if !updateIfCodeSourceMatch(updateIf.CodeSource, codeID) {
+						continue
+					}
+					if doublestar.MatchUnvalidated(updateIf.Glob, id) {
 						results = append(results, ChangeResult{
 							DocumentationSource: docSource,
 							Document:            desiredDoc.Path,
 							Section:             []string{},
-							Reasons:             []string{fmt.Sprintf("Update this document if any files matching %s were added", glob)},
+							Reasons:             []string{fmt.Sprintf("Update this document if any files matching %s were added", updateIf.Glob)},
 						})
 					}
 				}
 			case sqlite.ActionModify:
 				// Check modified
-				for _, glob := range desiredDoc.UpdateIf.Modified {
-					if doublestar.MatchUnvalidated(glob, id) {
+				for _, updateIf := range desiredDoc.UpdateIf.Modified {
+					// Skip if codeID is not a match
+					if !updateIfCodeSourceMatch(updateIf.CodeSource, codeID) {
+						continue
+					}
+
+					if doublestar.MatchUnvalidated(updateIf.Glob, id) {
 						results = append(results, ChangeResult{
 							DocumentationSource: docSource,
 							Document:            desiredDoc.Path,
 							Section:             []string{},
-							Reasons:             []string{fmt.Sprintf("Update this document if any files matching %s were modified", glob)},
+							Reasons:             []string{fmt.Sprintf("Update this document if any files matching %s were modified", updateIf.Glob)},
 						})
 					}
 				}
 			case sqlite.ActionRename:
 				// Check renamed
-				for _, glob := range desiredDoc.UpdateIf.Renamed {
-					if doublestar.MatchUnvalidated(glob, id) || doublestar.MatchUnvalidated(glob, originalID) {
+				for _, updateIf := range desiredDoc.UpdateIf.Renamed {
+					// Skip if codeID is not a match
+					if !updateIfCodeSourceMatch(updateIf.CodeSource, codeID) {
+						continue
+					}
+					if doublestar.MatchUnvalidated(updateIf.Glob, id) || doublestar.MatchUnvalidated(updateIf.Glob, originalID) {
 						results = append(results, ChangeResult{
 							DocumentationSource: docSource,
 							Document:            desiredDoc.Path,
 							Section:             []string{},
-							Reasons:             []string{fmt.Sprintf("Update this document if any files matching %s were renamed (%s was renamed to %s)", glob, id, originalID)},
+							Reasons:             []string{fmt.Sprintf("Update this document if any files matching %s were renamed (%s was renamed to %s)", updateIf.Glob, id, originalID)},
 						})
 					}
 				}
 			case sqlite.ActionDelete:
 				// Check deleted
-				for _, glob := range desiredDoc.UpdateIf.Deleted {
-					if doublestar.MatchUnvalidated(glob, id) {
+				for _, updateIf := range desiredDoc.UpdateIf.Deleted {
+					// Skip if codeID is not a match
+					if !updateIfCodeSourceMatch(updateIf.CodeSource, codeID) {
+						continue
+					}
+					if doublestar.MatchUnvalidated(updateIf.Glob, id) {
 						results = append(results, ChangeResult{
 							DocumentationSource: docSource,
 							Document:            desiredDoc.Path,
 							Section:             []string{},
-							Reasons:             []string{fmt.Sprintf("Update this document if any files matching %s were deleted", glob)},
+							Reasons:             []string{fmt.Sprintf("Update this document if any files matching %s were deleted", updateIf.Glob)},
 						})
 					}
 				}
 			}
 
 			// Check sections
-			results = append(results, checkSectionUpdateIfs(id, originalID, action, docSource, desiredDoc.Path, desiredDoc.Sections, []string{})...)
+			results = append(results, checkSectionUpdateIfs(id, originalID, action, codeID, docSource, desiredDoc.Path, desiredDoc.Sections, []string{})...)
 		}
 	}
 
 	return
 }
 
-func checkSectionUpdateIfs(id string, originalID string, action sqlite.Action, docSource string, document string, sections []config.DocumentSection, parents []string) (results []ChangeResult) {
+func checkSectionUpdateIfs(id string, originalID string, action sqlite.Action, codeID string, docSource string, document string, sections []config.DocumentSection, parents []string) (results []ChangeResult) {
 	for _, section := range sections {
 		sectionArr := []string{}
 		sectionArr = append(sectionArr, parents...)
 		sectionArr = append(sectionArr, section.ID)
 
 		// Check touched
-		for _, glob := range section.UpdateIf.Touched {
-			if doublestar.MatchUnvalidated(glob, id) {
+		for _, updateIf := range section.UpdateIf.Touched {
+			// Skip if codeID is not a match
+			if !updateIfCodeSourceMatch(updateIf.CodeSource, codeID) {
+				continue
+			}
+
+			if doublestar.MatchUnvalidated(updateIf.Glob, id) {
 				results = append(results, ChangeResult{
 					DocumentationSource: docSource,
 					Document:            document,
 					Section:             sectionArr,
-					Reasons:             []string{fmt.Sprintf("Update this section if any files matching %s were touched", glob)},
+					Reasons:             []string{fmt.Sprintf("Update this section if any files matching %s were touched", updateIf.Glob)},
 				})
-			} else if originalID != "" && doublestar.MatchUnvalidated(glob, originalID) {
+			} else if originalID != "" && doublestar.MatchUnvalidated(updateIf.Glob, originalID) {
 				results = append(results, ChangeResult{
 					DocumentationSource: docSource,
 					Document:            document,
 					Section:             sectionArr,
-					Reasons:             []string{fmt.Sprintf("Update this section if any files matching %s were touched (%s was renamed to %s)", glob, originalID, id)},
+					Reasons:             []string{fmt.Sprintf("Update this section if any files matching %s were touched (%s was renamed to %s)", updateIf.Glob, originalID, id)},
 				})
 			}
 		}
@@ -495,57 +522,84 @@ func checkSectionUpdateIfs(id string, originalID string, action sqlite.Action, d
 		switch action {
 		case sqlite.ActionInsert:
 			// Check added
-			for _, glob := range section.UpdateIf.Added {
-				if doublestar.MatchUnvalidated(glob, id) {
+			for _, updateIf := range section.UpdateIf.Added {
+				// Skip if codeID is not a match
+				if !updateIfCodeSourceMatch(updateIf.CodeSource, codeID) {
+					continue
+				}
+				if doublestar.MatchUnvalidated(updateIf.Glob, id) {
 					results = append(results, ChangeResult{
 						DocumentationSource: docSource,
 						Document:            document,
 						Section:             sectionArr,
-						Reasons:             []string{fmt.Sprintf("Update this section if any files matching %s were added", glob)},
+						Reasons:             []string{fmt.Sprintf("Update this section if any files matching %s were added", updateIf.Glob)},
 					})
 				}
 			}
 		case sqlite.ActionModify:
 			// Check modified
-			for _, glob := range section.UpdateIf.Modified {
-				if doublestar.MatchUnvalidated(glob, id) {
+			for _, updateIf := range section.UpdateIf.Modified {
+				// Skip if codeID is not a match
+				if !updateIfCodeSourceMatch(updateIf.CodeSource, codeID) {
+					continue
+				}
+
+				if doublestar.MatchUnvalidated(updateIf.Glob, id) {
 					results = append(results, ChangeResult{
 						DocumentationSource: docSource,
 						Document:            document,
 						Section:             sectionArr,
-						Reasons:             []string{fmt.Sprintf("Update this section if any files matching %s were modified", glob)},
+						Reasons:             []string{fmt.Sprintf("Update this section if any files matching %s were modified", updateIf.Glob)},
 					})
 				}
 			}
 		case sqlite.ActionRename:
 			// Check renamed
-			for _, glob := range section.UpdateIf.Renamed {
-				if doublestar.MatchUnvalidated(glob, id) || doublestar.MatchUnvalidated(glob, originalID) {
+			for _, updateIf := range section.UpdateIf.Renamed {
+				// Skip if codeID is not a match
+				if !updateIfCodeSourceMatch(updateIf.CodeSource, codeID) {
+					continue
+				}
+
+				if doublestar.MatchUnvalidated(updateIf.Glob, id) || doublestar.MatchUnvalidated(updateIf.Glob, originalID) {
 					results = append(results, ChangeResult{
 						DocumentationSource: docSource,
 						Document:            document,
 						Section:             sectionArr,
-						Reasons:             []string{fmt.Sprintf("Update this section if any files matching %s were renamed (%s was renamed to %s)", glob, id, originalID)},
+						Reasons:             []string{fmt.Sprintf("Update this section if any files matching %s were renamed (%s was renamed to %s)", updateIf.Glob, id, originalID)},
 					})
 				}
 			}
 		case sqlite.ActionDelete:
 			// Check deleted
-			for _, glob := range section.UpdateIf.Deleted {
-				if doublestar.MatchUnvalidated(glob, id) {
+			for _, updateIf := range section.UpdateIf.Deleted {
+				// Skip if codeID is not a match
+				if !updateIfCodeSourceMatch(updateIf.CodeSource, codeID) {
+					continue
+				}
+
+				if doublestar.MatchUnvalidated(updateIf.Glob, id) {
 					results = append(results, ChangeResult{
 						DocumentationSource: docSource,
 						Document:            document,
 						Section:             sectionArr,
-						Reasons:             []string{fmt.Sprintf("Update this section if any files matching %s were deleted", glob)},
+						Reasons:             []string{fmt.Sprintf("Update this section if any files matching %s were deleted", updateIf.Glob)},
 					})
 				}
 			}
 		}
 
 		// Check sections
-		results = append(results, checkSectionUpdateIfs(id, originalID, action, docSource, document, section.Sections, sectionArr)...)
+		results = append(results, checkSectionUpdateIfs(id, originalID, action, codeID, docSource, document, section.Sections, sectionArr)...)
 	}
 
 	return
+}
+
+func updateIfCodeSourceMatch(updateIfID string, codeID string) bool {
+	if updateIfID == "" || updateIfID == "*" {
+		return true
+	}
+
+	return updateIfID == codeID
 }

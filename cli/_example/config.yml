@@ -296,7 +296,8 @@ commonDocuments:
           - id: Running Locally
             required: true
             updateIf:
-              modified: [subdir/*.js]
+              modified:
+                - glob: subdir/*.js
   - id: check-current
     documents:
       - path: docs/subdir.md
@@ -320,4 +321,5 @@ commonDocuments:
           - id: Running Locally
             required: true
             updateIf:
-              modified: [subdir/*.js]
+              modified: 
+                - glob: subdir/*.js
