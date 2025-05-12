@@ -288,7 +288,7 @@ func CheckCurrent(args *CheckCurrentArgs) error {
 				System:              system.ID,
 				DocumentationSource: docSource.ID,
 				Document:            doc.ID,
-				Check:               "RULE_EXISTS",
+				Check:               "DESIRED_DOCUMENT_EXISTS",
 				Result:              result,
 				Message:             message,
 			})
@@ -319,7 +319,7 @@ func CheckCurrent(args *CheckCurrentArgs) error {
 				DocumentationSource: docSource.ID,
 				Document:            sec.ID,
 				Section:             arr[1:], // Split document off of the ID and take what is left, e.g. doc#sec1#sec1.1
-				Check:               "RULE_EXISTS",
+				Check:               "DESIRED_DOCUMENT_EXISTS",
 				Result:              result,
 				Message:             message,
 			})

@@ -4,7 +4,7 @@
       "system": "check-current",
       "documentationSource": "app",
       "document": "README.md",
-      "check": "REQUIRED",
+      "check": "DESIRED_DOCUMENT_EXISTS",
       "result": "PASS",
       "message": ""
     },
@@ -12,7 +12,7 @@
       "system": "check-current",
       "documentationSource": "app",
       "document": "README.md",
-      "check": "RULE_EXISTS",
+      "check": "REQUIRED",
       "result": "PASS",
       "message": ""
     },
@@ -46,7 +46,7 @@
       "section": [
         "Example"
       ],
-      "check": "RULE_EXISTS",
+      "check": "DESIRED_DOCUMENT_EXISTS",
       "result": "PASS",
       "message": ""
     },
@@ -58,7 +58,7 @@
         "Example",
         "Subsection 1"
       ],
-      "check": "RULE_EXISTS",
+      "check": "DESIRED_DOCUMENT_EXISTS",
       "result": "PASS",
       "message": ""
     },
@@ -70,7 +70,7 @@
         "Example",
         "Subsection 2"
       ],
-      "check": "RULE_EXISTS",
+      "check": "DESIRED_DOCUMENT_EXISTS",
       "result": "PASS",
       "message": ""
     },
@@ -78,7 +78,7 @@
       "system": "check-current",
       "documentationSource": "app",
       "document": "docs/docsDoc.md",
-      "check": "RULE_EXISTS",
+      "check": "DESIRED_DOCUMENT_EXISTS",
       "result": "ERROR",
       "message": "Document docs/docsDoc.md does not have a corresponding desired document"
     },
@@ -89,9 +89,17 @@
       "section": [
         "This is a test"
       ],
-      "check": "RULE_EXISTS",
+      "check": "DESIRED_DOCUMENT_EXISTS",
       "result": "ERROR",
       "message": "Section docs/docsDoc.md#This is a test does not have a corresponding desired document section"
+    },
+    {
+      "system": "check-current",
+      "documentationSource": "app",
+      "document": "docs/preDoc.md",
+      "check": "DESIRED_DOCUMENT_EXISTS",
+      "result": "PASS",
+      "message": ""
     },
     {
       "system": "check-current",
@@ -104,19 +112,11 @@
     {
       "system": "check-current",
       "documentationSource": "app",
-      "document": "docs/preDoc.md",
-      "check": "RULE_EXISTS",
-      "result": "PASS",
-      "message": ""
-    },
-    {
-      "system": "check-current",
-      "documentationSource": "app",
       "document": "docs/preDoc.md#A Random Heading",
       "section": [
         "A Random Heading"
       ],
-      "check": "RULE_EXISTS",
+      "check": "DESIRED_DOCUMENT_EXISTS",
       "result": "ERROR",
       "message": "Section docs/preDoc.md#A Random Heading does not have a corresponding desired document section"
     },
