@@ -27,7 +27,7 @@ systems:
           - "./**/*.js"
         exclude:
           - "./**/*.test.js"
-    docs:
+    documentation:
       - id: md-docs
         type: md
         extractor: fs

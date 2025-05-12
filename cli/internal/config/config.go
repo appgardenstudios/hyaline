@@ -60,7 +60,7 @@ type GitHub struct {
 type System struct {
 	ID                   string                `yaml:"id,omitempty"`
 	CodeSources          []CodeSource          `yaml:"code,omitempty"`
-	DocumentationSources []DocumentationSource `yaml:"docs,omitempty"`
+	DocumentationSources []DocumentationSource `yaml:"documentation,omitempty"`
 }
 
 func (s *System) GetDocumentationSource(id string) (doc DocumentationSource, found bool) {

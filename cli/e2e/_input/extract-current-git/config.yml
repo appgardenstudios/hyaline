@@ -29,7 +29,7 @@ systems:
           - "**/*.js"
         exclude:
           - "**/*.test.js"
-    docs:
+    documentation:
       - id: md-ssh
         type: md
         extractor: git

@@ -18,7 +18,7 @@ systems:
           - "**/*.js"
         exclude:
           - "**/*.test.js"
-    docs:
+    documentation:
       - id: md-docs
         type: md
         extractor: fs
@@ -78,7 +78,7 @@ systems:
           - "**/*.js"
         exclude:
           - "**/*.test.js"
-    docs:
+    documentation:
       - id: md-path
         type: md
         extractor: git
@@ -115,7 +115,7 @@ systems:
         include:
           - "**/*.md"
   - id: http
-    docs:
+    documentation:
       - id: http-docs-base
         type: html
         html:
@@ -140,7 +140,7 @@ systems:
         exclude:
           - "docs/irrelevant"
   - id: generate-config
-    docs:
+    documentation:
       - id: md-docs
         type: md
         extractor: fs
@@ -166,7 +166,7 @@ systems:
           - "**/*.js"
         exclude:
           - "**/*.test.js"
-    docs:
+    documentation:
       - id: app
         type: md
         extractor: git
@@ -199,7 +199,7 @@ systems:
           - "**/*.js"
         exclude:
           - "**/*.test.js"
-    docs:
+    documentation:
       - id: app
         type: md
         extractor: git

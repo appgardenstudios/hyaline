@@ -1,6 +1,6 @@
 systems:
   - id: my-app
-    docs:
+    documentation:
       - id: http-docs
         type: html
         html:

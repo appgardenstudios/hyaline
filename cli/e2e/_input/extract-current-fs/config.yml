@@ -10,7 +10,7 @@ systems:
           - "**/*.js"
         exclude:
           - "**/*.test.js"
-    docs:
+    documentation:
       - id: docs
         type: md
         extractor: fs
