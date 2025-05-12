@@ -151,11 +151,11 @@ type CodeSource struct {
 }
 
 type DocumentationSource struct {
-	ID        string         `yaml:"id,omitempty"`
-	Type      DocType        `yaml:"type,omitempty"`
-	HTML      DocHTMLOptions `yaml:"html,omitempty"`
-	Extractor Extractor      `yaml:"extractor,omitempty"`
-	Rules     []string       `yaml:"rules,omitempty"`
+	ID        string                     `yaml:"id,omitempty"`
+	Type      DocType                    `yaml:"type,omitempty"`
+	Options   DocumentationSourceOptions `yaml:"options,omitempty"`
+	Extractor Extractor                  `yaml:"extractor,omitempty"`
+	Rules     []string                   `yaml:"rules,omitempty"`
 }
 
 type DocType string
@@ -178,7 +178,7 @@ const (
 	DocTypeHTML     DocType = "html"
 )
 
-type DocHTMLOptions struct {
+type DocumentationSourceOptions struct {
 	Selector string `yaml:"selector,omitempty"`
 }
 

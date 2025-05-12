@@ -127,7 +127,7 @@ func TestLoad(t *testing.T) {
 				}, {
 					ID:   "html-docs-fs",
 					Type: "html",
-					HTML: DocHTMLOptions{
+					Options: DocumentationSourceOptions{
 						Selector: "main",
 					},
 					Extractor: Extractor{
@@ -140,7 +140,7 @@ func TestLoad(t *testing.T) {
 				}, {
 					ID:   "html-docs-git-http",
 					Type: "html",
-					HTML: DocHTMLOptions{
+					Options: DocumentationSourceOptions{
 						Selector: "main",
 					},
 					Extractor: Extractor{
@@ -163,7 +163,7 @@ func TestLoad(t *testing.T) {
 				}, {
 					ID:   "html-docs-git-ssh",
 					Type: "html",
-					HTML: DocHTMLOptions{
+					Options: DocumentationSourceOptions{
 						Selector: "main",
 					},
 					Extractor: Extractor{

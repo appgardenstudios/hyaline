@@ -3,7 +3,7 @@ systems:
     documentation:
       - id: http-docs
         type: html
-        html:
+        options:
           selector: main
         extractor:
           type: http

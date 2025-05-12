@@ -97,7 +97,7 @@ systems:
             - ./**/*.md
       - id: html-docs-fs
         type: html
-        html:
+        options:
           selector: main
         extractor:
           type: fs
@@ -107,7 +107,7 @@ systems:
             - ./**/*.md
       - id: html-docs-git-http
         type: html
-        html:
+        options:
           selector: main
         extractor:
           type: git
@@ -125,7 +125,7 @@ systems:
             - ./**/*.md
       - id: html-docs-git-ssh
         type: html
-        html:
+        options:
           selector: main
         extractor:
           type: git

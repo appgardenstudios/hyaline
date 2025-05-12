@@ -149,7 +149,7 @@ func ExtractCurrentFs(systemID string, d *config.DocumentationSource, db *sql.DB
 		var extractedData string
 		switch d.Type {
 		case config.DocTypeHTML:
-			extractedData, err = extractHTMLDocument(string(rawData), d.HTML.Selector)
+			extractedData, err = extractHTMLDocument(string(rawData), d.Options.Selector)
 			if err != nil {
 				slog.Debug("docs.ExtractCurrentFs could not extract html document", "error", err, "doc", doc)
 				return err
@@ -228,7 +228,7 @@ func ExtractCurrentGit(systemID string, d *config.DocumentationSource, db *sql.D
 				var extractedData string
 				switch d.Type {
 				case config.DocTypeHTML:
-					extractedData, err = extractHTMLDocument(string(bytes), d.HTML.Selector)
+					extractedData, err = extractHTMLDocument(string(bytes), d.Options.Selector)
 					if err != nil {
 						slog.Debug("docs.ExtractCurrentGit could not extract html document", "error", err, "doc", f.Name)
 						return err
@@ -372,7 +372,7 @@ func ExtractCurrentHttp(systemID string, d *config.DocumentationSource, db *sql.
 		var err error
 		switch d.Type {
 		case config.DocTypeHTML:
-			extractedData, err = extractHTMLDocument(string(r.Body), d.HTML.Selector)
+			extractedData, err = extractHTMLDocument(string(r.Body), d.Options.Selector)
 			if err != nil {
 				slog.Debug("docs.ExtractCurrentGit could not extract html document", "error", err, "doc", path)
 				errs = append(errs, err)

@@ -30,7 +30,7 @@ systems:
             - "**/*.md"
       - id: html-docs
         type: html
-        html:
+        options:
           selector: main
         extractor:
           type: fs
@@ -135,7 +135,7 @@ systems:
     documentation:
       - id: http-docs-base
         type: html
-        html:
+        options:
           selector: main
         extractor:
           type: http
@@ -147,7 +147,7 @@ systems:
             - "irrelevant"
       - id: http-docs-start
         type: html
-        html:
+        options:
           selector: main
         extractor:
           type: http

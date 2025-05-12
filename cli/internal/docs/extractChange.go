@@ -84,7 +84,7 @@ func ExtractChange(system *config.System, head string, base string, db *sql.DB) 
 					var extractedData string
 					switch d.Type {
 					case config.DocTypeHTML:
-						extractedData, err = extractHTMLDocument(string(bytes), d.HTML.Selector)
+						extractedData, err = extractHTMLDocument(string(bytes), d.Options.Selector)
 						if err != nil {
 							slog.Debug("docs.ExtractCurrentFs could not extract html document", "error", err, "doc", change.To.Name)
 							return err
