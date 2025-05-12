@@ -60,7 +60,7 @@ type GitHub struct {
 type System struct {
 	ID                   string                `yaml:"id,omitempty"`
 	CodeSources          []CodeSource          `yaml:"code,omitempty"`
-	DocumentationSources []DocumentationSource `yaml:"docs,omitempty"`
+	DocumentationSources []DocumentationSource `yaml:"documentation,omitempty"`
 }
 
 func (s *System) GetDocumentationSource(id string) (doc DocumentationSource, found bool) {
@@ -73,24 +73,31 @@ func (s *System) GetDocumentationSource(id string) (doc DocumentationSource, fou
 	return
 }
 
-type Extractor string
+type Extractor struct {
+	Type    ExtractorType    `yaml:"type,omitempty"`
+	Options ExtractorOptions `yaml:"options,omitempty"`
+	Include []string         `yaml:"include,omitempty"`
+	Exclude []string         `yaml:"exclude,omitempty"`
+}
 
-func (e Extractor) String() string {
+type ExtractorType string
+
+func (e ExtractorType) String() string {
 	return string(e)
 }
 
-func (e Extractor) IsValidCodeExtractor() bool {
+func (e ExtractorType) IsValidCodeExtractor() bool {
 	switch e {
-	case ExtractorFs, ExtractorGit:
+	case ExtractorTypeFs, ExtractorTypeGit:
 		return true
 	default:
 		return false
 	}
 }
 
-func (e Extractor) IsValidDocExtractor() bool {
+func (e ExtractorType) IsValidDocExtractor() bool {
 	switch e {
-	case ExtractorFs, ExtractorGit, ExtractorHttp:
+	case ExtractorTypeFs, ExtractorTypeGit, ExtractorTypeHttp:
 		return true
 	default:
 		return false
@@ -98,61 +105,57 @@ func (e Extractor) IsValidDocExtractor() bool {
 }
 
 const (
-	ExtractorFs   Extractor = "fs"
-	ExtractorGit  Extractor = "git"
-	ExtractorHttp Extractor = "http"
+	ExtractorTypeFs   ExtractorType = "fs"
+	ExtractorTypeGit  ExtractorType = "git"
+	ExtractorTypeHttp ExtractorType = "http"
 )
 
-type FsOptions struct {
-	Path string `yaml:"path,omitempty"`
-}
-
-type GitOptions struct {
-	Repo     string             `yaml:"repo,omitempty"`
-	Branch   string             `yaml:"branch,omitempty"`
-	Path     string             `yaml:"path,omitempty"`
-	Clone    bool               `yaml:"clone,omitempty"`
-	HTTPAuth GitHTTPAuthOptions `yaml:"httpAuth,omitempty"`
-	SSHAuth  GitSSHAuthOptions  `yaml:"sshAuth,omitempty"`
-}
-
-type HttpOptions struct {
+// Note: there should be a better way rather than crunching everything together
+type ExtractorOptions struct {
+	Path    string            `yaml:"path,omitempty"`
+	Repo    string            `yaml:"repo,omitempty"`
+	Branch  string            `yaml:"branch,omitempty"`
+	Clone   bool              `yaml:"clone,omitempty"`
+	Auth    ExtractorAuth     `yaml:"auth,omitempty"`
 	BaseURL string            `yaml:"baseUrl,omitempty"`
 	Start   string            `yaml:"start,omitempty"`
 	Headers map[string]string `yaml:"headers,omitempty"`
 }
 
-type GitHTTPAuthOptions struct {
-	Username string `yaml:"username,omitempty"`
-	Password string `yaml:"password,omitempty"`
+type ExtractorAuthType string
+
+func (e ExtractorAuthType) String() string {
+	return string(e)
 }
 
-type GitSSHAuthOptions struct {
+const (
+	ExtractorAuthHTTP ExtractorAuthType = "http"
+	ExtractorAuthSSH  ExtractorAuthType = "ssh"
+)
+
+type ExtractorAuth struct {
+	Type    ExtractorAuthType    `yaml:"type,omitempty"`
+	Options ExtractorAuthOptions `yaml:"options,omitempty"`
+}
+
+type ExtractorAuthOptions struct {
+	Username string `yaml:"username,omitempty"`
+	Password string `yaml:"password,omitempty"`
 	User     string `yaml:"user,omitempty"`
 	PEM      string `yaml:"pem,omitempty"`
-	Password string `yaml:"password,omitempty"`
 }
 
 type CodeSource struct {
-	ID         string     `yaml:"id,omitempty"`
-	Extractor  Extractor  `yaml:"extractor,omitempty"`
-	FsOptions  FsOptions  `yaml:"fs,omitempty"`
-	GitOptions GitOptions `yaml:"git,omitempty"`
-	Include    []string   `yaml:"include,omitempty"`
-	Exclude    []string   `yaml:"exclude,omitempty"`
+	ID        string    `yaml:"id,omitempty"`
+	Extractor Extractor `yaml:"extractor,omitempty"`
 }
 
 type DocumentationSource struct {
-	ID          string         `yaml:"id,omitempty"`
-	Type        DocType        `yaml:"type,omitempty"`
-	HTML        DocHTMLOptions `yaml:"html,omitempty"`
-	Extractor   Extractor      `yaml:"extractor,omitempty"`
-	FsOptions   FsOptions      `yaml:"fs,omitempty"`
-	GitOptions  GitOptions     `yaml:"git,omitempty"`
-	HttpOptions HttpOptions    `yaml:"http,omitempty"`
-	Include     []string       `yaml:"include,omitempty"`
-	Exclude     []string       `yaml:"exclude,omitempty"`
-	Rules       []string       `yaml:"rules,omitempty"`
+	ID        string                     `yaml:"id,omitempty"`
+	Type      DocType                    `yaml:"type,omitempty"`
+	Options   DocumentationSourceOptions `yaml:"options,omitempty"`
+	Extractor Extractor                  `yaml:"extractor,omitempty"`
+	Rules     []string                   `yaml:"rules,omitempty"`
 }
 
 type DocType string
@@ -175,7 +178,7 @@ const (
 	DocTypeHTML     DocType = "html"
 )
 
-type DocHTMLOptions struct {
+type DocumentationSourceOptions struct {
 	Selector string `yaml:"selector,omitempty"`
 }
 

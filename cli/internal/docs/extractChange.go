@@ -16,16 +16,16 @@ func ExtractChange(system *config.System, head string, base string, db *sql.DB) 
 	// Process each docs source
 	for _, d := range system.DocumentationSources {
 		// Only extract changed code for git sources
-		if d.Extractor != config.ExtractorGit {
+		if d.Extractor.Type != config.ExtractorTypeGit {
 			slog.Debug("code.ExtractChange skipping non-git code source", "system", system.ID, "doc", d.ID)
 			continue
 		}
 		slog.Debug("docs.ExtractChange extracting docs", "system", system.ID, "doc", d.ID, "head", head, "base", base)
 
 		// Get document path
-		path := d.GitOptions.Path
+		path := d.Extractor.Options.Path
 		if path == "" {
-			path = d.GitOptions.Repo
+			path = d.Extractor.Options.Repo
 		}
 
 		// Insert Documentation
@@ -42,7 +42,7 @@ func ExtractChange(system *config.System, head string, base string, db *sql.DB) 
 
 		// Initialize go-git repo (on disk or in mem)
 		var r *git.Repository
-		r, err = repo.GetRepo(d.GitOptions)
+		r, err = repo.GetRepo(d.Extractor.Options)
 		if err != nil {
 			slog.Debug("code.ExtractChange could not get repo", "error", err)
 			return
@@ -72,7 +72,7 @@ func ExtractChange(system *config.System, head string, base string, db *sql.DB) 
 			case merkletrie.Insert:
 				fallthrough
 			case merkletrie.Modify:
-				if config.PathIsIncluded(change.To.Name, d.Include, d.Exclude) {
+				if config.PathIsIncluded(change.To.Name, d.Extractor.Include, d.Extractor.Exclude) {
 					slog.Debug("docs.ExtractChange inserting document", "document", change.To.Name, "action", action)
 					bytes, err := repo.GetBlobBytes(to.Blob)
 					if err != nil {
@@ -84,7 +84,7 @@ func ExtractChange(system *config.System, head string, base string, db *sql.DB) 
 					var extractedData string
 					switch d.Type {
 					case config.DocTypeHTML:
-						extractedData, err = extractHTMLDocument(string(bytes), d.HTML.Selector)
+						extractedData, err = extractHTMLDocument(string(bytes), d.Options.Selector)
 						if err != nil {
 							slog.Debug("docs.ExtractCurrentFs could not extract html document", "error", err, "doc", change.To.Name)
 							return err
@@ -118,7 +118,7 @@ func ExtractChange(system *config.System, head string, base string, db *sql.DB) 
 					}
 				}
 			case merkletrie.Delete:
-				if config.PathIsIncluded(change.To.Name, d.Include, d.Exclude) {
+				if config.PathIsIncluded(change.To.Name, d.Extractor.Include, d.Extractor.Exclude) {
 					slog.Debug("docs.ExtractChange inserting document", "document", change.From.Name, "action", action)
 					err = sqlite.InsertDocument(sqlite.Document{
 						ID:              change.From.Name,

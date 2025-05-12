@@ -10,210 +10,242 @@ systems:
   - id: local
     code:
       - id: app
-        extractor: fs
-        fs:
-          path: ./_example/
-        include:
-          - package.json
-          - "**/*.js"
-        exclude:
-          - "**/*.test.js"
-    docs:
+        extractor: 
+          type: fs
+          options:
+            path: ./_example/
+          include:
+            - package.json
+            - "**/*.js"
+          exclude:
+            - "**/*.test.js"
+    documentation:
       - id: md-docs
         type: md
-        extractor: fs
-        fs:
-          path: ./_example/
-        include:
-          - "**/*.md"
+        extractor:
+          type: fs
+          options:
+            path: ./_example/
+          include:
+            - "**/*.md"
       - id: html-docs
         type: html
-        html:
+        options:
           selector: main
-        extractor: fs
-        fs:
-          path: ./_example/
-        include:
-          - "**/*.html"
+        extractor:
+          type: fs
+          options:
+            path: ./_example/
+          include:
+            - "**/*.html"
   - id: git
     code:
       - id: app-path
-        extractor: git
-        git:
-          path: ../../hyaline-example/
-          branch: main
-        include:
-          - package.json
-          - "**/*.js"
-        exclude:
-          - "**/*.test.js"
+        extractor:
+          type: git
+          options:
+            path: ../../hyaline-example/
+            branch: main
+          include:
+            - package.json
+            - "**/*.js"
+          exclude:
+            - "**/*.test.js"
       - id: app-ssh
-        extractor: git
-        git:
-          repo: git@github.com:appgardenstudios/hyaline-example.git
-          # path: /Users/johnmclark/code/hyaline-code-ssh
-          branch: main
-          clone: true
-          sshAuth:
-            user: git
-            pem: ${HYALINE_SSH_PEM}
-            password: ${HYALINE_SSH_PASSWORD}
-        include:
-          - package.json
-          - "**/*.js"
-        exclude:
-          - "**/*.test.js"
+        extractor:
+          type: git
+          options:
+            repo: git@github.com:appgardenstudios/hyaline-example.git
+            # path: /Users/johnmclark/code/hyaline-code-ssh
+            branch: main
+            clone: true
+            auth:
+              type: ssh
+              options:
+                user: git
+                pem: ${HYALINE_SSH_PEM}
+                password: ${HYALINE_SSH_PASSWORD}
+          include:
+            - package.json
+            - "**/*.js"
+          exclude:
+            - "**/*.test.js"
       - id: app-http
-        extractor: git
-        git:
-          repo: https://github.com/appgardenstudios/hyaline-example.git
-          # path: /Users/johnmclark/code/hyaline-code-http
-          branch: main
-          clone: true
-          httpAuth:
-            username: git
-            password: ${HYALINE_GITHUB_PAT}
-        include:
-          - package.json
-          - "**/*.js"
-        exclude:
-          - "**/*.test.js"
-    docs:
+        extractor:
+          type: git
+          options:
+            repo: https://github.com/appgardenstudios/hyaline-example.git
+            # path: /Users/johnmclark/code/hyaline-code-http
+            branch: main
+            clone: true
+            auth:
+              type: http
+              options:
+                username: git
+                password: ${HYALINE_GITHUB_PAT}
+          include:
+            - package.json
+            - "**/*.js"
+          exclude:
+            - "**/*.test.js"
+    documentation:
       - id: md-path
         type: md
-        extractor: git
-        git:
-          path: ../../hyaline-example/
-          branch: main
-        include:
-          - "**/*.md"
+        extractor:
+          type: git
+          options:
+            path: ../../hyaline-example/
+            branch: main
+          include:
+            - "**/*.md"
       - id: md-ssh
         type: md
-        extractor: git
-        git:
-          repo: git@github.com:appgardenstudios/hyaline-example.git
-          # path: /Users/johnmclark/code/hyaline-docs-ssh
-          branch: main
-          clone: true
-          sshAuth:
-            user: git
-            pem: ${HYALINE_SSH_PEM}
-            password: ${HYALINE_SSH_PASSWORD}
-        include:
-          - "**/*.md"
+        extractor:
+          type: git
+          options:
+            repo: git@github.com:appgardenstudios/hyaline-example.git
+            # path: /Users/johnmclark/code/hyaline-docs-ssh
+            branch: main
+            clone: true
+            auth:
+              type: http
+              options:
+                user: git
+                pem: ${HYALINE_SSH_PEM}
+                password: ${HYALINE_SSH_PASSWORD}
+          include:
+            - "**/*.md"
       - id: md-http
         type: md
-        extractor: git
-        git:
-          repo: https://github.com/appgardenstudios/hyaline-example.git
-          # path: /Users/johnmclark/code/hyaline-docs-http
-          branch: main
-          clone: true
-          httpAuth:
-            username: git
-            password: ${HYALINE_GITHUB_PAT}
-        include:
-          - "**/*.md"
+        extractor:
+          type: git
+          options:
+            repo: https://github.com/appgardenstudios/hyaline-example.git
+            # path: /Users/johnmclark/code/hyaline-docs-http
+            branch: main
+            clone: true
+            auth:
+              type: http
+              options:
+                username: git
+                password: ${HYALINE_GITHUB_PAT}
+          include:
+            - "**/*.md"
   - id: http
-    docs:
+    documentation:
       - id: http-docs-base
         type: html
-        html:
+        options:
           selector: main
-        extractor: http
-        http:
-          baseUrl: http://localhost:8080/docs
-        include:
-          - "**/*"
-        exclude:
-          - "irrelevant"
+        extractor:
+          type: http
+          options:
+            baseUrl: http://localhost:8080/docs
+          include:
+            - "**/*"
+          exclude:
+            - "irrelevant"
       - id: http-docs-start
         type: html
-        html:
+        options:
           selector: main
-        extractor: http
-        http:
-          baseUrl: http://localhost:8080/
-          start: "./docs"
-        include:
-          - "docs/**/*"
-        exclude:
-          - "docs/irrelevant"
+        extractor:
+          type: http
+          options:
+            baseUrl: http://localhost:8080/
+            start: "./docs"
+          include:
+            - "docs/**/*"
+          exclude:
+            - "docs/irrelevant"
   - id: generate-config
-    docs:
+    documentation:
       - id: md-docs
         type: md
-        extractor: fs
-        fs:
-          path: ./_example/
-        include:
-          - "**/*.md"
+        extractor:
+          type: fs
+          options:
+            path: ./_example/
+          include:
+            - "**/*.md"
         rules: ["basic-repo"]
   - id: check-change
     code:
       - id: app
-        extractor: git
-        git:
-          repo: git@github.com:appgardenstudios/hyaline-example.git
-          branch: main
-          clone: true
-          sshAuth:
-            user: git
-            pem: ${HYALINE_SSH_PEM}
-            password: ${HYALINE_SSH_PASSWORD}
-        include:
-          - package.json
-          - "**/*.js"
-        exclude:
-          - "**/*.test.js"
-    docs:
+        extractor:
+          type: git
+          options:
+            repo: git@github.com:appgardenstudios/hyaline-example.git
+            branch: main
+            clone: true
+            auth:
+              type: ssh
+              options:
+                user: git
+                pem: ${HYALINE_SSH_PEM}
+                password: ${HYALINE_SSH_PASSWORD}
+          include:
+            - package.json
+            - "**/*.js"
+          exclude:
+            - "**/*.test.js"
+    documentation:
       - id: app
         type: md
-        extractor: git
-        git:
-          repo: git@github.com:appgardenstudios/hyaline-example.git
-          # path: /Users/johnmclark/code/hyaline-docs-ssh
-          branch: main
-          clone: true
-          sshAuth:
-            user: git
-            pem: ${HYALINE_SSH_PEM}
-            password: ${HYALINE_SSH_PASSWORD}
-        include:
-          - "**/*.md"
+        extractor:
+          type: git
+          options:
+            repo: git@github.com:appgardenstudios/hyaline-example.git
+            # path: /Users/johnmclark/code/hyaline-docs-ssh
+            branch: main
+            clone: true
+            auth:
+              type: ssh
+              options:
+                user: git
+                pem: ${HYALINE_SSH_PEM}
+                password: ${HYALINE_SSH_PASSWORD}
+          include:
+            - "**/*.md"
         rules: [check-change]
   - id: check-current
     code:
       - id: app
-        extractor: git
-        git:
-          repo: git@github.com:appgardenstudios/hyaline-example.git
-          branch: main
-          clone: true
-          sshAuth:
-            user: git
-            pem: ${HYALINE_SSH_PEM}
-            password: ${HYALINE_SSH_PASSWORD}
-        include:
-          - package.json
-          - "**/*.js"
-        exclude:
-          - "**/*.test.js"
-    docs:
+        extractor:
+          type: git
+          options:
+            repo: git@github.com:appgardenstudios/hyaline-example.git
+            branch: main
+            clone: true
+            auth:
+              type: ssh
+              options:
+                user: git
+                pem: ${HYALINE_SSH_PEM}
+                password: ${HYALINE_SSH_PASSWORD}
+          include:
+            - package.json
+            - "**/*.js"
+          exclude:
+            - "**/*.test.js"
+    documentation:
       - id: app
         type: md
-        extractor: git
-        git:
-          repo: git@github.com:appgardenstudios/hyaline-example.git
-          # path: /Users/johnmclark/code/hyaline-docs-ssh
-          branch: main
-          clone: true
-          sshAuth:
-            user: git
-            pem: ${HYALINE_SSH_PEM}
-            password: ${HYALINE_SSH_PASSWORD}
-        include:
-          - "**/*.md"
+        extractor:
+          type: git
+          options:
+            repo: git@github.com:appgardenstudios/hyaline-example.git
+            # path: /Users/johnmclark/code/hyaline-docs-ssh
+            branch: main
+            clone: true
+            auth:
+              type: ssh
+              options:
+                user: git
+                pem: ${HYALINE_SSH_PEM}
+                password: ${HYALINE_SSH_PASSWORD}
+          include:
+            - "**/*.md"
         rules: [check-current]
 
 rules:

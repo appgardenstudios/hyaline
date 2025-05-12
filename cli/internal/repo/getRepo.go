@@ -12,7 +12,7 @@ import (
 	"github.com/go-git/go-git/v5/storage/memory"
 )
 
-func GetRepo(options config.GitOptions) (r *git.Repository, err error) {
+func GetRepo(options config.ExtractorOptions) (r *git.Repository, err error) {
 	if options.Clone {
 		// Ensure remote repo is passed in
 		if options.Repo == "" {
@@ -24,26 +24,26 @@ func GetRepo(options config.GitOptions) (r *git.Repository, err error) {
 			URL: options.Repo,
 		}
 
-		// Add http auth if password is set
-		if options.HTTPAuth.Password != "" {
+		// Add http auth if set
+		if options.Auth.Type == config.ExtractorAuthHTTP {
 			username := "git"
-			if options.HTTPAuth.Username != "" {
-				username = options.HTTPAuth.Username
+			if options.Auth.Options.Username != "" {
+				username = options.Auth.Options.Username
 			}
 			cloneOptions.Auth = &http.BasicAuth{
 				Username: username,
-				Password: options.HTTPAuth.Password,
+				Password: options.Auth.Options.Password,
 			}
 		}
 
-		// Add ssh auth if PEM is set
-		if options.SSHAuth.PEM != "" {
+		// Add ssh auth if set
+		if options.Auth.Type == config.ExtractorAuthSSH {
 			user := "git"
-			if options.SSHAuth.User != "" {
-				user = options.SSHAuth.User
+			if options.Auth.Options.User != "" {
+				user = options.Auth.Options.User
 			}
 			var keys *ssh.PublicKeys
-			keys, err = ssh.NewPublicKeys(user, []byte(options.SSHAuth.PEM), options.SSHAuth.Password)
+			keys, err = ssh.NewPublicKeys(user, []byte(options.Auth.Options.PEM), options.Auth.Options.Password)
 			if err != nil {
 				slog.Debug("repo.GetRepo could not parse git ssh PEM", "error", err)
 				return

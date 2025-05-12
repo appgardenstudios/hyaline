@@ -8,14 +8,15 @@ github:
 
 systems:
   - id: generate-config
-    docs:
+    documentation:
       - id: md-docs
         type: md
-        extractor: fs
-        fs:
-          path: ./_example/
-        include:
-          - "**/*.md"
+        extractor:
+          type: fs
+          options:
+            path: ./_example/
+          include:
+            - "**/*.md"
         rules: ["basic-repo"]
 
 rules:
