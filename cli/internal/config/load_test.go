@@ -30,7 +30,7 @@ func TestLoad(t *testing.T) {
 						Exclude: []string{"./**/*.test.js"},
 					},
 				}, {
-					ID: "app-git",
+					ID: "app-git-http",
 					Extractor: Extractor{
 						Type: "git",
 						Options: ExtractorOptions{
@@ -38,14 +38,33 @@ func TestLoad(t *testing.T) {
 							Branch: "main",
 							Path:   "my/path",
 							Clone:  true,
-							HTTPAuth: GitHTTPAuthOptions{
-								Username: "bob",
-								Password: "nope",
+							Auth: ExtractorAuth{
+								Type: "http",
+								Options: ExtractorAuthOptions{
+									Username: "bob",
+									Password: "nope",
+								},
 							},
-							SSHAuth: GitSSHAuthOptions{
-								User:     "bob",
-								PEM:      "my-pem",
-								Password: "nope",
+						},
+						Include: []string{"package.json", "./**/*.js"},
+						Exclude: []string{"./**/*.test.js"},
+					},
+				}, {
+					ID: "app-git-ssh",
+					Extractor: Extractor{
+						Type: "git",
+						Options: ExtractorOptions{
+							Repo:   "git@github.com:appgardenstudios/hyaline-example.git",
+							Branch: "main",
+							Path:   "my/path",
+							Clone:  true,
+							Auth: ExtractorAuth{
+								Type: "ssh",
+								Options: ExtractorAuthOptions{
+									User:     "bob",
+									PEM:      "my-pem",
+									Password: "nope",
+								},
 							},
 						},
 						Include: []string{"package.json", "./**/*.js"},
@@ -65,7 +84,7 @@ func TestLoad(t *testing.T) {
 						Include: []string{"./**/*.md"},
 					},
 				}, {
-					ID:   "md-docs-git",
+					ID:   "md-docs-git-http",
 					Type: "md",
 					Extractor: Extractor{
 						Type: "git",
@@ -74,14 +93,33 @@ func TestLoad(t *testing.T) {
 							Branch: "main",
 							Path:   "my/path",
 							Clone:  true,
-							HTTPAuth: GitHTTPAuthOptions{
-								Username: "bob",
-								Password: "nope",
+							Auth: ExtractorAuth{
+								Type: "http",
+								Options: ExtractorAuthOptions{
+									Username: "bob",
+									Password: "nope",
+								},
 							},
-							SSHAuth: GitSSHAuthOptions{
-								User:     "bob",
-								PEM:      "my-pem",
-								Password: "nope",
+						},
+						Include: []string{"./**/*.md"},
+					},
+				}, {
+					ID:   "md-docs-git-ssh",
+					Type: "md",
+					Extractor: Extractor{
+						Type: "git",
+						Options: ExtractorOptions{
+							Repo:   "git@github.com:appgardenstudios/hyaline-example.git",
+							Branch: "main",
+							Path:   "my/path",
+							Clone:  true,
+							Auth: ExtractorAuth{
+								Type: "ssh",
+								Options: ExtractorAuthOptions{
+									User:     "bob",
+									PEM:      "my-pem",
+									Password: "nope",
+								},
 							},
 						},
 						Include: []string{"./**/*.md"},
@@ -100,7 +138,7 @@ func TestLoad(t *testing.T) {
 						Include: []string{"./**/*.md"},
 					},
 				}, {
-					ID:   "html-docs-git",
+					ID:   "html-docs-git-http",
 					Type: "html",
 					HTML: DocHTMLOptions{
 						Selector: "main",
@@ -112,14 +150,36 @@ func TestLoad(t *testing.T) {
 							Branch: "main",
 							Path:   "my/path",
 							Clone:  true,
-							HTTPAuth: GitHTTPAuthOptions{
-								Username: "bob",
-								Password: "nope",
+							Auth: ExtractorAuth{
+								Type: "http",
+								Options: ExtractorAuthOptions{
+									Username: "bob",
+									Password: "nope",
+								},
 							},
-							SSHAuth: GitSSHAuthOptions{
-								User:     "bob",
-								PEM:      "my-pem",
-								Password: "nope",
+						},
+						Include: []string{"./**/*.md"},
+					},
+				}, {
+					ID:   "html-docs-git-ssh",
+					Type: "html",
+					HTML: DocHTMLOptions{
+						Selector: "main",
+					},
+					Extractor: Extractor{
+						Type: "git",
+						Options: ExtractorOptions{
+							Repo:   "git@github.com:appgardenstudios/hyaline-example.git",
+							Branch: "main",
+							Path:   "my/path",
+							Clone:  true,
+							Auth: ExtractorAuth{
+								Type: "ssh",
+								Options: ExtractorAuthOptions{
+									User:     "bob",
+									PEM:      "my-pem",
+									Password: "nope",
+								},
 							},
 						},
 						Include: []string{"./**/*.md"},

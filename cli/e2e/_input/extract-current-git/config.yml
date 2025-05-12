@@ -8,9 +8,11 @@ systems:
             repo: git@github.com:appgardenstudios/hyaline-example.git
             branch: main
             clone: true
-            sshAuth:
-              user: git
-              pem: ${HYALINE_SSH_PEM}
+            auth:
+              type: ssh
+              options:
+                user: git
+                pem: ${HYALINE_SSH_PEM}
           include:
             - package.json
             - "**/*.js"
@@ -23,9 +25,11 @@ systems:
             repo: https://github.com/appgardenstudios/hyaline-example.git
             branch: main
             clone: true
-            httpAuth:
-              username: git
-              password: ${HYALINE_GITHUB_PAT}
+            auth:
+              type: http
+              options:
+                username: git
+                password: ${HYALINE_GITHUB_PAT}
           include:
             - package.json
             - "**/*.js"
@@ -40,9 +44,11 @@ systems:
             repo: git@github.com:appgardenstudios/hyaline-example.git
             branch: main
             clone: true
-            sshAuth:
-              user: git
-              pem: ${HYALINE_SSH_PEM}
+            auth:
+              type: ssh
+              options:
+                user: git
+                pem: ${HYALINE_SSH_PEM}
           include:
             - "**/*.md"
       - id: md-http
@@ -53,8 +59,10 @@ systems:
             repo: https://github.com/appgardenstudios/hyaline-example.git
             branch: main
             clone: true
-            httpAuth:
-              username: git
-              password: ${HYALINE_GITHUB_PAT}
+            auth:
+              type: http
+              options:
+                username: git
+                password: ${HYALINE_GITHUB_PAT}
           include:
             - "**/*.md"

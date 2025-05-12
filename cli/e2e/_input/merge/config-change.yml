@@ -12,10 +12,12 @@ systems:
             # path: /Users/johnmclark/code/hyaline-code-ssh
             branch: main
             clone: true
-            sshAuth:
-              user: git
-              pem: ${HYALINE_SSH_PEM}
-              password: ${HYALINE_SSH_PASSWORD}
+            auth:
+              type: ssh
+              options:
+                user: git
+                pem: ${HYALINE_SSH_PEM}
+                password: ${HYALINE_SSH_PASSWORD}
           include:
             - package.json
             - "**/*.js"
@@ -31,9 +33,11 @@ systems:
             # path: /Users/johnmclark/code/hyaline-docs-ssh
             branch: main
             clone: true
-            sshAuth:
-              user: git
-              pem: ${HYALINE_SSH_PEM}
-              password: ${HYALINE_SSH_PASSWORD}
+            auth:
+              type: ssh
+              options:
+                user: git
+                pem: ${HYALINE_SSH_PEM}
+                password: ${HYALINE_SSH_PASSWORD}
           include:
             - "**/*.md"

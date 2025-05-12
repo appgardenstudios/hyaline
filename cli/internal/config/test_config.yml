@@ -16,7 +16,7 @@ systems:
             - "./**/*.js"
           exclude:
             - "./**/*.test.js"
-      - id: app-git
+      - id: app-git-http
         extractor:
           type: git
           options:
@@ -24,13 +24,30 @@ systems:
             branch: main
             path: my/path
             clone: true
-            httpAuth:
-              username: bob
-              password: nope
-            sshAuth:
-              user: bob
-              pem: my-pem
-              password: nope
+            auth:
+              type: http
+              options:
+                username: bob
+                password: nope
+          include:
+            - package.json
+            - "./**/*.js"
+          exclude:
+            - "./**/*.test.js"
+      - id: app-git-ssh
+        extractor:
+          type: git
+          options:
+            repo: git@github.com:appgardenstudios/hyaline-example.git
+            branch: main
+            path: my/path
+            clone: true
+            auth:
+              type: ssh
+              options:
+                user: bob
+                pem: my-pem
+                password: nope
           include:
             - package.json
             - "./**/*.js"
@@ -45,7 +62,7 @@ systems:
             path: ./
           include: 
             - ./**/*.md
-      - id: md-docs-git
+      - id: md-docs-git-http
         type: md
         extractor:
           type: git
@@ -54,13 +71,28 @@ systems:
             branch: main
             path: my/path
             clone: true
-            httpAuth:
-              username: bob
-              password: nope
-            sshAuth:
-              user: bob
-              pem: my-pem
-              password: nope
+            auth:
+              type: http
+              options:
+                username: bob
+                password: nope
+          include: 
+            - ./**/*.md
+      - id: md-docs-git-ssh
+        type: md
+        extractor:
+          type: git
+          options:
+            repo: git@github.com:appgardenstudios/hyaline-example.git
+            branch: main
+            path: my/path
+            clone: true
+            auth:
+              type: ssh
+              options:
+                user: bob
+                pem: my-pem
+                password: nope
           include: 
             - ./**/*.md
       - id: html-docs-fs
@@ -73,7 +105,7 @@ systems:
             path: ./
           include: 
             - ./**/*.md
-      - id: html-docs-git
+      - id: html-docs-git-http
         type: html
         html:
           selector: main
@@ -84,12 +116,29 @@ systems:
             branch: main
             path: my/path
             clone: true
-            httpAuth:
-              username: bob
-              password: nope
-            sshAuth:
-              user: bob
-              pem: my-pem
-              password: nope
+            auth:
+              type: http
+              options:
+                username: bob
+                password: nope
+          include: 
+            - ./**/*.md
+      - id: html-docs-git-ssh
+        type: html
+        html:
+          selector: main
+        extractor:
+          type: git
+          options:
+            repo: git@github.com:appgardenstudios/hyaline-example.git
+            branch: main
+            path: my/path
+            clone: true
+            auth:
+              type: ssh
+              options:
+                user: bob
+                pem: my-pem
+                password: nope
           include: 
             - ./**/*.md

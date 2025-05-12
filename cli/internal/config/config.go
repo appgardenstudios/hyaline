@@ -110,28 +110,39 @@ const (
 	ExtractorHttp ExtractorType = "http"
 )
 
-// TODO there should be a better way rather than crunching everything together
+// Note: there should be a better way rather than crunching everything together
 type ExtractorOptions struct {
-	Path     string             `yaml:"path,omitempty"`
-	Repo     string             `yaml:"repo,omitempty"`
-	Branch   string             `yaml:"branch,omitempty"`
-	Clone    bool               `yaml:"clone,omitempty"`
-	HTTPAuth GitHTTPAuthOptions `yaml:"httpAuth,omitempty"`
-	SSHAuth  GitSSHAuthOptions  `yaml:"sshAuth,omitempty"`
-	BaseURL  string             `yaml:"baseUrl,omitempty"`
-	Start    string             `yaml:"start,omitempty"`
-	Headers  map[string]string  `yaml:"headers,omitempty"`
+	Path    string            `yaml:"path,omitempty"`
+	Repo    string            `yaml:"repo,omitempty"`
+	Branch  string            `yaml:"branch,omitempty"`
+	Clone   bool              `yaml:"clone,omitempty"`
+	Auth    ExtractorAuth     `yaml:"auth,omitempty"`
+	BaseURL string            `yaml:"baseUrl,omitempty"`
+	Start   string            `yaml:"start,omitempty"`
+	Headers map[string]string `yaml:"headers,omitempty"`
 }
 
-type GitHTTPAuthOptions struct {
+type ExtractorAuthType string
+
+func (e ExtractorAuthType) String() string {
+	return string(e)
+}
+
+const (
+	ExtractorAuthHTTP ExtractorAuthType = "http"
+	ExtractorAuthSSH  ExtractorAuthType = "ssh"
+)
+
+type ExtractorAuth struct {
+	Type    ExtractorAuthType    `yaml:"type,omitempty"`
+	Options ExtractorAuthOptions `yaml:"options,omitempty"`
+}
+
+type ExtractorAuthOptions struct {
 	Username string `yaml:"username,omitempty"`
 	Password string `yaml:"password,omitempty"`
-}
-
-type GitSSHAuthOptions struct {
 	User     string `yaml:"user,omitempty"`
 	PEM      string `yaml:"pem,omitempty"`
-	Password string `yaml:"password,omitempty"`
 }
 
 type CodeSource struct {

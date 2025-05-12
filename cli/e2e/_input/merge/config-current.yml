@@ -23,10 +23,12 @@ systems:
             # path: /Users/johnmclark/code/hyaline-code-ssh
             branch: main
             clone: true
-            sshAuth:
-              user: git
-              pem: ${HYALINE_SSH_PEM}
-              password: ${HYALINE_SSH_PASSWORD}
+            auth:
+              type: ssh
+              options:
+                user: git
+                pem: ${HYALINE_SSH_PEM}
+                password: ${HYALINE_SSH_PASSWORD}
           include:
             - package.json
             - "**/*.js"
@@ -40,9 +42,11 @@ systems:
             # path: /Users/johnmclark/code/hyaline-code-http
             branch: main
             clone: true
-            httpAuth:
-              username: git
-              password: ${HYALINE_GITHUB_PAT}
+            auth:
+              type: http
+              options:
+                username: git
+                password: ${HYALINE_GITHUB_PAT}
           include:
             - package.json
             - "**/*.js"
@@ -67,10 +71,12 @@ systems:
             # path: /Users/johnmclark/code/hyaline-docs-ssh
             branch: main
             clone: true
-            sshAuth:
-              user: git
-              pem: ${HYALINE_SSH_PEM}
-              password: ${HYALINE_SSH_PASSWORD}
+            auth:
+              type: ssh
+              options:
+                user: git
+                pem: ${HYALINE_SSH_PEM}
+                password: ${HYALINE_SSH_PASSWORD}
           include:
             - "**/*.md"
       - id: app-http
@@ -82,8 +88,10 @@ systems:
             # path: /Users/johnmclark/code/hyaline-docs-http
             branch: main
             clone: true
-            httpAuth:
-              username: git
-              password: ${HYALINE_GITHUB_PAT}
+            auth:
+              type: http
+              options:
+                username: git
+                password: ${HYALINE_GITHUB_PAT}
           include:
             - "**/*.md"
