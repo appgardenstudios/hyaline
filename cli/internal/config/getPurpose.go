@@ -28,7 +28,7 @@ func GetPurpose(systemID string, documentationSourceID string, documentID string
 	return getPurposeFromSection(desiredDoc.Sections, sectionIDs)
 }
 
-func getPurposeFromSection(sections []RuleDocumentSection, sectionIDs []string) (purpose string, found bool) {
+func getPurposeFromSection(sections []DocumentSection, sectionIDs []string) (purpose string, found bool) {
 	var currentID string
 	var remainder []string
 

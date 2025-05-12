@@ -79,8 +79,8 @@ func GenerateConfig(args *GenerateConfigArgs) error {
 
 	// Loop through docs in our current system and generate a config for each
 	for _, d := range system.DocumentationSources {
-		// Create a rule for this documentation
-		rule := config.DocumentSet{
+		// Create a desired document for this documentation
+		desiredSocSet := config.DocumentSet{
 			ID:        d.ID,
 			Documents: []config.Document{},
 		}
@@ -92,7 +92,7 @@ func GenerateConfig(args *GenerateConfigArgs) error {
 			return err
 		}
 
-		// Loop through each document to generate rules for it
+		// Loop through each document to generate desired documents for it
 		for _, doc := range documents {
 			slog.Info("Processing document", "document", doc.ID)
 			// Get the desiredDoc for this document (if any)
@@ -110,7 +110,7 @@ func GenerateConfig(args *GenerateConfigArgs) error {
 					}
 				}
 
-				// Create rule for the document
+				// Create desired document for the document
 				desiredDoc = config.Document{
 					Path:     doc.ID,
 					Purpose:  purpose,
@@ -131,12 +131,12 @@ func GenerateConfig(args *GenerateConfigArgs) error {
 			}
 			desiredDoc.Sections = newSections
 
-			// Add ruleDoc to rule
-			rule.Documents = append(rule.Documents, desiredDoc)
+			// Add desired document to the set
+			desiredSocSet.Documents = append(desiredSocSet.Documents, desiredDoc)
 		}
 
-		// Add rule to config
-		newCfg.CommonDocuments = append(newCfg.CommonDocuments, rule)
+		// Add desired document set to config
+		newCfg.CommonDocuments = append(newCfg.CommonDocuments, desiredSocSet)
 	}
 
 	// Output new config
@@ -163,7 +163,7 @@ func GenerateConfig(args *GenerateConfigArgs) error {
 }
 
 // Note: sections MUST be in PEER_ORDER so that the doc sections are added in the correct order
-func createRuleSections(sections []*sqlite.Section, parentID string, existingSections []config.RuleDocumentSection, includePurpose bool, documentName string, documentPurpose string, cfg *config.LLM) (docSections []config.RuleDocumentSection, err error) {
+func createRuleSections(sections []*sqlite.Section, parentID string, existingSections []config.DocumentSection, includePurpose bool, documentName string, documentPurpose string, cfg *config.LLM) (docSections []config.DocumentSection, err error) {
 	for _, section := range sections {
 		// Guard against circular issues by ensuring that no ID is the same as its parent ID
 		if section.ID == section.ParentID {
@@ -189,7 +189,7 @@ func createRuleSections(sections []*sqlite.Section, parentID string, existingSec
 				}
 
 				// Create new doc section
-				docSection = config.RuleDocumentSection{
+				docSection = config.DocumentSection{
 					ID:       section.Name,
 					Purpose:  purpose,
 					Required: true,
@@ -197,7 +197,7 @@ func createRuleSections(sections []*sqlite.Section, parentID string, existingSec
 			}
 
 			// Get and add child doc sections
-			var childDocSections []config.RuleDocumentSection
+			var childDocSections []config.DocumentSection
 			childDocSections, err = createRuleSections(sections, section.ID, docSection.Sections, includePurpose, documentName, documentPurpose, cfg)
 			if err != nil {
 				return
@@ -212,7 +212,7 @@ func createRuleSections(sections []*sqlite.Section, parentID string, existingSec
 	return docSections, nil
 }
 
-func getRuleSection(sectionID string, sections []config.RuleDocumentSection) (sectionFound bool, section config.RuleDocumentSection) {
+func getRuleSection(sectionID string, sections []config.DocumentSection) (sectionFound bool, section config.DocumentSection) {
 	for _, section = range sections {
 		if section.ID == sectionID {
 			return true, section

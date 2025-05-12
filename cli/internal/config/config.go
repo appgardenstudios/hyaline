@@ -239,21 +239,21 @@ type DocumentSet struct {
 }
 
 type Document struct {
-	Path     string                `yaml:"path,omitempty"`
-	Purpose  string                `yaml:"purpose,omitempty"`
-	Required bool                  `yaml:"required,omitempty"`
-	Ignore   bool                  `yaml:"ignore,omitempty"`
-	UpdateIf UpdateIf              `yaml:"updateIf,omitempty"`
-	Sections []RuleDocumentSection `yaml:"sections,omitempty"`
+	Path     string            `yaml:"path,omitempty"`
+	Purpose  string            `yaml:"purpose,omitempty"`
+	Required bool              `yaml:"required,omitempty"`
+	Ignore   bool              `yaml:"ignore,omitempty"`
+	UpdateIf UpdateIf          `yaml:"updateIf,omitempty"`
+	Sections []DocumentSection `yaml:"sections,omitempty"`
 }
 
-type RuleDocumentSection struct {
-	ID       string                `yaml:"id,omitempty"`
-	Purpose  string                `yaml:"purpose,omitempty"`
-	Required bool                  `yaml:"required,omitempty"`
-	Ignore   bool                  `yaml:"ignore,omitempty"`
-	UpdateIf UpdateIf              `yaml:"updateIf,omitempty"`
-	Sections []RuleDocumentSection `yaml:"sections,omitempty"`
+type DocumentSection struct {
+	ID       string            `yaml:"id,omitempty"`
+	Purpose  string            `yaml:"purpose,omitempty"`
+	Required bool              `yaml:"required,omitempty"`
+	Ignore   bool              `yaml:"ignore,omitempty"`
+	UpdateIf UpdateIf          `yaml:"updateIf,omitempty"`
+	Sections []DocumentSection `yaml:"sections,omitempty"`
 }
 
 type UpdateIf struct {

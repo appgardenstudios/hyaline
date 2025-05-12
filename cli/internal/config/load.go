@@ -173,7 +173,7 @@ func validate(cfg *Config) (err error) {
 				_, found := desiredDocIDs[document.Path]
 				if found {
 					err = fmt.Errorf("duplicate desired document path detected: %s > %s > %s", system.ID, docSource.ID, document.Path)
-					slog.Debug("config.Validate found duplicate rule id", "system", system.ID, "documentation", docSource.ID, "document", document.Path, "error", err)
+					slog.Debug("config.Validate found duplicate desired document id", "system", system.ID, "documentation", docSource.ID, "document", document.Path, "error", err)
 					return
 				}
 				desiredDocIDs[document.Path] = struct{}{}
@@ -184,7 +184,7 @@ func validate(cfg *Config) (err error) {
 				includedDocSet, found := cfg.GetCommonDocumentSet(docID)
 				if !found {
 					err = fmt.Errorf("common documentation set not found: %s > %s > %s", system.ID, docSource.ID, docID)
-					slog.Debug("config.Validate found duplicate rule id", "system", system.ID, "documentation", docSource.ID, "includedDocument", docID, "error", err)
+					slog.Debug("config.Validate found duplicate desired document id", "system", system.ID, "documentation", docSource.ID, "includedDocument", docID, "error", err)
 					return
 				}
 
@@ -192,7 +192,7 @@ func validate(cfg *Config) (err error) {
 					_, found := desiredDocIDs[document.Path]
 					if found {
 						err = fmt.Errorf("duplicate desired document path detected in common document: %s > %s > %s", system.ID, docSource.ID, document.Path)
-						slog.Debug("config.Validate found duplicate rule id", "system", system.ID, "documentation", docSource.ID, "document", document.Path, "includedDocument", docID, "error", err)
+						slog.Debug("config.Validate found duplicate desired document id", "system", system.ID, "documentation", docSource.ID, "document", document.Path, "includedDocument", docID, "error", err)
 						return
 					}
 					desiredDocIDs[document.Path] = struct{}{}

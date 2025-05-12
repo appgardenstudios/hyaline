@@ -275,14 +275,14 @@ func CheckCurrent(args *CheckCurrentArgs) error {
 			processedDocumentMap[desiredDoc.Path] = struct{}{}
 		}
 
-		// Loop through docs and make sure each had a corresponding rule
+		// Loop through docs and make sure each had a corresponding desired document
 		for _, doc := range docs {
 			result := "PASS"
 			message := ""
 			_, found := processedDocumentMap[doc.ID]
 			if !found {
 				result = "ERROR"
-				message = fmt.Sprintf("Document %s does not have a corresponding rule", doc.ID)
+				message = fmt.Sprintf("Document %s does not have a corresponding desired document", doc.ID)
 			}
 			output.Results = append(output.Results, CheckCurrentOutputEntry{
 				System:              system.ID,
@@ -294,7 +294,7 @@ func CheckCurrent(args *CheckCurrentArgs) error {
 			})
 		}
 
-		// Loop through sections and make sure each has a corresponding rule
+		// Loop through sections and make sure each has a corresponding desired document
 		allSections, err := sqlite.GetAllSection(docSource.ID, system.ID, currentDB)
 		if err != nil {
 			slog.Debug("action.CheckChange could not get sections for documentationSource", "documentationSource", docSource.ID, "system", args.System, "error", err)
@@ -312,7 +312,7 @@ func CheckCurrent(args *CheckCurrentArgs) error {
 			_, found := processedSectionMap[sec.ID]
 			if !found {
 				result = "ERROR"
-				message = fmt.Sprintf("Section %s does not have a corresponding rule", sec.ID)
+				message = fmt.Sprintf("Section %s does not have a corresponding desired document section", sec.ID)
 			}
 			output.Results = append(output.Results, CheckCurrentOutputEntry{
 				System:              system.ID,
@@ -350,24 +350,24 @@ func CheckCurrent(args *CheckCurrentArgs) error {
 	return nil
 }
 
-func checkCurrentSections(system string, documentationSource string, document string, sectionArr []string, ruleDocSections []config.RuleDocumentSection, sectionMap *map[string]*sqlite.Section, processedSectionMap *map[string]struct{}, checkPurpose bool, checkComplete bool, cfg *config.LLM, currentDB *sql.DB) (results []CheckCurrentOutputEntry, err error) {
-	for _, ruleDocSection := range ruleDocSections {
+func checkCurrentSections(system string, documentationSource string, document string, sectionArr []string, desiredDocSections []config.DocumentSection, sectionMap *map[string]*sqlite.Section, processedSectionMap *map[string]struct{}, checkPurpose bool, checkComplete bool, cfg *config.LLM, currentDB *sql.DB) (results []CheckCurrentOutputEntry, err error) {
+	for _, desiredDocSection := range desiredDocSections {
 		currentSection := []string{}
 		currentSection = append(currentSection, sectionArr...)
-		currentSection = append(currentSection, ruleDocSection.ID)
+		currentSection = append(currentSection, desiredDocSection.ID)
 		sectionID := fmt.Sprintf("%s#%s", document, strings.Join(currentSection, "#"))
 
 		section, found := (*sectionMap)[sectionID]
 
 		// Check REQUIRED
-		if ruleDocSection.Required {
+		if desiredDocSection.Required {
 			result := "PASS"
 			message := ""
 			if !found {
 				result = "ERROR"
 				message = "This section is marked as required"
 			}
-			if ruleDocSection.Ignore {
+			if desiredDocSection.Ignore {
 				result = "SKIPPED"
 			}
 			results = append(results, CheckCurrentOutputEntry{
@@ -385,16 +385,16 @@ func checkCurrentSections(system string, documentationSource string, document st
 		if checkPurpose {
 			result := "PASS"
 			message := ""
-			if ruleDocSection.Ignore {
+			if desiredDocSection.Ignore {
 				result = "SKIPPED"
 			} else if !found {
 				result = "ERROR"
 				message = "This section does not exist"
 			} else {
-				if ruleDocSection.Purpose != "" {
+				if desiredDocSection.Purpose != "" {
 					var matches bool
 					var reason string
-					matches, reason, err = check.Purpose(system, documentationSource, document, currentSection, ruleDocSection.Purpose, section.ExtractedData, cfg, currentDB)
+					matches, reason, err = check.Purpose(system, documentationSource, document, currentSection, desiredDocSection.Purpose, section.ExtractedData, cfg, currentDB)
 					if err != nil {
 						return
 					}
@@ -425,16 +425,16 @@ func checkCurrentSections(system string, documentationSource string, document st
 		if checkComplete {
 			result := "PASS"
 			message := ""
-			if ruleDocSection.Ignore {
+			if desiredDocSection.Ignore {
 				result = "SKIPPED"
 			} else if !found {
 				result = "ERROR"
 				message = "This section does not exist"
 			} else {
-				if ruleDocSection.Purpose != "" {
+				if desiredDocSection.Purpose != "" {
 					var matches bool
 					var reason string
-					matches, reason, err = check.Completeness(system, documentationSource, document, currentSection, ruleDocSection.Purpose, section.ExtractedData, cfg, currentDB)
+					matches, reason, err = check.Completeness(system, documentationSource, document, currentSection, desiredDocSection.Purpose, section.ExtractedData, cfg, currentDB)
 					if err != nil {
 						return
 					}
@@ -462,9 +462,9 @@ func checkCurrentSections(system string, documentationSource string, document st
 		}
 
 		// Check sections (if not skipped)
-		if !ruleDocSection.Ignore {
+		if !desiredDocSection.Ignore {
 			var addtlResults []CheckCurrentOutputEntry
-			addtlResults, err = checkCurrentSections(system, documentationSource, document, currentSection, ruleDocSection.Sections, sectionMap, processedSectionMap, checkPurpose, checkComplete, cfg, currentDB)
+			addtlResults, err = checkCurrentSections(system, documentationSource, document, currentSection, desiredDocSection.Sections, sectionMap, processedSectionMap, checkPurpose, checkComplete, cfg, currentDB)
 			if err != nil {
 				return
 			}

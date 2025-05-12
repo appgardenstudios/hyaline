@@ -80,7 +80,7 @@
       "document": "docs/docsDoc.md",
       "check": "RULE_EXISTS",
       "result": "ERROR",
-      "message": "Document docs/docsDoc.md does not have a corresponding rule"
+      "message": "Document docs/docsDoc.md does not have a corresponding desired document"
     },
     {
       "system": "check-current",
@@ -91,7 +91,7 @@
       ],
       "check": "RULE_EXISTS",
       "result": "ERROR",
-      "message": "Section docs/docsDoc.md#This is a test does not have a corresponding rule"
+      "message": "Section docs/docsDoc.md#This is a test does not have a corresponding desired document section"
     },
     {
       "system": "check-current",
@@ -118,7 +118,7 @@
       ],
       "check": "RULE_EXISTS",
       "result": "ERROR",
-      "message": "Section docs/preDoc.md#A Random Heading does not have a corresponding rule"
+      "message": "Section docs/preDoc.md#A Random Heading does not have a corresponding desired document section"
     },
     {
       "system": "check-current",
