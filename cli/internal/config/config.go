@@ -123,25 +123,6 @@ type ExtractorOptions struct {
 	Headers  map[string]string  `yaml:"headers,omitempty"`
 }
 
-type FsOptions struct {
-	Path string `yaml:"path,omitempty"`
-}
-
-type GitOptions struct {
-	Repo     string             `yaml:"repo,omitempty"`
-	Branch   string             `yaml:"branch,omitempty"`
-	Path     string             `yaml:"path,omitempty"`
-	Clone    bool               `yaml:"clone,omitempty"`
-	HTTPAuth GitHTTPAuthOptions `yaml:"httpAuth,omitempty"`
-	SSHAuth  GitSSHAuthOptions  `yaml:"sshAuth,omitempty"`
-}
-
-type HttpOptions struct {
-	BaseURL string            `yaml:"baseUrl,omitempty"`
-	Start   string            `yaml:"start,omitempty"`
-	Headers map[string]string `yaml:"headers,omitempty"`
-}
-
 type GitHTTPAuthOptions struct {
 	Username string `yaml:"username,omitempty"`
 	Password string `yaml:"password,omitempty"`
