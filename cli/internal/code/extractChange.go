@@ -15,16 +15,16 @@ func ExtractChange(system *config.System, head string, base string, db *sql.DB) 
 	// Process each code source
 	for _, c := range system.CodeSources {
 		// Only extract changed code for git sources
-		if c.Extractor != config.ExtractorGit {
+		if c.Extractor.Type != config.ExtractorGit {
 			slog.Debug("code.ExtractChange skipping non-git code source", "system", system.ID, "code", c.ID)
 			continue
 		}
 		slog.Debug("code.ExtractChange extracting code", "system", system.ID, "code", c.ID, "head", head, "base", base)
 
 		// Get document path
-		path := c.GitOptions.Path
+		path := c.Extractor.Options.Path
 		if path == "" {
-			path = c.GitOptions.Repo
+			path = c.Extractor.Options.Repo
 		}
 
 		// Insert Code
@@ -40,7 +40,7 @@ func ExtractChange(system *config.System, head string, base string, db *sql.DB) 
 
 		// Initialize go-git repo (on disk or in mem)
 		var r *git.Repository
-		r, err = repo.GetRepo(c.GitOptions)
+		r, err = repo.GetRepo(c.Extractor.Options)
 		if err != nil {
 			slog.Debug("code.ExtractChange could not get repo", "error", err)
 			return
@@ -70,7 +70,7 @@ func ExtractChange(system *config.System, head string, base string, db *sql.DB) 
 			case merkletrie.Insert:
 				fallthrough
 			case merkletrie.Modify:
-				if config.PathIsIncluded(change.To.Name, c.Include, c.Exclude) {
+				if config.PathIsIncluded(change.To.Name, c.Extractor.Include, c.Extractor.Exclude) {
 					slog.Debug("code.ExtractChange inserting file", "file", change.To.Name, "action", action)
 					bytes, err := repo.GetBlobBytes(to.Blob)
 					if err != nil {
@@ -91,7 +91,7 @@ func ExtractChange(system *config.System, head string, base string, db *sql.DB) 
 					}
 				}
 			case merkletrie.Delete:
-				if config.PathIsIncluded(change.To.Name, c.Include, c.Exclude) {
+				if config.PathIsIncluded(change.To.Name, c.Extractor.Include, c.Extractor.Exclude) {
 					slog.Debug("code.ExtractChange inserting file", "file", change.From.Name, "action", action)
 					err = sqlite.InsertFile(sqlite.File{
 						ID:         change.From.Name,

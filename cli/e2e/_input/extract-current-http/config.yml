@@ -5,11 +5,12 @@ systems:
         type: html
         html:
           selector: main
-        extractor: http
-        http:
-          baseUrl: http://127.0.0.1:8081/
-          start: "./docs"
-        include:
-          - "docs/**/*"
-        exclude:
-          - "docs/irrelevant.html"
+        extractor:
+          type: http
+          options:
+            baseUrl: http://127.0.0.1:8081/
+            start: "./docs"
+          include:
+            - "docs/**/*"
+          exclude:
+            - "docs/irrelevant.html"

@@ -6,65 +6,90 @@ llm:
 systems:
   - id: my-app
     code:
-      - id: app
-        extractor: fs
-        fs:
-          path: ./
-        git:
-          repo: git@github.com:appgardenstudios/hyaline-example.git
-          branch: main
-          path: my/path
-          clone: true
-          httpAuth:
-            username: bob
-            password: nope
-          sshAuth:
-            user: bob
-            pem: my-pem
-            password: nope
-        include:
-          - package.json
-          - "./**/*.js"
-        exclude:
-          - "./**/*.test.js"
+      - id: app-fs
+        extractor:
+          type: fs
+          options:
+            path: ./
+          include:
+            - package.json
+            - "./**/*.js"
+          exclude:
+            - "./**/*.test.js"
+      - id: app-git
+        extractor:
+          type: git
+          options:
+            repo: git@github.com:appgardenstudios/hyaline-example.git
+            branch: main
+            path: my/path
+            clone: true
+            httpAuth:
+              username: bob
+              password: nope
+            sshAuth:
+              user: bob
+              pem: my-pem
+              password: nope
+          include:
+            - package.json
+            - "./**/*.js"
+          exclude:
+            - "./**/*.test.js"
     documentation:
-      - id: md-docs
+      - id: md-docs-fs
         type: md
-        extractor: fs
-        fs:
-          path: ./
-        git:
-          repo: git@github.com:appgardenstudios/hyaline-example.git
-          branch: main
-          path: my/path
-          clone: true
-          httpAuth:
-            username: bob
-            password: nope
-          sshAuth:
-            user: bob
-            pem: my-pem
-            password: nope
-        include: 
-         - ./**/*.md
-      - id: html-docs
+        extractor:
+          type: fs
+          options:
+            path: ./
+          include: 
+            - ./**/*.md
+      - id: md-docs-git
+        type: md
+        extractor:
+          type: git
+          options:
+            repo: git@github.com:appgardenstudios/hyaline-example.git
+            branch: main
+            path: my/path
+            clone: true
+            httpAuth:
+              username: bob
+              password: nope
+            sshAuth:
+              user: bob
+              pem: my-pem
+              password: nope
+          include: 
+            - ./**/*.md
+      - id: html-docs-fs
         type: html
         html:
           selector: main
-        extractor: fs
-        fs:
-          path: ./
-        git:
-          repo: git@github.com:appgardenstudios/hyaline-example.git
-          branch: main
-          path: my/path
-          clone: true
-          httpAuth:
-            username: bob
-            password: nope
-          sshAuth:
-            user: bob
-            pem: my-pem
-            password: nope
-        include: 
-         - ./**/*.md
+        extractor:
+          type: fs
+          options:
+            path: ./
+          include: 
+            - ./**/*.md
+      - id: html-docs-git
+        type: html
+        html:
+          selector: main
+        extractor:
+          type: git
+          options:
+            repo: git@github.com:appgardenstudios/hyaline-example.git
+            branch: main
+            path: my/path
+            clone: true
+            httpAuth:
+              username: bob
+              password: nope
+            sshAuth:
+              user: bob
+              pem: my-pem
+              password: nope
+          include: 
+            - ./**/*.md

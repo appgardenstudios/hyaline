@@ -10,35 +10,37 @@ systems:
   - id: check-current
     code:
       - id: app
-        extractor: git
-        git:
-          repo: git@github.com:appgardenstudios/hyaline-example.git
-          branch: main
-          clone: true
-          sshAuth:
-            user: git
-            pem: ${HYALINE_SSH_PEM}
-            password: ${HYALINE_SSH_PASSWORD}
-        include:
-          - package.json
-          - "**/*.js"
-        exclude:
-          - "**/*.test.js"
+        extractor:
+          type: git
+          options:
+            repo: git@github.com:appgardenstudios/hyaline-example.git
+            branch: main
+            clone: true
+            sshAuth:
+              user: git
+              pem: ${HYALINE_SSH_PEM}
+              password: ${HYALINE_SSH_PASSWORD}
+          include:
+            - package.json
+            - "**/*.js"
+          exclude:
+            - "**/*.test.js"
     documentation:
       - id: app
         type: md
-        extractor: git
-        git:
-          repo: git@github.com:appgardenstudios/hyaline-example.git
-          # path: /Users/johnmclark/code/hyaline-docs-ssh
-          branch: main
-          clone: true
-          sshAuth:
-            user: git
-            pem: ${HYALINE_SSH_PEM}
-            password: ${HYALINE_SSH_PASSWORD}
-        include:
-          - "**/*.md"
+        extractor:
+          type: git
+          options:
+            repo: git@github.com:appgardenstudios/hyaline-example.git
+            # path: /Users/johnmclark/code/hyaline-docs-ssh
+            branch: main
+            clone: true
+            sshAuth:
+              user: git
+              pem: ${HYALINE_SSH_PEM}
+              password: ${HYALINE_SSH_PASSWORD}
+          include:
+            - "**/*.md"
         rules: [check-current]
 
 rules:

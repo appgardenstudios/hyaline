@@ -23,13 +23,13 @@ func ExtractCurrent(system *config.System, db *sql.DB) (err error) {
 
 		// Get document path
 		var path string
-		switch c.Extractor {
+		switch c.Extractor.Type {
 		case config.ExtractorFs:
-			path = c.FsOptions.Path
+			path = c.Extractor.Options.Path
 		case config.ExtractorGit:
-			path = c.GitOptions.Path
+			path = c.Extractor.Options.Path
 			if path == "" {
-				path = c.GitOptions.Repo
+				path = c.Extractor.Options.Repo
 			}
 		}
 
@@ -45,7 +45,7 @@ func ExtractCurrent(system *config.System, db *sql.DB) (err error) {
 		}
 
 		// Extract based on the extractor
-		switch c.Extractor {
+		switch c.Extractor.Type {
 		case config.ExtractorFs:
 			err = ExtractCurrentFs(system.ID, &c, db)
 			if err != nil {
@@ -59,8 +59,8 @@ func ExtractCurrent(system *config.System, db *sql.DB) (err error) {
 				return
 			}
 		default:
-			slog.Debug("code.ExtractCurrent unknown extractor", "extractor", c.Extractor.String(), "code", c.ID)
-			return errors.New("Unknown Extractor '" + c.Extractor.String() + "' for code " + c.ID)
+			slog.Debug("code.ExtractCurrent unknown extractor", "extractor", c.Extractor.Type.String(), "code", c.ID)
+			return errors.New("Unknown Extractor '" + c.Extractor.Type.String() + "' for code " + c.ID)
 		}
 	}
 
@@ -69,9 +69,9 @@ func ExtractCurrent(system *config.System, db *sql.DB) (err error) {
 
 func ExtractCurrentFs(systemID string, c *config.CodeSource, db *sql.DB) (err error) {
 	// Get our absolute path
-	absPath, err := filepath.Abs(c.FsOptions.Path)
+	absPath, err := filepath.Abs(c.Extractor.Options.Path)
 	if err != nil {
-		slog.Debug("code.ExtractCurrentFs could not determine absolute code path", "error", err, "path", c.FsOptions.Path)
+		slog.Debug("code.ExtractCurrentFs could not determine absolute code path", "error", err, "path", c.Extractor.Options.Path)
 		return err
 	}
 	slog.Debug("code.ExtractCurrentFs extracting code from path", "absPath", absPath)
@@ -81,7 +81,7 @@ func ExtractCurrentFs(systemID string, c *config.CodeSource, db *sql.DB) (err er
 	// https://pkg.go.dev/os@go1.24.1#Root
 	root, err := os.OpenRoot(absPath)
 	if err != nil {
-		slog.Debug("code.ExtractCurrentFs could not open fs root", "error", err, "path", c.FsOptions.Path)
+		slog.Debug("code.ExtractCurrentFs could not open fs root", "error", err, "path", c.Extractor.Options.Path)
 		return err
 	}
 	fsRoot := root.FS()
@@ -90,7 +90,7 @@ func ExtractCurrentFs(systemID string, c *config.CodeSource, db *sql.DB) (err er
 	files := map[string]struct{}{}
 
 	// Loop through our includes and get files
-	for _, include := range c.Include {
+	for _, include := range c.Extractor.Include {
 		slog.Debug("code.ExtractCurrentFs extracting code using include", "include", include, "code", c.ID)
 
 		// Get matched files
@@ -104,7 +104,7 @@ func ExtractCurrentFs(systemID string, c *config.CodeSource, db *sql.DB) (err er
 		for _, file := range matches {
 			// See if we have a match for at least one of our excludes
 			match := false
-			for _, exclude := range c.Exclude {
+			for _, exclude := range c.Extractor.Exclude {
 				match = doublestar.MatchUnvalidated(exclude, file)
 				if match {
 					slog.Debug("code.ExtractCurrentFs file excluded", "file", file, "exclude", exclude)
@@ -145,7 +145,7 @@ func ExtractCurrentFs(systemID string, c *config.CodeSource, db *sql.DB) (err er
 func ExtractCurrentGit(systemID string, c *config.CodeSource, db *sql.DB) (err error) {
 	// Initialize go-git repo (on disk or in mem)
 	var r *git.Repository
-	r, err = repo.GetRepo(c.GitOptions)
+	r, err = repo.GetRepo(c.Extractor.Options)
 	if err != nil {
 		slog.Debug("code.ExtractCurrentGit could not get repo", "error", err)
 		return
@@ -153,15 +153,15 @@ func ExtractCurrentGit(systemID string, c *config.CodeSource, db *sql.DB) (err e
 
 	// Extract files from branch
 	branch := "main"
-	if c.GitOptions.Branch != "" {
-		branch = c.GitOptions.Branch
+	if c.Extractor.Options.Branch != "" {
+		branch = c.Extractor.Options.Branch
 	}
 	err = repo.GetFiles(branch, r, func(f *object.File) error {
-		for _, include := range c.Include {
+		for _, include := range c.Extractor.Include {
 			if doublestar.MatchUnvalidated(include, f.Name) {
 				// If excluded, skip this file and continue
 				excluded := false
-				for _, exclude := range c.Exclude {
+				for _, exclude := range c.Extractor.Exclude {
 					if doublestar.MatchUnvalidated(exclude, f.Name) {
 						excluded = true
 						break

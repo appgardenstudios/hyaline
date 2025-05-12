@@ -18,80 +18,114 @@ func TestLoad(t *testing.T) {
 		},
 		Systems: []System{{
 			ID: "my-app",
-			CodeSources: []CodeSource{{
-				ID:        "app",
-				Extractor: "fs",
-				FsOptions: FsOptions{
-					Path: "./",
-				},
-				GitOptions: GitOptions{
-					Repo:   "git@github.com:appgardenstudios/hyaline-example.git",
-					Branch: "main",
-					Path:   "my/path",
-					Clone:  true,
-					HTTPAuth: GitHTTPAuthOptions{
-						Username: "bob",
-						Password: "nope",
+			CodeSources: []CodeSource{
+				{
+					ID: "app-fs",
+					Extractor: Extractor{
+						Type: "fs",
+						Options: ExtractorOptions{
+							Path: "./",
+						},
+						Include: []string{"package.json", "./**/*.js"},
+						Exclude: []string{"./**/*.test.js"},
 					},
-					SSHAuth: GitSSHAuthOptions{
-						User:     "bob",
-						PEM:      "my-pem",
-						Password: "nope",
-					},
-				},
-				Include: []string{"package.json", "./**/*.js"},
-				Exclude: []string{"./**/*.test.js"},
-			}},
-			DocumentationSources: []DocumentationSource{{
-				ID:        "md-docs",
-				Type:      "md",
-				Extractor: "fs",
-				FsOptions: FsOptions{
-					Path: "./",
-				},
-				GitOptions: GitOptions{
-					Repo:   "git@github.com:appgardenstudios/hyaline-example.git",
-					Branch: "main",
-					Path:   "my/path",
-					Clone:  true,
-					HTTPAuth: GitHTTPAuthOptions{
-						Username: "bob",
-						Password: "nope",
-					},
-					SSHAuth: GitSSHAuthOptions{
-						User:     "bob",
-						PEM:      "my-pem",
-						Password: "nope",
+				}, {
+					ID: "app-git",
+					Extractor: Extractor{
+						Type: "git",
+						Options: ExtractorOptions{
+							Repo:   "git@github.com:appgardenstudios/hyaline-example.git",
+							Branch: "main",
+							Path:   "my/path",
+							Clone:  true,
+							HTTPAuth: GitHTTPAuthOptions{
+								Username: "bob",
+								Password: "nope",
+							},
+							SSHAuth: GitSSHAuthOptions{
+								User:     "bob",
+								PEM:      "my-pem",
+								Password: "nope",
+							},
+						},
+						Include: []string{"package.json", "./**/*.js"},
+						Exclude: []string{"./**/*.test.js"},
 					},
 				},
-				Include: []string{"./**/*.md"},
-			}, {
-				ID:   "html-docs",
-				Type: "html",
-				HTML: DocHTMLOptions{
-					Selector: "main",
-				},
-				Extractor: "fs",
-				FsOptions: FsOptions{
-					Path: "./",
-				},
-				GitOptions: GitOptions{
-					Repo:   "git@github.com:appgardenstudios/hyaline-example.git",
-					Branch: "main",
-					Path:   "my/path",
-					Clone:  true,
-					HTTPAuth: GitHTTPAuthOptions{
-						Username: "bob",
-						Password: "nope",
+			},
+			DocumentationSources: []DocumentationSource{
+				{
+					ID:   "md-docs-fs",
+					Type: "md",
+					Extractor: Extractor{
+						Type: "fs",
+						Options: ExtractorOptions{
+							Path: "./",
+						},
+						Include: []string{"./**/*.md"},
 					},
-					SSHAuth: GitSSHAuthOptions{
-						User:     "bob",
-						PEM:      "my-pem",
-						Password: "nope",
+				}, {
+					ID:   "md-docs-git",
+					Type: "md",
+					Extractor: Extractor{
+						Type: "git",
+						Options: ExtractorOptions{
+							Repo:   "git@github.com:appgardenstudios/hyaline-example.git",
+							Branch: "main",
+							Path:   "my/path",
+							Clone:  true,
+							HTTPAuth: GitHTTPAuthOptions{
+								Username: "bob",
+								Password: "nope",
+							},
+							SSHAuth: GitSSHAuthOptions{
+								User:     "bob",
+								PEM:      "my-pem",
+								Password: "nope",
+							},
+						},
+						Include: []string{"./**/*.md"},
+					},
+				}, {
+					ID:   "html-docs-fs",
+					Type: "html",
+					HTML: DocHTMLOptions{
+						Selector: "main",
+					},
+					Extractor: Extractor{
+						Type: "fs",
+						Options: ExtractorOptions{
+							Path: "./",
+						},
+						Include: []string{"./**/*.md"},
+					},
+				}, {
+					ID:   "html-docs-git",
+					Type: "html",
+					HTML: DocHTMLOptions{
+						Selector: "main",
+					},
+					Extractor: Extractor{
+						Type: "git",
+						Options: ExtractorOptions{
+							Repo:   "git@github.com:appgardenstudios/hyaline-example.git",
+							Branch: "main",
+							Path:   "my/path",
+							Clone:  true,
+							HTTPAuth: GitHTTPAuthOptions{
+								Username: "bob",
+								Password: "nope",
+							},
+							SSHAuth: GitSSHAuthOptions{
+								User:     "bob",
+								PEM:      "my-pem",
+								Password: "nope",
+							},
+						},
+						Include: []string{"./**/*.md"},
 					},
 				},
-				Include: []string{"./**/*.md"},
-			}},
+			},
 		}},
 	}
 
@@ -139,53 +173,71 @@ Line2`, `"Line1\"\nLine2"`},
 
 func TestValidate(t *testing.T) {
 	code := CodeSource{
-		ID:        "1234",
-		Extractor: "fs",
-		Include:   []string{"**/*.js"},
-		Exclude:   []string{"**/*.test.js"},
+		ID: "1234",
+		Extractor: Extractor{
+			Type:    "fs",
+			Include: []string{"**/*.js"},
+			Exclude: []string{"**/*.test.js"},
+		},
 	}
 	invalidCodeInclude := CodeSource{
-		ID:        "1234",
-		Extractor: "fs",
-		Include:   []string{"{a"},
+		ID: "1234",
+		Extractor: Extractor{
+			Type:    "fs",
+			Include: []string{"{a"},
+		},
 	}
 	invalidCodeExclude := CodeSource{
-		ID:        "1234",
-		Extractor: "fs",
-		Exclude:   []string{"{a"},
+		ID: "1234",
+		Extractor: Extractor{
+			Type:    "fs",
+			Exclude: []string{"{a"},
+		},
 	}
 	invalidCodeExtractor := CodeSource{
-		ID:        "1234",
-		Extractor: "invalid",
+		ID: "1234",
+		Extractor: Extractor{
+			Type: "invalid",
+		},
 	}
 	doc := DocumentationSource{
-		ID:        "1234",
-		Type:      "md",
-		Extractor: "fs",
-		Include:   []string{"**/*.md"},
-		Exclude:   []string{"random.md"},
+		ID:   "1234",
+		Type: "md",
+		Extractor: Extractor{
+			Type:    "fs",
+			Include: []string{"**/*.md"},
+			Exclude: []string{"random.md"},
+		},
 	}
 	invalidDoc := DocumentationSource{
-		ID:        "1234",
-		Type:      "invalid",
-		Extractor: "fs",
+		ID:   "1234",
+		Type: "invalid",
+		Extractor: Extractor{
+			Type: "fs",
+		},
 	}
 	invalidDocInclude := DocumentationSource{
-		ID:        "1234",
-		Type:      "md",
-		Extractor: "fs",
-		Include:   []string{"{a"},
+		ID:   "1234",
+		Type: "md",
+		Extractor: Extractor{
+			Type:    "fs",
+			Include: []string{"{a"},
+		},
 	}
 	invalidDocExclude := DocumentationSource{
-		ID:        "1234",
-		Type:      "md",
-		Extractor: "fs",
-		Include:   []string{"{a"},
+		ID:   "1234",
+		Type: "md",
+		Extractor: Extractor{
+			Type:    "fs",
+			Include: []string{"{a"},
+		},
 	}
 	invalidDocExtractor := DocumentationSource{
-		ID:        "1234",
-		Type:      "md",
-		Extractor: "invalid",
+		ID:   "1234",
+		Type: "md",
+		Extractor: Extractor{
+			Type: "invalid",
+		},
 	}
 	invalidLLM := LLM{
 		Provider: "invalid",

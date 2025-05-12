@@ -98,14 +98,14 @@ func validate(cfg *Config) (err error) {
 			codeIDs[code.ID] = struct{}{}
 
 			// Ensure extractor is valid
-			if !code.Extractor.IsValidCodeExtractor() {
-				err = errors.New("invalid code extractor detected: " + system.ID + " > " + code.ID + " > " + code.Extractor.String())
-				slog.Debug("config.Validate found invalid code extractor", "extractor", code.Extractor.String(), "system", system.ID, "code", code.ID, "error", err)
+			if !code.Extractor.Type.IsValidCodeExtractor() {
+				err = errors.New("invalid code extractor detected: " + system.ID + " > " + code.ID + " > " + code.Extractor.Type.String())
+				slog.Debug("config.Validate found invalid code extractor", "extractor", code.Extractor.Type.String(), "system", system.ID, "code", code.ID, "error", err)
 				return
 			}
 
 			// Ensure include patterns are valid
-			for _, include := range code.Include {
+			for _, include := range code.Extractor.Include {
 				if !doublestar.ValidatePattern(include) {
 					err = errors.New("invalid code include pattern detected: " + system.ID + " > " + code.ID + " > " + include)
 					slog.Debug("config.Validate found invalid include pattern", "include", include, "system", system.ID, "code", code.ID, "error", err)
@@ -114,7 +114,7 @@ func validate(cfg *Config) (err error) {
 			}
 
 			// Ensure exclude patterns are valid
-			for _, exclude := range code.Exclude {
+			for _, exclude := range code.Extractor.Exclude {
 				if !doublestar.ValidatePattern(exclude) {
 					err = errors.New("invalid code exclude pattern detected: " + system.ID + " > " + code.ID + " > " + exclude)
 					slog.Debug("config.Validate found invalid exclude pattern", "exclude", exclude, "system", system.ID, "code", code.ID, "error", err)
@@ -142,14 +142,14 @@ func validate(cfg *Config) (err error) {
 			}
 
 			// Ensure extractor is valid
-			if !doc.Extractor.IsValidDocExtractor() {
-				err = errors.New("invalid doc extractor detected: " + system.ID + " > " + doc.ID + " > " + doc.Extractor.String())
-				slog.Debug("config.Validate found invalid doc extractor", "extractor", doc.Extractor.String(), "system", system.ID, "doc", doc.ID, "error", err)
+			if !doc.Extractor.Type.IsValidDocExtractor() {
+				err = errors.New("invalid doc extractor detected: " + system.ID + " > " + doc.ID + " > " + doc.Extractor.Type.String())
+				slog.Debug("config.Validate found invalid doc extractor", "extractor", doc.Extractor.Type.String(), "system", system.ID, "doc", doc.ID, "error", err)
 				return
 			}
 
 			// Ensure include patterns are valid
-			for _, include := range doc.Include {
+			for _, include := range doc.Extractor.Include {
 				if !doublestar.ValidatePattern(include) {
 					err = errors.New("invalid doc include pattern detected: " + system.ID + " > " + doc.ID + " > " + include)
 					slog.Debug("config.Validate found invalid doc include", "include", include, "system", system.ID, "doc", doc.ID, "error", err)
@@ -158,7 +158,7 @@ func validate(cfg *Config) (err error) {
 			}
 
 			// Ensure exclude patterns are valid
-			for _, exclude := range doc.Exclude {
+			for _, exclude := range doc.Extractor.Exclude {
 				if !doublestar.ValidatePattern(exclude) {
 					err = errors.New("invalid doc exclude pattern detected: " + system.ID + " > " + doc.ID + " > " + exclude)
 					slog.Debug("config.Validate found invalid doc exclude", "exclude", exclude, "system", system.ID, "doc", doc.ID, "error", err)
