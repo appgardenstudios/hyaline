@@ -386,22 +386,22 @@ func formatSections(sections []config.DocumentSection, prefix string, parents []
 	return str.String()
 }
 
-func checkUpdateIfs(id string, originalID string, action sqlite.Action, ruleDocsMap map[string][]config.Document) (results []ChangeResult) {
-	for docSource, ruleDocs := range ruleDocsMap {
-		for _, ruleDoc := range ruleDocs {
+func checkUpdateIfs(id string, originalID string, action sqlite.Action, desiredDocsMap map[string][]config.Document) (results []ChangeResult) {
+	for docSource, desiredDocs := range desiredDocsMap {
+		for _, desiredDoc := range desiredDocs {
 			// Check touched
-			for _, glob := range ruleDoc.UpdateIf.Touched {
+			for _, glob := range desiredDoc.UpdateIf.Touched {
 				if doublestar.MatchUnvalidated(glob, id) {
 					results = append(results, ChangeResult{
 						DocumentationSource: docSource,
-						Document:            ruleDoc.Path,
+						Document:            desiredDoc.Path,
 						Section:             []string{},
 						Reasons:             []string{fmt.Sprintf("Update this document if any files matching %s were touched", glob)},
 					})
 				} else if originalID != "" && doublestar.MatchUnvalidated(glob, originalID) {
 					results = append(results, ChangeResult{
 						DocumentationSource: docSource,
-						Document:            ruleDoc.Path,
+						Document:            desiredDoc.Path,
 						Section:             []string{},
 						Reasons:             []string{fmt.Sprintf("Update this document if any files matching %s were touched (%s was renamed to %s)", glob, originalID, id)},
 					})
@@ -411,11 +411,11 @@ func checkUpdateIfs(id string, originalID string, action sqlite.Action, ruleDocs
 			switch action {
 			case sqlite.ActionInsert:
 				// Check added
-				for _, glob := range ruleDoc.UpdateIf.Added {
+				for _, glob := range desiredDoc.UpdateIf.Added {
 					if doublestar.MatchUnvalidated(glob, id) {
 						results = append(results, ChangeResult{
 							DocumentationSource: docSource,
-							Document:            ruleDoc.Path,
+							Document:            desiredDoc.Path,
 							Section:             []string{},
 							Reasons:             []string{fmt.Sprintf("Update this document if any files matching %s were added", glob)},
 						})
@@ -423,11 +423,11 @@ func checkUpdateIfs(id string, originalID string, action sqlite.Action, ruleDocs
 				}
 			case sqlite.ActionModify:
 				// Check modified
-				for _, glob := range ruleDoc.UpdateIf.Modified {
+				for _, glob := range desiredDoc.UpdateIf.Modified {
 					if doublestar.MatchUnvalidated(glob, id) {
 						results = append(results, ChangeResult{
 							DocumentationSource: docSource,
-							Document:            ruleDoc.Path,
+							Document:            desiredDoc.Path,
 							Section:             []string{},
 							Reasons:             []string{fmt.Sprintf("Update this document if any files matching %s were modified", glob)},
 						})
@@ -435,11 +435,11 @@ func checkUpdateIfs(id string, originalID string, action sqlite.Action, ruleDocs
 				}
 			case sqlite.ActionRename:
 				// Check renamed
-				for _, glob := range ruleDoc.UpdateIf.Renamed {
+				for _, glob := range desiredDoc.UpdateIf.Renamed {
 					if doublestar.MatchUnvalidated(glob, id) || doublestar.MatchUnvalidated(glob, originalID) {
 						results = append(results, ChangeResult{
 							DocumentationSource: docSource,
-							Document:            ruleDoc.Path,
+							Document:            desiredDoc.Path,
 							Section:             []string{},
 							Reasons:             []string{fmt.Sprintf("Update this document if any files matching %s were renamed (%s was renamed to %s)", glob, id, originalID)},
 						})
@@ -447,11 +447,11 @@ func checkUpdateIfs(id string, originalID string, action sqlite.Action, ruleDocs
 				}
 			case sqlite.ActionDelete:
 				// Check deleted
-				for _, glob := range ruleDoc.UpdateIf.Deleted {
+				for _, glob := range desiredDoc.UpdateIf.Deleted {
 					if doublestar.MatchUnvalidated(glob, id) {
 						results = append(results, ChangeResult{
 							DocumentationSource: docSource,
-							Document:            ruleDoc.Path,
+							Document:            desiredDoc.Path,
 							Section:             []string{},
 							Reasons:             []string{fmt.Sprintf("Update this document if any files matching %s were deleted", glob)},
 						})
@@ -460,7 +460,7 @@ func checkUpdateIfs(id string, originalID string, action sqlite.Action, ruleDocs
 			}
 
 			// Check sections
-			results = append(results, checkSectionUpdateIfs(id, originalID, action, docSource, ruleDoc.Path, ruleDoc.Sections, []string{})...)
+			results = append(results, checkSectionUpdateIfs(id, originalID, action, docSource, desiredDoc.Path, desiredDoc.Sections, []string{})...)
 		}
 	}
 
