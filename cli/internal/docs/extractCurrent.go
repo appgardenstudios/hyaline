@@ -30,14 +30,14 @@ func ExtractCurrent(system *config.System, db *sql.DB) (err error) {
 		// Get document path
 		var path string
 		switch d.Extractor.Type {
-		case config.ExtractorFs:
+		case config.ExtractorTypeFs:
 			path = d.Extractor.Options.Path
-		case config.ExtractorGit:
+		case config.ExtractorTypeGit:
 			path = d.Extractor.Options.Path
 			if path == "" {
 				path = d.Extractor.Options.Repo
 			}
-		case config.ExtractorHttp:
+		case config.ExtractorTypeHttp:
 			u, err := url.Parse(d.Extractor.Options.BaseURL)
 			if err != nil {
 				slog.Debug("docs.ExtractCurrent could not parse base url", "system", system.ID, "docs", d.ID, "baseUrl", d.Extractor.Options.BaseURL)
@@ -59,19 +59,19 @@ func ExtractCurrent(system *config.System, db *sql.DB) (err error) {
 
 		// Extract based on the extractor
 		switch d.Extractor.Type {
-		case config.ExtractorFs:
+		case config.ExtractorTypeFs:
 			err = ExtractCurrentFs(system.ID, &d, db)
 			if err != nil {
 				slog.Debug("docs.ExtractCurrent could not extract docs using fs extractor", "error", err, "doc", d.ID)
 				return
 			}
-		case config.ExtractorGit:
+		case config.ExtractorTypeGit:
 			err = ExtractCurrentGit(system.ID, &d, db)
 			if err != nil {
 				slog.Debug("docs.ExtractCurrent could not extract docs using git extractor", "error", err, "doc", d.ID)
 				return
 			}
-		case config.ExtractorHttp:
+		case config.ExtractorTypeHttp:
 			err = ExtractCurrentHttp(system.ID, &d, db)
 			if err != nil {
 				slog.Debug("docs.ExtractCurrent could not extract docs using http extractor", "error", err, "doc", d.ID)

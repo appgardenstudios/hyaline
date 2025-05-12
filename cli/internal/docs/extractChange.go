@@ -16,7 +16,7 @@ func ExtractChange(system *config.System, head string, base string, db *sql.DB) 
 	// Process each docs source
 	for _, d := range system.DocumentationSources {
 		// Only extract changed code for git sources
-		if d.Extractor.Type != config.ExtractorGit {
+		if d.Extractor.Type != config.ExtractorTypeGit {
 			slog.Debug("code.ExtractChange skipping non-git code source", "system", system.ID, "doc", d.ID)
 			continue
 		}

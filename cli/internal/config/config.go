@@ -88,7 +88,7 @@ func (e ExtractorType) String() string {
 
 func (e ExtractorType) IsValidCodeExtractor() bool {
 	switch e {
-	case ExtractorFs, ExtractorGit:
+	case ExtractorTypeFs, ExtractorTypeGit:
 		return true
 	default:
 		return false
@@ -97,7 +97,7 @@ func (e ExtractorType) IsValidCodeExtractor() bool {
 
 func (e ExtractorType) IsValidDocExtractor() bool {
 	switch e {
-	case ExtractorFs, ExtractorGit, ExtractorHttp:
+	case ExtractorTypeFs, ExtractorTypeGit, ExtractorTypeHttp:
 		return true
 	default:
 		return false
@@ -105,9 +105,9 @@ func (e ExtractorType) IsValidDocExtractor() bool {
 }
 
 const (
-	ExtractorFs   ExtractorType = "fs"
-	ExtractorGit  ExtractorType = "git"
-	ExtractorHttp ExtractorType = "http"
+	ExtractorTypeFs   ExtractorType = "fs"
+	ExtractorTypeGit  ExtractorType = "git"
+	ExtractorTypeHttp ExtractorType = "http"
 )
 
 // Note: there should be a better way rather than crunching everything together

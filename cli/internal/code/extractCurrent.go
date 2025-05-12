@@ -24,9 +24,9 @@ func ExtractCurrent(system *config.System, db *sql.DB) (err error) {
 		// Get document path
 		var path string
 		switch c.Extractor.Type {
-		case config.ExtractorFs:
+		case config.ExtractorTypeFs:
 			path = c.Extractor.Options.Path
-		case config.ExtractorGit:
+		case config.ExtractorTypeGit:
 			path = c.Extractor.Options.Path
 			if path == "" {
 				path = c.Extractor.Options.Repo
@@ -46,13 +46,13 @@ func ExtractCurrent(system *config.System, db *sql.DB) (err error) {
 
 		// Extract based on the extractor
 		switch c.Extractor.Type {
-		case config.ExtractorFs:
+		case config.ExtractorTypeFs:
 			err = ExtractCurrentFs(system.ID, &c, db)
 			if err != nil {
 				slog.Debug("code.ExtractCurrent could not extract code using fs extractor", "error", err, "code", c.ID)
 				return
 			}
-		case config.ExtractorGit:
+		case config.ExtractorTypeGit:
 			err = ExtractCurrentGit(system.ID, &c, db)
 			if err != nil {
 				slog.Debug("code.ExtractCurrent could not extract code using git extractor", "error", err, "code", c.ID)
