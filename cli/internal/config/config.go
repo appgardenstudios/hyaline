@@ -1,10 +1,10 @@
 package config
 
 type Config struct {
-	LLM     LLM       `yaml:"llm,omitempty"`
-	GitHub  GitHub    `yaml:"github,omitempty"`
-	Systems []System  `yaml:"systems,omitempty"`
-	Rules   []RuleSet `yaml:"rules,omitempty"`
+	LLM             LLM           `yaml:"llm,omitempty"`
+	GitHub          GitHub        `yaml:"github,omitempty"`
+	Systems         []System      `yaml:"systems,omitempty"`
+	CommonDocuments []DocumentSet `yaml:"commonDocuments,omitempty"`
 }
 
 func (c *Config) GetSystem(id string) (system System, found bool) {
@@ -17,10 +17,10 @@ func (c *Config) GetSystem(id string) (system System, found bool) {
 	return
 }
 
-func (c *Config) GetRuleSet(id string) (ruleSet RuleSet, found bool) {
-	for _, r := range c.Rules {
-		if r.ID == id {
-			return r, true
+func (c *Config) GetCommonDocumentSet(id string) (documentSet DocumentSet, found bool) {
+	for _, s := range c.CommonDocuments {
+		if s.ID == id {
+			return s, true
 		}
 	}
 
@@ -151,11 +151,62 @@ type CodeSource struct {
 }
 
 type DocumentationSource struct {
-	ID        string                     `yaml:"id,omitempty"`
-	Type      DocType                    `yaml:"type,omitempty"`
-	Options   DocumentationSourceOptions `yaml:"options,omitempty"`
-	Extractor Extractor                  `yaml:"extractor,omitempty"`
-	Rules     []string                   `yaml:"rules,omitempty"`
+	ID               string                     `yaml:"id,omitempty"`
+	Type             DocType                    `yaml:"type,omitempty"`
+	Options          DocumentationSourceOptions `yaml:"options,omitempty"`
+	Extractor        Extractor                  `yaml:"extractor,omitempty"`
+	IncludeDocuments []string                   `yaml:"includeDocuments,omitempty"`
+	Documents        []Document                 `yaml:"documents,omitempty"`
+}
+
+func (d *DocumentationSource) GetDocuments(c *Config) (documents []Document) {
+	// create a map of added documents so we can see what we have already added
+	documentMap := map[string]struct{}{}
+
+	// Add all documents from our documentation source first
+	for _, document := range d.Documents {
+		_, found := documentMap[document.Path]
+		if found {
+			// TODO log
+		} else {
+			documentMap[document.Path] = struct{}{}
+			documents = append(documents, document)
+		}
+
+	}
+
+	// Add documents from our common documents so that documents in later sets take priority of those
+	// in earlier sets as defined by the order of the commonDocument IDs.
+	for i := len(d.IncludeDocuments) - 1; i >= 0; i-- {
+		documentSetID := d.IncludeDocuments[i]
+		docSet, docSetFound := c.GetCommonDocumentSet(documentSetID)
+		if !docSetFound {
+			// TODO log
+			continue
+		}
+
+		for _, document := range docSet.Documents {
+			_, found := documentMap[document.Path]
+			if found {
+				// TODO log
+			} else {
+				documentMap[document.Path] = struct{}{}
+				documents = append(documents, document)
+			}
+		}
+	}
+
+	return
+}
+
+func (d *DocumentationSource) GetDocument(c *Config, path string) (document Document, found bool) {
+	for _, doc := range d.GetDocuments(c) {
+		if doc.Path == path {
+			return doc, true
+		}
+	}
+
+	return
 }
 
 type DocType string
@@ -182,12 +233,12 @@ type DocumentationSourceOptions struct {
 	Selector string `yaml:"selector,omitempty"`
 }
 
-type RuleSet struct {
-	ID        string         `yaml:"id,omitempty"`
-	Documents []RuleDocument `yaml:"documents,omitempty"`
+type DocumentSet struct {
+	ID        string     `yaml:"id,omitempty"`
+	Documents []Document `yaml:"documents,omitempty"`
 }
 
-type RuleDocument struct {
+type Document struct {
 	Path     string                `yaml:"path,omitempty"`
 	Purpose  string                `yaml:"purpose,omitempty"`
 	Required bool                  `yaml:"required,omitempty"`

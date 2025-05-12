@@ -165,15 +165,10 @@ func CheckChange(args *CheckChangeArgs) error {
 		Recommendations: []CheckChangeOutputEntry{},
 	}
 
-	// Get the full set of ruleDocuments that apply to this system mapped by documentationSource
-	ruleDocsMap := make(map[string][]config.RuleDocument)
-	for _, doc := range system.DocumentationSources {
-		ruleDocs := []config.RuleDocument{}
-		for _, ruleID := range doc.Rules {
-			rules := config.GetRule(cfg.Rules, ruleID)
-			ruleDocs = append(ruleDocs, rules.Documents...)
-		}
-		ruleDocsMap[doc.ID] = ruleDocs
+	// Get the full set of desiredDocuments that apply to this system mapped by documentationSource
+	desiredDocsMap := make(map[string][]config.Document)
+	for _, docSource := range system.DocumentationSources {
+		desiredDocsMap[docSource.ID] = docSource.GetDocuments(cfg)
 	}
 
 	// Get a map of the documents that have been updated as a part of this change (by documentation source)
@@ -187,7 +182,7 @@ func CheckChange(args *CheckChangeArgs) error {
 		updatedDocumentMap[doc.ID] = documents
 	}
 
-	// Initalize our results map used to collect results across all code sources
+	// Initialize our results map used to collect results across all code sources
 	resultsMap := make(map[CheckChangeResultKey]*check.ChangeResult)
 
 	// Get the set of documents/sections that need to be updated for each code change in each code source
@@ -203,7 +198,7 @@ func CheckChange(args *CheckChangeArgs) error {
 
 		// Check each file against our full set of documentation
 		for _, file := range files {
-			arr, err := check.Change(file, c, ruleDocsMap, pullRequests, issues, currentDB, changeDB, &cfg.LLM)
+			arr, err := check.Change(file, c, desiredDocsMap, pullRequests, issues, currentDB, changeDB, &cfg.LLM)
 			results = append(results, arr...)
 			if err != nil {
 				slog.Debug("action.CheckChange could not check change", "file", file.ID, "system", args.System, "error", err)
@@ -261,7 +256,7 @@ func CheckChange(args *CheckChangeArgs) error {
 	// Suggest change(s) (if flag is set)
 	if args.Suggest {
 		for idx, entry := range output.Recommendations {
-			// Get purpose from ruleDoc
+			// Get purpose from desiredDoc
 			purpose, _ := config.GetPurpose(entry.System, entry.DocumentationSource, entry.Document, entry.Section, cfg)
 			suggestion, err := suggest.Change(entry.System, entry.DocumentationSource, entry.Document, entry.Section, purpose, entry.Reasons, entry._References, pullRequests, issues, &cfg.LLM, currentDB)
 			if err != nil {

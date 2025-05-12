@@ -29,7 +29,7 @@ type ChangeResultReference struct {
 	Diff   string
 }
 
-func Change(file *sqlite.File, codeSource config.CodeSource, ruleDocsMap map[string][]config.RuleDocument, pullRequests []*sqlite.PullRequest, issues []*sqlite.Issue, currentDB *sql.DB, changeDB *sql.DB, cfg *config.LLM) (results []ChangeResult, err error) {
+func Change(file *sqlite.File, codeSource config.CodeSource, ruleDocsMap map[string][]config.Document, pullRequests []*sqlite.PullRequest, issues []*sqlite.Issue, currentDB *sql.DB, changeDB *sql.DB, cfg *config.LLM) (results []ChangeResult, err error) {
 	slog.Debug("check.Change checking file", "file", file.ID)
 
 	// Get original ID and contents so we can calculate a diff
@@ -102,7 +102,7 @@ type checkLLMNeedsUpdateSchemaEntry struct {
 type checkLLMNoUpdateNeededSchema struct {
 }
 
-func checkLLM(file *sqlite.File, codeSource config.CodeSource, textDiff string, ruleDocsMap map[string][]config.RuleDocument, pullRequests []*sqlite.PullRequest, issues []*sqlite.Issue, currentDB *sql.DB, changeDB *sql.DB, cfg *config.LLM) (results []ChangeResult, err error) {
+func checkLLM(file *sqlite.File, codeSource config.CodeSource, textDiff string, ruleDocsMap map[string][]config.Document, pullRequests []*sqlite.PullRequest, issues []*sqlite.Issue, currentDB *sql.DB, changeDB *sql.DB, cfg *config.LLM) (results []ChangeResult, err error) {
 	slog.Debug("check.checkLLM checking file", "file", file.ID)
 
 	// Generate the system and user prompt
@@ -285,7 +285,7 @@ type documentMapEntry struct {
 	Section             []string
 }
 
-func formatDocuments(ruleDocsMap map[string][]config.RuleDocument) (string, map[string]documentMapEntry) {
+func formatDocuments(ruleDocsMap map[string][]config.Document) (string, map[string]documentMapEntry) {
 	var documents strings.Builder
 	documentMap := make(map[string]documentMapEntry)
 	indent := 0
@@ -386,7 +386,7 @@ func formatSections(sections []config.RuleDocumentSection, prefix string, parent
 	return str.String()
 }
 
-func checkUpdateIfs(id string, originalID string, action sqlite.Action, ruleDocsMap map[string][]config.RuleDocument) (results []ChangeResult) {
+func checkUpdateIfs(id string, originalID string, action sqlite.Action, ruleDocsMap map[string][]config.Document) (results []ChangeResult) {
 	for docSource, ruleDocs := range ruleDocsMap {
 		for _, ruleDoc := range ruleDocs {
 			// Check touched

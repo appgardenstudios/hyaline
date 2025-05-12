@@ -45,9 +45,9 @@ systems:
                 password: ${HYALINE_SSH_PASSWORD}
           include:
             - "**/*.md"
-        rules: [check-change]
+        includeDocuments: [check-change]
 
-rules:
+commonDocuments:
   - id: check-change
     documents:
       - path: docs/subdir.md

@@ -168,9 +168,10 @@ func validate(cfg *Config) (err error) {
 		}
 	}
 
-	// Validate Rules
+	// Validate desiredDocuments
+	// TODO
 	ruleIDs := map[string]struct{}{}
-	for _, rule := range cfg.Rules {
+	for _, rule := range cfg.CommonDocuments {
 		if _, ok := ruleIDs[rule.ID]; ok {
 			err = errors.New("duplicate rule id detected: " + rule.ID)
 			slog.Debug("config.Validate found duplicate rule id", "rule", rule.ID, "error", err)

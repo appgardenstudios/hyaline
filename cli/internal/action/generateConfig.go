@@ -80,9 +80,9 @@ func GenerateConfig(args *GenerateConfigArgs) error {
 	// Loop through docs in our current system and generate a config for each
 	for _, d := range system.DocumentationSources {
 		// Create a rule for this documentation
-		rule := config.RuleSet{
+		rule := config.DocumentSet{
 			ID:        d.ID,
-			Documents: []config.RuleDocument{},
+			Documents: []config.Document{},
 		}
 
 		// Get a list of Documents from the db for this doc ID
@@ -95,11 +95,11 @@ func GenerateConfig(args *GenerateConfigArgs) error {
 		// Loop through each document to generate rules for it
 		for _, doc := range documents {
 			slog.Info("Processing document", "document", doc.ID)
-			// Get the ruleDoc for this document (if any)
-			ruleDoc, ruleDocFound := config.GetRuleDocument(cfg.Rules, d.Rules, doc.ID)
+			// Get the desiredDoc for this document (if any)
+			desiredDoc, desiredDocFound := d.GetDocument(cfg, doc.ID)
 
-			// If there is no rule, create it
-			if !ruleDocFound {
+			// If there is no desired document found, create it
+			if !desiredDocFound {
 				// If IncludePurpose flag is set, get purpose
 				purpose := ""
 				if args.IncludePurpose {
@@ -111,7 +111,7 @@ func GenerateConfig(args *GenerateConfigArgs) error {
 				}
 
 				// Create rule for the document
-				ruleDoc = config.RuleDocument{
+				desiredDoc = config.Document{
 					Path:     doc.ID,
 					Purpose:  purpose,
 					Required: true,
@@ -124,19 +124,19 @@ func GenerateConfig(args *GenerateConfigArgs) error {
 				slog.Debug("action.GenerateConfig could not get sections for a document from current db", "document", doc.ID, "doc", d.ID, "system", system.ID, "error", err)
 				return err
 			}
-			newSections, err := createRuleSections(sections, doc.ID, ruleDoc.Sections, args.IncludePurpose, doc.ID, ruleDoc.Purpose, &cfg.LLM)
+			newSections, err := createRuleSections(sections, doc.ID, desiredDoc.Sections, args.IncludePurpose, doc.ID, desiredDoc.Purpose, &cfg.LLM)
 			if err != nil {
 				slog.Debug("action.GenerateConfig could not generate sections for a document from current db", "document", doc.ID, "doc", d.ID, "system", system.ID, "error", err)
 				return err
 			}
-			ruleDoc.Sections = newSections
+			desiredDoc.Sections = newSections
 
 			// Add ruleDoc to rule
-			rule.Documents = append(rule.Documents, ruleDoc)
+			rule.Documents = append(rule.Documents, desiredDoc)
 		}
 
 		// Add rule to config
-		newCfg.Rules = append(newCfg.Rules, rule)
+		newCfg.CommonDocuments = append(newCfg.CommonDocuments, rule)
 	}
 
 	// Output new config
