@@ -302,33 +302,69 @@ func TestValidate(t *testing.T) {
 	invalidLLM := LLM{
 		Provider: "invalid",
 	}
-	rule := DocumentSet{
+	documentSet := DocumentSet{
 		ID: "test",
+	}
+	documentPath := DocumentationSource{
+		ID:        "1234",
+		Type:      "md",
+		Extractor: Extractor{Type: "fs"},
+		Documents: []Document{
+			{Path: "path"},
+		},
+	}
+	includedDocuments := DocumentationSource{
+		ID:               "1234",
+		Type:             "md",
+		Extractor:        Extractor{Type: "fs"},
+		IncludeDocuments: []string{"test"},
+		Documents: []Document{
+			{Path: "path"},
+		},
+	}
+	duplicateDocumentPath := DocumentationSource{
+		ID:        "1234",
+		Type:      "md",
+		Extractor: Extractor{Type: "fs"},
+		Documents: []Document{
+			{Path: "path"},
+			{Path: "path"},
+		},
+	}
+	documentSet2 := DocumentSet{
+		ID: "test",
+		Documents: []Document{{
+			Path: "path",
+		}},
 	}
 
 	var tests = []struct {
 		llm         LLM
 		code        []CodeSource
 		docs        []DocumentationSource
-		rules       []DocumentSet
+		documents   []DocumentSet
 		shouldError bool
 	}{
-		{LLM{}, []CodeSource{}, []DocumentationSource{}, []DocumentSet{}, false},
+		{LLM{}, []CodeSource{}, []DocumentationSource{}, []DocumentSet{}, false}, // 0
 		{LLM{}, []CodeSource{code}, []DocumentationSource{}, []DocumentSet{}, false},
 		{LLM{}, []CodeSource{}, []DocumentationSource{doc}, []DocumentSet{}, false},
 		{LLM{}, []CodeSource{code}, []DocumentationSource{doc}, []DocumentSet{}, false},
 		{LLM{}, []CodeSource{code, code}, []DocumentationSource{doc}, []DocumentSet{}, true},
-		{LLM{}, []CodeSource{code}, []DocumentationSource{doc, doc}, []DocumentSet{}, true},
+		{LLM{}, []CodeSource{code}, []DocumentationSource{doc, doc}, []DocumentSet{}, true}, // 5
 		{LLM{}, []CodeSource{code}, []DocumentationSource{invalidDoc}, []DocumentSet{}, true},
 		{LLM{}, []CodeSource{invalidCodeInclude}, []DocumentationSource{}, []DocumentSet{}, true},
 		{LLM{}, []CodeSource{invalidCodeExclude}, []DocumentationSource{}, []DocumentSet{}, true},
 		{LLM{}, []CodeSource{}, []DocumentationSource{invalidDocInclude}, []DocumentSet{}, true},
-		{LLM{}, []CodeSource{}, []DocumentationSource{invalidDocExclude}, []DocumentSet{}, true},
+		{LLM{}, []CodeSource{}, []DocumentationSource{invalidDocExclude}, []DocumentSet{}, true}, // 10
 		{LLM{}, []CodeSource{invalidCodeExtractor}, []DocumentationSource{}, []DocumentSet{}, true},
 		{LLM{}, []CodeSource{}, []DocumentationSource{invalidDocExtractor}, []DocumentSet{}, true},
 		{invalidLLM, []CodeSource{}, []DocumentationSource{}, []DocumentSet{}, true},
-		{LLM{}, []CodeSource{}, []DocumentationSource{}, []DocumentSet{rule}, false},
-		{LLM{}, []CodeSource{}, []DocumentationSource{}, []DocumentSet{rule, rule}, true},
+		{LLM{}, []CodeSource{}, []DocumentationSource{}, []DocumentSet{documentSet}, false},
+		{LLM{}, []CodeSource{}, []DocumentationSource{}, []DocumentSet{documentSet, documentSet}, true}, // 15
+		{LLM{}, []CodeSource{}, []DocumentationSource{documentPath}, []DocumentSet{}, false},
+		{LLM{}, []CodeSource{}, []DocumentationSource{includedDocuments}, []DocumentSet{documentSet}, false},
+		{LLM{}, []CodeSource{}, []DocumentationSource{includedDocuments}, []DocumentSet{documentSet2}, true},
+		{LLM{}, []CodeSource{}, []DocumentationSource{duplicateDocumentPath}, []DocumentSet{}, true},
 	}
 
 	for i, test := range tests {
@@ -339,7 +375,7 @@ func TestValidate(t *testing.T) {
 				CodeSources:          test.code,
 				DocumentationSources: test.docs,
 			}},
-			CommonDocuments: test.rules,
+			CommonDocuments: test.documents,
 		}
 
 		err := validate(cfg)
