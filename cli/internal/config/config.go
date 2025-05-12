@@ -166,9 +166,7 @@ func (d *DocumentationSource) GetDocuments(c *Config) (documents []Document) {
 	// Add all documents from our documentation source first
 	for _, document := range d.Documents {
 		_, found := documentMap[document.Path]
-		if found {
-			// TODO log
-		} else {
+		if !found {
 			documentMap[document.Path] = struct{}{}
 			documents = append(documents, document)
 		}
@@ -181,15 +179,12 @@ func (d *DocumentationSource) GetDocuments(c *Config) (documents []Document) {
 		documentSetID := d.IncludeDocuments[i]
 		docSet, docSetFound := c.GetCommonDocumentSet(documentSetID)
 		if !docSetFound {
-			// TODO log
 			continue
 		}
 
 		for _, document := range docSet.Documents {
 			_, found := documentMap[document.Path]
-			if found {
-				// TODO log
-			} else {
+			if !found {
 				documentMap[document.Path] = struct{}{}
 				documents = append(documents, document)
 			}
