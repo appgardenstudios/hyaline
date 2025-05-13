@@ -165,9 +165,9 @@ func (d *DocumentationSource) GetDocuments(c *Config) (documents []Document) {
 
 	// Add all documents from our documentation source first
 	for _, document := range d.Documents {
-		_, found := documentMap[document.Path]
+		_, found := documentMap[document.Name]
 		if !found {
-			documentMap[document.Path] = struct{}{}
+			documentMap[document.Name] = struct{}{}
 			documents = append(documents, document)
 		}
 
@@ -183,9 +183,9 @@ func (d *DocumentationSource) GetDocuments(c *Config) (documents []Document) {
 		}
 
 		for _, document := range docSet.Documents {
-			_, found := documentMap[document.Path]
+			_, found := documentMap[document.Name]
 			if !found {
-				documentMap[document.Path] = struct{}{}
+				documentMap[document.Name] = struct{}{}
 				documents = append(documents, document)
 			}
 		}
@@ -196,7 +196,7 @@ func (d *DocumentationSource) GetDocuments(c *Config) (documents []Document) {
 
 func (d *DocumentationSource) GetDocument(c *Config, path string) (document Document, found bool) {
 	for _, doc := range d.GetDocuments(c) {
-		if doc.Path == path {
+		if doc.Name == path {
 			return doc, true
 		}
 	}
@@ -234,7 +234,7 @@ type DocumentSet struct {
 }
 
 type Document struct {
-	Path     string            `yaml:"path,omitempty"`
+	Name     string            `yaml:"name,omitempty"`
 	Purpose  string            `yaml:"purpose,omitempty"`
 	Required bool              `yaml:"required,omitempty"`
 	Ignore   bool              `yaml:"ignore,omitempty"`
@@ -243,7 +243,7 @@ type Document struct {
 }
 
 type DocumentSection struct {
-	ID       string            `yaml:"id,omitempty"`
+	Name     string            `yaml:"name,omitempty"`
 	Purpose  string            `yaml:"purpose,omitempty"`
 	Required bool              `yaml:"required,omitempty"`
 	Ignore   bool              `yaml:"ignore,omitempty"`
@@ -252,14 +252,14 @@ type DocumentSection struct {
 }
 
 type UpdateIf struct {
-	Touched  []UpdateIfOptions `yaml:"touched,omitempty"`
-	Added    []UpdateIfOptions `yaml:"added,omitempty"`
-	Modified []UpdateIfOptions `yaml:"modified,omitempty"`
-	Deleted  []UpdateIfOptions `yaml:"deleted,omitempty"`
-	Renamed  []UpdateIfOptions `yaml:"renamed,omitempty"`
+	Touched  []UpdateIfEntry `yaml:"touched,omitempty"`
+	Added    []UpdateIfEntry `yaml:"added,omitempty"`
+	Modified []UpdateIfEntry `yaml:"modified,omitempty"`
+	Deleted  []UpdateIfEntry `yaml:"deleted,omitempty"`
+	Renamed  []UpdateIfEntry `yaml:"renamed,omitempty"`
 }
 
-type UpdateIfOptions struct {
+type UpdateIfEntry struct {
 	CodeSource string `yaml:"codeID,omitempty"`
 	Glob       string `yaml:"glob,omitempty"`
 }

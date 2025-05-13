@@ -170,13 +170,13 @@ func validate(cfg *Config) (err error) {
 			desiredDocIDs := map[string]struct{}{}
 			// Ensure there are no dupes in documents
 			for _, document := range docSource.Documents {
-				_, found := desiredDocIDs[document.Path]
+				_, found := desiredDocIDs[document.Name]
 				if found {
-					err = fmt.Errorf("duplicate desired document path detected: %s > %s > %s", system.ID, docSource.ID, document.Path)
-					slog.Debug("config.Validate found duplicate desired document id", "system", system.ID, "documentation", docSource.ID, "document", document.Path, "error", err)
+					err = fmt.Errorf("duplicate desired document path detected: %s > %s > %s", system.ID, docSource.ID, document.Name)
+					slog.Debug("config.Validate found duplicate desired document id", "system", system.ID, "documentation", docSource.ID, "document", document.Name, "error", err)
 					return
 				}
-				desiredDocIDs[document.Path] = struct{}{}
+				desiredDocIDs[document.Name] = struct{}{}
 			}
 
 			// Ensure that there are no dupes in includedDocuments and that every ID resolves
@@ -189,13 +189,13 @@ func validate(cfg *Config) (err error) {
 				}
 
 				for _, document := range includedDocSet.Documents {
-					_, found := desiredDocIDs[document.Path]
+					_, found := desiredDocIDs[document.Name]
 					if found {
-						err = fmt.Errorf("duplicate desired document path detected in common document: %s > %s > %s", system.ID, docSource.ID, document.Path)
-						slog.Debug("config.Validate found duplicate desired document id", "system", system.ID, "documentation", docSource.ID, "document", document.Path, "includedDocument", docID, "error", err)
+						err = fmt.Errorf("duplicate desired document path detected in common document: %s > %s > %s", system.ID, docSource.ID, document.Name)
+						slog.Debug("config.Validate found duplicate desired document id", "system", system.ID, "documentation", docSource.ID, "document", document.Name, "includedDocument", docID, "error", err)
 						return
 					}
-					desiredDocIDs[document.Path] = struct{}{}
+					desiredDocIDs[document.Name] = struct{}{}
 				}
 			}
 		}

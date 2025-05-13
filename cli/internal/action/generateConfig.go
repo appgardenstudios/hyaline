@@ -112,7 +112,7 @@ func GenerateConfig(args *GenerateConfigArgs) error {
 
 				// Create desired document for the document
 				desiredDoc = config.Document{
-					Path:     doc.ID,
+					Name:     doc.ID,
 					Purpose:  purpose,
 					Required: true,
 				}
@@ -190,7 +190,7 @@ func createRuleSections(sections []*sqlite.Section, parentID string, existingSec
 
 				// Create new doc section
 				docSection = config.DocumentSection{
-					ID:       section.Name,
+					Name:     section.Name,
 					Purpose:  purpose,
 					Required: true,
 				}
@@ -214,7 +214,7 @@ func createRuleSections(sections []*sqlite.Section, parentID string, existingSec
 
 func getRuleSection(sectionID string, sections []config.DocumentSection) (sectionFound bool, section config.DocumentSection) {
 	for _, section = range sections {
-		if section.ID == sectionID {
+		if section.Name == sectionID {
 			return true, section
 		}
 	}
