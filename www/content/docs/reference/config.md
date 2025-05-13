@@ -71,8 +71,8 @@ systems:
         extractor:
           type: fs | git
           options: {...} # Dependent on the extractor type
-          include: [glob]
-          exclude: [glob]
+          include: [package.json, "**/*.js"]
+          exclude: ["**/*.test.js"]
 ```
 
 **type**: The type of the extractor. For Code Sources there are two extractor types available: `fs` and `git`. For more information see extractor details below.
@@ -223,8 +223,8 @@ systems:
         extractor:
           type: fs | git | http
           options: {...} # Dependent on the extractor type
-          include: [glob]
-          exclude: [glob]
+          include: ["**/*.md"]
+          exclude: ["LICENSE.md"]
 ```
 
 **type**: The type of the extractor. For Documentation Sources there are three extractor types available: `fs`, `git`, and `http`. For more information see extractor details below.
@@ -348,7 +348,123 @@ systems:
 **headers**: A set of (optional) headers to include with each request.
 
 #### Documentation Source Documents
-TODO
+Documents describing the desired layout and contents of each piece of documentation for this documentation source.
+
+```yaml
+systems:
+  - id: system1
+    documentation:
+      - id: documentationSource1
+        documents:
+          - name: README.md
+            purpose: The purpose of this document is...
+            required: true
+            ignore: false
+            updateIf: {...}
+            sections:
+              - name: Running Locally
+                purpose: The purpose of this section is...
+                ...
+```
+
+**name**: The name of the document, including the relative path (uses the same relative path logic as Include/Exclude).
+
+**purpose**: The purpose of the document.
+
+**required**: True if this document is required (default false).
+
+**ignore**: True if this document should be ignored (default false).
+
+**updateIf**: Configuration on when to update this document based on code changes that may occur.
+
+**sections**: A list of document sections.
+
+##### Documentation Source Document Update If
+Conditions in which documentation should be reviewed and/or updated based on code changes that may occur.
+
+```yaml
+systems:
+  - id: system1
+    documentation:
+      - id: documentationSource1
+        documents:
+          - name: README.md
+            updateIf:
+              touched: [...]
+              added: [...]
+              modified: [...]
+              deleted: [...]
+              renamed: [...]
+```
+
+**touched**: A list of entries detailing that this document should be updated if any matching files are touched.
+
+**added**: A list of entries detailing that this document should be updated if any matching files are added.
+
+**modified**: A list of entries detailing that this document should be updated if any matching files are modified.
+
+**deleted**: A list of entries detailing that this document should be updated if any matching files are deleted.
+
+**renamed**: A list of entries detailing that this document should be updated if any matching files are renamed.
+
+
+##### Documentation Source Document Update If Entry
+Specifies which files should be looked at to see if a document or section should be updated.
+
+```yaml
+systems:
+  - id: system1
+    documentation:
+      - id: documentationSource1
+        documents:
+          - name: README.md
+            updateIf:
+              touched:
+                - codeID: "*"
+                  glob: "subDir1/**/*.js"
+                - codeID: "codeSource1"
+                  glob: "subDir2/**/*.js"
+                - glob: "subDir3/**/*.js"
+```
+
+**codeID**: The ID of the code source in the system that should be matched against. If blank or `*` it will match against any code source.
+
+**glob**: The glob to use for matching files. This uses the [doublestar](https://pkg.go.dev/github.com/bmatcuk/doublestar/v4) package to match paths. File paths are matched using the same logic as that the file's code source extractor configuration uses.
+
+##### Documentation Source Document Sections
+Sections describing the desired layout and contents of each section of documentation for this document in this documentation source.
+
+```yaml
+systems:
+  - id: system1
+    documentation:
+      - id: documentationSource1
+        documents:
+          - name: README.md
+            purpose: The purpose of this document is...
+            required: true
+            ignore: false
+            updateIf: {...}
+            sections:
+              - name: Running Locally
+                purpose: The purpose of this section is...
+                required: true
+                ignore: false
+                updateIf: {...}
+                sections: [...]
+```
+
+**name**: The name of the section. Note that the section name cannot contain `#`.
+
+**purpose**: The purpose of the section.
+
+**required**: True if this section is required (default false).
+
+**ignore**: True if this section should be ignored (default false).
+
+**updateIf**: Configuration on when to update this section based on code changes that may occur. These operate the same way as the updateIfs at the document level (see above for documentation).
+
+**sections**: A list of child sections matching this same schema.
 
 #### Documentation Source Include Documents
 TODO
