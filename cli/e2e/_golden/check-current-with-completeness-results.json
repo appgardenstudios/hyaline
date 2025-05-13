@@ -4,7 +4,6 @@
       "system": "check-current",
       "documentationSource": "app",
       "document": "README.md",
-      "rule": "check-current",
       "check": "COMPLETE",
       "result": "ERROR",
       "message": "This document is not complete. "
@@ -13,8 +12,7 @@
       "system": "check-current",
       "documentationSource": "app",
       "document": "README.md",
-      "rule": "check-current",
-      "check": "REQUIRED",
+      "check": "DESIRED_DOCUMENT_EXISTS",
       "result": "PASS",
       "message": ""
     },
@@ -22,8 +20,7 @@
       "system": "check-current",
       "documentationSource": "app",
       "document": "README.md",
-      "rule": "check-current",
-      "check": "RULE_EXISTS",
+      "check": "REQUIRED",
       "result": "PASS",
       "message": ""
     },
@@ -34,7 +31,6 @@
       "section": [
         "Example"
       ],
-      "rule": "check-current",
       "check": "COMPLETE",
       "result": "ERROR",
       "message": "This section is not complete. "
@@ -47,7 +43,6 @@
         "Example",
         "Subsection 1"
       ],
-      "rule": "check-current",
       "check": "COMPLETE",
       "result": "SKIPPED",
       "message": ""
@@ -60,7 +55,6 @@
         "Example",
         "Subsection 2"
       ],
-      "rule": "check-current",
       "check": "COMPLETE",
       "result": "ERROR",
       "message": "This section is not complete. "
@@ -73,7 +67,6 @@
         "Example",
         "Subsection 2"
       ],
-      "rule": "check-current",
       "check": "REQUIRED",
       "result": "PASS",
       "message": ""
@@ -85,7 +78,6 @@
       "section": [
         "Running Locally"
       ],
-      "rule": "check-current",
       "check": "COMPLETE",
       "result": "ERROR",
       "message": "This section does not exist"
@@ -97,7 +89,6 @@
       "section": [
         "Running Locally"
       ],
-      "rule": "check-current",
       "check": "REQUIRED",
       "result": "ERROR",
       "message": "This section is marked as required"
@@ -109,8 +100,7 @@
       "section": [
         "Example"
       ],
-      "rule": "check-current",
-      "check": "RULE_EXISTS",
+      "check": "DESIRED_DOCUMENT_EXISTS",
       "result": "PASS",
       "message": ""
     },
@@ -122,8 +112,7 @@
         "Example",
         "Subsection 1"
       ],
-      "rule": "check-current",
-      "check": "RULE_EXISTS",
+      "check": "DESIRED_DOCUMENT_EXISTS",
       "result": "PASS",
       "message": ""
     },
@@ -135,8 +124,7 @@
         "Example",
         "Subsection 2"
       ],
-      "rule": "check-current",
-      "check": "RULE_EXISTS",
+      "check": "DESIRED_DOCUMENT_EXISTS",
       "result": "PASS",
       "message": ""
     },
@@ -144,10 +132,9 @@
       "system": "check-current",
       "documentationSource": "app",
       "document": "docs/docsDoc.md",
-      "rule": "",
-      "check": "RULE_EXISTS",
+      "check": "DESIRED_DOCUMENT_EXISTS",
       "result": "ERROR",
-      "message": "Document docs/docsDoc.md does not have a corresponding rule"
+      "message": "Document docs/docsDoc.md does not have a corresponding desired document"
     },
     {
       "system": "check-current",
@@ -156,16 +143,14 @@
       "section": [
         "This is a test"
       ],
-      "rule": "",
-      "check": "RULE_EXISTS",
+      "check": "DESIRED_DOCUMENT_EXISTS",
       "result": "ERROR",
-      "message": "Section docs/docsDoc.md#This is a test does not have a corresponding rule"
+      "message": "Section docs/docsDoc.md#This is a test does not have a corresponding desired document section"
     },
     {
       "system": "check-current",
       "documentationSource": "app",
       "document": "docs/preDoc.md",
-      "rule": "check-current",
       "check": "COMPLETE",
       "result": "ERROR",
       "message": "This document is not complete. "
@@ -174,8 +159,7 @@
       "system": "check-current",
       "documentationSource": "app",
       "document": "docs/preDoc.md",
-      "rule": "check-current",
-      "check": "REQUIRED",
+      "check": "DESIRED_DOCUMENT_EXISTS",
       "result": "PASS",
       "message": ""
     },
@@ -183,8 +167,7 @@
       "system": "check-current",
       "documentationSource": "app",
       "document": "docs/preDoc.md",
-      "rule": "check-current",
-      "check": "RULE_EXISTS",
+      "check": "REQUIRED",
       "result": "PASS",
       "message": ""
     },
@@ -195,16 +178,14 @@
       "section": [
         "A Random Heading"
       ],
-      "rule": "",
-      "check": "RULE_EXISTS",
+      "check": "DESIRED_DOCUMENT_EXISTS",
       "result": "ERROR",
-      "message": "Section docs/preDoc.md#A Random Heading does not have a corresponding rule"
+      "message": "Section docs/preDoc.md#A Random Heading does not have a corresponding desired document section"
     },
     {
       "system": "check-current",
       "documentationSource": "app",
       "document": "docs/subdir.md",
-      "rule": "check-current",
       "check": "COMPLETE",
       "result": "ERROR",
       "message": "This document does not exist"
@@ -213,7 +194,6 @@
       "system": "check-current",
       "documentationSource": "app",
       "document": "docs/subdir.md",
-      "rule": "check-current",
       "check": "REQUIRED",
       "result": "ERROR",
       "message": "This document is marked as required"

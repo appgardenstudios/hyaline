@@ -302,33 +302,69 @@ func TestValidate(t *testing.T) {
 	invalidLLM := LLM{
 		Provider: "invalid",
 	}
-	rule := RuleSet{
+	documentSet := DocumentSet{
 		ID: "test",
+	}
+	documentPath := DocumentationSource{
+		ID:        "1234",
+		Type:      "md",
+		Extractor: Extractor{Type: "fs"},
+		Documents: []Document{
+			{Path: "path"},
+		},
+	}
+	includedDocuments := DocumentationSource{
+		ID:               "1234",
+		Type:             "md",
+		Extractor:        Extractor{Type: "fs"},
+		IncludeDocuments: []string{"test"},
+		Documents: []Document{
+			{Path: "path"},
+		},
+	}
+	duplicateDocumentPath := DocumentationSource{
+		ID:        "1234",
+		Type:      "md",
+		Extractor: Extractor{Type: "fs"},
+		Documents: []Document{
+			{Path: "path"},
+			{Path: "path"},
+		},
+	}
+	documentSet2 := DocumentSet{
+		ID: "test",
+		Documents: []Document{{
+			Path: "path",
+		}},
 	}
 
 	var tests = []struct {
 		llm         LLM
 		code        []CodeSource
 		docs        []DocumentationSource
-		rules       []RuleSet
+		documents   []DocumentSet
 		shouldError bool
 	}{
-		{LLM{}, []CodeSource{}, []DocumentationSource{}, []RuleSet{}, false},
-		{LLM{}, []CodeSource{code}, []DocumentationSource{}, []RuleSet{}, false},
-		{LLM{}, []CodeSource{}, []DocumentationSource{doc}, []RuleSet{}, false},
-		{LLM{}, []CodeSource{code}, []DocumentationSource{doc}, []RuleSet{}, false},
-		{LLM{}, []CodeSource{code, code}, []DocumentationSource{doc}, []RuleSet{}, true},
-		{LLM{}, []CodeSource{code}, []DocumentationSource{doc, doc}, []RuleSet{}, true},
-		{LLM{}, []CodeSource{code}, []DocumentationSource{invalidDoc}, []RuleSet{}, true},
-		{LLM{}, []CodeSource{invalidCodeInclude}, []DocumentationSource{}, []RuleSet{}, true},
-		{LLM{}, []CodeSource{invalidCodeExclude}, []DocumentationSource{}, []RuleSet{}, true},
-		{LLM{}, []CodeSource{}, []DocumentationSource{invalidDocInclude}, []RuleSet{}, true},
-		{LLM{}, []CodeSource{}, []DocumentationSource{invalidDocExclude}, []RuleSet{}, true},
-		{LLM{}, []CodeSource{invalidCodeExtractor}, []DocumentationSource{}, []RuleSet{}, true},
-		{LLM{}, []CodeSource{}, []DocumentationSource{invalidDocExtractor}, []RuleSet{}, true},
-		{invalidLLM, []CodeSource{}, []DocumentationSource{}, []RuleSet{}, true},
-		{LLM{}, []CodeSource{}, []DocumentationSource{}, []RuleSet{rule}, false},
-		{LLM{}, []CodeSource{}, []DocumentationSource{}, []RuleSet{rule, rule}, true},
+		{LLM{}, []CodeSource{}, []DocumentationSource{}, []DocumentSet{}, false}, // 0
+		{LLM{}, []CodeSource{code}, []DocumentationSource{}, []DocumentSet{}, false},
+		{LLM{}, []CodeSource{}, []DocumentationSource{doc}, []DocumentSet{}, false},
+		{LLM{}, []CodeSource{code}, []DocumentationSource{doc}, []DocumentSet{}, false},
+		{LLM{}, []CodeSource{code, code}, []DocumentationSource{doc}, []DocumentSet{}, true},
+		{LLM{}, []CodeSource{code}, []DocumentationSource{doc, doc}, []DocumentSet{}, true}, // 5
+		{LLM{}, []CodeSource{code}, []DocumentationSource{invalidDoc}, []DocumentSet{}, true},
+		{LLM{}, []CodeSource{invalidCodeInclude}, []DocumentationSource{}, []DocumentSet{}, true},
+		{LLM{}, []CodeSource{invalidCodeExclude}, []DocumentationSource{}, []DocumentSet{}, true},
+		{LLM{}, []CodeSource{}, []DocumentationSource{invalidDocInclude}, []DocumentSet{}, true},
+		{LLM{}, []CodeSource{}, []DocumentationSource{invalidDocExclude}, []DocumentSet{}, true}, // 10
+		{LLM{}, []CodeSource{invalidCodeExtractor}, []DocumentationSource{}, []DocumentSet{}, true},
+		{LLM{}, []CodeSource{}, []DocumentationSource{invalidDocExtractor}, []DocumentSet{}, true},
+		{invalidLLM, []CodeSource{}, []DocumentationSource{}, []DocumentSet{}, true},
+		{LLM{}, []CodeSource{}, []DocumentationSource{}, []DocumentSet{documentSet}, false},
+		{LLM{}, []CodeSource{}, []DocumentationSource{}, []DocumentSet{documentSet, documentSet}, true}, // 15
+		{LLM{}, []CodeSource{}, []DocumentationSource{documentPath}, []DocumentSet{}, false},
+		{LLM{}, []CodeSource{}, []DocumentationSource{includedDocuments}, []DocumentSet{documentSet}, false},
+		{LLM{}, []CodeSource{}, []DocumentationSource{includedDocuments}, []DocumentSet{documentSet2}, true},
+		{LLM{}, []CodeSource{}, []DocumentationSource{duplicateDocumentPath}, []DocumentSet{}, true},
 	}
 
 	for i, test := range tests {
@@ -339,7 +375,7 @@ func TestValidate(t *testing.T) {
 				CodeSources:          test.code,
 				DocumentationSources: test.docs,
 			}},
-			Rules: test.rules,
+			CommonDocuments: test.documents,
 		}
 
 		err := validate(cfg)

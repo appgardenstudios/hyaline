@@ -17,9 +17,9 @@ systems:
             path: ./_example/
           include:
             - "**/*.md"
-        rules: ["basic-repo"]
+        includeDocuments: ["basic-repo"]
 
-rules:
+commonDocuments:
   - id: basic-repo
     documents:
       - path: README.md
