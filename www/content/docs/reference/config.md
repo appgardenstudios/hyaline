@@ -164,11 +164,59 @@ systems:
 
 **auth.options.pem**: (`ssh`) The contents of the private key to use when cloning the repository.
 
-**auth.options.username**: (`http`) The http username to use when cloning. Defaults to `git`
+**auth.options.username**: (`http`) The http username to use when cloning. Defaults to `git`.
 
 **auth.options.password**: (`ssh` AND `http`) For `ssh`, the encryption password to use if the PEM contains a password encrypted PEM block. For `http` the password to use when cloning (will usually be a GitHub PAT or equivalent). 
 
-## Documentation Source
+### Documentation Source
+A set of documentation for the system, or system documentation.
+
+```yaml
+systems:
+  - id: system1
+    documentation:
+      - id: documentationSource1
+        type: md | html
+        options: {...}
+        extractor: {...}
+        documents:
+          - path: path/to/document.md
+            ...
+        includeDocuments: [commonDocumentID, ...]
+```
+
+**id**: Each Documentation Source has an ID used to reference it. The ID must be unique across all Documentation Sources for a system (note that you can use the same ID for Documentation Sources in different systems if desired).
+
+**type**: TODO
+
+**options**: TODO
+
+**extractor**: Each Documentation Source has an extractor that is responsible for extracting the documentation out and into the data set.
+
+**includeDocuments**: TODO
+
+**documents**: TODO
+
+#### Documentation Source Options
+TODO
+
+#### Documentation Source Extractor
+TODO
+
+##### Documentation Source Extractor Options (fs)
+TODO
+
+##### Documentation Source Extractor Options (git)
+TODO
+
+##### Documentation Source Extractor Options (http)
+TODO
+
+#### Documentation Source Documents
+TODO
+
+#### Documentation Source Include Documents
 TODO
 
 # Common Documents
+TODO
