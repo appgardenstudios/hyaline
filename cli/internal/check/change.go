@@ -299,7 +299,7 @@ func formatDocuments(desiredDocsMap map[string][]config.Document) (string, map[s
 			id := fmt.Sprintf("%s.%d", docID, idx+1)
 			documentMap[id] = documentMapEntry{
 				DocumentationSource: docID,
-				Document:            desiredDoc.Path,
+				Document:            desiredDoc.Name,
 				Section:             []string{},
 			}
 
@@ -308,7 +308,7 @@ func formatDocuments(desiredDocsMap map[string][]config.Document) (string, map[s
 			indent += 2
 
 			// <document_name>{{NAME}}<document_name>
-			documents.WriteString(fmt.Sprintf("%s<document_name>%s</document_name>\n", strings.Repeat(" ", indent), desiredDoc.Path))
+			documents.WriteString(fmt.Sprintf("%s<document_name>%s</document_name>\n", strings.Repeat(" ", indent), desiredDoc.Name))
 
 			// <document_purpose>{{PURPOSE}}</document_purpose>
 			if desiredDoc.Purpose != "" {
@@ -317,7 +317,7 @@ func formatDocuments(desiredDocsMap map[string][]config.Document) (string, map[s
 
 			// <sections>
 			if len(desiredDoc.Sections) > 0 {
-				documents.WriteString(formatSections(desiredDoc.Sections, id, []string{}, indent, docID, desiredDoc.Path, &documentMap))
+				documents.WriteString(formatSections(desiredDoc.Sections, id, []string{}, indent, docID, desiredDoc.Name, &documentMap))
 			}
 
 			indent -= 2
@@ -347,7 +347,7 @@ func formatSections(sections []config.DocumentSection, prefix string, parents []
 		id := fmt.Sprintf("%s.%d", prefix, idx+1)
 		sectionArr := []string{}
 		sectionArr = append(sectionArr, parents...)
-		sectionArr = append(sectionArr, section.ID)
+		sectionArr = append(sectionArr, section.Name)
 		(*documentMap)[id] = documentMapEntry{
 			DocumentationSource: documentSource,
 			Document:            document,
@@ -360,7 +360,7 @@ func formatSections(sections []config.DocumentSection, prefix string, parents []
 		indent += 2
 
 		// <section_name>{{NAME}}<section_name>
-		str.WriteString(fmt.Sprintf("%s<section_name>%s</section_name>\n", strings.Repeat(" ", indent), section.ID))
+		str.WriteString(fmt.Sprintf("%s<section_name>%s</section_name>\n", strings.Repeat(" ", indent), section.Name))
 
 		// <section_purpose>{{PURPOSE}}</section_purpose>
 		if section.Purpose != "" {
@@ -399,14 +399,14 @@ func checkUpdateIfs(id string, originalID string, action sqlite.Action, codeID s
 				if doublestar.MatchUnvalidated(updateIf.Glob, id) {
 					results = append(results, ChangeResult{
 						DocumentationSource: docSource,
-						Document:            desiredDoc.Path,
+						Document:            desiredDoc.Name,
 						Section:             []string{},
 						Reasons:             []string{fmt.Sprintf("Update this document if any files matching %s were touched", updateIf.Glob)},
 					})
 				} else if originalID != "" && doublestar.MatchUnvalidated(updateIf.Glob, originalID) {
 					results = append(results, ChangeResult{
 						DocumentationSource: docSource,
-						Document:            desiredDoc.Path,
+						Document:            desiredDoc.Name,
 						Section:             []string{},
 						Reasons:             []string{fmt.Sprintf("Update this document if any files matching %s were touched (%s was renamed to %s)", updateIf.Glob, originalID, id)},
 					})
@@ -424,7 +424,7 @@ func checkUpdateIfs(id string, originalID string, action sqlite.Action, codeID s
 					if doublestar.MatchUnvalidated(updateIf.Glob, id) {
 						results = append(results, ChangeResult{
 							DocumentationSource: docSource,
-							Document:            desiredDoc.Path,
+							Document:            desiredDoc.Name,
 							Section:             []string{},
 							Reasons:             []string{fmt.Sprintf("Update this document if any files matching %s were added", updateIf.Glob)},
 						})
@@ -441,7 +441,7 @@ func checkUpdateIfs(id string, originalID string, action sqlite.Action, codeID s
 					if doublestar.MatchUnvalidated(updateIf.Glob, id) {
 						results = append(results, ChangeResult{
 							DocumentationSource: docSource,
-							Document:            desiredDoc.Path,
+							Document:            desiredDoc.Name,
 							Section:             []string{},
 							Reasons:             []string{fmt.Sprintf("Update this document if any files matching %s were modified", updateIf.Glob)},
 						})
@@ -457,7 +457,7 @@ func checkUpdateIfs(id string, originalID string, action sqlite.Action, codeID s
 					if doublestar.MatchUnvalidated(updateIf.Glob, id) || doublestar.MatchUnvalidated(updateIf.Glob, originalID) {
 						results = append(results, ChangeResult{
 							DocumentationSource: docSource,
-							Document:            desiredDoc.Path,
+							Document:            desiredDoc.Name,
 							Section:             []string{},
 							Reasons:             []string{fmt.Sprintf("Update this document if any files matching %s were renamed (%s was renamed to %s)", updateIf.Glob, id, originalID)},
 						})
@@ -473,7 +473,7 @@ func checkUpdateIfs(id string, originalID string, action sqlite.Action, codeID s
 					if doublestar.MatchUnvalidated(updateIf.Glob, id) {
 						results = append(results, ChangeResult{
 							DocumentationSource: docSource,
-							Document:            desiredDoc.Path,
+							Document:            desiredDoc.Name,
 							Section:             []string{},
 							Reasons:             []string{fmt.Sprintf("Update this document if any files matching %s were deleted", updateIf.Glob)},
 						})
@@ -482,7 +482,7 @@ func checkUpdateIfs(id string, originalID string, action sqlite.Action, codeID s
 			}
 
 			// Check sections
-			results = append(results, checkSectionUpdateIfs(id, originalID, action, codeID, docSource, desiredDoc.Path, desiredDoc.Sections, []string{})...)
+			results = append(results, checkSectionUpdateIfs(id, originalID, action, codeID, docSource, desiredDoc.Name, desiredDoc.Sections, []string{})...)
 		}
 	}
 
@@ -493,7 +493,7 @@ func checkSectionUpdateIfs(id string, originalID string, action sqlite.Action, c
 	for _, section := range sections {
 		sectionArr := []string{}
 		sectionArr = append(sectionArr, parents...)
-		sectionArr = append(sectionArr, section.ID)
+		sectionArr = append(sectionArr, section.Name)
 
 		// Check touched
 		for _, updateIf := range section.UpdateIf.Touched {

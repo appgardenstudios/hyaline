@@ -44,7 +44,7 @@ func getPurposeFromSection(sections []DocumentSection, sectionIDs []string) (pur
 	}
 
 	for _, sec := range sections {
-		if sec.ID == currentID {
+		if sec.Name == currentID {
 			if len(remainder) == 0 {
 				return sec.Purpose, true
 			} else {

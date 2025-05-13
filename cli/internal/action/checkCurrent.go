@@ -151,7 +151,7 @@ func CheckCurrent(args *CheckCurrentArgs) error {
 
 		// Loop through desiredDocuments
 		for _, desiredDoc := range docSource.GetDocuments(cfg) {
-			doc, found := docMap[desiredDoc.Path]
+			doc, found := docMap[desiredDoc.Name]
 			// Check REQUIRED
 			if desiredDoc.Required {
 				result := "PASS"
@@ -166,7 +166,7 @@ func CheckCurrent(args *CheckCurrentArgs) error {
 				output.Results = append(output.Results, CheckCurrentOutputEntry{
 					System:              system.ID,
 					DocumentationSource: docSource.ID,
-					Document:            desiredDoc.Path,
+					Document:            desiredDoc.Name,
 					Check:               "REQUIRED",
 					Result:              result,
 					Message:             message,
@@ -184,9 +184,9 @@ func CheckCurrent(args *CheckCurrentArgs) error {
 					message = "This document does not exist"
 				} else {
 					if desiredDoc.Purpose != "" {
-						matches, reason, err := check.Purpose(system.ID, docSource.ID, desiredDoc.Path, []string{}, desiredDoc.Purpose, doc.ExtractedData, &cfg.LLM, currentDB)
+						matches, reason, err := check.Purpose(system.ID, docSource.ID, desiredDoc.Name, []string{}, desiredDoc.Purpose, doc.ExtractedData, &cfg.LLM, currentDB)
 						if err != nil {
-							slog.Debug("action.CheckChange could not check purpose for document", "document", desiredDoc.Path, "documentationSource", docSource.ID, "system", args.System, "error", err)
+							slog.Debug("action.CheckChange could not check purpose for document", "document", desiredDoc.Name, "documentationSource", docSource.ID, "system", args.System, "error", err)
 							return err
 						}
 						if !matches {
@@ -204,7 +204,7 @@ func CheckCurrent(args *CheckCurrentArgs) error {
 				output.Results = append(output.Results, CheckCurrentOutputEntry{
 					System:              system.ID,
 					DocumentationSource: docSource.ID,
-					Document:            desiredDoc.Path,
+					Document:            desiredDoc.Name,
 					Check:               "MATCHES_PURPOSE",
 					Result:              result,
 					Message:             message,
@@ -222,9 +222,9 @@ func CheckCurrent(args *CheckCurrentArgs) error {
 					message = "This document does not exist"
 				} else {
 					if desiredDoc.Purpose != "" {
-						complete, reason, err := check.Completeness(system.ID, docSource.ID, desiredDoc.Path, []string{}, desiredDoc.Purpose, doc.ExtractedData, &cfg.LLM, currentDB)
+						complete, reason, err := check.Completeness(system.ID, docSource.ID, desiredDoc.Name, []string{}, desiredDoc.Purpose, doc.ExtractedData, &cfg.LLM, currentDB)
 						if err != nil {
-							slog.Debug("action.CheckChange could not check completeness for document", "document", desiredDoc.Path, "documentationSource", docSource.ID, "system", args.System, "error", err)
+							slog.Debug("action.CheckChange could not check completeness for document", "document", desiredDoc.Name, "documentationSource", docSource.ID, "system", args.System, "error", err)
 							return err
 						}
 						if !complete {
@@ -242,7 +242,7 @@ func CheckCurrent(args *CheckCurrentArgs) error {
 				output.Results = append(output.Results, CheckCurrentOutputEntry{
 					System:              system.ID,
 					DocumentationSource: docSource.ID,
-					Document:            desiredDoc.Path,
+					Document:            desiredDoc.Name,
 					Check:               "COMPLETE",
 					Result:              result,
 					Message:             message,
@@ -253,9 +253,9 @@ func CheckCurrent(args *CheckCurrentArgs) error {
 			if !desiredDoc.Ignore {
 				// Get section map
 				sectionMap := make(map[string]*sqlite.Section)
-				sections, err := sqlite.GetAllSectionsForDocument(desiredDoc.Path, docSource.ID, system.ID, currentDB)
+				sections, err := sqlite.GetAllSectionsForDocument(desiredDoc.Name, docSource.ID, system.ID, currentDB)
 				if err != nil {
-					slog.Debug("action.CheckChange could not get sections for document", "document", desiredDoc.Path, "documentationSource", docSource.ID, "system", args.System, "error", err)
+					slog.Debug("action.CheckChange could not get sections for document", "document", desiredDoc.Name, "documentationSource", docSource.ID, "system", args.System, "error", err)
 					return err
 				}
 				for _, sec := range sections {
@@ -263,16 +263,16 @@ func CheckCurrent(args *CheckCurrentArgs) error {
 				}
 
 				// Check section
-				addtlResults, err := checkCurrentSections(system.ID, docSource.ID, desiredDoc.Path, []string{}, desiredDoc.Sections, &sectionMap, &processedSectionMap, args.CheckPurpose, args.CheckCompleteness, &cfg.LLM, currentDB)
+				addtlResults, err := checkCurrentSections(system.ID, docSource.ID, desiredDoc.Name, []string{}, desiredDoc.Sections, &sectionMap, &processedSectionMap, args.CheckPurpose, args.CheckCompleteness, &cfg.LLM, currentDB)
 				if err != nil {
-					slog.Debug("action.CheckChange could not check current sections for document", "document", desiredDoc.Path, "documentationSource", docSource.ID, "system", args.System, "error", err)
+					slog.Debug("action.CheckChange could not check current sections for document", "document", desiredDoc.Name, "documentationSource", docSource.ID, "system", args.System, "error", err)
 					return err
 				}
 				output.Results = append(output.Results, addtlResults...)
 			}
 
 			// Mark doc as processed
-			processedDocumentMap[desiredDoc.Path] = struct{}{}
+			processedDocumentMap[desiredDoc.Name] = struct{}{}
 		}
 
 		// Loop through docs and make sure each had a corresponding desired document
@@ -354,7 +354,7 @@ func checkCurrentSections(system string, documentationSource string, document st
 	for _, desiredDocSection := range desiredDocSections {
 		currentSection := []string{}
 		currentSection = append(currentSection, sectionArr...)
-		currentSection = append(currentSection, desiredDocSection.ID)
+		currentSection = append(currentSection, desiredDocSection.Name)
 		sectionID := fmt.Sprintf("%s#%s", document, strings.Join(currentSection, "#"))
 
 		section, found := (*sectionMap)[sectionID]

@@ -310,7 +310,7 @@ func TestValidate(t *testing.T) {
 		Type:      "md",
 		Extractor: Extractor{Type: "fs"},
 		Documents: []Document{
-			{Path: "path"},
+			{Name: "path"},
 		},
 	}
 	includedDocuments := DocumentationSource{
@@ -319,7 +319,7 @@ func TestValidate(t *testing.T) {
 		Extractor:        Extractor{Type: "fs"},
 		IncludeDocuments: []string{"test"},
 		Documents: []Document{
-			{Path: "path"},
+			{Name: "path"},
 		},
 	}
 	duplicateDocumentPath := DocumentationSource{
@@ -327,14 +327,14 @@ func TestValidate(t *testing.T) {
 		Type:      "md",
 		Extractor: Extractor{Type: "fs"},
 		Documents: []Document{
-			{Path: "path"},
-			{Path: "path"},
+			{Name: "path"},
+			{Name: "path"},
 		},
 	}
 	documentSet2 := DocumentSet{
 		ID: "test",
 		Documents: []Document{{
-			Path: "path",
+			Name: "path",
 		}},
 	}
 

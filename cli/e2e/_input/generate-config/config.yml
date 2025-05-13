@@ -22,14 +22,14 @@ systems:
 commonDocuments:
   - id: basic-repo
     documents:
-      - path: README.md
+      - name: README.md
         purpose: The purpose of the document
         required: true
         sections:
-          - id: Example
+          - name: Example
             purpose: The purpose of the section
             sections:
-              - id: Subsection 1
+              - name: Subsection 1
                 ignore: true
-          - id: Running Locally
+          - name: Running Locally
             required: true
