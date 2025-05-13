@@ -45,31 +45,27 @@ systems:
                 password: ${HYALINE_SSH_PASSWORD}
           include:
             - "**/*.md"
-        includeDocuments: [check-current]
-
-commonDocuments:
-  - id: check-current
-    documents:
-      - path: docs/subdir.md
-        purpose: The purpose of this document is to record any change to js files in the subdir directory, no matter how small
-        required: true
-      - path: docs/preDoc.md
-        purpose: The document docs/preDoc.md appears to be a markdown file containing preliminary text and a sample heading section with placeholder content. Its purpose seems to be demonstrating document structure rather than providing actual documentation content.
-        required: true
-      - path: README.md
-        purpose: The purpose of the document
-        required: true
-        sections:
-          - id: Example
-            purpose: The purpose of the section
-            sections:
-              - id: Subsection 1
-                ignore: true
-              - id: Subsection 2
-                purpose: Since this appears to be placeholder content without specific details, I can only state that this section titled "Subsection 2" is a component of the README.md document that supports its overall purpose of "The purpose of the document."
-                required: true
-          - id: Running Locally
+        documents:
+          - path: docs/subdir.md
+            purpose: The purpose of this document is to record any change to js files in the subdir directory, no matter how small
             required: true
-            updateIf:
-              modified:
-                - glob: subdir/*.js
+          - path: docs/preDoc.md
+            purpose: The document docs/preDoc.md appears to be a markdown file containing preliminary text and a sample heading section with placeholder content. Its purpose seems to be demonstrating document structure rather than providing actual documentation content.
+            required: true
+          - path: README.md
+            purpose: The purpose of the document
+            required: true
+            sections:
+              - id: Example
+                purpose: The purpose of the section
+                sections:
+                  - id: Subsection 1
+                    ignore: true
+                  - id: Subsection 2
+                    purpose: Since this appears to be placeholder content without specific details, I can only state that this section titled "Subsection 2" is a component of the README.md document that supports its overall purpose of "The purpose of the document."
+                    required: true
+              - id: Running Locally
+                required: true
+                updateIf:
+                  modified:
+                    - glob: subdir/*.js
