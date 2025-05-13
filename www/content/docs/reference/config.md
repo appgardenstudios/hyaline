@@ -187,30 +187,165 @@ systems:
 
 **id**: Each Documentation Source has an ID used to reference it. The ID must be unique across all Documentation Sources for a system (note that you can use the same ID for Documentation Sources in different systems if desired).
 
-**type**: TODO
+**type**: The type of documentation. `md` and `html` are the currently supported documentation types.
 
-**options**: TODO
+**options**: Documentation source options used when converting documentation into markdown.
 
 **extractor**: Each Documentation Source has an extractor that is responsible for extracting the documentation out and into the data set.
 
-**includeDocuments**: TODO
+**documents**: A set of documents specifying the desired structure and contents of the system documentation.
 
-**documents**: TODO
+**includeDocuments**: A set of IDs referencing one or more sets of Common Documents
 
 #### Documentation Source Options
-TODO
+Documentation source options.
+
+```yaml
+systems:
+  - id: system1
+    documentation:
+      - id: documentationSource1
+        type: md | html
+        options:
+          selector: "#main"
+```
+
+**selector**: A css-style selector used to extract system documentation when the type of documentation is html. Uses [Cascadia](https://pkg.go.dev/github.com/andybalholm/cascadia). See [Extract Current](../explanation/extract-current.md) and [Extract Change](../explanation/extract-change.md) for more information.
 
 #### Documentation Source Extractor
-TODO
+An extractor that specifies how documentation is extracted for this Documentation Source and placed into a data set.
+
+```yaml
+systems:
+  - id: system1
+    documentation:
+      - id: documentationSource1
+        extractor:
+          type: fs | git | http
+          options: {...} # Dependent on the extractor type
+          include: [glob]
+          exclude: [glob]
+```
+
+**type**: The type of the extractor. For Documentation Sources there are three extractor types available: `fs`, `git`, and `http`. For more information see extractor details below.
+
+**options**: The options for the extractor. Note that these are specific to the type of extractor. Please see below for the options available for each extractor.
+
+**include**: The set of globs to include in the set of documentation during the extraction process. This uses the [doublestar](https://pkg.go.dev/github.com/bmatcuk/doublestar/v4) package to match paths. See extractor details below for how path comparisons are made and how relative glob paths work.
+
+**exclude**: The set of globs to exclude from the set of documentation during the extraction process. This uses the [doublestar](https://pkg.go.dev/github.com/bmatcuk/doublestar/v4) package to match paths. See extractor details below for how path comparisons are made and how relative glob paths work.
 
 ##### Documentation Source Extractor Options (fs)
-TODO
+Extract documentation from a file system path. Note that documentation sources using this extractor will not be eligible to be included in a change data set. If you have a local git repository use the git extractor with the `path` option.
+
+Note that Include and Exclude globs are relative to the path specified.
+
+Please see the explanation of [Extract Current](../explanation/extract-current.md) for more information.
+
+```yaml
+systems:
+  - id: system1
+    documentation:
+      - id: documentationSource1
+        extractor:
+          type: fs
+          options:
+            path: path/to/documentation
+```
+
+**path**: The path that documentation will be extracted from. If the path is not absolute it is joined with the current working directory to turn it into an absolute path. Note that the fs extractor uses [Root](https://pkg.go.dev/os@go1.24.1#Root) when scanning a directory, meaning that while symlinks are followed they must be within the Root.
 
 ##### Documentation Source Extractor Options (git)
-TODO
+Extract documentation from a git repository (local or remote). For more information on how extraction works please see the documentation for [Extract Current](../explanation/extract-current.md) and [Extract Change](../explanation/extract-change.md).
+
+Note that Include and Exclude globs are relative to the root of the repository.
+
+```yaml
+systems:
+  - id: system1
+    documentation:
+      - id: documentationSource1
+        extractor:
+          type: git
+          options:
+            path: path/to/repo
+            branch: main
+      - id: documentationSource2
+        extractor:
+          type: git
+          options:
+            path: path/to/repo
+            repo: git@github.com:appgardenstudios/hyaline.git
+            branch: main
+            clone: true
+            auth:
+              type: ssh
+              options:
+                user: git
+                pem: -----BEGIN OPENSSH...
+                password: pem-password...
+      - id: documentationSource3
+        extractor:
+          type: git
+          options:
+            repo: https://github.com/appgardenstudios/hyaline-example.git
+            branch: main
+            clone: true
+            auth:
+              type: ssh
+              options:
+                username: git
+                password: github_pat_...
+```
+
+**path**: The local path to the repository. If the path is not absolute it is joined with the current working directory to turn it into an absolute path. If `clone` is false the repository at path is opened. If `clone` is true the repository is cloned to the path before being opened. `path` is required if `clone` is false.
+
+**repo**: The remote git repository to use. Can be an ssh or http(s) URL. Only required if `clone` is true.
+
+**branch**: The branch to extract documentation from. If not set will default to `main`.
+
+**clone**: Boolean specifying wether or not to clone the repository before opening. If true `repo` is also required. Defaults to false.
+
+**auth**: Authentication information for cloning the repository. Note that if no auth is specified Hyaline will still attempt to clone, and if the repo URL is ssh your local ssh configuration will be used automatically.
+
+**auth.type**: The type of authentication. Can be either `ssh` or `http`. Type should match the type of repo URL supplied (Hyaline does __not__ attempt to auto-detect which auth option to use based on the repo URL)
+
+**auth.options**: Authentication options based on the type specified.
+
+**auth.options.user**: (`ssh`) The ssh user to use when cloning the repository. Defaults to `git`.
+
+**auth.options.pem**: (`ssh`) The contents of the private key to use when cloning the repository.
+
+**auth.options.username**: (`http`) The http username to use when cloning. Defaults to `git`.
+
+**auth.options.password**: (`ssh` AND `http`) For `ssh`, the encryption password to use if the PEM contains a password encrypted PEM block. For `http` the password to use when cloning (will usually be a GitHub PAT or equivalent). 
 
 ##### Documentation Source Extractor Options (http)
-TODO
+Extract documentation from an http(s) source via crawling. Note that documentation sources using this extractor will not be eligible to be included in a change data set.
+
+Note that Include and Exclude globs are relative to the baseURL.
+
+Please see the explanation of [Extract Current](../explanation/extract-current.md) for more information.
+
+```yaml
+systems:
+  - id: system1
+    documentation:
+      - id: documentationSource1
+        extractor:
+          type: fs
+          options:
+            baseUrl: https://www.hyaline.dev/
+            start: ./docs
+            headers:
+              custom-header: My Header Value
+```
+
+**baseUrl**: The base URL to start with. The baseUrl will be the starting URL if `start` is not defined. Also note that the crawler is limited to the same domain as that on the baseUrl.
+
+**start**: An (optional) starting path relative to the baseURL. If set the crawler will start on the `baseUrl` joined with `start` path.
+
+**headers**: A set of (optional) headers to include with each request.
 
 #### Documentation Source Documents
 TODO
