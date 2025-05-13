@@ -3,11 +3,48 @@ title: Hyaline config
 purpose: Document the configuration options for Hyaline
 ---
 # Overview
-TODO
+This documents the configuration options and format present in the Hyaline configuration file.
+
+## Secrets
+Hyaline has the ability to pull configuration values from environment variables. To use this functionality set the value of a key to `${ENV_VAR_NAME}` to use the value of the environment variable called `ENV_VAR_NAME`.
+
+```yaml
+llm:
+  provider: anthropic
+  model: claude-3-5-sonnet-20241022
+  key: ${HYALINE_ANTHROPIC_KEY}
+
+github:
+  token: ${HYALINE_GITHUB_PAT}
+```
+
+In the configuration example above `llm.key` will be set to the value of the environment variable `HYALINE_ANTHROPIC_KEY`, and `github.token` will be set to the value of the environment variable `HYALINE_GITHUB_PAT`
 
 # LLM
+The connection information to use when calling out to an LLM.
+
+```yaml
+llm:
+  provider: anthropic | testing
+  model: model-identifier
+  key: ${LLM_API_KEY}
+```
+
+**provider**: The provider to use when calling out to an LLM. possible values are `anthropic` and  `testing`.
+
+**model**: The LLM model to use. See each provider's documentation for a list of possible values.
+
+**key**: The API key to use in requests. Note that this should be pulled from the environment and not hard-coded in the configuration file itself (see Secrets above)
 
 # GitHub
+The configuration for calling out to GitHub (not used for extraction, just for PR and issue retrieval)
+
+```yaml
+github:
+  token: ${GITHUB_PAT}
+```
+
+**token**: The GitHub token. Should be able to read pull requests and issues from relevant repositories.
 
 # Systems
 Stores the configuration for each system known to Hyaline. Defined as a list of system objects.
@@ -467,7 +504,33 @@ systems:
 **sections**: A list of child sections matching this same schema.
 
 #### Documentation Source Include Documents
-TODO
+Include common documents describing the desired layout and contents of each piece of documentation for this documentation source. These are added to the list of documents in this documentation source. Note that documents in the documentation source take priority over any included documents.
+
+```yaml
+systems:
+  - id: system1
+    documentation:
+      - id: documentationSource1
+        includeDocuments: [commonDocumentID, ...]
+
+commonDocuments:
+  - id: commonDocumentID
+    documents:
+      - name: README.md
+        ...
+```
 
 # Common Documents
-TODO
+A set of common document that can be referenced by documentation sources to reduce duplicate configuration and enforce consistency across systems (e.g. common formats for a README.md document, for example)
+
+```yaml
+commonDocuments:
+  - id: commonDocumentID
+    documents:
+      - name: README.md
+        ...
+```
+
+**id**: The ID of the document set.
+
+**documents**: The set of documents. This has the exact same format as the documents block in the documentation source. See details above.
