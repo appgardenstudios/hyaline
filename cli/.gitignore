@@ -16,3 +16,6 @@ hyaline-e2e
 e2e/_output/*
 generated-config.yml
 results.json
+
+# Release artifacts
+dist/
