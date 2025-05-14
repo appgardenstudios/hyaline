@@ -7,7 +7,7 @@
 * `make`
 * `go` (v1.24+)
 * `diff` (gnu version) for testing (`brew install diffutils`)
-* `gh` for releasing (`brew install gh`)
+* `gh` (github cli) for releasing (`brew install gh`)
 
 ## Running Locally
 ```sh
