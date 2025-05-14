@@ -7,6 +7,7 @@
 * `make`
 * `go` (v1.24+)
 * `diff` (gnu version) for testing (`brew install diffutils`)
+* `gh` (github cli) for releasing (`brew install gh`)
 
 ## Running Locally
 ```sh
@@ -30,3 +31,8 @@ Unit tests are run with `make test`, and there are e2e tests that invoke the act
 Note that the following env vars must be set for the `e2e` tests to work and pass:
 * **HYALINE_SSH_PEM** (with access to `github.com/appgardenstudios/hyaline-example`)
 * **HYALINE_GITHUB_PAT** (with access to `github.com/appgardenstudios/hyaline-example`)
+
+## Releasing
+Release by checking out the appropriate commit on the main branch and then running `make release`.
+
+Note that test will be run, so the env vars required for testing must be set (see above for details)
