@@ -63,8 +63,12 @@ The documentation that is extracted is placed into a data set that is stored in 
 ## Extracting Documentation - fs
 The `fs` extractor extracts documentation from the local file system. It operates the same way as the Code `fs` extractor (See Extracting Code - fs).
 
+TODO image 
+
 ## Extracting Documentation - git
 The `git` extractor extracts documentation from a local or remote git repository. It operates the same way as the Code `git` extractor and supports the same set of setups (See Extracting Code - git).
+
+TODO image 
 
 ## Extracting Documentation - http
 The `http` extractor extracts documentation from an http(s) server via crawling.
