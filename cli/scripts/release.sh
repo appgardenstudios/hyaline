@@ -34,5 +34,5 @@ git tag $TAG
 # Push tag to GitHub
 git push origin $TAG
 
-# Create Draft Release (will print link to release when done)
+# Create Release (will print link to release when done)
 gh release create $TAG --verify-tag --fail-on-no-commits --generate-notes --latest ./dist/*
