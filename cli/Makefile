@@ -133,3 +133,7 @@ merge:
 	make build
 	echo "---"
 	./hyaline --debug merge --input ./current.db --input ./current-copy.db --input ./change.db --output ./merged.db
+
+.PHONY: release
+release:
+	./scripts/release.sh
