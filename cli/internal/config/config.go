@@ -1,10 +1,10 @@
 package config
 
 type Config struct {
-	LLM     LLM       `yaml:"llm,omitempty"`
-	GitHub  GitHub    `yaml:"github,omitempty"`
-	Systems []System  `yaml:"systems,omitempty"`
-	Rules   []RuleSet `yaml:"rules,omitempty"`
+	LLM             LLM           `yaml:"llm,omitempty"`
+	GitHub          GitHub        `yaml:"github,omitempty"`
+	Systems         []System      `yaml:"systems,omitempty"`
+	CommonDocuments []DocumentSet `yaml:"commonDocuments,omitempty"`
 }
 
 func (c *Config) GetSystem(id string) (system System, found bool) {
@@ -17,10 +17,10 @@ func (c *Config) GetSystem(id string) (system System, found bool) {
 	return
 }
 
-func (c *Config) GetRuleSet(id string) (ruleSet RuleSet, found bool) {
-	for _, r := range c.Rules {
-		if r.ID == id {
-			return r, true
+func (c *Config) GetCommonDocumentSet(id string) (documentSet DocumentSet, found bool) {
+	for _, s := range c.CommonDocuments {
+		if s.ID == id {
+			return s, true
 		}
 	}
 
@@ -60,7 +60,7 @@ type GitHub struct {
 type System struct {
 	ID                   string                `yaml:"id,omitempty"`
 	CodeSources          []CodeSource          `yaml:"code,omitempty"`
-	DocumentationSources []DocumentationSource `yaml:"docs,omitempty"`
+	DocumentationSources []DocumentationSource `yaml:"documentation,omitempty"`
 }
 
 func (s *System) GetDocumentationSource(id string) (doc DocumentationSource, found bool) {
@@ -73,24 +73,31 @@ func (s *System) GetDocumentationSource(id string) (doc DocumentationSource, fou
 	return
 }
 
-type Extractor string
+type Extractor struct {
+	Type    ExtractorType    `yaml:"type,omitempty"`
+	Options ExtractorOptions `yaml:"options,omitempty"`
+	Include []string         `yaml:"include,omitempty"`
+	Exclude []string         `yaml:"exclude,omitempty"`
+}
 
-func (e Extractor) String() string {
+type ExtractorType string
+
+func (e ExtractorType) String() string {
 	return string(e)
 }
 
-func (e Extractor) IsValidCodeExtractor() bool {
+func (e ExtractorType) IsValidCodeExtractor() bool {
 	switch e {
-	case ExtractorFs, ExtractorGit:
+	case ExtractorTypeFs, ExtractorTypeGit:
 		return true
 	default:
 		return false
 	}
 }
 
-func (e Extractor) IsValidDocExtractor() bool {
+func (e ExtractorType) IsValidDocExtractor() bool {
 	switch e {
-	case ExtractorFs, ExtractorGit, ExtractorHttp:
+	case ExtractorTypeFs, ExtractorTypeGit, ExtractorTypeHttp:
 		return true
 	default:
 		return false
@@ -98,61 +105,103 @@ func (e Extractor) IsValidDocExtractor() bool {
 }
 
 const (
-	ExtractorFs   Extractor = "fs"
-	ExtractorGit  Extractor = "git"
-	ExtractorHttp Extractor = "http"
+	ExtractorTypeFs   ExtractorType = "fs"
+	ExtractorTypeGit  ExtractorType = "git"
+	ExtractorTypeHttp ExtractorType = "http"
 )
 
-type FsOptions struct {
-	Path string `yaml:"path,omitempty"`
-}
-
-type GitOptions struct {
-	Repo     string             `yaml:"repo,omitempty"`
-	Branch   string             `yaml:"branch,omitempty"`
-	Path     string             `yaml:"path,omitempty"`
-	Clone    bool               `yaml:"clone,omitempty"`
-	HTTPAuth GitHTTPAuthOptions `yaml:"httpAuth,omitempty"`
-	SSHAuth  GitSSHAuthOptions  `yaml:"sshAuth,omitempty"`
-}
-
-type HttpOptions struct {
+// Note: there should be a better way rather than crunching everything together
+type ExtractorOptions struct {
+	Path    string            `yaml:"path,omitempty"`
+	Repo    string            `yaml:"repo,omitempty"`
+	Branch  string            `yaml:"branch,omitempty"`
+	Clone   bool              `yaml:"clone,omitempty"`
+	Auth    ExtractorAuth     `yaml:"auth,omitempty"`
 	BaseURL string            `yaml:"baseUrl,omitempty"`
 	Start   string            `yaml:"start,omitempty"`
 	Headers map[string]string `yaml:"headers,omitempty"`
 }
 
-type GitHTTPAuthOptions struct {
-	Username string `yaml:"username,omitempty"`
-	Password string `yaml:"password,omitempty"`
+type ExtractorAuthType string
+
+func (e ExtractorAuthType) String() string {
+	return string(e)
 }
 
-type GitSSHAuthOptions struct {
+const (
+	ExtractorAuthHTTP ExtractorAuthType = "http"
+	ExtractorAuthSSH  ExtractorAuthType = "ssh"
+)
+
+type ExtractorAuth struct {
+	Type    ExtractorAuthType    `yaml:"type,omitempty"`
+	Options ExtractorAuthOptions `yaml:"options,omitempty"`
+}
+
+type ExtractorAuthOptions struct {
+	Username string `yaml:"username,omitempty"`
+	Password string `yaml:"password,omitempty"`
 	User     string `yaml:"user,omitempty"`
 	PEM      string `yaml:"pem,omitempty"`
-	Password string `yaml:"password,omitempty"`
 }
 
 type CodeSource struct {
-	ID         string     `yaml:"id,omitempty"`
-	Extractor  Extractor  `yaml:"extractor,omitempty"`
-	FsOptions  FsOptions  `yaml:"fs,omitempty"`
-	GitOptions GitOptions `yaml:"git,omitempty"`
-	Include    []string   `yaml:"include,omitempty"`
-	Exclude    []string   `yaml:"exclude,omitempty"`
+	ID        string    `yaml:"id,omitempty"`
+	Extractor Extractor `yaml:"extractor,omitempty"`
 }
 
 type DocumentationSource struct {
-	ID          string         `yaml:"id,omitempty"`
-	Type        DocType        `yaml:"type,omitempty"`
-	HTML        DocHTMLOptions `yaml:"html,omitempty"`
-	Extractor   Extractor      `yaml:"extractor,omitempty"`
-	FsOptions   FsOptions      `yaml:"fs,omitempty"`
-	GitOptions  GitOptions     `yaml:"git,omitempty"`
-	HttpOptions HttpOptions    `yaml:"http,omitempty"`
-	Include     []string       `yaml:"include,omitempty"`
-	Exclude     []string       `yaml:"exclude,omitempty"`
-	Rules       []string       `yaml:"rules,omitempty"`
+	ID               string                     `yaml:"id,omitempty"`
+	Type             DocType                    `yaml:"type,omitempty"`
+	Options          DocumentationSourceOptions `yaml:"options,omitempty"`
+	Extractor        Extractor                  `yaml:"extractor,omitempty"`
+	IncludeDocuments []string                   `yaml:"includeDocuments,omitempty"`
+	Documents        []Document                 `yaml:"documents,omitempty"`
+}
+
+func (d *DocumentationSource) GetDocuments(c *Config) (documents []Document) {
+	// create a map of added documents so we can see what we have already added
+	documentMap := map[string]struct{}{}
+
+	// Add all documents from our documentation source first
+	for _, document := range d.Documents {
+		_, found := documentMap[document.Name]
+		if !found {
+			documentMap[document.Name] = struct{}{}
+			documents = append(documents, document)
+		}
+
+	}
+
+	// Add documents from our common documents so that documents in later sets take priority of those
+	// in earlier sets as defined by the order of the commonDocument IDs.
+	for i := len(d.IncludeDocuments) - 1; i >= 0; i-- {
+		documentSetID := d.IncludeDocuments[i]
+		docSet, docSetFound := c.GetCommonDocumentSet(documentSetID)
+		if !docSetFound {
+			continue
+		}
+
+		for _, document := range docSet.Documents {
+			_, found := documentMap[document.Name]
+			if !found {
+				documentMap[document.Name] = struct{}{}
+				documents = append(documents, document)
+			}
+		}
+	}
+
+	return
+}
+
+func (d *DocumentationSource) GetDocument(c *Config, path string) (document Document, found bool) {
+	for _, doc := range d.GetDocuments(c) {
+		if doc.Name == path {
+			return doc, true
+		}
+	}
+
+	return
 }
 
 type DocType string
@@ -175,37 +224,42 @@ const (
 	DocTypeHTML     DocType = "html"
 )
 
-type DocHTMLOptions struct {
+type DocumentationSourceOptions struct {
 	Selector string `yaml:"selector,omitempty"`
 }
 
-type RuleSet struct {
-	ID        string         `yaml:"id,omitempty"`
-	Documents []RuleDocument `yaml:"documents,omitempty"`
+type DocumentSet struct {
+	ID        string     `yaml:"id,omitempty"`
+	Documents []Document `yaml:"documents,omitempty"`
 }
 
-type RuleDocument struct {
-	Path     string                `yaml:"path,omitempty"`
-	Purpose  string                `yaml:"purpose,omitempty"`
-	Required bool                  `yaml:"required,omitempty"`
-	Ignore   bool                  `yaml:"ignore,omitempty"`
-	UpdateIf UpdateIf              `yaml:"updateIf,omitempty"`
-	Sections []RuleDocumentSection `yaml:"sections,omitempty"`
+type Document struct {
+	Name     string            `yaml:"name,omitempty"`
+	Purpose  string            `yaml:"purpose,omitempty"`
+	Required bool              `yaml:"required,omitempty"`
+	Ignore   bool              `yaml:"ignore,omitempty"`
+	UpdateIf UpdateIf          `yaml:"updateIf,omitempty"`
+	Sections []DocumentSection `yaml:"sections,omitempty"`
 }
 
-type RuleDocumentSection struct {
-	ID       string                `yaml:"id,omitempty"`
-	Purpose  string                `yaml:"purpose,omitempty"`
-	Required bool                  `yaml:"required,omitempty"`
-	Ignore   bool                  `yaml:"ignore,omitempty"`
-	UpdateIf UpdateIf              `yaml:"updateIf,omitempty"`
-	Sections []RuleDocumentSection `yaml:"sections,omitempty"`
+type DocumentSection struct {
+	Name     string            `yaml:"name,omitempty"`
+	Purpose  string            `yaml:"purpose,omitempty"`
+	Required bool              `yaml:"required,omitempty"`
+	Ignore   bool              `yaml:"ignore,omitempty"`
+	UpdateIf UpdateIf          `yaml:"updateIf,omitempty"`
+	Sections []DocumentSection `yaml:"sections,omitempty"`
 }
 
 type UpdateIf struct {
-	Touched  []string `yaml:"touched,omitempty"`
-	Added    []string `yaml:"added,omitempty"`
-	Modified []string `yaml:"modified,omitempty"`
-	Deleted  []string `yaml:"deleted,omitempty"`
-	Renamed  []string `yaml:"renamed,omitempty"`
+	Touched  []UpdateIfEntry `yaml:"touched,omitempty"`
+	Added    []UpdateIfEntry `yaml:"added,omitempty"`
+	Modified []UpdateIfEntry `yaml:"modified,omitempty"`
+	Deleted  []UpdateIfEntry `yaml:"deleted,omitempty"`
+	Renamed  []UpdateIfEntry `yaml:"renamed,omitempty"`
+}
+
+type UpdateIfEntry struct {
+	CodeSource string `yaml:"codeID,omitempty"`
+	Glob       string `yaml:"glob,omitempty"`
 }

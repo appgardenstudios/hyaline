@@ -1,31 +1,31 @@
-rules:
+commonDocuments:
     - id: md-docs
       documents:
-        - path: README.md
+        - name: README.md
           purpose: The purpose of the document
           required: true
           sections:
-            - id: Example
+            - name: Example
               purpose: The purpose of the section
               sections:
-                - id: Subsection 1
+                - name: Subsection 1
                   ignore: true
-                - id: Subsection 2
+                - name: Subsection 2
                   purpose: LLM TEST RESPONSE
                   required: true
-            - id: Running Locally
+            - name: Running Locally
               required: true
-        - path: docs/docsDoc.md
+        - name: docs/docsDoc.md
           purpose: LLM TEST RESPONSE
           required: true
           sections:
-            - id: This is a test
+            - name: This is a test
               purpose: LLM TEST RESPONSE
               required: true
-        - path: docs/preDoc.md
+        - name: docs/preDoc.md
           purpose: LLM TEST RESPONSE
           required: true
           sections:
-            - id: A Random Heading
+            - name: A Random Heading
               purpose: LLM TEST RESPONSE
               required: true

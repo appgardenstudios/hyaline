@@ -79,10 +79,10 @@ func GenerateConfig(args *GenerateConfigArgs) error {
 
 	// Loop through docs in our current system and generate a config for each
 	for _, d := range system.DocumentationSources {
-		// Create a rule for this documentation
-		rule := config.RuleSet{
+		// Create a desired document for this documentation
+		desiredSocSet := config.DocumentSet{
 			ID:        d.ID,
-			Documents: []config.RuleDocument{},
+			Documents: []config.Document{},
 		}
 
 		// Get a list of Documents from the db for this doc ID
@@ -92,14 +92,14 @@ func GenerateConfig(args *GenerateConfigArgs) error {
 			return err
 		}
 
-		// Loop through each document to generate rules for it
+		// Loop through each document to generate desired documents for it
 		for _, doc := range documents {
 			slog.Info("Processing document", "document", doc.ID)
-			// Get the ruleDoc for this document (if any)
-			ruleDoc, ruleDocFound := config.GetRuleDocument(cfg.Rules, d.Rules, doc.ID)
+			// Get the desiredDoc for this document (if any)
+			desiredDoc, desiredDocFound := d.GetDocument(cfg, doc.ID)
 
-			// If there is no rule, create it
-			if !ruleDocFound {
+			// If there is no desired document found, create it
+			if !desiredDocFound {
 				// If IncludePurpose flag is set, get purpose
 				purpose := ""
 				if args.IncludePurpose {
@@ -110,9 +110,9 @@ func GenerateConfig(args *GenerateConfigArgs) error {
 					}
 				}
 
-				// Create rule for the document
-				ruleDoc = config.RuleDocument{
-					Path:     doc.ID,
+				// Create desired document for the document
+				desiredDoc = config.Document{
+					Name:     doc.ID,
 					Purpose:  purpose,
 					Required: true,
 				}
@@ -124,19 +124,19 @@ func GenerateConfig(args *GenerateConfigArgs) error {
 				slog.Debug("action.GenerateConfig could not get sections for a document from current db", "document", doc.ID, "doc", d.ID, "system", system.ID, "error", err)
 				return err
 			}
-			newSections, err := createRuleSections(sections, doc.ID, ruleDoc.Sections, args.IncludePurpose, doc.ID, ruleDoc.Purpose, &cfg.LLM)
+			newSections, err := createRuleSections(sections, doc.ID, desiredDoc.Sections, args.IncludePurpose, doc.ID, desiredDoc.Purpose, &cfg.LLM)
 			if err != nil {
 				slog.Debug("action.GenerateConfig could not generate sections for a document from current db", "document", doc.ID, "doc", d.ID, "system", system.ID, "error", err)
 				return err
 			}
-			ruleDoc.Sections = newSections
+			desiredDoc.Sections = newSections
 
-			// Add ruleDoc to rule
-			rule.Documents = append(rule.Documents, ruleDoc)
+			// Add desired document to the set
+			desiredSocSet.Documents = append(desiredSocSet.Documents, desiredDoc)
 		}
 
-		// Add rule to config
-		newCfg.Rules = append(newCfg.Rules, rule)
+		// Add desired document set to config
+		newCfg.CommonDocuments = append(newCfg.CommonDocuments, desiredSocSet)
 	}
 
 	// Output new config
@@ -163,7 +163,7 @@ func GenerateConfig(args *GenerateConfigArgs) error {
 }
 
 // Note: sections MUST be in PEER_ORDER so that the doc sections are added in the correct order
-func createRuleSections(sections []*sqlite.Section, parentID string, existingSections []config.RuleDocumentSection, includePurpose bool, documentName string, documentPurpose string, cfg *config.LLM) (docSections []config.RuleDocumentSection, err error) {
+func createRuleSections(sections []*sqlite.Section, parentID string, existingSections []config.DocumentSection, includePurpose bool, documentName string, documentPurpose string, cfg *config.LLM) (docSections []config.DocumentSection, err error) {
 	for _, section := range sections {
 		// Guard against circular issues by ensuring that no ID is the same as its parent ID
 		if section.ID == section.ParentID {
@@ -189,15 +189,15 @@ func createRuleSections(sections []*sqlite.Section, parentID string, existingSec
 				}
 
 				// Create new doc section
-				docSection = config.RuleDocumentSection{
-					ID:       section.Name,
+				docSection = config.DocumentSection{
+					Name:     section.Name,
 					Purpose:  purpose,
 					Required: true,
 				}
 			}
 
 			// Get and add child doc sections
-			var childDocSections []config.RuleDocumentSection
+			var childDocSections []config.DocumentSection
 			childDocSections, err = createRuleSections(sections, section.ID, docSection.Sections, includePurpose, documentName, documentPurpose, cfg)
 			if err != nil {
 				return
@@ -212,9 +212,9 @@ func createRuleSections(sections []*sqlite.Section, parentID string, existingSec
 	return docSections, nil
 }
 
-func getRuleSection(sectionID string, sections []config.RuleDocumentSection) (sectionFound bool, section config.RuleDocumentSection) {
+func getRuleSection(sectionID string, sections []config.DocumentSection) (sectionFound bool, section config.DocumentSection) {
 	for _, section = range sections {
-		if section.ID == sectionID {
+		if section.Name == sectionID {
 			return true, section
 		}
 	}

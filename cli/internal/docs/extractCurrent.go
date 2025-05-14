@@ -29,18 +29,18 @@ func ExtractCurrent(system *config.System, db *sql.DB) (err error) {
 
 		// Get document path
 		var path string
-		switch d.Extractor {
-		case config.ExtractorFs:
-			path = d.FsOptions.Path
-		case config.ExtractorGit:
-			path = d.GitOptions.Path
+		switch d.Extractor.Type {
+		case config.ExtractorTypeFs:
+			path = d.Extractor.Options.Path
+		case config.ExtractorTypeGit:
+			path = d.Extractor.Options.Path
 			if path == "" {
-				path = d.GitOptions.Repo
+				path = d.Extractor.Options.Repo
 			}
-		case config.ExtractorHttp:
-			u, err := url.Parse(d.HttpOptions.BaseURL)
+		case config.ExtractorTypeHttp:
+			u, err := url.Parse(d.Extractor.Options.BaseURL)
 			if err != nil {
-				slog.Debug("docs.ExtractCurrent could not parse base url", "system", system.ID, "docs", d.ID, "baseUrl", d.HttpOptions.BaseURL)
+				slog.Debug("docs.ExtractCurrent could not parse base url", "system", system.ID, "docs", d.ID, "baseUrl", d.Extractor.Options.BaseURL)
 			}
 			path = fmt.Sprintf("%s://%s", u.Scheme, u.Host)
 		}
@@ -58,28 +58,28 @@ func ExtractCurrent(system *config.System, db *sql.DB) (err error) {
 		}
 
 		// Extract based on the extractor
-		switch d.Extractor {
-		case config.ExtractorFs:
+		switch d.Extractor.Type {
+		case config.ExtractorTypeFs:
 			err = ExtractCurrentFs(system.ID, &d, db)
 			if err != nil {
 				slog.Debug("docs.ExtractCurrent could not extract docs using fs extractor", "error", err, "doc", d.ID)
 				return
 			}
-		case config.ExtractorGit:
+		case config.ExtractorTypeGit:
 			err = ExtractCurrentGit(system.ID, &d, db)
 			if err != nil {
 				slog.Debug("docs.ExtractCurrent could not extract docs using git extractor", "error", err, "doc", d.ID)
 				return
 			}
-		case config.ExtractorHttp:
+		case config.ExtractorTypeHttp:
 			err = ExtractCurrentHttp(system.ID, &d, db)
 			if err != nil {
 				slog.Debug("docs.ExtractCurrent could not extract docs using http extractor", "error", err, "doc", d.ID)
 				return
 			}
 		default:
-			slog.Debug("docs.ExtractCurrent unknown extractor", "extractor", d.Extractor.String(), "doc", d.ID)
-			return errors.New("Unknown Extractor '" + d.Extractor.String() + "' for doc " + d.ID)
+			slog.Debug("docs.ExtractCurrent unknown extractor", "extractor", d.Extractor.Type.String(), "doc", d.ID)
+			return errors.New("Unknown Extractor '" + d.Extractor.Type.String() + "' for doc " + d.ID)
 		}
 	}
 
@@ -88,9 +88,9 @@ func ExtractCurrent(system *config.System, db *sql.DB) (err error) {
 
 func ExtractCurrentFs(systemID string, d *config.DocumentationSource, db *sql.DB) (err error) {
 	// Get our absolute path
-	absPath, err := filepath.Abs(d.FsOptions.Path)
+	absPath, err := filepath.Abs(d.Extractor.Options.Path)
 	if err != nil {
-		slog.Debug("docs.ExtractCurrentFs could not determine absolute docs path", "error", err, "path", d.FsOptions.Path)
+		slog.Debug("docs.ExtractCurrentFs could not determine absolute docs path", "error", err, "path", d.Extractor.Options.Path)
 		return err
 	}
 	slog.Debug("docs.ExtractCurrentFs extracting docs from path", "absPath", absPath)
@@ -100,7 +100,7 @@ func ExtractCurrentFs(systemID string, d *config.DocumentationSource, db *sql.DB
 	// https://pkg.go.dev/os@go1.24.1#Root
 	root, err := os.OpenRoot(absPath)
 	if err != nil {
-		slog.Debug("code.ExtractCurrentFs could not open fs root", "error", err, "path", d.FsOptions.Path)
+		slog.Debug("code.ExtractCurrentFs could not open fs root", "error", err, "path", d.Extractor.Options.Path)
 		return err
 	}
 	fsRoot := root.FS()
@@ -109,7 +109,7 @@ func ExtractCurrentFs(systemID string, d *config.DocumentationSource, db *sql.DB
 	docs := map[string]struct{}{}
 
 	// Loop through our includes and get files
-	for _, include := range d.Include {
+	for _, include := range d.Extractor.Include {
 		slog.Debug("docs.ExtractCurrentFs extracting docs using include", "include", include, "doc", d.ID)
 
 		// Get matched docs
@@ -123,7 +123,7 @@ func ExtractCurrentFs(systemID string, d *config.DocumentationSource, db *sql.DB
 		for _, doc := range matches {
 			// See if we have a excludeMatch for at least one of our excludes
 			excludeMatch := false
-			for _, exclude := range d.Exclude {
+			for _, exclude := range d.Extractor.Exclude {
 				excludeMatch = doublestar.MatchUnvalidated(exclude, doc)
 				if excludeMatch {
 					slog.Debug("docs.ExtractCurrentFs doc excluded", "doc", doc, "exclude", exclude)
@@ -149,7 +149,7 @@ func ExtractCurrentFs(systemID string, d *config.DocumentationSource, db *sql.DB
 		var extractedData string
 		switch d.Type {
 		case config.DocTypeHTML:
-			extractedData, err = extractHTMLDocument(string(rawData), d.HTML.Selector)
+			extractedData, err = extractHTMLDocument(string(rawData), d.Options.Selector)
 			if err != nil {
 				slog.Debug("docs.ExtractCurrentFs could not extract html document", "error", err, "doc", doc)
 				return err
@@ -190,7 +190,7 @@ func ExtractCurrentFs(systemID string, d *config.DocumentationSource, db *sql.DB
 func ExtractCurrentGit(systemID string, d *config.DocumentationSource, db *sql.DB) (err error) {
 	// Initialize go-git repo (on disk or in mem)
 	var r *git.Repository
-	r, err = repo.GetRepo(d.GitOptions)
+	r, err = repo.GetRepo(d.Extractor.Options)
 	if err != nil {
 		slog.Debug("docs.ExtractCurrentGit could not get repo", "error", err)
 		return
@@ -198,15 +198,15 @@ func ExtractCurrentGit(systemID string, d *config.DocumentationSource, db *sql.D
 
 	// Extract files from branch
 	branch := "main"
-	if d.GitOptions.Branch != "" {
-		branch = d.GitOptions.Branch
+	if d.Extractor.Options.Branch != "" {
+		branch = d.Extractor.Options.Branch
 	}
 	err = repo.GetFiles(branch, r, func(f *object.File) error {
-		for _, include := range d.Include {
+		for _, include := range d.Extractor.Include {
 			if doublestar.MatchUnvalidated(include, f.Name) {
 				// If excluded, skip this file and continue
 				excluded := false
-				for _, exclude := range d.Exclude {
+				for _, exclude := range d.Extractor.Exclude {
 					if doublestar.MatchUnvalidated(exclude, f.Name) {
 						excluded = true
 						break
@@ -228,7 +228,7 @@ func ExtractCurrentGit(systemID string, d *config.DocumentationSource, db *sql.D
 				var extractedData string
 				switch d.Type {
 				case config.DocTypeHTML:
-					extractedData, err = extractHTMLDocument(string(bytes), d.HTML.Selector)
+					extractedData, err = extractHTMLDocument(string(bytes), d.Options.Selector)
 					if err != nil {
 						slog.Debug("docs.ExtractCurrentGit could not extract html document", "error", err, "doc", f.Name)
 						return err
@@ -278,34 +278,34 @@ func ExtractCurrentHttp(systemID string, d *config.DocumentationSource, db *sql.
 	var errs []error
 
 	// Use baseURL to calculate includes/excludes
-	baseUrl, err := url.Parse(d.HttpOptions.BaseURL)
+	baseUrl, err := url.Parse(d.Extractor.Options.BaseURL)
 	if err != nil {
-		slog.Debug("docs.ExtractCurrentHttp could not parse baseUrl", "baseUrl", d.HttpOptions.BaseURL, "error", err)
+		slog.Debug("docs.ExtractCurrentHttp could not parse baseUrl", "baseUrl", d.Extractor.Options.BaseURL, "error", err)
 		return err
 	}
 	var includes []string
-	for _, include := range d.Include {
+	for _, include := range d.Extractor.Include {
 		includes = append(includes, path.Join(baseUrl.Path, include))
 	}
 	var excludes []string
-	for _, exclude := range d.Exclude {
+	for _, exclude := range d.Extractor.Exclude {
 		excludes = append(excludes, path.Join(baseUrl.Path, exclude))
 	}
 	slog.Debug("docs.ExtractCurrentHttp includes/excludes", "includes", includes, "excludes", excludes, "basePath", baseUrl.Path)
 
 	// Determine start URL
 	var startUrl *url.URL
-	if d.HttpOptions.Start != "" {
-		startUrl, err = url.Parse(d.HttpOptions.Start)
+	if d.Extractor.Options.Start != "" {
+		startUrl, err = url.Parse(d.Extractor.Options.Start)
 		if err != nil {
-			slog.Debug("docs.ExtractCurrentHttp could not parse start", "start", d.HttpOptions.Start, "error", err)
+			slog.Debug("docs.ExtractCurrentHttp could not parse start", "start", d.Extractor.Options.Start, "error", err)
 			return err
 		}
 		startUrl = baseUrl.ResolveReference(startUrl)
 	} else {
 		startUrl = baseUrl
 	}
-	slog.Debug("docs.ExtractCurrentHttp startUrl", "startUrl", startUrl, "start", d.HttpOptions.Start, "baseUrl", baseUrl.String())
+	slog.Debug("docs.ExtractCurrentHttp startUrl", "startUrl", startUrl, "start", d.Extractor.Options.Start, "baseUrl", baseUrl.String())
 
 	// Initialize our collector
 	c := colly.NewCollector(
@@ -320,7 +320,7 @@ func ExtractCurrentHttp(systemID string, d *config.DocumentationSource, db *sql.
 	})
 
 	// Add headers (if any)
-	for key, val := range d.HttpOptions.Headers {
+	for key, val := range d.Extractor.Options.Headers {
 		c.Headers.Add(key, val)
 	}
 
@@ -372,7 +372,7 @@ func ExtractCurrentHttp(systemID string, d *config.DocumentationSource, db *sql.
 		var err error
 		switch d.Type {
 		case config.DocTypeHTML:
-			extractedData, err = extractHTMLDocument(string(r.Body), d.HTML.Selector)
+			extractedData, err = extractHTMLDocument(string(r.Body), d.Options.Selector)
 			if err != nil {
 				slog.Debug("docs.ExtractCurrentGit could not extract html document", "error", err, "doc", path)
 				errs = append(errs, err)

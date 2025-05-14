@@ -10,70 +10,77 @@ systems:
   - id: check-change
     code:
       - id: app
-        extractor: git
-        git:
-          repo: git@github.com:appgardenstudios/hyaline-example.git
-          branch: main
-          clone: true
-          sshAuth:
-            user: git
-            pem: ${HYALINE_SSH_PEM}
-            password: ${HYALINE_SSH_PASSWORD}
-        include:
-          - package.json
-          - "**/*.js"
-        exclude:
-          - "**/*.test.js"
-    docs:
+        extractor:
+          type: git
+          options:
+            repo: git@github.com:appgardenstudios/hyaline-example.git
+            branch: main
+            clone: true
+            auth:
+              type: ssh
+              options:
+                user: git
+                pem: ${HYALINE_SSH_PEM}
+                password: ${HYALINE_SSH_PASSWORD}
+          include:
+            - package.json
+            - "**/*.js"
+          exclude:
+            - "**/*.test.js"
+    documentation:
       - id: app
         type: md
-        extractor: git
-        git:
-          repo: git@github.com:appgardenstudios/hyaline-example.git
-          # path: /Users/johnmclark/code/hyaline-docs-ssh
-          branch: main
-          clone: true
-          sshAuth:
-            user: git
-            pem: ${HYALINE_SSH_PEM}
-            password: ${HYALINE_SSH_PASSWORD}
-        include:
-          - "**/*.md"
-        rules: [check-change]
+        extractor:
+          type: git
+          options:
+            repo: git@github.com:appgardenstudios/hyaline-example.git
+            # path: /Users/johnmclark/code/hyaline-docs-ssh
+            branch: main
+            clone: true
+            auth:
+              type: ssh
+              options:
+                user: git
+                pem: ${HYALINE_SSH_PEM}
+                password: ${HYALINE_SSH_PASSWORD}
+          include:
+            - "**/*.md"
+        includeDocuments: [check-change]
 
-rules:
+commonDocuments:
   - id: check-change
     documents:
-      - path: docs/subdir.md
+      - name: docs/subdir.md
         purpose: The purpose of this document is to record any change to js files in the subdir directory, no matter how small
         required: true
-      - path: docs/docsDoc.md
+      - name: docs/docsDoc.md
         purpose: The docs/docsDoc.md file appears to be a test document used to verify basic document formatting and functionality. It contains simple test content and repeated test phrases.
         required: true
         sections:
-          - id: This is a test
+          - name: This is a test
             purpose: This section demonstrates basic test content through repetitive test phrases, serving as a simple verification of document formatting and display capabilities.
             required: true
-      - path: docs/preDoc.md
+      - name: docs/preDoc.md
         purpose: The document docs/preDoc.md appears to be a markdown file containing preliminary text and a sample heading section with placeholder content. Its purpose seems to be demonstrating document structure rather than providing actual documentation content.
         required: true
         sections:
-          - id: A Random Heading
+          - name: A Random Heading
             purpose: This placeholder section contains sample text to demonstrate document structure and formatting, aligning with the preliminary nature of the preDoc.md file.
             required: true
-      - path: README.md
+      - name: README.md
         purpose: The purpose of the document
         required: true
         sections:
-          - id: Example
+          - name: Example
             purpose: The purpose of the section
             sections:
-              - id: Subsection 1
+              - name: Subsection 1
                 ignore: true
-              - id: Subsection 2
+              - name: Subsection 2
                 purpose: Since this appears to be placeholder content without specific details, I can only state that this section titled "Subsection 2" is a component of the README.md document that supports its overall purpose of "The purpose of the document."
                 required: true
-          - id: Running Locally
+          - name: Running Locally
             required: true
             updateIf:
-              modified: [subdir/*.js]
+              modified:
+                - glob: subdir/*.js

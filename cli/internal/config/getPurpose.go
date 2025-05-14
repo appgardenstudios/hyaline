@@ -13,22 +13,22 @@ func GetPurpose(systemID string, documentationSourceID string, documentID string
 		return
 	}
 
-	// Get ruleDoc
-	ruleDoc, found := GetRuleDocument(cfg.Rules, documentationSource.Rules, documentID)
+	// Get desired document
+	desiredDoc, found := documentationSource.GetDocument(cfg, documentID)
 	if !found {
 		return
 	}
 
 	// If this is a document, return
 	if len(sectionIDs) == 0 {
-		return ruleDoc.Purpose, true
+		return desiredDoc.Purpose, true
 	}
 
 	// Otherwise, get purpose from section
-	return getPurposeFromSection(ruleDoc.Sections, sectionIDs)
+	return getPurposeFromSection(desiredDoc.Sections, sectionIDs)
 }
 
-func getPurposeFromSection(sections []RuleDocumentSection, sectionIDs []string) (purpose string, found bool) {
+func getPurposeFromSection(sections []DocumentSection, sectionIDs []string) (purpose string, found bool) {
 	var currentID string
 	var remainder []string
 
@@ -44,7 +44,7 @@ func getPurposeFromSection(sections []RuleDocumentSection, sectionIDs []string) 
 	}
 
 	for _, sec := range sections {
-		if sec.ID == currentID {
+		if sec.Name == currentID {
 			if len(remainder) == 0 {
 				return sec.Purpose, true
 			} else {

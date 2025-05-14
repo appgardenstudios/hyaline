@@ -98,14 +98,14 @@ func validate(cfg *Config) (err error) {
 			codeIDs[code.ID] = struct{}{}
 
 			// Ensure extractor is valid
-			if !code.Extractor.IsValidCodeExtractor() {
-				err = errors.New("invalid code extractor detected: " + system.ID + " > " + code.ID + " > " + code.Extractor.String())
-				slog.Debug("config.Validate found invalid code extractor", "extractor", code.Extractor.String(), "system", system.ID, "code", code.ID, "error", err)
+			if !code.Extractor.Type.IsValidCodeExtractor() {
+				err = errors.New("invalid code extractor detected: " + system.ID + " > " + code.ID + " > " + code.Extractor.Type.String())
+				slog.Debug("config.Validate found invalid code extractor", "extractor", code.Extractor.Type.String(), "system", system.ID, "code", code.ID, "error", err)
 				return
 			}
 
 			// Ensure include patterns are valid
-			for _, include := range code.Include {
+			for _, include := range code.Extractor.Include {
 				if !doublestar.ValidatePattern(include) {
 					err = errors.New("invalid code include pattern detected: " + system.ID + " > " + code.ID + " > " + include)
 					slog.Debug("config.Validate found invalid include pattern", "include", include, "system", system.ID, "code", code.ID, "error", err)
@@ -114,7 +114,7 @@ func validate(cfg *Config) (err error) {
 			}
 
 			// Ensure exclude patterns are valid
-			for _, exclude := range code.Exclude {
+			for _, exclude := range code.Extractor.Exclude {
 				if !doublestar.ValidatePattern(exclude) {
 					err = errors.New("invalid code exclude pattern detected: " + system.ID + " > " + code.ID + " > " + exclude)
 					slog.Debug("config.Validate found invalid exclude pattern", "exclude", exclude, "system", system.ID, "code", code.ID, "error", err)
@@ -123,60 +123,93 @@ func validate(cfg *Config) (err error) {
 			}
 		}
 
-		// Validate docs block
+		// Validate documentation block
 		docIDs := map[string]struct{}{}
-		for _, doc := range system.DocumentationSources {
+		for _, docSource := range system.DocumentationSources {
 			// Ensure that system/docs combinations are unique
-			if _, ok := docIDs[doc.ID]; ok {
-				err = errors.New("duplicate docs id detected: " + system.ID + " > " + doc.ID)
-				slog.Debug("config.Validate found duplicate docs id", "system", system.ID, "doc", doc.ID, "error", err)
+			if _, ok := docIDs[docSource.ID]; ok {
+				err = errors.New("duplicate docs id detected: " + system.ID + " > " + docSource.ID)
+				slog.Debug("config.Validate found duplicate docs id", "system", system.ID, "doc", docSource.ID, "error", err)
 				return
 			}
-			docIDs[doc.ID] = struct{}{}
+			docIDs[docSource.ID] = struct{}{}
 
 			// Ensure that doc type is valid
-			if !doc.Type.IsValid() {
-				err = errors.New("invalid doc type '" + doc.Type.String() + "' detected: " + system.ID + " > " + doc.ID)
-				slog.Debug("config.Validate found invalid doc type", "system", system.ID, "doc", doc.ID, "type", doc.Type.String(), "error", err)
+			if !docSource.Type.IsValid() {
+				err = errors.New("invalid doc type '" + docSource.Type.String() + "' detected: " + system.ID + " > " + docSource.ID)
+				slog.Debug("config.Validate found invalid doc type", "system", system.ID, "doc", docSource.ID, "type", docSource.Type.String(), "error", err)
 				return
 			}
 
 			// Ensure extractor is valid
-			if !doc.Extractor.IsValidDocExtractor() {
-				err = errors.New("invalid doc extractor detected: " + system.ID + " > " + doc.ID + " > " + doc.Extractor.String())
-				slog.Debug("config.Validate found invalid doc extractor", "extractor", doc.Extractor.String(), "system", system.ID, "doc", doc.ID, "error", err)
+			if !docSource.Extractor.Type.IsValidDocExtractor() {
+				err = errors.New("invalid doc extractor detected: " + system.ID + " > " + docSource.ID + " > " + docSource.Extractor.Type.String())
+				slog.Debug("config.Validate found invalid doc extractor", "extractor", docSource.Extractor.Type.String(), "system", system.ID, "doc", docSource.ID, "error", err)
 				return
 			}
 
 			// Ensure include patterns are valid
-			for _, include := range doc.Include {
+			for _, include := range docSource.Extractor.Include {
 				if !doublestar.ValidatePattern(include) {
-					err = errors.New("invalid doc include pattern detected: " + system.ID + " > " + doc.ID + " > " + include)
-					slog.Debug("config.Validate found invalid doc include", "include", include, "system", system.ID, "doc", doc.ID, "error", err)
+					err = errors.New("invalid doc include pattern detected: " + system.ID + " > " + docSource.ID + " > " + include)
+					slog.Debug("config.Validate found invalid doc include", "include", include, "system", system.ID, "doc", docSource.ID, "error", err)
 					return
 				}
 			}
 
 			// Ensure exclude patterns are valid
-			for _, exclude := range doc.Exclude {
+			for _, exclude := range docSource.Extractor.Exclude {
 				if !doublestar.ValidatePattern(exclude) {
-					err = errors.New("invalid doc exclude pattern detected: " + system.ID + " > " + doc.ID + " > " + exclude)
-					slog.Debug("config.Validate found invalid doc exclude", "exclude", exclude, "system", system.ID, "doc", doc.ID, "error", err)
+					err = errors.New("invalid doc exclude pattern detected: " + system.ID + " > " + docSource.ID + " > " + exclude)
+					slog.Debug("config.Validate found invalid doc exclude", "exclude", exclude, "system", system.ID, "doc", docSource.ID, "error", err)
 					return
+				}
+			}
+
+			// Validate documents
+			desiredDocIDs := map[string]struct{}{}
+			// Ensure there are no dupes in documents
+			for _, document := range docSource.Documents {
+				_, found := desiredDocIDs[document.Name]
+				if found {
+					err = fmt.Errorf("duplicate desired document path detected: %s > %s > %s", system.ID, docSource.ID, document.Name)
+					slog.Debug("config.Validate found duplicate desired document id", "system", system.ID, "documentation", docSource.ID, "document", document.Name, "error", err)
+					return
+				}
+				desiredDocIDs[document.Name] = struct{}{}
+			}
+
+			// Ensure that there are no dupes in includedDocuments and that every ID resolves
+			for _, docID := range docSource.IncludeDocuments {
+				includedDocSet, found := cfg.GetCommonDocumentSet(docID)
+				if !found {
+					err = fmt.Errorf("common documentation set not found: %s > %s > %s", system.ID, docSource.ID, docID)
+					slog.Debug("config.Validate found duplicate desired document id", "system", system.ID, "documentation", docSource.ID, "includedDocument", docID, "error", err)
+					return
+				}
+
+				for _, document := range includedDocSet.Documents {
+					_, found := desiredDocIDs[document.Name]
+					if found {
+						err = fmt.Errorf("duplicate desired document path detected in common document: %s > %s > %s", system.ID, docSource.ID, document.Name)
+						slog.Debug("config.Validate found duplicate desired document id", "system", system.ID, "documentation", docSource.ID, "document", document.Name, "includedDocument", docID, "error", err)
+						return
+					}
+					desiredDocIDs[document.Name] = struct{}{}
 				}
 			}
 		}
 	}
 
-	// Validate Rules
-	ruleIDs := map[string]struct{}{}
-	for _, rule := range cfg.Rules {
-		if _, ok := ruleIDs[rule.ID]; ok {
-			err = errors.New("duplicate rule id detected: " + rule.ID)
-			slog.Debug("config.Validate found duplicate rule id", "rule", rule.ID, "error", err)
+	// Verify that commonDocuments don't have overlapping IDs
+	commonDocumentIDs := map[string]struct{}{}
+	for _, commonDoc := range cfg.CommonDocuments {
+		if _, ok := commonDocumentIDs[commonDoc.ID]; ok {
+			err = errors.New("duplicate common document id detected: " + commonDoc.ID)
+			slog.Debug("config.Validate found duplicate common document id", "commonDocument", commonDoc.ID, "error", err)
 			return
 		}
-		ruleIDs[rule.ID] = struct{}{}
+		commonDocumentIDs[commonDoc.ID] = struct{}{}
 	}
 
 	return
