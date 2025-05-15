@@ -34,6 +34,8 @@ func ExtractChange(args *ExtractChangeArgs) error {
 		"system", args.System,
 		"base", args.Base,
 		"head", args.Head,
+		"codeIDs", args.CodeIDs,
+		"documentationIDs", args.DocumentationIDs,
 		"pullRequest", args.PullRequest,
 		"issues", args.Issues,
 		"output", args.Output,
