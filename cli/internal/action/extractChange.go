@@ -39,13 +39,6 @@ func ExtractChange(args *ExtractChangeArgs) error {
 		"output", args.Output,
 	))
 
-	// Ensure at least 1 of code or documentation source is provided
-	if len(args.CodeIDs) == 0 && len(args.DocumentationIDs) == 0 {
-		err := errors.New("at least one code-id or documentation-id is required")
-		slog.Debug("action.ExtractChange requires at least one at least one code-id or documentation-id", "error", err)
-		return err
-	}
-
 	// Load Config
 	cfg, err := config.Load(args.Config)
 	if err != nil {
@@ -94,6 +87,20 @@ func ExtractChange(args *ExtractChangeArgs) error {
 	}
 	slog.Debug("action.ExtractChange system inserted")
 
+	// Determine our set of code/documentation IDs to extract
+	// (default to extracting everything if no code AND documentation IDs are passed in)
+	codeIDs := append([]string{}, args.CodeIDs...)
+	documentationIDs := append([]string{}, args.DocumentationIDs...)
+	if len(codeIDs) == 0 && len(documentationIDs) == 0 {
+		// Extract all code and documentation ids
+		for _, c := range system.CodeSources {
+			codeIDs = append(codeIDs, c.ID)
+		}
+		for _, d := range system.DocumentationSources {
+			documentationIDs = append(documentationIDs, d.ID)
+		}
+	}
+
 	// Extract/Insert Pull Request (if present)
 	if args.PullRequest != "" {
 		if cfg.GitHub.Token == "" {
@@ -123,7 +130,7 @@ func ExtractChange(args *ExtractChangeArgs) error {
 	}
 
 	// Extract/Insert Code
-	err = code.ExtractChange(system, args.Head, args.Base, args.CodeIDs, db)
+	err = code.ExtractChange(system, args.Head, args.Base, codeIDs, db)
 	if err != nil {
 		slog.Debug("action.ExtractChange could not extract code", "error", err)
 		return err
@@ -131,7 +138,7 @@ func ExtractChange(args *ExtractChangeArgs) error {
 	slog.Debug("action.ExtractChange code inserted")
 
 	// Extract/Insert Docs
-	err = docs.ExtractChange(system, args.Head, args.Base, args.DocumentationIDs, db)
+	err = docs.ExtractChange(system, args.Head, args.Base, documentationIDs, db)
 	if err != nil {
 		slog.Debug("action.ExtractChange could not extract docs", "error", err)
 		return err
