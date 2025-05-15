@@ -3,13 +3,13 @@ title: Extract Current
 purpose: Explain how Hyaline extracts current documentation, code, and other metadata
 ---
 # Overview
-Hyaline has the ability to extract code, documentation, and other metadata into a current data set that can be used to build systems and products as well as verify that existing documentation is accurate and complete.
+Hyaline has the ability to extract code and documentation into a current data set that can be used to build systems and products as well as verify that existing documentation is accurate and complete.
 
 ![Overview](_img/extract-current-overview.svg)
 
-TODO explanation of image
+In the example above you can see a variety of code and documentation spread over multiple repositories and documentation sites. Hyaline's extraction process can take all of this code and documentation and place it into a single, unified data set organized by system. This data set can then be used to [run checks](./check-current.md) and support building/maintaining products and systems via an [mcp server](./mcp.md).
 
-TODO Explanation of system and how you have multiple sources for system code and documentation
+The main unit of organization within Hyaline is the system. A system can contain any number of code and/or documentation sources. When using Hyaline, it is helpful to create multiple focused, single purpose systems rather than a single system with everything in it. Also note that there is no restriction on where the code and/or documentation of a system comes from, meaning that you can break up a mono-repo into multiple, smaller systems or piece together a system from code and documentation spread across a large number of repositories and sites.
 
 # Extracting Code
 System source code is extracted for each defined code source in the configuration (TODO link to config). Code can be extracted using one of two available extractors: `fs` and `git`.
@@ -81,7 +81,7 @@ The `http` extractor extracts documentation from an http(s) server via crawling.
 
 TODO explanation of image
 
-TODO image of css selector and html -> document conversion process
+![HTML to Markdown](_img/extract-current-html-to-markdown.svg)
 
 TODO explanation of image
 
