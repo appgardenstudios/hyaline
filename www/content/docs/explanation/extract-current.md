@@ -5,7 +5,7 @@ purpose: Explain how Hyaline extracts current documentation, code, and other met
 # Overview
 Hyaline has the ability to extract code, documentation, and other metadata into a current data set that can be used to build systems and products as well as verify that existing documentation is accurate and complete.
 
-TODO image of overall extraction process/flow
+![Overview](_img/extract-current-overview.svg)
 
 TODO explanation of image
 
@@ -16,14 +16,14 @@ System source code is extracted for each defined code source in the configuratio
 
 TODO talk about what to extract (source code, not tests and other items)
 
-TODO image of conceptual relationships between system, code, and files
+![Extracting Code](_img/extract-current-extracting-code.svg)
 
 The code that is extracted is placed into a data set that is stored in sqlite. TODO link to reference
 
 ## Extracting Code - fs
 The `fs` extractor extracts source code from the local file system.
 
-TODO image of extraction from filesystem
+![Extracting Code fs](_img/extract-current-extracting-code-fs.svg)
 
 TODO explanation of image
 
@@ -33,17 +33,17 @@ The `git` extractor extracts source code from a local or remote git repository. 
 Note that Hyaline extracts code from a specific branch as specified in the configuration. It does this extraction via the git metadata itself, rather than requiring the repository to be in a specific state. In other words, you don't need to check out the main branch to extract code from it. Hyaline will use the internal git structure to scan and extract the code. 
 
 ### Local Repo
-TODO image of local repo
+![Local Repo](_img/extract-current-local-repo.svg)
 
 In this scenario a local repository already exists on the local file system, and Hyaline uses that repository to extract the code.
 
 ### Remote Repo, Cloned Locally
-TODO image of remote repo being cloned to the fs
+![Remote Repo Cloned Locally](_img/extract-current-remote-repo-cloned-locally.svg)
 
 In this scenario Hyaline clones a remote repository down to the local file system, and then uses that local repo to extract code from. 
 
 ### Remote Repo, Cloned In Memory
-TODO image of remote repo being cloned to an in-memory fs
+![Remote Repo Cloned Locally](_img/extract-current-remote-repo-cloned-in-memory.svg)
 
 In this scenario Hyaline clones a remote repository into a local in-memory filesystem, and then uses that in-memory repository to extract code from.
 
@@ -54,7 +54,11 @@ TODO discuss non-markdown to markdown conversion and selector for html sources
 
 TODO talk about what to extract (documentation, can ignore items as needed)
 
-TODO image of conceptual relationships between system, documentation, document, and section.
+![Extracting Documentation](_img/extract-current-extracting-documentation.svg)
+
+TODO explain image
+
+![Extracting Documentation Sections](_img/extract-current-extracting-documentation-sections.svg)
 
 TODO talk about how sections are extracted.
 
@@ -63,17 +67,21 @@ The documentation that is extracted is placed into a data set that is stored in 
 ## Extracting Documentation - fs
 The `fs` extractor extracts documentation from the local file system. It operates the same way as the Code `fs` extractor (See Extracting Code - fs).
 
-TODO image 
+![Extracting Documentation fs](_img/extract-current-extracting-documentation-fs.svg)
 
 ## Extracting Documentation - git
 The `git` extractor extracts documentation from a local or remote git repository. It operates the same way as the Code `git` extractor and supports the same set of setups (See Extracting Code - git).
 
-TODO image 
+![Extracting Documentation git](_img/extract-current-extracting-documentation-git.svg)
 
 ## Extracting Documentation - http
 The `http` extractor extracts documentation from an http(s) server via crawling.
 
-TODO image of crawling
+![Extracting Documentation http](_img/extract-current-extracting-documentation-http.svg)
+
+TODO explanation of image
+
+TODO image of css selector and html -> document conversion process
 
 TODO explanation of image
 
