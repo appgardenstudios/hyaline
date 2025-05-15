@@ -16,13 +16,15 @@ import (
 )
 
 type ExtractChangeArgs struct {
-	Config      string
-	System      string
-	Base        string
-	Head        string
-	PullRequest string
-	Issues      []string
-	Output      string
+	Config           string
+	System           string
+	Base             string
+	Head             string
+	CodeIDs          []string
+	DocumentationIDs []string
+	PullRequest      string
+	Issues           []string
+	Output           string
 }
 
 func ExtractChange(args *ExtractChangeArgs) error {
@@ -36,6 +38,13 @@ func ExtractChange(args *ExtractChangeArgs) error {
 		"issues", args.Issues,
 		"output", args.Output,
 	))
+
+	// Ensure at least 1 of code or documentation source is provided
+	if len(args.CodeIDs) == 0 && len(args.DocumentationIDs) == 0 {
+		err := errors.New("at least one code-id or documentation-id is required")
+		slog.Debug("action.ExtractChange requires at least one at least one code-id or documentation-id", "error", err)
+		return err
+	}
 
 	// Load Config
 	cfg, err := config.Load(args.Config)
@@ -114,7 +123,7 @@ func ExtractChange(args *ExtractChangeArgs) error {
 	}
 
 	// Extract/Insert Code
-	err = code.ExtractChange(system, args.Head, args.Base, db)
+	err = code.ExtractChange(system, args.Head, args.Base, args.CodeIDs, db)
 	if err != nil {
 		slog.Debug("action.ExtractChange could not extract code", "error", err)
 		return err
@@ -122,7 +131,7 @@ func ExtractChange(args *ExtractChangeArgs) error {
 	slog.Debug("action.ExtractChange code inserted")
 
 	// Extract/Insert Docs
-	err = docs.ExtractChange(system, args.Head, args.Base, db)
+	err = docs.ExtractChange(system, args.Head, args.Base, args.DocumentationIDs, db)
 	if err != nil {
 		slog.Debug("action.ExtractChange could not extract docs", "error", err)
 		return err

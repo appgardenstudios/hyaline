@@ -6,18 +6,25 @@ import (
 	"hyaline/internal/repo"
 	"hyaline/internal/sqlite"
 	"log/slog"
+	"slices"
 	"strings"
 
 	"github.com/go-git/go-git/v5"
 	"github.com/go-git/go-git/v5/utils/merkletrie"
 )
 
-func ExtractChange(system *config.System, head string, base string, db *sql.DB) (err error) {
+func ExtractChange(system *config.System, head string, base string, documentationIDs []string, db *sql.DB) (err error) {
 	// Process each docs source
 	for _, d := range system.DocumentationSources {
+		// Only extract if this documentation ID is passed in
+		if !slices.Contains(documentationIDs, d.ID) {
+			slog.Debug("docs.ExtractChange skipping non-included documentation source", "system", system.ID, "doc", d.ID)
+			continue
+		}
+
 		// Only extract changed code for git sources
 		if d.Extractor.Type != config.ExtractorTypeGit {
-			slog.Debug("code.ExtractChange skipping non-git code source", "system", system.ID, "doc", d.ID)
+			slog.Debug("docs.ExtractChange skipping non-git documentation source", "system", system.ID, "doc", d.ID)
 			continue
 		}
 		slog.Debug("docs.ExtractChange extracting docs", "system", system.ID, "doc", d.ID, "head", head, "base", base)
