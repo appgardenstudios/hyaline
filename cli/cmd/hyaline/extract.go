@@ -38,12 +38,12 @@ func Extract(logLevel *slog.LevelVar) *cli.Command {
 					},
 					&cli.StringSliceFlag{
 						Name:     "code-id",
-						Required: true,
+						Required: false,
 						Usage:    "IDs of the code source(s) that will be extracted",
 					},
 					&cli.StringSliceFlag{
 						Name:     "documentation-id",
-						Required: true,
+						Required: false,
 						Usage:    "IDs of the documentation source(s) that will be extracted",
 					},
 					&cli.StringFlag{
