@@ -150,7 +150,7 @@ Generate a configuration for the system `app` from `./current.db` using the conf
 `hyaline merge` merge 2 or more data sets into a single data set. Please visit the explanation documentation for [merge](../explanation/merge.md) for more details.
 
 **Options**:
-* `--input` - (required) Path to a data set
+* `--input` - (required, multiple allowed) Path to a data set
 * `--output` - (required) Path of the merged data set (file must not already exist)
 
 **Example**:
@@ -158,3 +158,9 @@ Generate a configuration for the system `app` from `./current.db` using the conf
 $ hyaline merge --input ./current.db --input ./new.db --output ./combined.db
 ```
 Merge `./new.db` into `./current.db` and output the result to `./combined.db`
+
+**Example**:
+```
+$ hyaline merge --input ./current.db --input ./new1.db --input ./new2.db --output ./combined.db
+```
+Merge `./new1.db` into `./current.db` followed by `./new2.db` and output the result to `./combined.db`
