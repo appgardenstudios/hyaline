@@ -23,23 +23,23 @@ TAG="$DATE-$HASH"
 
 # Build/zip binaries
 GOOS=darwin GOARCH=amd64 go build -o ./dist/hyaline -ldflags="-X 'main.Version=$TAG'" ./cmd/hyaline.go
-gzip -c9 ./dist/hyaline > ./dist/hyaline-darwin-amd64.gz
+zip -9 ./dist/hyaline-darwin-amd64.zip ./dist/hyaline
 rm -f ./dist/hyaline
 
 GOOS=darwin GOARCH=arm64 go build -o ./dist/hyaline -ldflags="-X 'main.Version=$TAG'" ./cmd/hyaline.go
-gzip -c9 ./dist/hyaline > ./dist/hyaline-darwin-arm64.gz
+zip -9 ./dist/hyaline-darwin-arm64.zip ./dist/hyaline
 rm -f ./dist/hyaline
 
 GOOS=linux GOARCH=amd64 go build -o ./dist/hyaline -ldflags="-X 'main.Version=$TAG'" ./cmd/hyaline.go
-gzip -c9 ./dist/hyaline > ./dist/hyaline-linux-amd64.gz
+zip -9 ./dist/hyaline-linux-amd64.zip ./dist/hyaline
 rm -f ./dist/hyaline
 
 GOOS=linux GOARCH=arm64 go build -o ./dist/hyaline -ldflags="-X 'main.Version=$TAG'" ./cmd/hyaline.go
-gzip -c9 ./dist/hyaline > ./dist/hyaline-linux-arm64.gz
+zip -9 ./dist/hyaline-linux-arm64.zip ./dist/hyaline
 rm -f ./dist/hyaline
 
 GOOS=windows GOARCH=amd64 go build -o ./dist/hyaline.exe -ldflags="-X 'main.Version=$TAG'" ./cmd/hyaline.go
-gzip -c9 ./dist/hyaline.exe > ./dist/hyaline-windows-amd64.gz
+zip -9 ./dist/hyaline-windows-amd64.zip ./dist/hyaline.exe
 rm -f ./dist/hyaline.exe
 
 # Create Tag
@@ -49,4 +49,4 @@ git tag $TAG
 git push origin $TAG
 
 # Create Draft Release (will print link to release when done)
-gh release create $TAG --draft --verify-tag --fail-on-no-commits --generate-notes --latest ./dist/*.gz
+gh release create $TAG --draft --verify-tag --fail-on-no-commits --generate-notes --latest ./dist/*.zip
