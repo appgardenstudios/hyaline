@@ -18,7 +18,7 @@ Note that you usually only want to extract the source code and configuration, an
 
 ![Extracting Code](_img/extract-current-extracting-code.svg)
 
-The code that is extracted is organized into systems and stored as files associated with a code source. You can have any number of files associated with a code source, and any number of code sources associated with a system. For example, you could have frontend source code separated from backend source code separate4d from infrastructure code.
+The code that is extracted is organized into systems and stored as files associated with a code source. You can have any number of files associated with a code source, and any number of code sources associated with a system. For example, you could have frontend source code separated from backend source code separated from infrastructure code.
 
 The code that is extracted is placed into a data set that is stored in sqlite. Please see the [data set reference](../reference/data-set.md) for more information.
 
@@ -108,7 +108,7 @@ The following files are _not_ extracted:
 For more detail on git extractor options please see the [configuration reference](../reference/config.md).
 
 # Extracting Documentation
-System documentation is extracted for each defined documentation source in the configuration (TODO link to config). Documentation can be extracted using one of three available extractors: `fs`, `git`, and `http`. These 3 extractors are explained below.
+System documentation is extracted for each defined documentation source in the [configuration](../reference/config.md). Documentation can be extracted using one of three available extractors: `fs`, `git`, and `http`. These 3 extractors are explained below.
 
 ![Extracting Documentation](_img/extract-current-extracting-documentation.svg)
 
@@ -116,11 +116,13 @@ The documentation that is extracted is organized into systems and stored as docu
 
 The documentation that is extracted is placed into a data set that is stored in sqlite. Please see the [data set reference](../reference/data-set.md) for more information.
 
+## Documentation Sections
+
 ![Extracting Documentation Sections](_img/extract-current-extracting-documentation-sections.svg)
 
 Section extraction is done by scanning through a document and dividing it up into sections based on the markdown heading hierarchy encountered in the document (e.g. `#` is heading level1, `##` is heading level 2, and so forth). Each section contains the text of the section and any child sections.
 
-TODO discuss non-markdown to markdown conversion and selector for html sources
+## Non-Markdown Documentation
 
 ![HTML to Markdown](_img/extract-current-html-to-markdown.svg)
 
