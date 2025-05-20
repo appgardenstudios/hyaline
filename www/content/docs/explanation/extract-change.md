@@ -47,9 +47,9 @@ The extraction process uses the same configuration as the extract current proces
 
 ![Extract Changed Documentation](_img/extract-change-documentation.svg)
 
-TODO explanation of the image
+Documentation extraction operates the same way as code extraction (See **Extracting Changed Code** above).
 
-TODO link to data set documentation
+For more details on the schema of the change data set please see the [data set reference](../reference/data-set.md).
 
 # Extracting Metadata
 Hyaline also supports extracting additional metadata and context about the change, such as any pull request or issue information available.
@@ -59,14 +59,18 @@ Hyaline supports extracting the title and contents of a GitHub pull request and 
 
 ![Extracting Pull Request](_img/extract-change-pull-request.svg)
 
-TODO explanation of the image above.
+In this scenario there are multiple pull requests available in GitHub, and based on our CLI options we extract `Pull Request 2` and place it in our change data set.
+
+For more details on the schema of the change data set please see the [data set reference](../reference/data-set.md).
 
 ## Issues
 Hyaline supports extracting the title and contents of one or more issues and that inclusion of that information in the change data set.
 
 ![Extracting Issues](_img/extract-change-issues.svg)
 
-TODO explanation of the image above.
+In this scenario there are multiple issues available in GitHub, and based on our CLI options we extract `Issue 1` and `Issue 3` and place them in our change data set.
+
+For more details on the schema of the change data set please see the [data set reference](../reference/data-set.md).
 
 # Next Steps
 You can continue on to see how Hyaline checks [current](./check-current.md) or [change](./check-change.md) data sets.
