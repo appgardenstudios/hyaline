@@ -3,7 +3,7 @@ title: How To install the Hyaline CLI
 purpose: Document how to install the Hyaline CLI
 ---
 # Purpose
-Install the Hyaline CLI
+Install the Hyaline CLI.
 
 # Prerequisite(s)
 * (none)
