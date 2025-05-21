@@ -15,6 +15,8 @@ Along with the files and documents, hyaline can also extract the pull request an
 
 When extracting a change for a system you may have situations where a system is made up of code and/or documentation sources that come from more than one repository. In that case you can tell Hyaline to only extract a subset of the available code and/or documentation sources for the change, targeting a single repository at a time.
 
+For more details on the schema of the change data set, including the information captured when extracting changed code, documentation, and change metadata please see the [data set reference](../reference/data-set.md).
+
 # Extracting Changed Code
 System source code that changed is extracted for each targeted code source in the system. Note that the code source must be configured to use the `git` extractor for change extraction to work, as Hyaline compares two branches to extract the diffs used when extracting the change.
 
