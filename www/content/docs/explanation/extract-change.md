@@ -3,11 +3,11 @@ title: Extract Change
 purpose: Explain how Hyaline extracts changed documentation, code, and other metadata
 ---
 # Overview
-Hyaline has the ability to extract the set of changed code and documentation, along with other change metadata, into a change data set that can be used to check for needed documentation updates based on the changes made. The goal is to extract only what code and/or documentation actually changed, alongside any relevant change metadata, into a discrete change data set.
+Hyaline has the ability to extract the set of changed code and documentation, along with other change metadata, into a change data set that can be used to check for needed documentation updates based on the changes made. The goal is to extract only the code and/or documentation that actually changed, along with any relevant change metadata, into a discrete change data set.
 
 ![Overview](_img/extract-change-overview.svg)
 
-In the image above you can see a simplified representation of files and documents in two branches of a repository, the Base Branch (usually main) and the Head Branch (usually a feature branch). You will also notice that there are several differences between the branches represented by different colors (new, deleted, changed, and renamed files and documents). Hyaline takes the diff between the two branches and extracts files and documents that have changed and place them in a change data set. Note that the code and documentation source configuration is used, so only files and documents that match the configured extractor includes/excludes are extracted.
+In the image above you can see a simplified representation of files and documents in two branches of a repository, the Base Branch (usually main) and the Head Branch (usually a feature branch). You will also notice that there are several differences between the branches represented by different colors (new/deleted/changed/renamed files and documents). Hyaline takes the diff between the two branches and extracts files and documents that have changed and place them in a change data set. Note that the code and documentation source configuration is used, so only files and documents that match the configured extractor includes/excludes are extracted.
 
 Along with the files and documents, hyaline can also extract the pull request and issues associated with the change. The contents of these are also placed in the change set.
 
