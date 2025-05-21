@@ -13,7 +13,7 @@ This documents the results produced by the `check current` and `check change` co
       "system": "my-app",
       "documentationSource": "backend",
       "document": "README.md",
-      "section: [
+      "section": [
         "Running Locally",
       ],
       "check": "COMPLETE",
@@ -24,7 +24,7 @@ This documents the results produced by the `check current` and `check change` co
       "system": "my-app",
       "documentationSource": "backend",
       "document": "README.md",
-      "section: [
+      "section": [
         "Running Locally",
       ],
       "check": "DESIRED_DOCUMENT_EXISTS",
@@ -35,7 +35,7 @@ This documents the results produced by the `check current` and `check change` co
       "system": "my-app",
       "documentationSource": "backend",
       "document": "README.md",
-      "section: [
+      "section": [
         "Running Locally",
       ],
       "check": "MATCHES_PURPOSE",
@@ -46,7 +46,7 @@ This documents the results produced by the `check current` and `check change` co
       "system": "my-app",
       "documentationSource": "backend",
       "document": "README.md",
-      "section: [
+      "section": [
         "Running Locally",
       ],
       "check": "REQUIRED",
