@@ -31,8 +31,8 @@ The path, or location, of the code being extracted as defined in the config. The
 
 | Extractor | Value |
 |-----------|-------|
-| **fs** | The value of `path` in the extractor options |
-| **git** | The value of `path` in the extractor options if set, otherwise the value of `repo` in the extractor options |
+| fs | The value of `path` in the extractor options |
+| git | The value of `path` in the extractor options if set, otherwise the value of `repo` in the extractor options |
 
 
 ## SYSTEM_FILE
@@ -62,9 +62,9 @@ The path, or location, of the documentation being extracted as defined in the co
 
 | Extractor | Value |
 |-----------|-------|
-| **fs** | The value of `path` in the extractor options |
-| **git** | The value of `path` in the extractor options if set, otherwise the value of `repo` in the extractor options |
-| **http** | The parsed value of the baseUrl in the extractor options (`{scheme}://{host}`). Note that host includes port if set |
+| fs | The value of `path` in the extractor options |
+| git | The value of `path` in the extractor options if set, otherwise the value of `repo` in the extractor options |
+| http | The parsed value of the baseUrl in the extractor options (`{scheme}://{host}`). Note that host includes port if set |
 
 ## SYSTEM_DOCUMENT
 Documents belonging to system documentation sources within Hyaline.
@@ -113,7 +113,7 @@ The Change ID is constructed based on the Type of change. The format for each ty
 
 | Type | Format |
 |------|--------|
-| **GITHUB_PULL_REQUEST** | `OWNER/REPO/ID` |
+| GITHUB_PULL_REQUEST | `OWNER/REPO/ID` |
 
 ## SYSTEM_TASK
 
@@ -132,24 +132,24 @@ The following enums exist and are used in Hyaline data sets
 ## Action
 | Value | Description |
 |-------|-------------|
-| `` | No action |
-| `Insert` | A file or document was inserted |
-| `Modify` | A file or document was modified |
-| `Rename` | A file or document was renamed (may also have modifications) |
-| `Delete` | A file or document was deleted |
+|  | No action |
+| Insert | A file or document was inserted |
+| Modify | A file or document was modified |
+| Rename | A file or document was renamed (may also have modifications) |
+| Delete | A file or document was deleted |
 
 ## Documentation Type
 | Value | Description |
 |-------|-------------|
-| `md` | Markdown |
-| `html` | HTML |
+| md | Markdown |
+| html | HTML |
 
 ## Change Type
 | Value | Description |
 |-------|-------------|
-| `GITHUB_PULL_REQUEST` | A GitHub Pull Request |
+| GITHUB_PULL_REQUEST | A GitHub Pull Request |
 
 ## Task Type
 | Value | Description |
 |-------|-------------|
-| `GITHUB_ISSUE` | A GitHub Issue |
+| GITHUB_ISSUE | A GitHub Issue |
