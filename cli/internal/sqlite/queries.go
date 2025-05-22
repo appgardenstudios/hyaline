@@ -550,7 +550,7 @@ type SystemSection struct {
 
 func InsertSystemSection(section SystemSection, db *sql.DB) (err error) {
 	stmt, err := db.Prepare(`
-INSERT INTO SECTION
+INSERT INTO SYSTEM_SECTION
 	(ID, DOCUMENT_ID, DOCUMENTATION_ID, SYSTEM_ID, NAME, PARENT_ID, PEER_ORDER, EXTRACTED_DATA)
 VALUES
 	(?, ?, ?, ?, ?, ?, ?, ?)
@@ -697,9 +697,9 @@ type SystemChange struct {
 func InsertSystemChange(change SystemChange, db *sql.DB) (err error) {
 	stmt, err := db.Prepare(`
 INSERT INTO SYSTEM_CHANGE
-  (ID, SYSTEM_ID, TITLE, BODY)
+  (ID, SYSTEM_ID, TYPE, TITLE, BODY)
 VALUES
-	(?, ?, ?, ?)
+	(?, ?, ?, ?, ?)
 `)
 	if err != nil {
 		return
@@ -735,7 +735,7 @@ WHERE
 func GetAllSystemChange(systemID string, db *sql.DB) (arr []*SystemChange, err error) {
 	stmt, err := db.Prepare(`
 SELECT
-  ID, SYSTEM_ID, TITLE, BODY
+  ID, SYSTEM_ID, TYPE, TITLE, BODY
 FROM
   SYSTEM_CHANGE
 WHERE
@@ -753,7 +753,7 @@ WHERE
 
 	for rows.Next() {
 		var row SystemChange
-		if err := rows.Scan(&row.ID, &row.SystemID, &row.Title, &row.Body); err != nil {
+		if err := rows.Scan(&row.ID, &row.SystemID, &row.Type, &row.Title, &row.Body); err != nil {
 			return arr, err
 		}
 		arr = append(arr, &row)
@@ -778,7 +778,7 @@ func InsertSystemTask(task SystemTask, db *sql.DB) (err error) {
 INSERT INTO SYSTEM_TASK
   (ID, SYSTEM_ID, TYPE, TITLE, BODY)
 VALUES
-	(?, ?, ?, ?)
+	(?, ?, ?, ?, ?)
 `)
 	if err != nil {
 		return
