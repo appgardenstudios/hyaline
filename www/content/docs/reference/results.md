@@ -77,8 +77,8 @@ A list of fields, their types, and a description of each.
 ### Checks
 The list of available checks, what cli option is required to perform the chck (if any), and a description of the check
 
-| Check | Option | Description |
-|-------|--------|-------------|
+| Check | CLI Option | Description |
+|-------|------------|-------------|
 | COMPLETE | --check-completeness | If the document or section contents are complete |
 | DESIRED_DOCUMENT_EXISTS | (none) | If there is a corresponding document or section in the configuration |
 | MATCHES_PURPOSE | --check-purpose | If the document or section contents match the stated purpose in the config |
