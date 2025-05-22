@@ -1,0 +1,31 @@
+commonDocuments:
+    - id: md-docs
+      documents:
+        - name: README.md
+          purpose: The purpose of the document
+          required: true
+          sections:
+            - name: Example
+              purpose: The purpose of the section
+              sections:
+                - name: Subsection 1
+                  ignore: true
+                - name: Subsection 2
+                  purpose: LLM TEST RESPONSE
+                  required: true
+            - name: Running Locally
+              required: true
+        - name: docs/docsDoc.md
+          purpose: LLM TEST RESPONSE
+          required: true
+          sections:
+            - name: This is a test
+              purpose: LLM TEST RESPONSE
+              required: true
+        - name: docs/preDoc.md
+          purpose: LLM TEST RESPONSE
+          required: true
+          sections:
+            - name: A Random Heading
+              purpose: LLM TEST RESPONSE
+              required: true

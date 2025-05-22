@@ -35,7 +35,7 @@ func ExtractChange(system *config.System, head string, base string, codeIDs []st
 		}
 
 		// Insert Code
-		err = sqlite.InsertCode(sqlite.Code{
+		err = sqlite.InsertSystemCode(sqlite.SystemCode{
 			ID:       c.ID,
 			SystemID: system.ID,
 			Path:     path,
@@ -84,7 +84,7 @@ func ExtractChange(system *config.System, head string, base string, codeIDs []st
 						slog.Debug("code.ExtractChange could not retrieve blob from diff", "error", err)
 						return err
 					}
-					err = sqlite.InsertFile(sqlite.File{
+					err = sqlite.InsertSystemFile(sqlite.SystemFile{
 						ID:         change.To.Name,
 						CodeID:     c.ID,
 						SystemID:   system.ID,
@@ -100,7 +100,7 @@ func ExtractChange(system *config.System, head string, base string, codeIDs []st
 			case merkletrie.Delete:
 				if config.PathIsIncluded(change.To.Name, c.Extractor.Include, c.Extractor.Exclude) {
 					slog.Debug("code.ExtractChange inserting file", "file", change.From.Name, "action", action)
-					err = sqlite.InsertFile(sqlite.File{
+					err = sqlite.InsertSystemFile(sqlite.SystemFile{
 						ID:         change.From.Name,
 						CodeID:     c.ID,
 						SystemID:   system.ID,

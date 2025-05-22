@@ -23,9 +23,10 @@ func InsertPullRequest(ref string, token string, systemID string, db *sql.DB) (e
 	}
 
 	// Insert PR
-	err = sqlite.InsertPullRequest(sqlite.PullRequest{
+	err = sqlite.InsertSystemChange(sqlite.SystemChange{
 		ID:       ref,
 		SystemID: systemID,
+		Type:     "GITHUB_PULL_REQUEST",
 		Title:    *pr.Title,
 		Body:     *pr.Body,
 	}, db)

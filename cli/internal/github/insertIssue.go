@@ -23,9 +23,10 @@ func InsertIssue(ref string, token string, systemID string, db *sql.DB) (err err
 	}
 
 	// Insert PR
-	err = sqlite.InsertIssue(sqlite.Issue{
+	err = sqlite.InsertSystemTask(sqlite.SystemTask{
 		ID:       ref,
 		SystemID: systemID,
+		Type:     "GITHUB_ISSUE",
 		Title:    *issue.Title,
 		Body:     *issue.Body,
 	}, db)

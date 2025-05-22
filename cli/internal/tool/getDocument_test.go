@@ -16,7 +16,7 @@ func TestGetDocument(t *testing.T) {
 		t.Fatal(err)
 	}
 	sqlite.CreateSchema(db)
-	sqlite.InsertDocument(sqlite.Document{
+	sqlite.InsertSystemDocument(sqlite.SystemDocument{
 		ID:              "doc1",
 		DocumentationID: "app",
 		SystemID:        "system1",
@@ -24,7 +24,7 @@ func TestGetDocument(t *testing.T) {
 		RawData:         "doc1 raw data",
 		ExtractedData:   "doc1 extracted data",
 	}, db)
-	sqlite.InsertDocument(sqlite.Document{
+	sqlite.InsertSystemDocument(sqlite.SystemDocument{
 		ID:              "doc2",
 		DocumentationID: "app",
 		SystemID:        "system1",
@@ -32,7 +32,7 @@ func TestGetDocument(t *testing.T) {
 		RawData:         "doc2 raw data",
 		ExtractedData:   "doc2 extracted data",
 	}, db)
-	sqlite.InsertDocument(sqlite.Document{
+	sqlite.InsertSystemDocument(sqlite.SystemDocument{
 		ID:              "doc3",
 		DocumentationID: "app",
 		SystemID:        "system2",

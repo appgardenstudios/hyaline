@@ -34,7 +34,7 @@ func ExtractCurrent(system *config.System, db *sql.DB) (err error) {
 		}
 
 		// Insert Code
-		err = sqlite.InsertCode(sqlite.Code{
+		err = sqlite.InsertSystemCode(sqlite.SystemCode{
 			ID:       c.ID,
 			SystemID: system.ID,
 			Path:     path,
@@ -125,7 +125,7 @@ func ExtractCurrentFs(systemID string, c *config.CodeSource, db *sql.DB) (err er
 			return err
 		}
 
-		err = sqlite.InsertFile(sqlite.File{
+		err = sqlite.InsertSystemFile(sqlite.SystemFile{
 			ID:         file,
 			CodeID:     c.ID,
 			SystemID:   systemID,
@@ -178,7 +178,7 @@ func ExtractCurrentGit(systemID string, c *config.CodeSource, db *sql.DB) (err e
 					slog.Debug("code.ExtractCurrentGit could not get blob bytes", "error", err)
 					return err
 				}
-				err = sqlite.InsertFile(sqlite.File{
+				err = sqlite.InsertSystemFile(sqlite.SystemFile{
 					ID:         f.Name,
 					CodeID:     c.ID,
 					SystemID:   systemID,

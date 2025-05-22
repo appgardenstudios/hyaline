@@ -16,19 +16,19 @@ func TestGetFile(t *testing.T) {
 		t.Fatal(err)
 	}
 	sqlite.CreateSchema(db)
-	sqlite.InsertFile(sqlite.File{
+	sqlite.InsertSystemFile(sqlite.SystemFile{
 		ID:       "file1",
 		CodeID:   "app",
 		SystemID: "system1",
 		RawData:  "file1 contents",
 	}, db)
-	sqlite.InsertFile(sqlite.File{
+	sqlite.InsertSystemFile(sqlite.SystemFile{
 		ID:       "file2",
 		CodeID:   "app",
 		SystemID: "system1",
 		RawData:  "file2 contents",
 	}, db)
-	sqlite.InsertFile(sqlite.File{
+	sqlite.InsertSystemFile(sqlite.SystemFile{
 		ID:       "file3",
 		CodeID:   "app",
 		SystemID: "system2",

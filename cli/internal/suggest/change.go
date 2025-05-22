@@ -21,7 +21,7 @@ type changeNoUpdateNeededSchema struct {
 }
 
 // Eventually we should group this up and handle a document and section updates in the same call
-func Change(systemID string, documentationSource string, document string, section []string, purpose string, reasons []string, references []check.ChangeResultReference, pullRequests []*sqlite.PullRequest, issues []*sqlite.Issue, cfg *config.LLM, currentDB *sql.DB) (suggestion string, err error) {
+func Change(systemID string, documentationSource string, document string, section []string, purpose string, reasons []string, references []check.ChangeResultReference, systemChanges []*sqlite.SystemChange, systemTasks []*sqlite.SystemTask, cfg *config.LLM, currentDB *sql.DB) (suggestion string, err error) {
 	systemPrompt := "You are a senior technical writer who writes clear and accurate system documentation."
 	var prompt strings.Builder
 
@@ -37,8 +37,9 @@ func Change(systemID string, documentationSource string, document string, sectio
 	prompt.WriteString("\n")
 
 	// Add Pull Request (if any)
-	numPullRequests := len(pullRequests)
-	for _, pr := range pullRequests {
+	// Note: When we support more than just pull requests this will need to be updated
+	numSystemChanges := len(systemChanges)
+	for _, pr := range systemChanges {
 		prompt.WriteString("<pull_request>\n")
 		prompt.WriteString(fmt.Sprintf("  <pull_request_title>%s</pull_request_title>\n", pr.Title))
 		prompt.WriteString("  <pull_request_content>\n")
@@ -50,8 +51,9 @@ func Change(systemID string, documentationSource string, document string, sectio
 	}
 
 	// Add issue(s) (if any)
-	numIssues := len(issues)
-	for _, issue := range issues {
+	// Note: When we support more than just pull requests this will need to be updated
+	numSystemTasks := len(systemTasks)
+	for _, issue := range systemTasks {
 		prompt.WriteString("<issue>\n")
 		prompt.WriteString(fmt.Sprintf("  <issue_title>%s</issue_title>\n", issue.Title))
 		prompt.WriteString("  <issue_content>\n")
@@ -68,8 +70,8 @@ func Change(systemID string, documentationSource string, document string, sectio
 	if isSection {
 		// Get current section content
 		sectionID := fmt.Sprintf("%s#%s", document, strings.Join(section, "#"))
-		var originalSection *sqlite.Section
-		originalSection, err = sqlite.GetSection(sectionID, document, documentationSource, systemID, currentDB)
+		var originalSection *sqlite.SystemSection
+		originalSection, err = sqlite.GetSystemSection(sectionID, document, documentationSource, systemID, currentDB)
 		if err != nil {
 			slog.Debug("suggest.Change could not retrieve section", "sectionID", sectionID, "error", err)
 			return
@@ -89,8 +91,8 @@ func Change(systemID string, documentationSource string, document string, sectio
 		prompt.WriteString("\n")
 	} else {
 		// Get current document content
-		var originalDocument *sqlite.Document
-		originalDocument, err = sqlite.GetDocument(document, documentationSource, systemID, currentDB)
+		var originalDocument *sqlite.SystemDocument
+		originalDocument, err = sqlite.GetSystemDocument(document, documentationSource, systemID, currentDB)
 		if err != nil {
 			slog.Debug("suggest.Change could not retrieve document", "document", document, "error", err)
 			return
@@ -121,10 +123,11 @@ func Change(systemID string, documentationSource string, document string, sectio
 		toolName = "update_document"
 	}
 	prompt.WriteString("Given the set of file changes detailed in <diffs>, ")
-	if numPullRequests > 0 {
+	// Note: When we support more than just pull requests this will need to be updated
+	if numSystemChanges > 0 {
 		prompt.WriteString("and the contents of related pull request(s) in <pull_request>, ")
 	}
-	if numIssues > 0 {
+	if numSystemTasks > 0 {
 		prompt.WriteString("and the contents of related issue(s) in <issue>, ")
 	}
 	prompt.WriteString(fmt.Sprintf("determine what changes need to be made to the %s contained in <%s>. ", tagName, tagName))

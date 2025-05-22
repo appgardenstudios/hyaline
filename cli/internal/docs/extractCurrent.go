@@ -46,7 +46,7 @@ func ExtractCurrent(system *config.System, db *sql.DB) (err error) {
 		}
 
 		// Insert Documentation
-		err = sqlite.InsertDocumentation(sqlite.Documentation{
+		err = sqlite.InsertSystemDocumentation(sqlite.SystemDocumentation{
 			ID:       d.ID,
 			SystemID: system.ID,
 			Type:     d.Type.String(),
@@ -160,7 +160,7 @@ func ExtractCurrentFs(systemID string, d *config.DocumentationSource, db *sql.DB
 		extractedData = strings.ReplaceAll(extractedData, "\r", "")
 
 		// Insert our document
-		err = sqlite.InsertDocument(sqlite.Document{
+		err = sqlite.InsertSystemDocument(sqlite.SystemDocument{
 			ID:              doc,
 			DocumentationID: d.ID,
 			SystemID:        systemID,
@@ -239,7 +239,7 @@ func ExtractCurrentGit(systemID string, d *config.DocumentationSource, db *sql.D
 				extractedData = strings.ReplaceAll(extractedData, "\r", "")
 
 				// Insert our document
-				err = sqlite.InsertDocument(sqlite.Document{
+				err = sqlite.InsertSystemDocument(sqlite.SystemDocument{
 					ID:              f.Name,
 					DocumentationID: d.ID,
 					SystemID:        systemID,
@@ -384,7 +384,7 @@ func ExtractCurrentHttp(systemID string, d *config.DocumentationSource, db *sql.
 		extractedData = strings.ReplaceAll(extractedData, "\r", "")
 
 		// Insert our document
-		err = sqlite.InsertDocument(sqlite.Document{
+		err = sqlite.InsertSystemDocument(sqlite.SystemDocument{
 			ID:              path,
 			DocumentationID: d.ID,
 			SystemID:        systemID,
@@ -435,7 +435,7 @@ func insertMarkdownSectionAndChildren(s *section, order int, documentId string, 
 	if s.Parent != nil {
 		parentId = documentId + s.Parent.FullName
 	}
-	err := sqlite.InsertSection(sqlite.Section{
+	err := sqlite.InsertSystemSection(sqlite.SystemSection{
 		ID:              documentId + s.FullName,
 		DocumentID:      documentId,
 		DocumentationID: documentationId,

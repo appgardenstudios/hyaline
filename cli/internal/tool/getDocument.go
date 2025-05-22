@@ -42,7 +42,7 @@ func GetDocument(systemID string, currentDB *sql.DB) *llm.Tool {
 			documentID := strings.Join(parts[1:], "/")
 
 			// Get document from the db
-			document, err := sqlite.GetDocument(documentID, documentationID, systemID, currentDB)
+			document, err := sqlite.GetSystemDocument(documentID, documentationID, systemID, currentDB)
 			if err != nil {
 				slog.Debug("tool.GetDocument - could not retrieve document", "documentID", documentID, "documentationID", documentationID, "systemID", systemID, "error", err)
 				return true, "", err
