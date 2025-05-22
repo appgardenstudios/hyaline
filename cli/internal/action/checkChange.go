@@ -146,17 +146,17 @@ func CheckChange(args *CheckChangeArgs) error {
 		return err
 	}
 
-	// Get Pull Requests
+	// Get Changes
 	systemChanges, err := sqlite.GetAllSystemChange(system.ID, changeDB)
 	if err != nil {
-		slog.Debug("action.CheckChange could not get related pull requests", "error", err)
+		slog.Debug("action.CheckChange could not get related changes", "error", err)
 		return err
 	}
 
-	// Get Issues
+	// Get Tasks
 	systemTasks, err := sqlite.GetAllSystemTask(system.ID, changeDB)
 	if err != nil {
-		slog.Debug("action.CheckChange could not get related issues", "error", err)
+		slog.Debug("action.CheckChange could not get related tasks", "error", err)
 		return err
 	}
 
