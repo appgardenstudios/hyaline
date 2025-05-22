@@ -9,13 +9,13 @@ func CreateSchema(db *sql.DB) (err error) {
 	slog.Debug("sqlite.CreateSchema schema creation started")
 	_, err = db.Exec(`
 CREATE TABLE SYSTEM(ID TEXT PRIMARY KEY);
-CREATE TABLE CODE(ID, SYSTEM_ID, PATH);
-CREATE TABLE FILE(ID, CODE_ID, SYSTEM_ID, ACTION, ORIGINAL_ID, RAW_DATA);
-CREATE TABLE DOCUMENTATION(ID, SYSTEM_ID, TYPE, PATH);
-CREATE TABLE DOCUMENT(ID, DOCUMENTATION_ID, SYSTEM_ID, TYPE, ACTION, ORIGINAL_ID, RAW_DATA, EXTRACTED_DATA);
-CREATE TABLE SECTION(ID, DOCUMENT_ID, DOCUMENTATION_ID, SYSTEM_ID, NAME, PARENT_ID, PEER_ORDER, EXTRACTED_DATA);
-CREATE TABLE PULL_REQUEST(ID, SYSTEM_ID, TITLE, BODY);
-CREATE TABLE ISSUE(ID, SYSTEM_ID, TITLE, BODY);
+CREATE TABLE SYSTEM_CODE(ID, SYSTEM_ID, PATH);
+CREATE TABLE SYSTEM_FILE(ID, CODE_ID, SYSTEM_ID, ACTION, ORIGINAL_ID, RAW_DATA);
+CREATE TABLE SYSTEM_DOCUMENTATION(ID, SYSTEM_ID, TYPE, PATH);
+CREATE TABLE SYSTEM_DOCUMENT(ID, DOCUMENTATION_ID, SYSTEM_ID, TYPE, ACTION, ORIGINAL_ID, RAW_DATA, EXTRACTED_DATA);
+CREATE TABLE SYSTEM_SECTION(ID, DOCUMENT_ID, DOCUMENTATION_ID, SYSTEM_ID, NAME, PARENT_ID, PEER_ORDER, EXTRACTED_DATA);
+CREATE TABLE SYSTEM_CHANGE(ID, SYSTEM_ID, TYPE, TITLE, BODY);
+CREATE TABLE SYSTEM_TASK(ID, SYSTEM_ID, TYPE, TITLE, BODY);
 `)
 
 	slog.Debug("sqlite.CreateSchema schema creation complete")
@@ -94,15 +94,15 @@ FROM
 	return
 }
 
-type Code struct {
+type SystemCode struct {
 	ID       string
 	SystemID string
 	Path     string
 }
 
-func InsertCode(code Code, db *sql.DB) (err error) {
+func InsertSystemCode(code SystemCode, db *sql.DB) (err error) {
 	stmt, err := db.Prepare(`
-INSERT INTO CODE
+INSERT INTO SYSTEM_CODE
 	(ID, SYSTEM_ID, PATH)
 VALUES
 	(?, ?, ?)
@@ -118,10 +118,10 @@ VALUES
 	return
 }
 
-func DeleteCode(codeID string, systemID string, db *sql.DB) error {
+func DeleteSystemCode(codeID string, systemID string, db *sql.DB) error {
 	stmt, err := db.Prepare(`
 DELETE FROM
-  CODE
+  SYSTEM_CODE
 WHERE
   ID = ?
 	AND SYSTEM_ID = ? 
@@ -138,12 +138,12 @@ WHERE
 	return nil
 }
 
-func GetAllCode(systemID string, db *sql.DB) (arr []*Code, err error) {
+func GetAllSystemCode(systemID string, db *sql.DB) (arr []*SystemCode, err error) {
 	stmt, err := db.Prepare(`
 SELECT
   ID, SYSTEM_ID, PATH
 FROM
-  CODE
+  SYSTEM_CODE
 WHERE
   SYSTEM_ID = ?
 `)
@@ -158,7 +158,7 @@ WHERE
 	defer rows.Close()
 
 	for rows.Next() {
-		var row Code
+		var row SystemCode
 		if err := rows.Scan(&row.ID, &row.SystemID, &row.Path); err != nil {
 			return arr, err
 		}
@@ -171,7 +171,7 @@ WHERE
 	return
 }
 
-type File struct {
+type SystemFile struct {
 	ID         string
 	CodeID     string
 	SystemID   string
@@ -180,9 +180,9 @@ type File struct {
 	RawData    string
 }
 
-func InsertFile(file File, db *sql.DB) (err error) {
+func InsertSystemFile(file SystemFile, db *sql.DB) (err error) {
 	stmt, err := db.Prepare(`
-INSERT INTO FILE
+INSERT INTO SYSTEM_FILE
 	(ID, CODE_ID, SYSTEM_ID, ACTION, ORIGINAL_ID, RAW_DATA)
 VALUES
 	(?, ?, ?, ?, ?, ?)
@@ -198,10 +198,10 @@ VALUES
 	return
 }
 
-func DeleteFile(codeID string, systemID string, db *sql.DB) error {
+func DeleteSystemFile(codeID string, systemID string, db *sql.DB) error {
 	stmt, err := db.Prepare(`
 DELETE FROM
-  FILE
+  SYSTEM_FILE
 WHERE
   CODE_ID = ?
 	AND SYSTEM_ID = ?
@@ -218,12 +218,12 @@ WHERE
 	return nil
 }
 
-func GetFile(fileID string, codeID string, systemID string, db *sql.DB) (*File, error) {
+func GetSystemFile(fileID string, codeID string, systemID string, db *sql.DB) (*SystemFile, error) {
 	stmt, err := db.Prepare(`
 SELECT
   ID, CODE_ID, SYSTEM_ID, ACTION, ORIGINAL_ID, RAW_DATA
 FROM
-  FILE
+  SYSTEM_FILE
 WHERE
   ID = ?
   AND CODE_ID = ?
@@ -233,7 +233,7 @@ WHERE
 		return nil, err
 	}
 
-	var row File
+	var row SystemFile
 	err = stmt.QueryRow(fileID, codeID, systemID).Scan(&row.ID, &row.CodeID, &row.SystemID, &row.Action, &row.OriginalID, &row.RawData)
 	if err != nil {
 		if err == sql.ErrNoRows {
@@ -245,12 +245,12 @@ WHERE
 	return &row, nil
 }
 
-func GetAllFiles(codeID string, systemID string, db *sql.DB) (arr []*File, err error) {
+func GetAllSystemFiles(codeID string, systemID string, db *sql.DB) (arr []*SystemFile, err error) {
 	stmt, err := db.Prepare(`
 SELECT
   ID, CODE_ID, SYSTEM_ID, ACTION, ORIGINAL_ID, RAW_DATA
 FROM
-  FILE
+  SYSTEM_FILE
 WHERE
   CODE_ID = ?
   AND SYSTEM_ID = ?
@@ -266,7 +266,7 @@ WHERE
 	defer rows.Close()
 
 	for rows.Next() {
-		var row File
+		var row SystemFile
 		if err := rows.Scan(&row.ID, &row.CodeID, &row.SystemID, &row.Action, &row.OriginalID, &row.RawData); err != nil {
 			return arr, err
 		}
@@ -279,12 +279,12 @@ WHERE
 	return
 }
 
-func GetAllSystemFiles(systemID string, db *sql.DB) (arr []*File, err error) {
+func GetAllSystemFilesForSystem(systemID string, db *sql.DB) (arr []*SystemFile, err error) {
 	stmt, err := db.Prepare(`
 SELECT
   ID, CODE_ID, SYSTEM_ID, ACTION, ORIGINAL_ID, RAW_DATA
 FROM
-  FILE
+  SYSTEM_FILE
 WHERE
   SYSTEM_ID = ?
 ORDER BY
@@ -301,7 +301,7 @@ ORDER BY
 	defer rows.Close()
 
 	for rows.Next() {
-		var row File
+		var row SystemFile
 		if err := rows.Scan(&row.ID, &row.CodeID, &row.SystemID, &row.Action, &row.OriginalID, &row.RawData); err != nil {
 			return arr, err
 		}
@@ -314,16 +314,16 @@ ORDER BY
 	return
 }
 
-type Documentation struct {
+type SystemDocumentation struct {
 	ID       string
 	SystemID string
 	Type     string
 	Path     string
 }
 
-func InsertDocumentation(doc Documentation, db *sql.DB) (err error) {
+func InsertSystemDocumentation(doc SystemDocumentation, db *sql.DB) (err error) {
 	stmt, err := db.Prepare(`
-INSERT INTO DOCUMENTATION
+INSERT INTO SYSTEM_DOCUMENTATION
 	(ID, SYSTEM_ID, TYPE, PATH)
 VALUES
 	(?, ?, ?, ?)
@@ -339,10 +339,10 @@ VALUES
 	return
 }
 
-func DeleteDocumentation(documentationID string, systemID string, db *sql.DB) error {
+func DeleteSystemDocumentation(documentationID string, systemID string, db *sql.DB) error {
 	stmt, err := db.Prepare(`
 DELETE FROM
-  DOCUMENTATION
+  SYSTEM_DOCUMENTATION
 WHERE
   ID = ?
 	AND SYSTEM_ID = ? 
@@ -359,12 +359,12 @@ WHERE
 	return nil
 }
 
-func GetAllDocumentation(systemID string, db *sql.DB) (arr []*Documentation, err error) {
+func GetAllSystemDocumentation(systemID string, db *sql.DB) (arr []*SystemDocumentation, err error) {
 	stmt, err := db.Prepare(`
 SELECT
   ID, SYSTEM_ID, TYPE, PATH
 FROM
-  DOCUMENTATION
+  SYSTEM_DOCUMENTATION
 WHERE
   SYSTEM_ID = ?
 `)
@@ -379,7 +379,7 @@ WHERE
 	defer rows.Close()
 
 	for rows.Next() {
-		var row Documentation
+		var row SystemDocumentation
 		if err := rows.Scan(&row.ID, &row.SystemID, &row.Type, &row.Path); err != nil {
 			return arr, err
 		}
@@ -392,7 +392,7 @@ WHERE
 	return
 }
 
-type Document struct {
+type SystemDocument struct {
 	ID              string
 	DocumentationID string
 	SystemID        string
@@ -403,9 +403,9 @@ type Document struct {
 	ExtractedData   string
 }
 
-func InsertDocument(doc Document, db *sql.DB) (err error) {
+func InsertSystemDocument(doc SystemDocument, db *sql.DB) (err error) {
 	stmt, err := db.Prepare(`
-INSERT INTO DOCUMENT
+INSERT INTO SYSTEM_DOCUMENT
 	(ID, DOCUMENTATION_ID, SYSTEM_ID, TYPE, ACTION, ORIGINAL_ID, RAW_DATA, EXTRACTED_DATA)
 VALUES
 	(?, ?, ?, ?, ?, ?, ?, ?)
@@ -421,10 +421,10 @@ VALUES
 	return
 }
 
-func DeleteDocument(documentationID string, systemID string, db *sql.DB) error {
+func DeleteSystemDocument(documentationID string, systemID string, db *sql.DB) error {
 	stmt, err := db.Prepare(`
 DELETE FROM
-  DOCUMENT
+  SYSTEM_DOCUMENT
 WHERE
   DOCUMENTATION_ID = ?
 	AND SYSTEM_ID = ? 
@@ -441,12 +441,12 @@ WHERE
 	return nil
 }
 
-func GetDocument(documentID string, documentationID string, systemID string, db *sql.DB) (*Document, error) {
+func GetSystemDocument(documentID string, documentationID string, systemID string, db *sql.DB) (*SystemDocument, error) {
 	stmt, err := db.Prepare(`
 SELECT
   ID, DOCUMENTATION_ID, SYSTEM_ID, TYPE, ACTION, ORIGINAL_ID, RAW_DATA, EXTRACTED_DATA
 FROM
-  DOCUMENT
+  SYSTEM_DOCUMENT
 WHERE
   ID = ?
 	AND DOCUMENTATION_ID = ?
@@ -456,7 +456,7 @@ WHERE
 		return nil, err
 	}
 
-	var row Document
+	var row SystemDocument
 	err = stmt.QueryRow(documentID, documentationID, systemID).Scan(&row.ID, &row.DocumentationID, &row.SystemID, &row.Type, &row.Action, &row.OriginalID, &row.RawData, &row.ExtractedData)
 	if err != nil {
 		if err == sql.ErrNoRows {
@@ -468,12 +468,12 @@ WHERE
 	return &row, nil
 }
 
-func GetAllDocument(documentationID string, systemID string, db *sql.DB) (arr []*Document, err error) {
+func GetAllSystemDocument(documentationID string, systemID string, db *sql.DB) (arr []*SystemDocument, err error) {
 	stmt, err := db.Prepare(`
 SELECT
   ID, DOCUMENTATION_ID, SYSTEM_ID, TYPE, ACTION, ORIGINAL_ID, RAW_DATA, EXTRACTED_DATA
 FROM
-  DOCUMENT
+  SYSTEM_DOCUMENT
 WHERE
   DOCUMENTATION_ID = ?
   AND SYSTEM_ID = ?
@@ -489,7 +489,7 @@ WHERE
 	defer rows.Close()
 
 	for rows.Next() {
-		var row Document
+		var row SystemDocument
 		if err := rows.Scan(&row.ID, &row.DocumentationID, &row.SystemID, &row.Type, &row.Action, &row.OriginalID, &row.RawData, &row.ExtractedData); err != nil {
 			return arr, err
 		}
@@ -502,12 +502,12 @@ WHERE
 	return
 }
 
-func GetAllSystemDocuments(systemID string, db *sql.DB) (arr []*Document, err error) {
+func GetAllSystemDocumentsForSystem(systemID string, db *sql.DB) (arr []*SystemDocument, err error) {
 	stmt, err := db.Prepare(`
 SELECT
   ID, DOCUMENTATION_ID, SYSTEM_ID, TYPE, ACTION, ORIGINAL_ID, RAW_DATA, EXTRACTED_DATA
 FROM
-  DOCUMENT
+  SYSTEM_DOCUMENT
 WHERE
   SYSTEM_ID = ?
 ORDER BY
@@ -524,7 +524,7 @@ ORDER BY
 	defer rows.Close()
 
 	for rows.Next() {
-		var row Document
+		var row SystemDocument
 		if err := rows.Scan(&row.ID, &row.DocumentationID, &row.SystemID, &row.Type, &row.Action, &row.OriginalID, &row.RawData, &row.ExtractedData); err != nil {
 			return arr, err
 		}
@@ -537,7 +537,7 @@ ORDER BY
 	return
 }
 
-type Section struct {
+type SystemSection struct {
 	ID              string
 	DocumentID      string
 	DocumentationID string
@@ -548,9 +548,9 @@ type Section struct {
 	ExtractedData   string
 }
 
-func InsertSection(section Section, db *sql.DB) (err error) {
+func InsertSystemSection(section SystemSection, db *sql.DB) (err error) {
 	stmt, err := db.Prepare(`
-INSERT INTO SECTION
+INSERT INTO SYSTEM_SECTION
 	(ID, DOCUMENT_ID, DOCUMENTATION_ID, SYSTEM_ID, NAME, PARENT_ID, PEER_ORDER, EXTRACTED_DATA)
 VALUES
 	(?, ?, ?, ?, ?, ?, ?, ?)
@@ -566,10 +566,10 @@ VALUES
 	return
 }
 
-func DeleteSection(documentationID string, systemID string, db *sql.DB) error {
+func DeleteSystemSection(documentationID string, systemID string, db *sql.DB) error {
 	stmt, err := db.Prepare(`
 DELETE FROM
-  SECTION
+  SYSTEM_SECTION
 WHERE
   DOCUMENTATION_ID = ?
 	AND SYSTEM_ID = ? 
@@ -586,12 +586,12 @@ WHERE
 	return nil
 }
 
-func GetSection(sectionID string, documentID string, documentationID string, systemID string, db *sql.DB) (*Section, error) {
+func GetSystemSection(sectionID string, documentID string, documentationID string, systemID string, db *sql.DB) (*SystemSection, error) {
 	stmt, err := db.Prepare(`
 SELECT
   ID, DOCUMENT_ID, DOCUMENTATION_ID, SYSTEM_ID, NAME, PARENT_ID, PEER_ORDER, EXTRACTED_DATA
 FROM
-  SECTION
+  SYSTEM_SECTION
 WHERE
   ID = ?
   AND DOCUMENT_ID = ?
@@ -602,7 +602,7 @@ WHERE
 		return nil, err
 	}
 
-	var row Section
+	var row SystemSection
 	err = stmt.QueryRow(sectionID, documentID, documentationID, systemID).Scan(&row.ID, &row.DocumentID, &row.DocumentationID, &row.SystemID, &row.Name, &row.ParentID, &row.PeerOrder, &row.ExtractedData)
 	if err != nil {
 		if err == sql.ErrNoRows {
@@ -614,12 +614,12 @@ WHERE
 	return &row, nil
 }
 
-func GetAllSection(documentationID string, systemID string, db *sql.DB) (arr []*Section, err error) {
+func GetAllSystemSection(documentationID string, systemID string, db *sql.DB) (arr []*SystemSection, err error) {
 	stmt, err := db.Prepare(`
 SELECT
   ID, DOCUMENT_ID, DOCUMENTATION_ID, SYSTEM_ID, NAME, PARENT_ID, PEER_ORDER, EXTRACTED_DATA
 FROM
-  SECTION
+  SYSTEM_SECTION
 WHERE
   DOCUMENTATION_ID = ?
   AND SYSTEM_ID = ?
@@ -635,7 +635,7 @@ WHERE
 	defer rows.Close()
 
 	for rows.Next() {
-		var row Section
+		var row SystemSection
 		if err := rows.Scan(&row.ID, &row.DocumentID, &row.DocumentationID, &row.SystemID, &row.Name, &row.ParentID, &row.PeerOrder, &row.ExtractedData); err != nil {
 			return arr, err
 		}
@@ -649,12 +649,12 @@ WHERE
 }
 
 // NOTE that this function MUST return sections in PEER_ORDER as that guarantee is used by the caller
-func GetAllSectionsForDocument(documentID string, documentationID string, systemID string, db *sql.DB) (arr []*Section, err error) {
+func GetAllSystemSectionsForDocument(documentID string, documentationID string, systemID string, db *sql.DB) (arr []*SystemSection, err error) {
 	stmt, err := db.Prepare(`
 SELECT
   ID, DOCUMENT_ID, DOCUMENTATION_ID, SYSTEM_ID, NAME, PARENT_ID, PEER_ORDER, EXTRACTED_DATA
 FROM
-  SECTION
+  SYSTEM_SECTION
 WHERE
   DOCUMENT_ID = ?
   AND DOCUMENTATION_ID = ?
@@ -673,7 +673,7 @@ ORDER BY
 	defer rows.Close()
 
 	for rows.Next() {
-		var row Section
+		var row SystemSection
 		if err := rows.Scan(&row.ID, &row.DocumentID, &row.DocumentationID, &row.SystemID, &row.Name, &row.ParentID, &row.PeerOrder, &row.ExtractedData); err != nil {
 			return arr, err
 		}
@@ -686,24 +686,25 @@ ORDER BY
 	return
 }
 
-type PullRequest struct {
+type SystemChange struct {
 	ID       string
 	SystemID string
+	Type     string
 	Title    string
 	Body     string
 }
 
-func InsertPullRequest(pullRequest PullRequest, db *sql.DB) (err error) {
+func InsertSystemChange(change SystemChange, db *sql.DB) (err error) {
 	stmt, err := db.Prepare(`
-INSERT INTO PULL_REQUEST
-  (ID, SYSTEM_ID, TITLE, BODY)
+INSERT INTO SYSTEM_CHANGE
+  (ID, SYSTEM_ID, TYPE, TITLE, BODY)
 VALUES
-	(?, ?, ?, ?)
+	(?, ?, ?, ?, ?)
 `)
 	if err != nil {
 		return
 	}
-	_, err = stmt.Exec(pullRequest.ID, pullRequest.SystemID, pullRequest.Title, pullRequest.Body)
+	_, err = stmt.Exec(change.ID, change.SystemID, change.Type, change.Title, change.Body)
 	if err != nil {
 		return
 	}
@@ -711,10 +712,10 @@ VALUES
 	return
 }
 
-func DeletePullRequest(pullRequestID string, systemID string, db *sql.DB) error {
+func DeleteSystemChange(changeID string, systemID string, db *sql.DB) error {
 	stmt, err := db.Prepare(`
 DELETE FROM
-  PULL_REQUEST
+  SYSTEM_CHANGE
 WHERE
   ID = ?
 	AND SYSTEM_ID = ? 
@@ -723,7 +724,7 @@ WHERE
 		return err
 	}
 
-	_, err = stmt.Exec(pullRequestID, systemID)
+	_, err = stmt.Exec(changeID, systemID)
 	if err != nil {
 		return err
 	}
@@ -731,12 +732,12 @@ WHERE
 	return nil
 }
 
-func GetAllPullRequest(systemID string, db *sql.DB) (arr []*PullRequest, err error) {
+func GetAllSystemChange(systemID string, db *sql.DB) (arr []*SystemChange, err error) {
 	stmt, err := db.Prepare(`
 SELECT
-  ID, SYSTEM_ID, TITLE, BODY
+  ID, SYSTEM_ID, TYPE, TITLE, BODY
 FROM
-  PULL_REQUEST
+  SYSTEM_CHANGE
 WHERE
   SYSTEM_ID = ?
 `)
@@ -751,8 +752,8 @@ WHERE
 	defer rows.Close()
 
 	for rows.Next() {
-		var row PullRequest
-		if err := rows.Scan(&row.ID, &row.SystemID, &row.Title, &row.Body); err != nil {
+		var row SystemChange
+		if err := rows.Scan(&row.ID, &row.SystemID, &row.Type, &row.Title, &row.Body); err != nil {
 			return arr, err
 		}
 		arr = append(arr, &row)
@@ -764,24 +765,25 @@ WHERE
 	return
 }
 
-type Issue struct {
+type SystemTask struct {
 	ID       string
 	SystemID string
+	Type     string
 	Title    string
 	Body     string
 }
 
-func InsertIssue(issue Issue, db *sql.DB) (err error) {
+func InsertSystemTask(task SystemTask, db *sql.DB) (err error) {
 	stmt, err := db.Prepare(`
-INSERT INTO ISSUE
-  (ID, SYSTEM_ID, TITLE, BODY)
+INSERT INTO SYSTEM_TASK
+  (ID, SYSTEM_ID, TYPE, TITLE, BODY)
 VALUES
-	(?, ?, ?, ?)
+	(?, ?, ?, ?, ?)
 `)
 	if err != nil {
 		return
 	}
-	_, err = stmt.Exec(issue.ID, issue.SystemID, issue.Title, issue.Body)
+	_, err = stmt.Exec(task.ID, task.SystemID, task.Type, task.Title, task.Body)
 	if err != nil {
 		return
 	}
@@ -789,10 +791,10 @@ VALUES
 	return
 }
 
-func DeleteIssue(issueID string, systemID string, db *sql.DB) error {
+func DeleteSystemTask(taskID string, systemID string, db *sql.DB) error {
 	stmt, err := db.Prepare(`
 DELETE FROM
-  ISSUE
+  SYSTEM_TASK
 WHERE
   ID = ?
 	AND SYSTEM_ID = ? 
@@ -801,7 +803,7 @@ WHERE
 		return err
 	}
 
-	_, err = stmt.Exec(issueID, systemID)
+	_, err = stmt.Exec(taskID, systemID)
 	if err != nil {
 		return err
 	}
@@ -809,12 +811,12 @@ WHERE
 	return nil
 }
 
-func GetAllIssue(systemID string, db *sql.DB) (arr []*Issue, err error) {
+func GetAllSystemTask(systemID string, db *sql.DB) (arr []*SystemTask, err error) {
 	stmt, err := db.Prepare(`
 SELECT
-  ID, SYSTEM_ID, TITLE, BODY
+  ID, SYSTEM_ID, TYPE, TITLE, BODY
 FROM
-  ISSUE
+  SYSTEM_TASK
 WHERE
   SYSTEM_ID = ?
 `)
@@ -829,8 +831,8 @@ WHERE
 	defer rows.Close()
 
 	for rows.Next() {
-		var row Issue
-		if err := rows.Scan(&row.ID, &row.SystemID, &row.Title, &row.Body); err != nil {
+		var row SystemTask
+		if err := rows.Scan(&row.ID, &row.SystemID, &row.Type, &row.Title, &row.Body); err != nil {
 			return arr, err
 		}
 		arr = append(arr, &row)

@@ -1,6 +1,16 @@
 commonDocuments:
     - id: md-docs
       documents:
+        - name: docs/docsDoc.md
+          required: true
+          sections:
+            - name: This is a test
+              required: true
+        - name: docs/preDoc.md
+          required: true
+          sections:
+            - name: A Random Heading
+              required: true
         - name: README.md
           purpose: The purpose of the document
           required: true
@@ -13,14 +23,4 @@ commonDocuments:
                 - name: Subsection 2
                   required: true
             - name: Running Locally
-              required: true
-        - name: docs/docsDoc.md
-          required: true
-          sections:
-            - name: This is a test
-              required: true
-        - name: docs/preDoc.md
-          required: true
-          sections:
-            - name: A Random Heading
               required: true

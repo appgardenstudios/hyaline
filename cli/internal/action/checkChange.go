@@ -146,17 +146,17 @@ func CheckChange(args *CheckChangeArgs) error {
 		return err
 	}
 
-	// Get Pull Requests
-	pullRequests, err := sqlite.GetAllPullRequest(system.ID, changeDB)
+	// Get Changes
+	systemChanges, err := sqlite.GetAllSystemChange(system.ID, changeDB)
 	if err != nil {
-		slog.Debug("action.CheckChange could not get related pull requests", "error", err)
+		slog.Debug("action.CheckChange could not get related changes", "error", err)
 		return err
 	}
 
-	// Get Issues
-	issues, err := sqlite.GetAllIssue(system.ID, changeDB)
+	// Get Tasks
+	systemTasks, err := sqlite.GetAllSystemTask(system.ID, changeDB)
 	if err != nil {
-		slog.Debug("action.CheckChange could not get related issues", "error", err)
+		slog.Debug("action.CheckChange could not get related tasks", "error", err)
 		return err
 	}
 
@@ -172,9 +172,9 @@ func CheckChange(args *CheckChangeArgs) error {
 	}
 
 	// Get a map of the documents that have been updated as a part of this change (by documentation source)
-	updatedDocumentMap := make(map[string][]*sqlite.Document)
+	updatedDocumentMap := make(map[string][]*sqlite.SystemDocument)
 	for _, doc := range system.DocumentationSources {
-		documents, err := sqlite.GetAllDocument(doc.ID, system.ID, changeDB)
+		documents, err := sqlite.GetAllSystemDocument(doc.ID, system.ID, changeDB)
 		if err != nil {
 			slog.Debug("action.CheckChange could not get changed documents", "doc", doc.ID, "system", args.System, "error", err)
 			return err
@@ -190,7 +190,7 @@ func CheckChange(args *CheckChangeArgs) error {
 		results := []check.ChangeResult{}
 
 		// Get the set of files changed for this code source
-		files, err := sqlite.GetAllFiles(c.ID, system.ID, changeDB)
+		files, err := sqlite.GetAllSystemFiles(c.ID, system.ID, changeDB)
 		if err != nil {
 			slog.Debug("action.CheckChange could not get files for codeSource", "codeSource", c.ID, "system", args.System, "error", err)
 			return err
@@ -198,7 +198,7 @@ func CheckChange(args *CheckChangeArgs) error {
 
 		// Check each file against our full set of documentation
 		for _, file := range files {
-			arr, err := check.Change(file, c, desiredDocsMap, pullRequests, issues, currentDB, changeDB, &cfg.LLM)
+			arr, err := check.Change(file, c, desiredDocsMap, systemChanges, systemTasks, currentDB, changeDB, &cfg.LLM)
 			results = append(results, arr...)
 			if err != nil {
 				slog.Debug("action.CheckChange could not check change", "file", file.ID, "system", args.System, "error", err)
@@ -258,7 +258,7 @@ func CheckChange(args *CheckChangeArgs) error {
 		for idx, entry := range output.Recommendations {
 			// Get purpose from desiredDoc
 			purpose, _ := config.GetPurpose(entry.System, entry.DocumentationSource, entry.Document, entry.Section, cfg)
-			suggestion, err := suggest.Change(entry.System, entry.DocumentationSource, entry.Document, entry.Section, purpose, entry.Reasons, entry._References, pullRequests, issues, &cfg.LLM, currentDB)
+			suggestion, err := suggest.Change(entry.System, entry.DocumentationSource, entry.Document, entry.Section, purpose, entry.Reasons, entry._References, systemChanges, systemTasks, &cfg.LLM, currentDB)
 			if err != nil {
 				slog.Debug("action.CheckChange could not get suggestion",
 					"system", entry.System,

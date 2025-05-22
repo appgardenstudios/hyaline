@@ -23,7 +23,7 @@ func ListFiles(systemID string, currentDB *sql.DB) *llm.Tool {
 			slog.Debug("tool.ListFiles - called")
 
 			// Get all files for this system
-			files, err := sqlite.GetAllSystemFiles(systemID, currentDB)
+			files, err := sqlite.GetAllSystemFilesForSystem(systemID, currentDB)
 			if err != nil {
 				slog.Debug("tool.ListDocuments - could not retrieve files", "systemID", systemID, "error", err)
 				return true, "", err

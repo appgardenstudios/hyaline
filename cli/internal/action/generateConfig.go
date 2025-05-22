@@ -86,7 +86,7 @@ func GenerateConfig(args *GenerateConfigArgs) error {
 		}
 
 		// Get a list of Documents from the db for this doc ID
-		documents, err := sqlite.GetAllDocument(d.ID, system.ID, currentDB)
+		documents, err := sqlite.GetAllSystemDocument(d.ID, system.ID, currentDB)
 		if err != nil {
 			slog.Debug("action.GenerateConfig could not get documents from current db", "doc", d.ID, "system", system.ID, "error", err)
 			return err
@@ -119,7 +119,7 @@ func GenerateConfig(args *GenerateConfigArgs) error {
 			}
 
 			// Get and add sections for this document
-			sections, err := sqlite.GetAllSectionsForDocument(doc.ID, d.ID, system.ID, currentDB)
+			sections, err := sqlite.GetAllSystemSectionsForDocument(doc.ID, d.ID, system.ID, currentDB)
 			if err != nil {
 				slog.Debug("action.GenerateConfig could not get sections for a document from current db", "document", doc.ID, "doc", d.ID, "system", system.ID, "error", err)
 				return err
@@ -163,7 +163,7 @@ func GenerateConfig(args *GenerateConfigArgs) error {
 }
 
 // Note: sections MUST be in PEER_ORDER so that the doc sections are added in the correct order
-func createRuleSections(sections []*sqlite.Section, parentID string, existingSections []config.DocumentSection, includePurpose bool, documentName string, documentPurpose string, cfg *config.LLM) (docSections []config.DocumentSection, err error) {
+func createRuleSections(sections []*sqlite.SystemSection, parentID string, existingSections []config.DocumentSection, includePurpose bool, documentName string, documentPurpose string, cfg *config.LLM) (docSections []config.DocumentSection, err error) {
 	for _, section := range sections {
 		// Guard against circular issues by ensuring that no ID is the same as its parent ID
 		if section.ID == section.ParentID {

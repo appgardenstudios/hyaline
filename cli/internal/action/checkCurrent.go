@@ -139,8 +139,8 @@ func CheckCurrent(args *CheckCurrentArgs) error {
 		processedSectionMap := make(map[string]struct{})
 
 		// Get all documents for system and put them into a map
-		docMap := make(map[string]*sqlite.Document)
-		docs, err := sqlite.GetAllDocument(docSource.ID, system.ID, currentDB)
+		docMap := make(map[string]*sqlite.SystemDocument)
+		docs, err := sqlite.GetAllSystemDocument(docSource.ID, system.ID, currentDB)
 		if err != nil {
 			slog.Debug("action.CheckChange could not get documents for documentationSource", "documentationSource", docSource.ID, "system", args.System, "error", err)
 			return err
@@ -252,8 +252,8 @@ func CheckCurrent(args *CheckCurrentArgs) error {
 			// Check sections (if not skipped)
 			if !desiredDoc.Ignore {
 				// Get section map
-				sectionMap := make(map[string]*sqlite.Section)
-				sections, err := sqlite.GetAllSectionsForDocument(desiredDoc.Name, docSource.ID, system.ID, currentDB)
+				sectionMap := make(map[string]*sqlite.SystemSection)
+				sections, err := sqlite.GetAllSystemSectionsForDocument(desiredDoc.Name, docSource.ID, system.ID, currentDB)
 				if err != nil {
 					slog.Debug("action.CheckChange could not get sections for document", "document", desiredDoc.Name, "documentationSource", docSource.ID, "system", args.System, "error", err)
 					return err
@@ -295,7 +295,7 @@ func CheckCurrent(args *CheckCurrentArgs) error {
 		}
 
 		// Loop through sections and make sure each has a corresponding desired document
-		allSections, err := sqlite.GetAllSection(docSource.ID, system.ID, currentDB)
+		allSections, err := sqlite.GetAllSystemSection(docSource.ID, system.ID, currentDB)
 		if err != nil {
 			slog.Debug("action.CheckChange could not get sections for documentationSource", "documentationSource", docSource.ID, "system", args.System, "error", err)
 			return err
@@ -350,7 +350,7 @@ func CheckCurrent(args *CheckCurrentArgs) error {
 	return nil
 }
 
-func checkCurrentSections(system string, documentationSource string, document string, sectionArr []string, desiredDocSections []config.DocumentSection, sectionMap *map[string]*sqlite.Section, processedSectionMap *map[string]struct{}, checkPurpose bool, checkComplete bool, cfg *config.LLM, currentDB *sql.DB) (results []CheckCurrentOutputEntry, err error) {
+func checkCurrentSections(system string, documentationSource string, document string, sectionArr []string, desiredDocSections []config.DocumentSection, sectionMap *map[string]*sqlite.SystemSection, processedSectionMap *map[string]struct{}, checkPurpose bool, checkComplete bool, cfg *config.LLM, currentDB *sql.DB) (results []CheckCurrentOutputEntry, err error) {
 	for _, desiredDocSection := range desiredDocSections {
 		currentSection := []string{}
 		currentSection = append(currentSection, sectionArr...)

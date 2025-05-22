@@ -36,7 +36,7 @@ func ExtractChange(system *config.System, head string, base string, documentatio
 		}
 
 		// Insert Documentation
-		err = sqlite.InsertDocumentation(sqlite.Documentation{
+		err = sqlite.InsertSystemDocumentation(sqlite.SystemDocumentation{
 			ID:       d.ID,
 			SystemID: system.ID,
 			Type:     d.Type.String(),
@@ -101,7 +101,7 @@ func ExtractChange(system *config.System, head string, base string, documentatio
 					}
 					extractedData = strings.ReplaceAll(extractedData, "\r", "")
 
-					err = sqlite.InsertDocument(sqlite.Document{
+					err = sqlite.InsertSystemDocument(sqlite.SystemDocument{
 						ID:              change.To.Name,
 						DocumentationID: d.ID,
 						SystemID:        system.ID,
@@ -127,7 +127,7 @@ func ExtractChange(system *config.System, head string, base string, documentatio
 			case merkletrie.Delete:
 				if config.PathIsIncluded(change.To.Name, d.Extractor.Include, d.Extractor.Exclude) {
 					slog.Debug("docs.ExtractChange inserting document", "document", change.From.Name, "action", action)
-					err = sqlite.InsertDocument(sqlite.Document{
+					err = sqlite.InsertSystemDocument(sqlite.SystemDocument{
 						ID:              change.From.Name,
 						DocumentationID: d.ID,
 						SystemID:        system.ID,

@@ -5,23 +5,23 @@ import (
 	"hyaline/internal/sqlite"
 )
 
-func MergePullRequests(systemID string, source *sql.DB, dest *sql.DB) error {
-	// Get all PULL_REQUEST entries from the source we will be copying
-	pullRequestsToCopy, err := sqlite.GetAllPullRequest(systemID, source)
+func MergeChanges(systemID string, source *sql.DB, dest *sql.DB) error {
+	// Get all CHANGE entries from the source we will be copying
+	changeToCopy, err := sqlite.GetAllSystemChange(systemID, source)
 	if err != nil {
 		return err
 	}
 
-	// Copy each PULL_REQUEST from source to dest
-	for _, p := range pullRequestsToCopy {
-		// Delete the existing PULL_REQUEST (if any)
-		err := sqlite.DeletePullRequest(p.ID, systemID, dest)
+	// Copy each CHANGE from source to dest
+	for _, p := range changeToCopy {
+		// Delete the existing CHANGE (if any)
+		err := sqlite.DeleteSystemChange(p.ID, systemID, dest)
 		if err != nil {
 			return err
 		}
 
-		// Copy PULL_REQUEST
-		err = sqlite.InsertPullRequest(*p, dest)
+		// Copy CHANGE
+		err = sqlite.InsertSystemChange(*p, dest)
 		if err != nil {
 			return err
 		}
@@ -30,23 +30,23 @@ func MergePullRequests(systemID string, source *sql.DB, dest *sql.DB) error {
 	return nil
 }
 
-func MergeIssues(systemID string, source *sql.DB, dest *sql.DB) error {
-	// Get all ISSUE entries from the source we will be copying
-	issuesToCopy, err := sqlite.GetAllIssue(systemID, source)
+func MergeTasks(systemID string, source *sql.DB, dest *sql.DB) error {
+	// Get all TASK entries from the source we will be copying
+	tasksToCopy, err := sqlite.GetAllSystemTask(systemID, source)
 	if err != nil {
 		return err
 	}
 
-	// Copy each ISSUE from source to dest
-	for _, i := range issuesToCopy {
-		// Delete the existing ISSUE (if any)
-		err := sqlite.DeleteIssue(i.ID, systemID, dest)
+	// Copy each TASK from source to dest
+	for _, i := range tasksToCopy {
+		// Delete the existing TASK (if any)
+		err := sqlite.DeleteSystemTask(i.ID, systemID, dest)
 		if err != nil {
 			return err
 		}
 
-		// Copy ISSUE
-		err = sqlite.InsertIssue(*i, dest)
+		// Copy TASK
+		err = sqlite.InsertSystemTask(*i, dest)
 		if err != nil {
 			return err
 		}

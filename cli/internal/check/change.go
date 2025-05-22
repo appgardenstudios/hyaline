@@ -29,7 +29,7 @@ type ChangeResultReference struct {
 	Diff   string
 }
 
-func Change(file *sqlite.File, codeSource config.CodeSource, desiredDocsMap map[string][]config.Document, pullRequests []*sqlite.PullRequest, issues []*sqlite.Issue, currentDB *sql.DB, changeDB *sql.DB, cfg *config.LLM) (results []ChangeResult, err error) {
+func Change(file *sqlite.SystemFile, codeSource config.CodeSource, desiredDocsMap map[string][]config.Document, systemChanges []*sqlite.SystemChange, systemTasks []*sqlite.SystemTask, currentDB *sql.DB, changeDB *sql.DB, cfg *config.LLM) (results []ChangeResult, err error) {
 	slog.Debug("check.Change checking file", "file", file.ID)
 
 	// Get original ID and contents so we can calculate a diff
@@ -37,8 +37,8 @@ func Change(file *sqlite.File, codeSource config.CodeSource, desiredDocsMap map[
 	originalContents := ""
 	if file.Action == sqlite.ActionModify || file.Action == sqlite.ActionDelete {
 		// Get original contents
-		var original *sqlite.File
-		original, err = sqlite.GetFile(file.ID, file.CodeID, file.SystemID, currentDB)
+		var original *sqlite.SystemFile
+		original, err = sqlite.GetSystemFile(file.ID, file.CodeID, file.SystemID, currentDB)
 		if err != nil || original == nil {
 			slog.Debug("check.Change could not get original file from modification", "file", file.ID, "error", err)
 			return
@@ -47,8 +47,8 @@ func Change(file *sqlite.File, codeSource config.CodeSource, desiredDocsMap map[
 	}
 	if file.Action == sqlite.ActionRename {
 		// Get original contents
-		var original *sqlite.File
-		original, err = sqlite.GetFile(file.OriginalID, file.CodeID, file.SystemID, currentDB)
+		var original *sqlite.SystemFile
+		original, err = sqlite.GetSystemFile(file.OriginalID, file.CodeID, file.SystemID, currentDB)
 		if err != nil || original == nil {
 			slog.Debug("check.Change could not get original file from rename", "file", file.ID, "error", err)
 			return
@@ -66,7 +66,7 @@ func Change(file *sqlite.File, codeSource config.CodeSource, desiredDocsMap map[
 	}
 
 	// Check LLM
-	llmResults, err := checkLLM(file, codeSource, textDiff, desiredDocsMap, pullRequests, issues, currentDB, changeDB, cfg)
+	llmResults, err := checkLLM(file, codeSource, textDiff, desiredDocsMap, systemChanges, systemTasks, currentDB, changeDB, cfg)
 	if err != nil {
 		return
 	}
@@ -102,7 +102,7 @@ type checkLLMNeedsUpdateSchemaEntry struct {
 type checkLLMNoUpdateNeededSchema struct {
 }
 
-func checkLLM(file *sqlite.File, codeSource config.CodeSource, textDiff string, desiredDocsMap map[string][]config.Document, pullRequests []*sqlite.PullRequest, issues []*sqlite.Issue, currentDB *sql.DB, changeDB *sql.DB, cfg *config.LLM) (results []ChangeResult, err error) {
+func checkLLM(file *sqlite.SystemFile, codeSource config.CodeSource, textDiff string, desiredDocsMap map[string][]config.Document, systemChanges []*sqlite.SystemChange, systemIssues []*sqlite.SystemTask, currentDB *sql.DB, changeDB *sql.DB, cfg *config.LLM) (results []ChangeResult, err error) {
 	slog.Debug("check.checkLLM checking file", "file", file.ID)
 
 	// Generate the system and user prompt
@@ -118,8 +118,9 @@ func checkLLM(file *sqlite.File, codeSource config.CodeSource, textDiff string, 
 	prompt.WriteString("\n\n")
 
 	// Add Pull Request (if any)
-	numPullRequests := len(pullRequests)
-	for _, pr := range pullRequests {
+	// Note: When we support more than just pull requests this will need to be updated
+	numSystemChanges := len(systemChanges)
+	for _, pr := range systemChanges {
 		prompt.WriteString("<pull_request>\n")
 		prompt.WriteString(fmt.Sprintf("  <pull_request_title>%s</pull_request_title>\n", pr.Title))
 		prompt.WriteString("  <pull_request_content>\n")
@@ -131,8 +132,9 @@ func checkLLM(file *sqlite.File, codeSource config.CodeSource, textDiff string, 
 	}
 
 	// Add issue(s) (if any)
-	numIssues := len(issues)
-	for _, issue := range issues {
+	// Note: When we support more than just pull requests this will need to be updated
+	numSystemTasks := len(systemIssues)
+	for _, issue := range systemIssues {
 		prompt.WriteString("<issue>\n")
 		prompt.WriteString(fmt.Sprintf("  <issue_title>%s</issue_title>\n", issue.Title))
 		prompt.WriteString("  <issue_content>\n")
@@ -200,10 +202,11 @@ func checkLLM(file *sqlite.File, codeSource config.CodeSource, textDiff string, 
 	}
 
 	// Add prompt instructions for pull requests and/or issue(s)
-	if numPullRequests > 0 {
+	// Note: When we support more than just pull requests this will need to be updated
+	if numSystemChanges > 0 {
 		prompt.WriteString("and that the contents of related pull request(s) are in <pull_request>, ")
 	}
-	if numIssues > 0 {
+	if numSystemTasks > 0 {
 		prompt.WriteString("and that the contents of related issue(s) are in <issue>, ")
 	}
 
