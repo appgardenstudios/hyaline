@@ -1,81 +1,130 @@
 <!DOCTYPE html>
 <html lang="en" charset="utf-8" class="h-full">
+
 <head>
-	<!-- TODO set title and description-->
+  <!-- TODO set title and description-->
   {{ partialCached "css.html" . }}
 </head>
-<body class="h-full">
-	<div class="flex flex-col min-h-full items-stretch ">
-		<nav class="bg-blue-200 text-blue-900">
-			<div class="mx-auto max-w-[90rem] px-4 sm:px-6 lg:px-8">
-				<div class="flex h-16 justify-between items-center">
-					<div class="shrink-0">
-						<a class="flex items-center" href="/">
-							<h1 class="text-2xl text-gray-800">hyaline</h1>
-						</a>
-					</div>
-					<div class="flex">
-						<div class="hidden sm:-my-px sm:ml-6 sm:flex sm:space-x-8 text-gray-800">
-							<a href="/docs" class="inline-flex items-center border-b-2 border-transparent px-1 pt-1 text-sm font-medium hover:border-blue-600">Documentation</a>
-							<a href="/articles" class="inline-flex items-center border-b-2 border-transparent px-1 pt-1 text-sm font-medium hover:border-blue-600">Articles</a>
-							<a href="/download" class="inline-flex items-center border-b-2 border-transparent px-1 pt-1 text-sm font-medium hover:border-blue-600">Download</a>
-						</div>
-						<div class="-mr-2 flex items-center sm:hidden">
-							<!-- Mobile menu button -->
-							<button id="mobile-menu-button" type="button" class="relative inline-flex items-center justify-center rounded-md p-2 hover:bg-gray-100 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:outline-hidden cursor-pointer" aria-controls="mobile-menu" aria-expanded="false" >
-								<span class="absolute -inset-0.5"></span>
-								<span class="sr-only">Open main menu</span>
-								<!-- Menu open: "hidden", Menu closed: "block" -->
-								<svg id="mobile-menu-open" class="block size-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon">
-									<path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
-								</svg>
-								<!-- Menu open: "block", Menu closed: "hidden" -->
-								<svg id="mobile-menu-close" class="hidden size-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon">
-									<path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
-								</svg>
-							</button>
-						</div>
-					</div>
-				</div>
-			</div>
-	
-			<!-- Mobile menu, show/hide based on menu state. -->
-			<div class="hidden sm:hidden" id="mobile-menu">
-				<div class="space-y-1 pt-2 pb-3">
-					<a href="/docs" class="block border-l-4 border-transparent py-2 pr-4 pl-3 text-base font-medium text-gray-100 hover:border-gray-50 hover:text-gray-50">Documentation</a>
-					<a href="/articles" class="block border-l-4 border-transparent py-2 pr-4 pl-3 text-base font-medium text-gray-100 hover:border-gray-50 hover:text-gray-50">Articles</a>
-					<a href="/download" class="block border-l-4 border-transparent py-2 pr-4 pl-3 text-base font-medium text-gray-100 hover:border-gray-50 hover:text-gray-50">Download</a>
-				</div>
-			</div>
-		</nav>
-	
-		<main>
-			{{ block "main" . }}
-			{{ end }}
-		</main>
 
-		<footer class="flex h-16 items-center justify-center">
-			<span>&copy; 2025 Hyaline</span>
-			<span class="px-1">-</span>
-			<a class="underline" href="/about">About</a>
-		</footer>
-	</div>
+<body class="bg-white">
+  <!-- Navigation Bar -->
+  <header class="sticky top-0 bg-white shadow-sm z-50">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between items-center py-4">
+        <div class="flex items-center">
+          <a href="/" class="text-gray-900 inline-block" aria-label="hyaline">
+            <svg width="90" height="16" viewBox="0 0 208 39" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <path d="M27.448 2.296V37H22.84V21.784H4.648V37H-0.0079999V2.296H4.648V17.368H22.84V2.296H27.448ZM46.6611 25.432L33.7971 2.296H39.5091L49.8291 21.448L48.3891 21.544L58.6131 2.296H64.2771L51.3171 25.432V37H46.6611V25.432ZM62.536 37L77.704 0.855999H77.992L93.112 37H87.784L76.456 8.152L79.768 5.992L67.096 37H62.536ZM71.416 23.848H84.328L85.864 27.88H70.072L71.416 23.848ZM99.6483 2.296H104.304V32.536H121.92V37H99.6483V2.296ZM129.508 2.296H134.164V37H129.508V2.296ZM174.181 38.104L147.349 10.888L148.693 11.224L148.789 37H144.133V1.24H144.373L170.917 28.552L169.813 28.312L169.717 2.296H174.325V38.104H174.181ZM184.305 2.296H206.865V6.76H188.961V17.32H204.945V21.784H188.961V32.536H207.536V37H184.305V2.296Z" fill="currentColor"/>
+            </svg>
+          </a>
+        </div>
+        <nav class="hidden md:flex space-x-8">
+          <a href="/docs" class="text-gray-700 hover:text-blue-600 transition-colors">Documentation</a>
+          <a href="/articles" class="text-gray-700 hover:text-blue-600 transition-colors">Articles</a>
+          <a href="/download" class="text-gray-700 hover:text-blue-600 transition-colors">Download</a>
+          <a href="/#pricing" class="text-gray-700 hover:text-blue-600 transition-colors">Pricing</a>
+        </nav>
+        <div class="md:hidden">
+          <button id="mobile-menu-button" type="button" class="text-gray-700 hover:text-blue-600 focus:outline-none"
+            aria-expanded="false" aria-label="Toggle navigation">
+            <svg id="menu-icon" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+            </svg>
+            <svg id="close-icon" class="h-6 w-6 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+      <!-- Mobile Menu -->
+      <div id="mobile-menu" class="md:hidden hidden">
+        <div class="px-2 pt-2 pb-4 space-y-1 bg-white border-t border-gray-200">
+          <a href="#"
+            class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50">Documentation</a>
+          <a href="#"
+            class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50">Articles</a>
+          <a href="#"
+            class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50">Download</a>
+          <a href="#"
+            class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50">Pricing</a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    {{ block "main" . }}
+    {{ end }}
+  </main>
+
+  <footer class="bg-gray-100 py-8">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between items-center">
+        <p class="text-gray-600">&copy; 2025 Hyaline. All rights reserved.</p>
+        <a href="/about" class="text-gray-600 hover:text-blue-600 transition-colors">About</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Mobile Menu Toggle
+    document.addEventListener('DOMContentLoaded', function () {
+      const mobileMenuButton = document.getElementById('mobile-menu-button');
+      const mobileMenu = document.getElementById('mobile-menu');
+      const menuIcon = document.getElementById('menu-icon');
+      const closeIcon = document.getElementById('close-icon');
+
+      // Function to toggle menu visibility
+      function toggleMenu() {
+        const isExpanded = mobileMenuButton.getAttribute('aria-expanded') === 'true';
+
+        // Toggle aria-expanded attribute
+        mobileMenuButton.setAttribute('aria-expanded', !isExpanded);
+
+        // Toggle menu visibility
+        if (isExpanded) {
+          mobileMenu.classList.add('hidden');
+          menuIcon.classList.remove('hidden');
+          closeIcon.classList.add('hidden');
+        } else {
+          mobileMenu.classList.remove('hidden');
+          menuIcon.classList.add('hidden');
+          closeIcon.classList.remove('hidden');
+        }
+      }
+
+      // Add click event listener to the menu button
+      mobileMenuButton.addEventListener('click', toggleMenu);
+
+      // Close menu when clicking outside
+      document.addEventListener('click', function (event) {
+        const isClickInsideMenu = mobileMenu.contains(event.target);
+        const isClickOnButton = mobileMenuButton.contains(event.target);
+
+        if (!isClickInsideMenu && !isClickOnButton && mobileMenu.classList.contains('hidden') === false) {
+          toggleMenu();
+        }
+      });
+
+      // Close menu when window is resized to desktop size
+      window.addEventListener('resize', function () {
+        if (window.innerWidth >= 768 && mobileMenu.classList.contains('hidden') === false) {
+          mobileMenu.classList.add('hidden');
+          menuIcon.classList.remove('hidden');
+          closeIcon.classList.add('hidden');
+          mobileMenuButton.setAttribute('aria-expanded', 'false');
+        }
+      });
+
+      // Close menu when clicking on a mobile menu link (smooth navigation)
+      const mobileMenuLinks = mobileMenu.querySelectorAll('a');
+      mobileMenuLinks.forEach(link => {
+        link.addEventListener('click', function () {
+          toggleMenu();
+        });
+      });
+    });
+  </script>
 </body>
-<script type="text/javascript">
-	/** Listen to mobile menu button and toggle menu and icon **/
-	// TODO Easing when showing/hiding nav menu button & content
-	(function() {
-		const button = document.getElementById('mobile-menu-button');
-		const menu = document.getElementById('mobile-menu');
-		const menuOpen = document.getElementById('mobile-menu-open');
-		const menuClose = document.getElementById('mobile-menu-close')
-		button.addEventListener('click', function() {
-			menu.classList.toggle('hidden');
-			menuOpen.classList.toggle('hidden');
-			menuOpen.classList.toggle('block');
-			menuClose.classList.toggle('hidden');
-			menuClose.classList.toggle('block');
-		});
-	})();
-</script>
+
 </html>
