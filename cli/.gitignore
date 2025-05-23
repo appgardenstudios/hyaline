@@ -1,5 +1,21 @@
 # The binary
 hyaline
+!hyaline/
 
 # Intermediate databases
 *.db
+
+# Testing artifacts
+hyaline-e2e
+.coverdata/
+
+# Developer environment variables used for debugging
+.env
+
+# Other files used for testing
+e2e/_output/*
+generated-config.yml
+results.json
+
+# Release artifacts
+dist/

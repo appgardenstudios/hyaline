@@ -1,0 +1,38 @@
+{
+  // See https://go.microsoft.com/fwlink/?LinkId=733558
+  // for the documentation about the tasks.json format
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "cleanup",
+      "type": "shell",
+      "command": "rm -rf current.db change.db",
+      "options":{
+        "cwd": "${workspaceFolder}/cli/"
+      },
+      "presentation":{
+        "reveal": "silent"
+      }
+    },{
+      "label": "cleanup-generate",
+      "type": "shell",
+      "command": "rm -f generated-config.yml",
+      "options":{
+        "cwd": "${workspaceFolder}/cli/"
+      },
+      "presentation":{
+        "reveal": "silent"
+      }
+    },{
+      "label": "cleanup-check",
+      "type": "shell",
+      "command": "rm -f results.json",
+      "options":{
+        "cwd": "${workspaceFolder}/cli/"
+      },
+      "presentation":{
+        "reveal": "silent"
+      }
+    }
+  ]
+}

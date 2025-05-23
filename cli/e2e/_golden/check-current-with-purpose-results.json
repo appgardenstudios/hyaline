@@ -1,0 +1,202 @@
+{
+  "results": [
+    {
+      "system": "check-current",
+      "documentationSource": "app",
+      "document": "README.md",
+      "check": "DESIRED_DOCUMENT_EXISTS",
+      "result": "PASS",
+      "message": ""
+    },
+    {
+      "system": "check-current",
+      "documentationSource": "app",
+      "document": "README.md",
+      "check": "MATCHES_PURPOSE",
+      "result": "ERROR",
+      "message": "This document does not match it's purpose. "
+    },
+    {
+      "system": "check-current",
+      "documentationSource": "app",
+      "document": "README.md",
+      "check": "REQUIRED",
+      "result": "PASS",
+      "message": ""
+    },
+    {
+      "system": "check-current",
+      "documentationSource": "app",
+      "document": "README.md",
+      "section": [
+        "Example"
+      ],
+      "check": "MATCHES_PURPOSE",
+      "result": "ERROR",
+      "message": "This section does not match it's purpose. "
+    },
+    {
+      "system": "check-current",
+      "documentationSource": "app",
+      "document": "README.md",
+      "section": [
+        "Example",
+        "Subsection 1"
+      ],
+      "check": "MATCHES_PURPOSE",
+      "result": "SKIPPED",
+      "message": ""
+    },
+    {
+      "system": "check-current",
+      "documentationSource": "app",
+      "document": "README.md",
+      "section": [
+        "Example",
+        "Subsection 2"
+      ],
+      "check": "MATCHES_PURPOSE",
+      "result": "ERROR",
+      "message": "This section does not match it's purpose. "
+    },
+    {
+      "system": "check-current",
+      "documentationSource": "app",
+      "document": "README.md",
+      "section": [
+        "Example",
+        "Subsection 2"
+      ],
+      "check": "REQUIRED",
+      "result": "PASS",
+      "message": ""
+    },
+    {
+      "system": "check-current",
+      "documentationSource": "app",
+      "document": "README.md",
+      "section": [
+        "Running Locally"
+      ],
+      "check": "MATCHES_PURPOSE",
+      "result": "ERROR",
+      "message": "This section does not exist"
+    },
+    {
+      "system": "check-current",
+      "documentationSource": "app",
+      "document": "README.md",
+      "section": [
+        "Running Locally"
+      ],
+      "check": "REQUIRED",
+      "result": "ERROR",
+      "message": "This section is marked as required"
+    },
+    {
+      "system": "check-current",
+      "documentationSource": "app",
+      "document": "README.md#Example",
+      "section": [
+        "Example"
+      ],
+      "check": "DESIRED_DOCUMENT_EXISTS",
+      "result": "PASS",
+      "message": ""
+    },
+    {
+      "system": "check-current",
+      "documentationSource": "app",
+      "document": "README.md#Example#Subsection 1",
+      "section": [
+        "Example",
+        "Subsection 1"
+      ],
+      "check": "DESIRED_DOCUMENT_EXISTS",
+      "result": "PASS",
+      "message": ""
+    },
+    {
+      "system": "check-current",
+      "documentationSource": "app",
+      "document": "README.md#Example#Subsection 2",
+      "section": [
+        "Example",
+        "Subsection 2"
+      ],
+      "check": "DESIRED_DOCUMENT_EXISTS",
+      "result": "PASS",
+      "message": ""
+    },
+    {
+      "system": "check-current",
+      "documentationSource": "app",
+      "document": "docs/docsDoc.md",
+      "check": "DESIRED_DOCUMENT_EXISTS",
+      "result": "ERROR",
+      "message": "Document docs/docsDoc.md does not have a corresponding desired document"
+    },
+    {
+      "system": "check-current",
+      "documentationSource": "app",
+      "document": "docs/docsDoc.md#This is a test",
+      "section": [
+        "This is a test"
+      ],
+      "check": "DESIRED_DOCUMENT_EXISTS",
+      "result": "ERROR",
+      "message": "Section docs/docsDoc.md#This is a test does not have a corresponding desired document section"
+    },
+    {
+      "system": "check-current",
+      "documentationSource": "app",
+      "document": "docs/preDoc.md",
+      "check": "DESIRED_DOCUMENT_EXISTS",
+      "result": "PASS",
+      "message": ""
+    },
+    {
+      "system": "check-current",
+      "documentationSource": "app",
+      "document": "docs/preDoc.md",
+      "check": "MATCHES_PURPOSE",
+      "result": "ERROR",
+      "message": "This document does not match it's purpose. "
+    },
+    {
+      "system": "check-current",
+      "documentationSource": "app",
+      "document": "docs/preDoc.md",
+      "check": "REQUIRED",
+      "result": "PASS",
+      "message": ""
+    },
+    {
+      "system": "check-current",
+      "documentationSource": "app",
+      "document": "docs/preDoc.md#A Random Heading",
+      "section": [
+        "A Random Heading"
+      ],
+      "check": "DESIRED_DOCUMENT_EXISTS",
+      "result": "ERROR",
+      "message": "Section docs/preDoc.md#A Random Heading does not have a corresponding desired document section"
+    },
+    {
+      "system": "check-current",
+      "documentationSource": "app",
+      "document": "docs/subdir.md",
+      "check": "MATCHES_PURPOSE",
+      "result": "ERROR",
+      "message": "This document does not exist"
+    },
+    {
+      "system": "check-current",
+      "documentationSource": "app",
+      "document": "docs/subdir.md",
+      "check": "REQUIRED",
+      "result": "ERROR",
+      "message": "This document is marked as required"
+    }
+  ]
+}

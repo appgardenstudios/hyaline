@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"hyaline/internal/action"
+	"hyaline/cmd/hyaline"
 	"log"
 	"log/slog"
 	"os"
@@ -12,6 +12,10 @@ import (
 
 var Version = "unknown"
 
+var usage = "Maintain Your Documentation - Find, Fix, and Prevent Documentation Issues."
+
+var betaNote = "Note: Hyaline is currently in an open beta. As such, this software is only licensed for evaluation and use until the open beta period ends."
+
 func main() {
 	var logLevel = new(slog.LevelVar)
 	h := slog.NewTextHandler(os.Stderr, &slog.HandlerOptions{Level: logLevel})
@@ -19,9 +23,9 @@ func main() {
 
 	app := &cli.App{
 		Name:  "hyaline",
-		Usage: "Maintain Your Documentation - Find, Fix, and Prevent Documentation Issues",
+		Usage: fmt.Sprintf("%s\n%s", usage, betaNote),
 		Action: func(*cli.Context) error {
-			fmt.Println("hello world")
+			fmt.Printf("%s\n%s\n", usage, betaNote)
 			return nil
 		},
 		Flags: []cli.Flag{
@@ -31,157 +35,11 @@ func main() {
 			},
 		},
 		Commands: []*cli.Command{
-			{
-				Name:  "version",
-				Usage: "Print out the current version",
-				Action: func(cCtx *cli.Context) error {
-					fmt.Println(Version)
-					return nil
-				},
-			},
-			{
-				Name:  "check",
-				Usage: "Check documentation for issues and errors",
-				Flags: []cli.Flag{
-					&cli.StringFlag{
-						Name:     "config",
-						Required: true,
-						Usage:    "Path to the config file",
-					},
-					&cli.StringFlag{
-						Name:     "current",
-						Required: true,
-						Usage:    "Path to the current data set",
-					},
-					&cli.StringFlag{
-						Name:     "change",
-						Required: false,
-						Usage:    "Path to the change data set",
-					},
-					&cli.StringFlag{
-						Name:     "system",
-						Required: true,
-						Usage:    "ID of the system to extract",
-					},
-					&cli.BoolFlag{
-						Name:  "recommend",
-						Usage: "Include a recommended action when a check does not pass",
-					},
-				},
-				Action: func(cCtx *cli.Context) error {
-					// Set log level
-					if cCtx.Bool("debug") {
-						logLevel.Set(slog.LevelDebug)
-					}
-
-					// Execute action
-					err := action.Check(&action.CheckArgs{
-						Config:    cCtx.String("config"),
-						Current:   cCtx.String("current"),
-						Change:    cCtx.String("change"),
-						System:    cCtx.String("system"),
-						Recommend: cCtx.Bool("recommend"),
-					})
-					if err != nil {
-						return cli.Exit(err.Error(), 1)
-					}
-					return nil
-				},
-			},
-			{
-				Name:  "extract",
-				Usage: "Extract code, documentation, and other metadata",
-				Subcommands: []*cli.Command{
-					{
-						Name:  "change",
-						Usage: "Extract and create a change data set",
-						Flags: []cli.Flag{
-							&cli.StringFlag{
-								Name:     "config",
-								Required: true,
-								Usage:    "Path to the config file",
-							},
-							&cli.StringFlag{
-								Name:     "system",
-								Required: true,
-								Usage:    "ID of the system to extract",
-							},
-							&cli.StringFlag{
-								Name:     "base",
-								Required: true,
-								Usage:    "Base branch (where changes will be applied)",
-							},
-							&cli.StringFlag{
-								Name:     "head",
-								Required: true,
-								Usage:    "Head branch (which changes will be applied)",
-							},
-							&cli.StringFlag{
-								Name:     "output",
-								Required: true,
-								Usage:    "Path of the sqlite database to create",
-							},
-						},
-						Action: func(cCtx *cli.Context) error {
-							// Set log level
-							if cCtx.Bool("debug") {
-								logLevel.Set(slog.LevelDebug)
-							}
-
-							// Execute action
-							err := action.ExtractChange(&action.ExtractChangeArgs{
-								Config: cCtx.String("config"),
-								System: cCtx.String("system"),
-								Base:   cCtx.String("base"),
-								Head:   cCtx.String("head"),
-								Output: cCtx.String("output"),
-							})
-							if err != nil {
-								return cli.Exit(err.Error(), 1)
-							}
-							return nil
-						},
-					},
-					{
-						Name:  "current",
-						Usage: "Extract and create a current data set",
-						Flags: []cli.Flag{
-							&cli.StringFlag{
-								Name:     "config",
-								Required: true,
-								Usage:    "Path to the config file",
-							},
-							&cli.StringFlag{
-								Name:     "system",
-								Required: true,
-								Usage:    "ID of the system to extract",
-							},
-							&cli.StringFlag{
-								Name:     "output",
-								Required: true,
-								Usage:    "Path of the sqlite database to create",
-							},
-						},
-						Action: func(cCtx *cli.Context) error {
-							// Set log level
-							if cCtx.Bool("debug") {
-								logLevel.Set(slog.LevelDebug)
-							}
-
-							// Execute action
-							err := action.ExtractCurrent(&action.ExtractCurrentArgs{
-								Config: cCtx.String("config"),
-								System: cCtx.String("system"),
-								Output: cCtx.String("output"),
-							})
-							if err != nil {
-								return cli.Exit(err.Error(), 1)
-							}
-							return nil
-						},
-					},
-				},
-			},
+			hyaline.Version(Version, betaNote),
+			hyaline.Check(logLevel),
+			hyaline.Extract(logLevel),
+			hyaline.Generate(logLevel),
+			hyaline.Merge(logLevel),
 		},
 	}
 

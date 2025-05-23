@@ -6,72 +6,110 @@ import (
 	"hyaline/internal/repo"
 	"hyaline/internal/sqlite"
 	"log/slog"
+	"slices"
 	"strings"
 
+	"github.com/go-git/go-git/v5"
 	"github.com/go-git/go-git/v5/utils/merkletrie"
-	"github.com/mattn/go-zglob"
 )
 
-func ExtractChange(system *config.System, head string, base string, db *sql.DB) (err error) {
+func ExtractChange(system *config.System, head string, base string, documentationIDs []string, db *sql.DB) (err error) {
 	// Process each docs source
-	for _, d := range system.Docs {
-		slog.Debug("docs.ExtractChange extracting docs", "system", system, "docs", d.ID, "head", head, "base", base)
+	for _, d := range system.DocumentationSources {
+		// Only extract if this documentation ID is passed in
+		if !slices.Contains(documentationIDs, d.ID) {
+			slog.Debug("docs.ExtractChange skipping non-included documentation source", "system", system.ID, "doc", d.ID)
+			continue
+		}
+
+		// Only extract changed code for git sources
+		if d.Extractor.Type != config.ExtractorTypeGit {
+			slog.Debug("docs.ExtractChange skipping non-git documentation source", "system", system.ID, "doc", d.ID)
+			continue
+		}
+		slog.Debug("docs.ExtractChange extracting docs", "system", system.ID, "doc", d.ID, "head", head, "base", base)
+
+		// Get document path
+		path := d.Extractor.Options.Path
+		if path == "" {
+			path = d.Extractor.Options.Repo
+		}
+
 		// Insert Documentation
-		documentationId := system.ID + "-" + d.ID
-		err = sqlite.InsertChangeDocumentation(sqlite.ChangeDocumentation{
-			ID:       documentationId,
+		err = sqlite.InsertSystemDocumentation(sqlite.SystemDocumentation{
+			ID:       d.ID,
 			SystemID: system.ID,
-			Type:     d.Type,
-			Path:     d.Path,
+			Type:     d.Type.String(),
+			Path:     path,
 		}, db)
+		if err != nil {
+			slog.Debug("docs.ExtractChange could not insert documentation", "error", err, "doc", d.ID)
+			return err
+		}
+
+		// Initialize go-git repo (on disk or in mem)
+		var r *git.Repository
+		r, err = repo.GetRepo(d.Extractor.Options)
+		if err != nil {
+			slog.Debug("code.ExtractChange could not get repo", "error", err)
+			return
+		}
 
 		// Get our diffs
-		diffs, err := repo.GetDiff(d.Path, head, base)
+		diff, err := repo.GetDiff(r, head, base)
 		if err != nil {
 			slog.Debug("docs.ExtractChange could not get diff", "error", err)
 			return err
 		}
 
-		// Get our glob
-		glob, err := zglob.New(d.Glob)
-		if err != nil {
-			slog.Debug("docs.ExtractChange could not instantiate preset glob", "error", err, "glob", d.Glob)
-			return err
-		}
-
 		// Load any files in the diff that match our preset
-		for _, diff := range diffs {
-			slog.Debug("docs.ExtractChange processing diff", "diff", diff.String())
-			action, err := diff.Action()
+		for _, change := range diff {
+			slog.Debug("docs.ExtractChange processing diff", "diff", change.String())
+			action, err := change.Action()
 			if err != nil {
-				slog.Debug("docs.ExtractChange could not retrieve action for diff", "error", err, "diff", diff)
+				slog.Debug("docs.ExtractChange could not retrieve action for diff", "error", err, "diff", change)
 				return err
 			}
-			_, to, err := diff.Files()
+			_, to, err := change.Files()
 			if err != nil {
-				slog.Debug("docs.ExtractChange could not retrieve files for diff", "error", err, "diff", diff)
+				slog.Debug("docs.ExtractChange could not retrieve files for diff", "error", err, "diff", change)
 				return err
 			}
 			switch action {
 			case merkletrie.Insert:
 				fallthrough
 			case merkletrie.Modify:
-				if glob.Match(diff.To.Name) {
-					slog.Debug("docs.ExtractChange inserting document", "document", diff.To.Name, "action", action)
+				if config.PathIsIncluded(change.To.Name, d.Extractor.Include, d.Extractor.Exclude) {
+					slog.Debug("docs.ExtractChange inserting document", "document", change.To.Name, "action", action)
 					bytes, err := repo.GetBlobBytes(to.Blob)
 					if err != nil {
 						slog.Debug("docs.ExtractChange could not retrieve blob from diff", "error", err)
 						return err
 					}
-					err = sqlite.InsertChangeDocument(sqlite.ChangeDocument{
-						ID:              diff.To.Name,
-						DocumentationID: documentationId,
+
+					// Extract and clean data (trim whitespace and remove carriage returns)
+					var extractedData string
+					switch d.Type {
+					case config.DocTypeHTML:
+						extractedData, err = extractHTMLDocument(string(bytes), d.Options.Selector)
+						if err != nil {
+							slog.Debug("docs.ExtractCurrentFs could not extract html document", "error", err, "doc", change.To.Name)
+							return err
+						}
+					default:
+						extractedData = strings.TrimSpace(string(bytes))
+					}
+					extractedData = strings.ReplaceAll(extractedData, "\r", "")
+
+					err = sqlite.InsertSystemDocument(sqlite.SystemDocument{
+						ID:              change.To.Name,
+						DocumentationID: d.ID,
 						SystemID:        system.ID,
-						RelativePath:    diff.To.Name,
-						Format:          d.Type,
-						Action:          action.String(),
+						Type:            d.Type.String(),
+						Action:          sqlite.MapAction(action, change.From.Name, change.To.Name),
+						OriginalID:      change.From.Name,
 						RawData:         string(bytes),
-						ExtractedText:   extractMarkdownText(bytes),
+						ExtractedData:   extractedData,
 					}, db)
 					if err != nil {
 						slog.Debug("docs.ExtractChange could not insert document", "error", err)
@@ -79,24 +117,23 @@ func ExtractChange(system *config.System, head string, base string, db *sql.DB) 
 					}
 
 					// Get and insert sections
-					cleanContent := strings.ReplaceAll(string(bytes), "\r", "")
-					sections := getMarkdownSections(strings.Split(cleanContent, "\n"))
-					err = insertChangeSectionAndChildren(sections, 0, to.Name, documentationId, system.ID, d.Type, db)
+					sections := getMarkdownSections(strings.Split(extractedData, "\n"))
+					err = insertMarkdownSectionAndChildren(sections, 0, change.To.Name, d.ID, system.ID, db)
 					if err != nil {
-						slog.Debug("docs.ExtractCurrent could not insert section", "error", err)
+						slog.Debug("docs.ExtractCurrentFs could not insert section", "error", err)
 						return err
 					}
 				}
 			case merkletrie.Delete:
-				if glob.Match(diff.From.Name) {
-					slog.Debug("docs.ExtractChange inserting document", "document", diff.From.Name, "action", action)
-					err = sqlite.InsertChangeDocument(sqlite.ChangeDocument{
-						ID:              diff.From.Name,
-						DocumentationID: documentationId,
+				if config.PathIsIncluded(change.To.Name, d.Extractor.Include, d.Extractor.Exclude) {
+					slog.Debug("docs.ExtractChange inserting document", "document", change.From.Name, "action", action)
+					err = sqlite.InsertSystemDocument(sqlite.SystemDocument{
+						ID:              change.From.Name,
+						DocumentationID: d.ID,
 						SystemID:        system.ID,
-						RelativePath:    diff.From.Name,
-						Format:          d.Type,
-						Action:          action.String(),
+						Type:            d.Type.String(),
+						Action:          sqlite.ActionDelete,
+						OriginalID:      "",
 						RawData:         "",
 					}, db)
 					if err != nil {
@@ -109,38 +146,4 @@ func ExtractChange(system *config.System, head string, base string, db *sql.DB) 
 	}
 
 	return
-}
-
-func insertChangeSectionAndChildren(s *section, order int, documentId string, documentationId string, systemId string, format string, db *sql.DB) error {
-	// Insert this section
-	parentSectionId := ""
-	if s.Parent != nil {
-		parentSectionId = documentId + "#" + s.Parent.Title
-	}
-	err := sqlite.InsertChangeSection(sqlite.ChangeSection{
-		ID:              documentId + "#" + s.Title,
-		DocumentID:      documentId,
-		DocumentationID: documentationId,
-		SystemID:        systemId,
-		ParentSectionID: parentSectionId,
-		Order:           order,
-		Title:           s.Title,
-		Format:          format,
-		RawData:         strings.TrimSpace(s.Content),
-		ExtractedText:   extractMarkdownText([]byte(s.Content)),
-	}, db)
-	if err != nil {
-		slog.Debug("docs.insertChangeSectionAndChildren could not insert section", "error", err)
-		return err
-	}
-
-	// Insert children
-	for i, child := range s.Children {
-		err = insertChangeSectionAndChildren(child, i, documentId, documentationId, systemId, format, db)
-		if err != nil {
-			return err
-		}
-	}
-
-	return nil
 }

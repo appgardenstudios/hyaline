@@ -1,0 +1,22 @@
+systems:
+  - id: my-app
+    code:
+      - id: app
+        extractor:
+          type: fs
+          options:
+            path: ./_input/extract-current-fs/
+          include:
+            - package.json
+            - "**/*.js"
+          exclude:
+            - "**/*.test.js"
+    documentation:
+      - id: docs
+        type: md
+        extractor:
+          type: fs
+          options:
+            path: ./_input/extract-current-fs/
+          include:
+            - "**/*.md"

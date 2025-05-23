@@ -8,74 +8,89 @@ import (
 	"log/slog"
 	"slices"
 
+	"github.com/go-git/go-git/v5"
 	"github.com/go-git/go-git/v5/utils/merkletrie"
-	"github.com/mattn/go-zglob"
 )
 
-func ExtractChange(system *config.System, head string, base string, db *sql.DB) (err error) {
+func ExtractChange(system *config.System, head string, base string, codeIDs []string, db *sql.DB) (err error) {
 	// Process each code source
-	for _, c := range system.Code {
-		slog.Debug("code.ExtractChange extracting code", "system", system, "code", c.ID)
-
-		// Insert Code
-		codeId := system.ID + "-" + c.ID
-		err = sqlite.InsertChangeCode(sqlite.ChangeCode{
-			ID:       codeId,
-			SystemID: system.ID,
-			Path:     c.Path,
-		}, db)
-
-		// Make sure we have a valid preset. If not, skip
-		preset, ok := presets[c.Preset]
-		if !ok {
-			slog.Info("Code Preset Not Found. Skipping...", "system", system, "code", c.ID, "preset", c.Preset)
+	for _, c := range system.CodeSources {
+		// Only extract if this code ID is passed in
+		if !slices.Contains(codeIDs, c.ID) {
+			slog.Debug("code.ExtractChange skipping non-included code source", "system", system.ID, "code", c.ID)
 			continue
 		}
-		glob, err := zglob.New(preset.Glob)
+
+		// Only extract changed code for git sources
+		if c.Extractor.Type != config.ExtractorTypeGit {
+			slog.Debug("code.ExtractChange skipping non-git code source", "system", system.ID, "code", c.ID)
+			continue
+		}
+		slog.Debug("code.ExtractChange extracting code", "system", system.ID, "code", c.ID, "head", head, "base", base)
+
+		// Get document path
+		path := c.Extractor.Options.Path
+		if path == "" {
+			path = c.Extractor.Options.Repo
+		}
+
+		// Insert Code
+		err = sqlite.InsertSystemCode(sqlite.SystemCode{
+			ID:       c.ID,
+			SystemID: system.ID,
+			Path:     path,
+		}, db)
 		if err != nil {
-			slog.Debug("code.ExtractChange could not instantiate preset glob", "error", err, "glob", preset.Glob)
+			slog.Debug("code.ExtractChange could not insert code", "error", err, "code", c.ID)
 			return err
 		}
-		slog.Debug("code.ExtractChange extracting code using preset", "presetID", c.Preset, "preset", preset)
 
-		// Get our diffs
-		diffs, err := repo.GetDiff(c.Path, head, base)
+		// Initialize go-git repo (on disk or in mem)
+		var r *git.Repository
+		r, err = repo.GetRepo(c.Extractor.Options)
+		if err != nil {
+			slog.Debug("code.ExtractChange could not get repo", "error", err)
+			return
+		}
+
+		// Get our diff
+		diff, err := repo.GetDiff(r, head, base)
 		if err != nil {
 			slog.Debug("code.ExtractChange could not get diff", "error", err)
 			return err
 		}
 
 		// Load any files in the diff that match our preset
-		for _, diff := range diffs {
-			slog.Debug("code.ExtractChange processing diff", "diff", diff.String())
-			action, err := diff.Action()
+		for _, change := range diff {
+			slog.Debug("code.ExtractChange processing diff", "diff", change.String())
+			action, err := change.Action()
 			if err != nil {
-				slog.Debug("code.ExtractChange could not retrieve action for diff", "error", err, "diff", diff)
+				slog.Debug("code.ExtractChange could not retrieve action for diff", "error", err, "diff", change)
 				return err
 			}
-			_, to, err := diff.Files()
+			_, to, err := change.Files()
 			if err != nil {
-				slog.Debug("code.ExtractChange could not retrieve files for diff", "error", err, "diff", diff)
+				slog.Debug("code.ExtractChange could not retrieve files for diff", "error", err, "diff", change)
 				return err
 			}
 			switch action {
 			case merkletrie.Insert:
 				fallthrough
 			case merkletrie.Modify:
-				if glob.Match(diff.To.Name) || slices.Contains(preset.Files, diff.To.Name) {
-					slog.Debug("code.ExtractChange inserting file", "file", diff.To.Name, "action", action)
+				if config.PathIsIncluded(change.To.Name, c.Extractor.Include, c.Extractor.Exclude) {
+					slog.Debug("code.ExtractChange inserting file", "file", change.To.Name, "action", action)
 					bytes, err := repo.GetBlobBytes(to.Blob)
 					if err != nil {
 						slog.Debug("code.ExtractChange could not retrieve blob from diff", "error", err)
 						return err
 					}
-					err = sqlite.InsertChangeFile(sqlite.ChangeFile{
-						ID:           diff.To.Name,
-						CodeID:       codeId,
-						SystemID:     system.ID,
-						RelativePath: diff.To.Name,
-						Action:       action.String(),
-						RawData:      string(bytes),
+					err = sqlite.InsertSystemFile(sqlite.SystemFile{
+						ID:         change.To.Name,
+						CodeID:     c.ID,
+						SystemID:   system.ID,
+						Action:     sqlite.MapAction(action, change.From.Name, change.To.Name),
+						OriginalID: change.From.Name,
+						RawData:    string(bytes),
 					}, db)
 					if err != nil {
 						slog.Debug("code.ExtractChange could not insert file", "error", err)
@@ -83,15 +98,15 @@ func ExtractChange(system *config.System, head string, base string, db *sql.DB) 
 					}
 				}
 			case merkletrie.Delete:
-				if glob.Match(diff.From.Name) || slices.Contains(preset.Files, diff.From.Name) {
-					slog.Debug("code.ExtractChange inserting file", "file", diff.From.Name, "action", action)
-					err = sqlite.InsertChangeFile(sqlite.ChangeFile{
-						ID:           diff.From.Name,
-						CodeID:       codeId,
-						SystemID:     system.ID,
-						RelativePath: diff.From.Name,
-						Action:       action.String(),
-						RawData:      "",
+				if config.PathIsIncluded(change.To.Name, c.Extractor.Include, c.Extractor.Exclude) {
+					slog.Debug("code.ExtractChange inserting file", "file", change.From.Name, "action", action)
+					err = sqlite.InsertSystemFile(sqlite.SystemFile{
+						ID:         change.From.Name,
+						CodeID:     c.ID,
+						SystemID:   system.ID,
+						Action:     sqlite.ActionDelete,
+						OriginalID: "",
+						RawData:    "",
 					}, db)
 					if err != nil {
 						slog.Debug("code.ExtractChange could not insert file", "error", err)

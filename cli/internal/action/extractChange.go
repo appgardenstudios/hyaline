@@ -6,18 +6,25 @@ import (
 	"hyaline/internal/code"
 	"hyaline/internal/config"
 	"hyaline/internal/docs"
+	"hyaline/internal/github"
 	"hyaline/internal/sqlite"
 	"log/slog"
 	"os"
 	"path/filepath"
+
+	_ "modernc.org/sqlite"
 )
 
 type ExtractChangeArgs struct {
-	Config string
-	System string
-	Base   string
-	Head   string
-	Output string
+	Config           string
+	System           string
+	Base             string
+	Head             string
+	CodeIDs          []string
+	DocumentationIDs []string
+	PullRequest      string
+	Issues           []string
+	Output           string
 }
 
 func ExtractChange(args *ExtractChangeArgs) error {
@@ -27,6 +34,10 @@ func ExtractChange(args *ExtractChangeArgs) error {
 		"system", args.System,
 		"base", args.Base,
 		"head", args.Head,
+		"codeIDs", args.CodeIDs,
+		"documentationIDs", args.DocumentationIDs,
+		"pullRequest", args.PullRequest,
+		"issues", args.Issues,
 		"output", args.Output,
 	))
 
@@ -57,7 +68,7 @@ func ExtractChange(args *ExtractChangeArgs) error {
 		return err
 	}
 	defer db.Close()
-	err = sqlite.CreateChangeSchema(db)
+	err = sqlite.CreateSchema(db)
 	if err != nil {
 		slog.Debug("action.ExtractChange could not create the current schema", "error", err)
 		return err
@@ -69,7 +80,7 @@ func ExtractChange(args *ExtractChangeArgs) error {
 		slog.Debug("action.ExtractChange could not locate the system", "system", args.System, "error", err)
 		return err
 	}
-	err = sqlite.InsertChangeSystem(sqlite.ChangeSystem{
+	err = sqlite.InsertSystem(sqlite.System{
 		ID: system.ID,
 	}, db)
 	if err != nil {
@@ -78,8 +89,50 @@ func ExtractChange(args *ExtractChangeArgs) error {
 	}
 	slog.Debug("action.ExtractChange system inserted")
 
+	// Determine our set of code/documentation IDs to extract
+	// (default to extracting everything if no code AND documentation IDs are passed in)
+	codeIDs := append([]string{}, args.CodeIDs...)
+	documentationIDs := append([]string{}, args.DocumentationIDs...)
+	if len(codeIDs) == 0 && len(documentationIDs) == 0 {
+		// Extract all code and documentation ids
+		for _, c := range system.CodeSources {
+			codeIDs = append(codeIDs, c.ID)
+		}
+		for _, d := range system.DocumentationSources {
+			documentationIDs = append(documentationIDs, d.ID)
+		}
+	}
+
+	// Extract/Insert Pull Request (if present)
+	if args.PullRequest != "" {
+		if cfg.GitHub.Token == "" {
+			return errors.New("github token required to retrieve pull-request information")
+		}
+		err = github.InsertPullRequest(args.PullRequest, cfg.GitHub.Token, system.ID, db)
+		if err != nil {
+			slog.Debug("action.ExtractChange could not insert the system", "error", err)
+			return err
+		}
+		slog.Debug("action.ExtractChange pull request inserted")
+	}
+
+	// Extract/Insert Issues
+	if len(args.Issues) > 0 {
+		if cfg.GitHub.Token == "" {
+			return errors.New("github token required to retrieve issue information")
+		}
+		for _, issue := range args.Issues {
+			err = github.InsertIssue(issue, cfg.GitHub.Token, system.ID, db)
+			if err != nil {
+				slog.Debug("action.ExtractChange could not insert the system", "error", err)
+				return err
+			}
+		}
+		slog.Debug("action.ExtractChange issues inserted")
+	}
+
 	// Extract/Insert Code
-	err = code.ExtractChange(system, args.Head, args.Base, db)
+	err = code.ExtractChange(system, args.Head, args.Base, codeIDs, db)
 	if err != nil {
 		slog.Debug("action.ExtractChange could not extract code", "error", err)
 		return err
@@ -87,7 +140,7 @@ func ExtractChange(args *ExtractChangeArgs) error {
 	slog.Debug("action.ExtractChange code inserted")
 
 	// Extract/Insert Docs
-	err = docs.ExtractChange(system, args.Head, args.Base, db)
+	err = docs.ExtractChange(system, args.Head, args.Base, documentationIDs, db)
 	if err != nil {
 		slog.Debug("action.ExtractChange could not extract docs", "error", err)
 		return err
