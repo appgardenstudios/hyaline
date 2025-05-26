@@ -5,7 +5,7 @@ purpose: Explain how Hyaline checks current documentation for issues
 # Overview
 Hyaline has the ability to check the current set of documentation against the configuration and look for issues that should be addressed. The goal is to verify that each piece of documentation (each document/section) that is extant is present in the configuration with a purpose, and that each document or section present in the configuration exists, matches its purpose, and is complete.
 
-TODO image of overview flow, show extract current, check current, results, etc.
+![Overview](_img/check-current-overview.svg)
 
 TODO explanation of image
 
@@ -20,7 +20,7 @@ There are 4 primary checks that Hyaline can perform on current documentation:
 # Check Desired Document Exists
 This check, identified by `DESIRED_DOCUMENT_EXISTS`, is intended to help identify those documents and/or sections that are present in the actual extracted documentation but are not present in the configuration.
 
-TODO image of desired documentation vs actual and example of missing in configuration
+![Check Desired Document Exists](_img/check-current-desired-document-exists.svg)
 
 TODO explanation of image
 
@@ -33,7 +33,7 @@ This check will have one of the following results:
 # Check Required
 This check, identified by `REQUIRED`, is intended to identify those documents and/or sections that are marked as required in the configuration but do not exist in the extracted documentation.
 
-TODO image of desired vs actual and example of missing documentation
+![Check Required](_img/check-current-required.svg)
 
 TODO explanation of image
 
@@ -47,7 +47,7 @@ This check will have one of the following results:
 # Check Purpose
 This check, identified by `MATCHES_PURPOSE`, is intended to identify those documents and/or sections that do not match the purpose of that document or section as defined in the configuration.
 
-TODO image of desired vs actual and example of documentation matching and not matching its purpose. Show LLM
+![Check Purpose](_img/check-current-purpose.svg)
 
 TODO explanation of image
 
@@ -62,7 +62,7 @@ This check will have one of the following results:
 # Check Completeness
 This check, identified by `COMPLETE`, is intended to identify those documents that are incomplete as defined by the purpose of that document or section in the configuration.
 
-TODO image of desired vs actual and example of documentation being complete and incomplete. Show LLM
+![Check Completeness](_img/check-current-completeness.svg)
 
 TODO explanation of image
 
