@@ -40,6 +40,7 @@ func main() {
 			hyaline.Extract(logLevel),
 			hyaline.Generate(logLevel),
 			hyaline.Merge(logLevel),
+			hyaline.Update(logLevel),
 		},
 	}
 
