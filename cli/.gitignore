@@ -16,6 +16,7 @@ hyaline-e2e
 e2e/_output/*
 generated-config.yml
 results.json
+update-pr.json
 
 # Release artifacts
 dist/

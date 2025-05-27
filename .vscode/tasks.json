@@ -33,6 +33,16 @@
       "presentation":{
         "reveal": "silent"
       }
+    },{
+      "label": "cleanup-update-pr",
+      "type": "shell",
+      "command": "rm -f update-pr.json",
+      "options":{
+        "cwd": "${workspaceFolder}/cli/"
+      },
+      "presentation":{
+        "reveal": "silent"
+      }
     }
   ]
 }
