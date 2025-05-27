@@ -141,6 +141,7 @@ pre-update-pr:
 
 .PHONY: update-pr
 update-pr:
+	rm -f ./update-pr.json
 	make build
 	echo "---"
 	./hyaline --debug update pr --config ./_example/config.yml --pull-request appgardenstudios/hyaline-example/1 --recommendations ./results.json --output ./update-pr.json
