@@ -10,6 +10,7 @@ import (
 	"log/slog"
 	"os"
 	"path/filepath"
+	"reflect"
 	"strings"
 )
 
@@ -90,7 +91,7 @@ func UpdatePR(args *UpdatePRArgs) error {
 	if args.Comment == "" {
 		comment, err = updatePRAddComment(args.Sha, recommendations, args.PullRequest, cfg.GitHub.Token)
 	} else {
-		err = updatePRFromComment()
+		comment, err = updatePRFromComment(args.Sha, recommendations, args.PullRequest, args.Comment, cfg.GitHub.Token)
 	}
 	if err != nil {
 		slog.Debug("action.UpdatePR could not update or add comment", "comment", args.Comment, "error", err)
@@ -120,9 +121,92 @@ func UpdatePR(args *UpdatePRArgs) error {
 	return nil
 }
 
-func updatePRFromComment() error {
+func updatePRFromComment(sha string, recommendations CheckChangeOutput, pr string, comment string, token string) (*UpdatePRComment, error) {
+	// Get comment
+	existingComment, err := github.GetComment(comment, token)
+	if err != nil {
+		slog.Debug("action.updatePRFromComment could not get existing comment", "error", err)
+		return nil, err
+	}
+
+	// Get existing recs from Raw Data
+	recs, err := parseRawData(existingComment)
+	if err != nil {
+		slog.Debug("action.updatePRFromComment could not extract data from existing comment", "error", err)
+		return nil, err
+	}
+
+	// Merge recommendations
+	// TODO split this out into its own function
+	for _, newRec := range recommendations.Recommendations {
+		// See if this rec already exists
+		match := false
+		for index, existingRec := range recs {
+			if newRecMatchesExisting(&newRec, &existingRec) {
+				match = true
+				// Do not overwrite existing rec's checked status so we preserve any "manual" checks
+				if !existingRec.Checked {
+					recs[index].Checked = newRec.Changed
+				}
+				// TODO merge reasons
+				break
+			}
+		}
+		// If it does not, add it
+		if !match {
+			recs = append(recs, UpdatePRCommentRecommendation{
+				Checked:  newRec.Changed,
+				System:   newRec.System,
+				Source:   newRec.DocumentationSource,
+				Document: newRec.Document,
+				Section:  newRec.Section,
+				Reasons:  newRec.Reasons,
+			})
+		}
+	}
+
+	// Sort recommendations
 	// TODO
-	return nil
+
+	// Format New Raw Data
+	rawData, err := formatRawData(&recs)
+	if err != nil {
+		slog.Debug("action.updatePRFromComment could not format raw data", "error", err)
+		return nil, err
+	}
+
+	// Create comment
+	updatedComment := UpdatePRComment{
+		Sha:             sha,
+		Recommendations: recs,
+		RawData:         rawData,
+	}
+
+	// Format comment
+	formattedComment := formatPRComment(&updatedComment)
+
+	// Update comment
+	err = github.UpdateComment(comment, formattedComment, token)
+	if err != nil {
+		slog.Debug("action.updatePRFromComment could not update comment", "pr", pr, "error", err)
+		return nil, err
+	}
+
+	return &updatedComment, nil
+}
+
+func newRecMatchesExisting(newRec *CheckChangeOutputEntry, existingRec *UpdatePRCommentRecommendation) bool {
+	if newRec.System != existingRec.System {
+		return false
+	}
+	if newRec.DocumentationSource != existingRec.Source {
+		return false
+	}
+	if newRec.Document != existingRec.Document {
+		return false
+	}
+
+	return reflect.DeepEqual(newRec.Section, existingRec.Section)
 }
 
 func updatePRAddComment(sha string, recommendations CheckChangeOutput, pr string, token string) (*UpdatePRComment, error) {
@@ -176,6 +260,49 @@ func formatRawData(recommendations *[]UpdatePRCommentRecommendation) (string, er
 	return fmt.Sprintf("<![CDATA[ %s ]]>", string(data)), nil
 }
 
+func parseRawData(comment string) (recs []UpdatePRCommentRecommendation, err error) {
+	// Get CData
+	// TODO move this to a const
+	dataStart := strings.Index(comment, "<![CDATA[ ")
+	if dataStart == -1 {
+		err = errors.New("could not find start of CDATA block")
+		return
+	}
+	// TODO move dataEnd cdata to a const
+	dataEnd := strings.LastIndex(comment, " ]]>")
+	if dataEnd == -1 {
+		err = errors.New("could not find end of CDATA block")
+		return
+	}
+	data := comment[dataStart+10 : dataEnd]
+	err = json.Unmarshal([]byte(data), &recs)
+	if err != nil {
+		return
+	}
+
+	// Get any manual checks and update the corresponding rec
+	// Note that this relies on the CData order being the same as the recs list order
+	// TODO move the review string to a const
+	checksStart := strings.Index(comment, "### Review and update (if needed) the following document(s) and/or section(s):")
+	if dataEnd == -1 {
+		err = errors.New("could not find start of checks")
+		return
+	}
+	checks := comment[checksStart:dataStart]
+	lines := strings.Split(checks, "\n")
+	currentRec := 0
+	for _, line := range lines {
+		if strings.HasPrefix(line, "- [") && currentRec < len(recs) {
+			if strings.HasPrefix(line, "- [x]") {
+				recs[currentRec].Checked = true
+			}
+			currentRec++
+		}
+	}
+
+	return
+}
+
 func formatPRComment(comment *UpdatePRComment) string {
 	var md strings.Builder
 
@@ -184,8 +311,9 @@ func formatPRComment(comment *UpdatePRComment) string {
 	md.WriteString("- [ ] Trigger Re-run\n")
 	md.WriteString("\n")
 
+	// Note: This starting line always needs to be present because we use it as a sentinel for getting the check marks
+	md.WriteString("### Review and update (if needed) the following document(s) and/or section(s):\n")
 	if len(comment.Recommendations) > 0 {
-		md.WriteString("### Review and update (if needed) the following document(s) and/or section(s):\n")
 		for _, rec := range comment.Recommendations {
 			checked := " "
 			if rec.Checked {

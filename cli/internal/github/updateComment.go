@@ -6,7 +6,7 @@ import (
 	"github.com/google/go-github/v71/github"
 )
 
-func AddComment(ref string, body string, token string) (err error) {
+func UpdateComment(ref string, body string, token string) (err error) {
 
 	// Parse reference
 	owner, repo, id, err := parseReference(ref)
@@ -16,7 +16,7 @@ func AddComment(ref string, body string, token string) (err error) {
 
 	// Add Comment
 	client := github.NewClient(nil).WithAuthToken(token)
-	_, _, err = client.Issues.CreateComment(context.Background(), owner, repo, int(id), &github.IssueComment{
+	_, _, err = client.Issues.EditComment(context.Background(), owner, repo, id, &github.IssueComment{
 		Body: &body,
 	})
 	if err != nil {
