@@ -306,6 +306,7 @@ func parseRawData(comment string) (recs []UpdatePRCommentRecommendation, err err
 func formatPRComment(comment *UpdatePRComment) string {
 	var md strings.Builder
 
+	// TODO put in 0-width spaces in Hyaline
 	md.WriteString("# Hyaline PR Check\n")
 	md.WriteString(fmt.Sprintf("**ref**: %s\n", html.EscapeString(comment.Sha)))
 	md.WriteString("- [ ] Trigger Re-run\n")
@@ -314,6 +315,7 @@ func formatPRComment(comment *UpdatePRComment) string {
 	// Note: This starting line always needs to be present because we use it as a sentinel for getting the check marks
 	md.WriteString("### Review and update (if needed) the following document(s) and/or section(s):\n")
 	if len(comment.Recommendations) > 0 {
+		md.WriteString("Once each item has been reviewed and updated (if needed), check it off below\n")
 		for _, rec := range comment.Recommendations {
 			checked := " "
 			if rec.Checked {
