@@ -2,6 +2,7 @@ package action
 
 import (
 	"reflect"
+	"strings"
 	"testing"
 )
 
@@ -155,5 +156,50 @@ func TestMergeRecs(t *testing.T) {
 		if !reflect.DeepEqual(recs, test.mergedRecs) {
 			t.Errorf("%d: got %v, expected %v", i, recs, test.mergedRecs)
 		}
+	}
+}
+
+func TestParsePRComment(t *testing.T) {
+	recs := []UpdatePRCommentRecommendation{
+		{
+			Checked:  false,
+			System:   "system",
+			Source:   "source",
+			Document: "document",
+			Section:  []string{"section1", "section2"},
+			Reasons:  []string{"reason1", "reason2"},
+		},
+	}
+	rawData, err := formatRawData(&recs)
+	if err != nil {
+		t.Fatal(err)
+	}
+	comment := UpdatePRComment{
+		Sha:             "sha",
+		Recommendations: recs,
+		RawData:         rawData,
+	}
+	formattedComment := formatPRComment(&comment)
+
+	// mark everything as checked
+	formattedComment = strings.ReplaceAll(formattedComment, "- [ ]", "- [x]")
+
+	expectedRecs := []UpdatePRCommentRecommendation{
+		{
+			Checked:  true,
+			System:   "system",
+			Source:   "source",
+			Document: "document",
+			Section:  []string{"section1", "section2"},
+			Reasons:  []string{"reason1", "reason2"},
+		},
+	}
+
+	existingRecs, err := parsePRComment(formattedComment)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !reflect.DeepEqual(expectedRecs, existingRecs) {
+		t.Errorf("got %v, expected %v", existingRecs, expectedRecs)
 	}
 }
