@@ -151,7 +151,7 @@ update-pr-existing:
 	rm -f ./update-pr.json
 	make build
 	echo "---"
-	./hyaline --debug update pr --config ./_example/config.yml --pull-request appgardenstudios/hyaline-example/1 --comment appgardenstudios/hyaline-example/2916662239 --recommendations ./results.json --output ./update-pr.json
+	./hyaline --debug update pr --config ./_example/config.yml --pull-request appgardenstudios/hyaline-example/1 --comment appgardenstudios/hyaline-example/2916854796 --recommendations ./results.json --output ./update-pr.json
 
 .PHONY: release
 release:

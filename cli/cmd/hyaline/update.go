@@ -44,7 +44,7 @@ func Update(logLevel *slog.LevelVar) *cli.Command {
 					&cli.StringFlag{
 						Name:     "output",
 						Required: true,
-						Usage:    "Path of the sqlite database to create",
+						Usage:    "Path of the comment metadata to create",
 					},
 				},
 				Action: func(cCtx *cli.Context) error {
