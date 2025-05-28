@@ -9,7 +9,7 @@ Hyaline has the ability to generate a desired document configuration based on th
 
 Here you can see that we have a set of documents and sections extracted in the current data set on the left. Hyaline loops through those documents and sections, calling an llm for each if generating a purpose, and then outputs an updated configuration file (just the desired documents section) that can be used in the original configuration file (it does not update configuration files in place).
 
-TODO link to cli reference
+Please visit the [CLI Reference](../reference/cli.md) for more information about using generate config.
 
 # Algorithm
 Hyaline loops through each document in each documentation source in the extracted current data set and generates a desired document from it if the document does not already exist in the desired document set in the configuration. It then goes through each section in the document (if the document is not marked as ignored) and does the same for each actual section. Hyaline then writes out the new, combined configuration. 
@@ -26,4 +26,4 @@ If desired, Hyaline can also generate purpose statements for each document and/o
 
 ![Purpose](_img/generate-config-purpose.svg)
 
-When configured to, Hyaline will also generate purpose statements for desired documents and sections that do not contain them. To do this it takes the contents of the document or section and calls an LLM to generate a purpose statement for the document and/or section, and then adds that to the output.
+When configured to, Hyaline will also generate purpose statements for desired documents and sections that do not contain them. To do this it takes the contents of the document or section and calls an LLM to generate a purpose statement for the document and/or section, and then adds that to the updated configuration that is output.
