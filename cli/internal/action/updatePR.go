@@ -123,7 +123,7 @@ func UpdatePR(args *UpdatePRArgs) error {
 	if args.Comment == "" {
 		comment, err = updatePRAddComment(args.Sha, checkChangeOutput.Recommendations, args.PullRequest, cfg.GitHub.Token)
 	} else {
-		comment, err = updatePRFromComment(args.Sha, checkChangeOutput.Recommendations, args.PullRequest, args.Comment, cfg.GitHub.Token)
+		comment, err = updatePRUpdateComment(args.Sha, checkChangeOutput.Recommendations, args.PullRequest, args.Comment, cfg.GitHub.Token)
 	}
 	if err != nil {
 		slog.Debug("action.UpdatePR could not update or add comment", "comment", args.Comment, "error", err)
@@ -151,7 +151,7 @@ func UpdatePR(args *UpdatePRArgs) error {
 	return nil
 }
 
-func updatePRFromComment(sha string, newRecs []CheckChangeOutputEntry, pr string, comment string, token string) (*UpdatePRComment, error) {
+func updatePRUpdateComment(sha string, newRecs []CheckChangeOutputEntry, pr string, comment string, token string) (*UpdatePRComment, error) {
 	// Get comment
 	existingComment, err := github.GetComment(comment, token)
 	if err != nil {
@@ -347,6 +347,10 @@ func parsePRComment(comment string) (recs []UpdatePRCommentRecommendation, err e
 	currentRec := 0
 	for _, line := range lines {
 		if strings.HasPrefix(line, "- [") && currentRec < len(recs) {
+			// Always pull checked from the list and NOT CData
+			if strings.HasPrefix(line, "- [ ]") {
+				recs[currentRec].Checked = false
+			}
 			if strings.HasPrefix(line, "- [x]") {
 				recs[currentRec].Checked = true
 			}
