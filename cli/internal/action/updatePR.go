@@ -11,6 +11,8 @@ import (
 	"os"
 	"path/filepath"
 	"reflect"
+	"slices"
+	"sort"
 	"strings"
 )
 
@@ -36,6 +38,36 @@ type UpdatePRCommentRecommendation struct {
 	Document string   `json:"document"`
 	Section  []string `json:"section"`
 	Reasons  []string `json:"reasons"`
+}
+
+type UpdatePRCommentRecommendationSort []UpdatePRCommentRecommendation
+
+func (c UpdatePRCommentRecommendationSort) Len() int {
+	return len(c)
+}
+func (c UpdatePRCommentRecommendationSort) Swap(i, j int) {
+	c[i], c[j] = c[j], c[i]
+}
+func (c UpdatePRCommentRecommendationSort) Less(i, j int) bool {
+	if c[i].System < c[j].System {
+		return true
+	}
+	if c[i].System > c[j].System {
+		return false
+	}
+	if c[i].Source < c[j].Source {
+		return true
+	}
+	if c[i].Source > c[j].Source {
+		return false
+	}
+	if c[i].Document < c[j].Document {
+		return true
+	}
+	if c[i].Document > c[j].Document {
+		return false
+	}
+	return strings.Join(c[i].Section, "#") < strings.Join(c[j].Section, "#")
 }
 
 func UpdatePR(args *UpdatePRArgs) error {
@@ -180,7 +212,8 @@ func mergeRecs(newRecs []CheckChangeOutputEntry, existingRecs []UpdatePRCommentR
 				if !existingRec.Checked {
 					mergedRecs[index].Checked = newRec.Changed
 				}
-				// TODO merge reasons
+				// Always merge reasons
+				mergedRecs[index].Reasons = mergeReasons(&newRec.Reasons, &existingRec.Reasons)
 				break
 			}
 		}
@@ -198,7 +231,19 @@ func mergeRecs(newRecs []CheckChangeOutputEntry, existingRecs []UpdatePRCommentR
 	}
 
 	// Sort
-	// TODO
+	sort.Sort(UpdatePRCommentRecommendationSort(mergedRecs))
+
+	return
+}
+
+func mergeReasons(newReasons *[]string, existingReasons *[]string) (mergedReasons []string) {
+	mergedReasons = append(mergedReasons, *existingReasons...)
+
+	for _, newReason := range *newReasons {
+		if !slices.Contains(mergedReasons, newReason) {
+			mergedReasons = append(mergedReasons, newReason)
+		}
+	}
 
 	return
 }
