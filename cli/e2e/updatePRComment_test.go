@@ -1,0 +1,32 @@
+package e2e
+
+import (
+	"fmt"
+	"testing"
+	"time"
+)
+
+func TestUpdatePRComment(t *testing.T) {
+	goldenPath := "./_golden/update-pr-comment.json"
+	outputPath := fmt.Sprintf("./_output/update-pr-comment-%d.json", time.Now().UnixMilli())
+	args := []string{
+		"update", "pr",
+		"--config", "./_input/update-pr-comment/config.yml",
+		"--pull-request", "appgardenstudios/hyaline-example/1",
+		"--comment", "appgardenstudios/hyaline-example/2917345331",
+		"--recommendations", "./_input/update-pr-comment/recommendations.json",
+		"--output", outputPath,
+	}
+
+	stdOutStdErr, err := runBinary(args, t)
+	t.Log(string(stdOutStdErr))
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if *update {
+		updateGolden(goldenPath, outputPath, t)
+	}
+
+	compareFiles(goldenPath, outputPath, t)
+}

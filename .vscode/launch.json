@@ -176,7 +176,7 @@
         "--config", "./_example/config.yml",
         "--pull-request", "appgardenstudios/hyaline-example/1",
         "--recommendations", "./results.json",
-        "--output", "./update-pr.json"
+        "--output", "./comment.json"
       ]
     },{
       "name": "Update PR with Comment",
@@ -194,7 +194,7 @@
         "--pull-request", "appgardenstudios/hyaline-example/1",
         "--comment", "appgardenstudios/hyaline-example/2916854796",
         "--recommendations", "./results.json",
-        "--output", "./update-pr.json"
+        "--output", "./comment.json"
       ]
     }
   ]

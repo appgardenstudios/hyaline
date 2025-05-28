@@ -36,7 +36,7 @@
     },{
       "label": "cleanup-update-pr",
       "type": "shell",
-      "command": "rm -f update-pr.json",
+      "command": "rm -f comment.json",
       "options":{
         "cwd": "${workspaceFolder}/cli/"
       },

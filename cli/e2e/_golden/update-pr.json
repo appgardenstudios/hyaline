@@ -1,0 +1,28 @@
+{
+  "sha": "",
+  "recommendations": [
+    {
+      "checked": true,
+      "system": "check-change",
+      "source": "app",
+      "document": "README.md",
+      "section": [
+        "Running Locally"
+      ],
+      "reasons": [
+        "Update this section if any files matching subdir/*.js were modified"
+      ]
+    },
+    {
+      "checked": false,
+      "system": "check-change",
+      "source": "app",
+      "document": "docs/subdir.md",
+      "section": null,
+      "reasons": [
+        "This document needs to be updated because its explicit purpose is to record any changes to js files in the subdir directory, and subdir/subdirfile.js has been modified with a comment change"
+      ]
+    }
+  ],
+  "rawData": "\u003c![CDATA[ [{\"checked\":true,\"system\":\"check-change\",\"source\":\"app\",\"document\":\"README.md\",\"section\":[\"Running Locally\"],\"reasons\":[\"Update this section if any files matching subdir/*.js were modified\"]},{\"checked\":false,\"system\":\"check-change\",\"source\":\"app\",\"document\":\"docs/subdir.md\",\"section\":null,\"reasons\":[\"This document needs to be updated because its explicit purpose is to record any changes to js files in the subdir directory, and subdir/subdirfile.js has been modified with a comment change\"]}] ]]\u003e"
+}
