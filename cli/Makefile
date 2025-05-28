@@ -141,17 +141,17 @@ pre-update-pr:
 
 .PHONY: update-pr
 update-pr:
-	rm -f ./update-pr.json
+	rm -f ./comment.json
 	make build
 	echo "---"
 	./hyaline --debug update pr --config ./_example/config.yml --pull-request appgardenstudios/hyaline-example/1 --recommendations ./results.json --output ./comment.json
 
-.PHONY: update-pr-existing
-update-pr-existing:
-	rm -f ./update-pr.json
+.PHONY: update-pr-comment
+update-pr-comment:
+	rm -f ./comment.json
 	make build
 	echo "---"
-	./hyaline --debug update pr --config ./_example/config.yml --pull-request appgardenstudios/hyaline-example/1 --comment appgardenstudios/hyaline-example/2916854796 --recommendations ./results.json --output ./comment.json
+	./hyaline --debug update pr --config ./_example/config.yml --pull-request appgardenstudios/hyaline-example/1 --comment appgardenstudios/hyaline-example/2917391402 --recommendations ./results.json --output ./comment.json
 
 .PHONY: release
 release:

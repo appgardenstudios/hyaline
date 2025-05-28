@@ -192,7 +192,7 @@
         "update", "pr",
         "--config", "./_example/config.yml",
         "--pull-request", "appgardenstudios/hyaline-example/1",
-        "--comment", "appgardenstudios/hyaline-example/2916854796",
+        "--comment", "appgardenstudios/hyaline-example/2917391402",
         "--recommendations", "./results.json",
         "--output", "./comment.json"
       ]
