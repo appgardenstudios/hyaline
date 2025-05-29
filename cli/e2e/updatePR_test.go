@@ -15,6 +15,7 @@ func TestUpdatePR(t *testing.T) {
 		"update", "pr",
 		"--config", "./_input/update-pr/config.yml",
 		"--pull-request", "appgardenstudios/hyaline-example/1",
+		"--sha", "b4c5c73",
 		"--recommendations", "./_input/update-pr/recommendations.json",
 		"--output", outputPath,
 	}
