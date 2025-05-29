@@ -7,4 +7,5 @@ System, Product, Team, Process, Release, Etc...
 
 ```
 cli/ # The Hyaline CLI tool
+www/ # The Hyaline website
 ```

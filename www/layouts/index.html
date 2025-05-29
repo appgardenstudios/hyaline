@@ -1,0 +1,448 @@
+{{ define "main" }}
+<!-- Hero Section -->
+<section class="py-16 md:py-24 bg-white">
+  <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="max-w-4xl mx-auto">
+      <div class="w-full mb-10">
+        {{ $svg := resources.Get "images/infographic.svg" }}
+        {{ $svg.Content | safeHTML }}
+      </div>
+      <h1 class="text-4xl md:text-5xl font-bold text-center text-gray-900 mb-6">Your documentation <span
+          class="text-blue-600">made useful</span></h1>
+      <p class="text-xl text-center text-gray-600 mb-8 max-w-2xl mx-auto">Hyaline keeps your documentation updated and
+        accessible to both humans and AI agents.</p>
+      <div class="flex justify-center gap-4">
+        <a href="#learn-more"
+          class="px-8 py-3 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 transition-colors">Learn
+          more</a>
+        <a href="#"
+          class="px-8 py-3 border border-gray-300 text-gray-700 font-medium rounded-md hover:bg-gray-50 transition-colors">View
+          demo</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="learn-more" class="py-16 md:py-24 bg-gray-100">
+  <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="text-center mb-16 fade-in">
+      <h2 class="text-4xl md:text-5xl font-bold mb-6">
+        How does it work?
+      </h2>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-16">
+      <div class="lg:col-span-1">
+        <div class="space-y-2" id="tabs-container" role="tablist" aria-label="Product features">
+          <!-- Tab 1 -->
+          <div
+            class="p-4 rounded-xl cursor-pointer transition-all duration-300 transform hover:scale-102
+                  aria-selected:bg-blue-600 aria-selected:text-white aria-selected:shadow-lg 
+                  aria-[selected='false']:bg-white aria-[selected='false']:hover:bg-gray-100 aria-[selected='false']:text-gray-800 aria-[selected='false']:shadow-md"
+            id="tab-collab" 
+            role="tab"
+            aria-selected="true"
+            aria-controls="panel-collab"
+            tabindex="0">
+            <div class="flex items-center">
+              <div class="w-10 h-10 rounded-full flex items-center justify-center mr-4 
+                        aria-selected:bg-white/20 aria-[selected='false']:bg-white">
+                <div class="aria-selected:text-white aria-[selected='false']:text-blue-600">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path
+                      d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                  </svg>
+                </div>
+              </div>
+              <h3 class="text-lg font-semibold">Collaborative Development</h3>
+            </div>
+          </div>
+
+          <!-- Tab 2 -->
+          <div
+            class="p-4 rounded-xl cursor-pointer transition-all duration-300 transform hover:scale-102
+                  aria-selected:bg-blue-600 aria-selected:text-white aria-selected:shadow-lg 
+                  aria-[selected='false']:bg-white aria-[selected='false']:hover:bg-gray-100 aria-[selected='false']:text-gray-800 aria-[selected='false']:shadow-md"
+            id="tab-updated" 
+            role="tab"
+            aria-selected="false"
+            aria-controls="panel-updated"
+            tabindex="-1">
+            <div class="flex items-center">
+              <div class="w-10 h-10 rounded-full flex items-center justify-center mr-4 
+                        aria-selected:bg-white/20 aria-[selected='false']:bg-white">
+                <div class="aria-selected:text-white aria-[selected='false']:text-blue-600">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path
+                      d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                  </svg>
+                </div>
+              </div>
+              <h3 class="text-lg font-semibold">Always Updated</h3>
+            </div>
+          </div>
+
+          <!-- Tab 3 -->
+          <div
+            class="p-4 rounded-xl cursor-pointer transition-all duration-300 transform hover:scale-102
+                  aria-selected:bg-blue-600 aria-selected:text-white aria-selected:shadow-lg 
+                  aria-[selected='false']:bg-white aria-[selected='false']:hover:bg-gray-100 aria-[selected='false']:text-gray-800 aria-[selected='false']:shadow-md"
+            id="tab-internal" 
+            role="tab"
+            aria-selected="false"
+            aria-controls="panel-internal"
+            tabindex="-1">
+            <div class="flex items-center">
+              <div class="w-10 h-10 rounded-full flex items-center justify-center mr-4 
+                        aria-selected:bg-white/20 aria-[selected='false']:bg-white">
+                <div class="aria-selected:text-white aria-[selected='false']:text-blue-600">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path
+                      d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
+                </div>
+              </div>
+              <h3 class="text-lg font-semibold">Internal & External</h3>
+            </div>
+          </div>
+
+          <!-- Tab 4 -->
+          <div
+            class="p-4 rounded-xl cursor-pointer transition-all duration-300 transform hover:scale-102
+                  aria-selected:bg-blue-600 aria-selected:text-white aria-selected:shadow-lg 
+                  aria-[selected='false']:bg-white aria-[selected='false']:hover:bg-gray-100 aria-[selected='false']:text-gray-800 aria-[selected='false']:shadow-md"
+            id="tab-access" 
+            role="tab"
+            aria-selected="false"
+            aria-controls="panel-access"
+            tabindex="-1">
+            <div class="flex items-center">
+              <div class="w-10 h-10 rounded-full flex items-center justify-center mr-4 
+                        aria-selected:bg-white/20 aria-[selected='false']:bg-white">
+                <div class="aria-selected:text-white aria-[selected='false']:text-blue-600">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M13 10V3L4 14h7v7l9-11h-7z" />
+                  </svg>
+                </div>
+              </div>
+              <h3 class="text-lg font-semibold">Universal Access</h3>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="lg:col-span-2 mt-8 lg:mt-0 relative">
+        <div id="tab-content-container">
+          <!-- Content 1 -->
+          <div class="bg-white rounded-2xl shadow-xl overflow-hidden transition-all duration-500 ease-in-out
+                     hidden:invisible hidden:opacity-0 hidden:transform hidden:translate-y-5 hidden:absolute hidden:w-full
+                     not-hidden:visible not-hidden:opacity-100 not-hidden:transform not-hidden:translate-y-0 not-hidden:relative" 
+               id="panel-collab"
+               role="tabpanel"
+               aria-labelledby="tab-collab"
+               tabindex="0">
+            <div class="grid grid-cols-1 md:grid-cols-2">
+              <div class="p-8">
+                <h3 class="text-2xl font-bold mb-4 text-blue-600">Collaborative Development</h3>
+                <p class="text-gray-600 text-lg leading-relaxed">
+                  Hyaline bridges the gap between human developers and AI tools, creating a seamless documentation
+                  workflow that enhances collaboration and reduces friction in the development process.
+                </p>
+                <button
+                  class="mt-8 px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors">
+                  Learn more
+                </button>
+              </div>
+              <div class="bg-gray-100 flex items-center justify-center">
+                <img src="/placeholder.svg?height=400&width=600" alt="Collaborative Development"
+                  class="w-full h-full object-cover" />
+              </div>
+            </div>
+          </div>
+
+          <!-- Content 2 -->
+          <div class="bg-white rounded-2xl shadow-xl overflow-hidden transition-all duration-500 ease-in-out
+                     hidden:invisible hidden:opacity-0 hidden:transform hidden:translate-y-5 hidden:absolute hidden:w-full
+                     not-hidden:visible not-hidden:opacity-100 not-hidden:transform not-hidden:translate-y-0 not-hidden:relative" 
+               id="panel-updated"
+               role="tabpanel"
+               aria-labelledby="tab-updated"
+               tabindex="0"
+               hidden>
+            <div class="grid grid-cols-1 md:grid-cols-2">
+              <div class="p-8">
+                <h3 class="text-2xl font-bold mb-4 text-blue-600">Always Updated</h3>
+                <p class="text-gray-600 text-lg leading-relaxed">
+                  Say goodbye to outdated documentation. Hyaline automatically keeps your docs in sync with your
+                  codebase, ensuring that your team and users always have access to the most current information.
+                </p>
+                <button
+                  class="mt-8 px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors">
+                  Learn more
+                </button>
+              </div>
+              <div class="bg-gray-100 flex items-center justify-center">
+                <img src="/placeholder.svg?height=400&width=600" alt="Always Updated"
+                  class="w-full h-full object-cover" />
+              </div>
+            </div>
+          </div>
+
+          <!-- Content 3 -->
+          <div class="bg-white rounded-2xl shadow-xl overflow-hidden transition-all duration-500 ease-in-out
+                     hidden:invisible hidden:opacity-0 hidden:transform hidden:translate-y-5 hidden:absolute hidden:w-full
+                     not-hidden:visible not-hidden:opacity-100 not-hidden:transform not-hidden:translate-y-0 not-hidden:relative" 
+               id="panel-internal"
+               role="tabpanel"
+               aria-labelledby="tab-internal"
+               tabindex="0"
+               hidden>
+            <div class="grid grid-cols-1 md:grid-cols-2">
+              <div class="p-8">
+                <h3 class="text-2xl font-bold mb-4 text-blue-600">Internal & External</h3>
+                <p class="text-gray-600 text-lg leading-relaxed">
+                  One platform to manage both your internal team documentation and customer-facing guides. Hyaline
+                  intelligently separates and connects these knowledge bases for maximum efficiency.
+                </p>
+                <button
+                  class="mt-8 px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors">
+                  Learn more
+                </button>
+              </div>
+              <div class="bg-gray-100 flex items-center justify-center">
+                <img src="/placeholder.svg?height=400&width=600" alt="Internal & External"
+                  class="w-full h-full object-cover" />
+              </div>
+            </div>
+          </div>
+
+          <!-- Content 4 -->
+          <div class="bg-white rounded-2xl shadow-xl overflow-hidden transition-all duration-500 ease-in-out
+                     hidden:invisible hidden:opacity-0 hidden:transform hidden:translate-y-5 hidden:absolute hidden:w-full
+                     not-hidden:visible not-hidden:opacity-100 not-hidden:transform not-hidden:translate-y-0 not-hidden:relative" 
+               id="panel-access"
+               role="tabpanel"
+               aria-labelledby="tab-access"
+               tabindex="0"
+               hidden>
+            <div class="grid grid-cols-1 md:grid-cols-2">
+              <div class="p-8">
+                <h3 class="text-2xl font-bold mb-4 text-blue-600">Universal Access</h3>
+                <p class="text-gray-600 text-lg leading-relaxed">
+                  Documentation that works for everyone. Hyaline creates content that's optimized for both human
+                  readers and AI systems, ensuring your knowledge is accessible across your entire tech stack.
+                </p>
+                <button
+                  class="mt-8 px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors">
+                  Learn more
+                </button>
+              </div>
+              <div class="bg-gray-100 flex items-center justify-center">
+                <img src="/placeholder.svg?height=400&width=600" alt="Universal Access"
+                  class="w-full h-full object-cover" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Pricing Section -->
+<section id="pricing" class="py-16 md:py-24 bg-blue-900 text-white">
+  <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+    <h2 class="text-3xl md:text-4xl font-bold text-center mb-4">Pricing Plans</h2>
+    <p class="text-xl text-center text-gray-300 mb-16 max-w-2xl mx-auto">Simple pricing for everyone.</p>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+      <div class="bg-white p-8 rounded-lg shadow-lg flex flex-col text-gray-900">
+        <h3 class="text-2xl font-bold mb-2">Free</h3>
+        <p class="text-gray-600 mb-6">For open source projects and non-profit organizations</p>
+        <div class="text-4xl font-bold mb-6 text-blue-600">$0</div>
+        <ul class="space-y-3 mb-8 flex-grow">
+          <li class="flex items-start">
+            <svg class="h-5 w-5 text-green-600 mt-0.5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+            </svg>
+            <span>Full documentation features</span>
+          </li>
+          <li class="flex items-start">
+            <svg class="h-5 w-5 text-green-600 mt-0.5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+            </svg>
+            <span>Community support</span>
+          </li>
+          <li class="flex items-start">
+            <svg class="h-5 w-5 text-green-600 mt-0.5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+            </svg>
+            <span>Open source license</span>
+          </li>
+        </ul>
+        <a href="#"
+          class="text-center py-3 px-4 border border-blue-600 text-blue-600 font-medium rounded-md hover:bg-blue-50 transition-colors mt-auto">Get
+          Started</a>
+      </div>
+      <div class="bg-blue-600 p-8 rounded-lg shadow-lg flex flex-col text-white relative transform scale-105">
+        <div
+          class="absolute top-0 right-0 bg-green-600 text-white text-xs font-bold px-3 py-1 rounded-bl-lg rounded-tr-lg">
+          POPULAR</div>
+        <h3 class="text-2xl font-bold mb-2">Standard</h3>
+        <p class="text-blue-100 mb-6">For businesses and commercial use</p>
+        <div class="text-4xl font-bold mb-6">$99<span class="text-base font-normal text-blue-200">/month</span></div>
+        <ul class="space-y-3 mb-8 flex-grow">
+          <li class="flex items-start">
+            <svg class="h-5 w-5 text-white mt-0.5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+            </svg>
+            <span>All free features</span>
+          </li>
+          <li class="flex items-start">
+            <svg class="h-5 w-5 text-white mt-0.5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+            </svg>
+            <span>Commercial license</span>
+          </li>
+          <li class="flex items-start">
+            <svg class="h-5 w-5 text-white mt-0.5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+            </svg>
+            <span>Email support</span>
+          </li>
+          <li class="flex items-start">
+            <svg class="h-5 w-5 text-white mt-0.5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+            </svg>
+            <span>Advanced AI integration</span>
+          </li>
+        </ul>
+        <a href="#"
+          class="text-center py-3 px-4 bg-white text-blue-600 font-medium rounded-md hover:bg-gray-100 transition-colors mt-auto">Get
+          Started</a>
+      </div>
+      <div class="bg-white p-8 rounded-lg shadow-lg flex flex-col text-gray-900">
+        <h3 class="text-2xl font-bold mb-2">Enterprise</h3>
+        <p class="text-gray-600 mb-6">License with premium support</p>
+        <div class="text-4xl font-bold mb-6 text-blue-600">$299<span
+            class="text-base font-normal text-gray-500">/month</span></div>
+        <ul class="space-y-3 mb-8 flex-grow">
+          <li class="flex items-start">
+            <svg class="h-5 w-5 text-green-600 mt-0.5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+            </svg>
+            <span>All standard features</span>
+          </li>
+          <li class="flex items-start">
+            <svg class="h-5 w-5 text-green-600 mt-0.5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+            </svg>
+            <span>Priority support</span>
+          </li>
+          <li class="flex items-start">
+            <svg class="h-5 w-5 text-green-600 mt-0.5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+            </svg>
+            <span>Custom integrations</span>
+          </li>
+          <li class="flex items-start">
+            <svg class="h-5 w-5 text-green-600 mt-0.5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+            </svg>
+            <span>Dedicated account manager</span>
+          </li>
+        </ul>
+        <a href="#"
+          class="text-center py-3 px-4 border border-blue-600 text-blue-600 font-medium rounded-md hover:bg-blue-50 transition-colors mt-auto">Contact
+          Sales</a>
+      </div>
+    </div>
+    <div class="mt-12 text-center">
+      <p class="text-lg text-gray-300">Optional hosting and management can be added to any plan.</p>
+    </div>
+  </div>
+</section>
+
+<script>
+  // Tab functionality for "How does it work" section
+  document.addEventListener('DOMContentLoaded', function () {
+    // Tab functionality
+    const tabList = document.getElementById('tabs-container');
+    const tabs = Array.from(tabList.querySelectorAll('[role="tab"]'));
+    const panels = document.querySelectorAll('[role="tabpanel"]');
+    
+    // Add click event listeners to tabs
+    tabs.forEach((tab) => {
+      tab.addEventListener('click', (e) => {
+        e.preventDefault();
+        activateTab(tab);
+      });
+      
+      // Add keyboard event listeners for accessibility
+      tab.addEventListener('keydown', (e) => {
+        const index = tabs.indexOf(tab);
+        
+        // Handle keyboard navigation
+        switch (e.key) {
+          case 'ArrowLeft':
+            e.preventDefault();
+            focusTab(index - 1 >= 0 ? index - 1 : tabs.length - 1);
+            break;
+          case 'ArrowRight':
+            e.preventDefault();
+            focusTab(index + 1 < tabs.length ? index + 1 : 0);
+            break;
+          case 'Home':
+            e.preventDefault();
+            focusTab(0);
+            break;
+          case 'End':
+            e.preventDefault();
+            focusTab(tabs.length - 1);
+            break;
+          case 'Enter':
+          case ' ':
+            e.preventDefault();
+            activateTab(tab);
+            break;
+        }
+      });
+    });
+    
+    // Focus a tab and optionally activate it
+    function focusTab(index) {
+      tabs[index].focus();
+      activateTab(tabs[index]);
+    }
+    
+    // Activate a tab - update ARIA states and display the panel
+    function activateTab(tab) {
+      // Deactivate all tabs
+      tabs.forEach(t => {
+        t.setAttribute('aria-selected', 'false');
+        t.tabIndex = -1;
+      });
+      
+      // Activate the selected tab
+      tab.setAttribute('aria-selected', 'true');
+      tab.tabIndex = 0;
+      
+      // Hide all panels
+      panels.forEach(panel => {
+        panel.hidden = true;
+      });
+      
+      // Show the selected panel
+      const panelId = tab.getAttribute('aria-controls');
+      const panel = document.getElementById(panelId);
+      panel.hidden = false;
+    }
+    
+    // Initialize with first tab active
+    activateTab(tabs[0]);
+  });
+</script>
+{{ end }}
