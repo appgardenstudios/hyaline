@@ -1,0 +1,2 @@
+github:
+  token: ${HYALINE_GITHUB_PAT}

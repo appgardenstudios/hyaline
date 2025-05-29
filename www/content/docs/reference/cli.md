@@ -164,3 +164,26 @@ Merge `./new.db` into `./current.db` and output the result to `./combined.db`
 $ hyaline merge --input ./current.db --input ./new1.db --input ./new2.db --output ./combined.db
 ```
 Merge `./new1.db` into `./current.db` followed by `./new2.db` and output the result to `./combined.db`
+
+## update pr
+`hyaline update pr` updates a GitHub pull request by adding or updating a comment with the recommendations output by `hyaline check change`. Please visit the explanation documentation for [update pr](../explanation/update-pr.md) for more details.
+
+**Options**:
+* `--config` - (required) Path to the config file
+* `--pull-request` - (required) GitHub Pull Request to update (OWNER/REPO/PR_NUMBER)
+* `--comment` - (optional) GitHub Pull Request comment to update (OWNER/REPO/COMMENT_NUMBER)
+* `--sha` - (optional) Git sha to add to the comment
+* `--recommendations` - (required) Recommendations to use (output of check change)
+* `--output` - (required) Path of the comment metadata (file must not already exist)
+
+**Example**:
+```
+$ hyaline update pr --config ./hyaline.yml --pull-request appgardenstudios/hyaline-example/1 --recommendations ./results.json --output ./comment-metadata.json
+```
+Update the PR `appgardenstudios/hyaline-example/1` by adding a comment with the recommendations in `./results.json` and output the resulting comment metadata to `./comment-metadata.json`
+
+**Example**:
+```
+$ hyaline update pr --config ./hyaline.yml --pull-request appgardenstudios/hyaline-example/1 --comment appgardenstudios/hyaline-example/2916854796 --sha b4c5c73 --recommendations ./results.json --output ./comment-metadata.json
+```
+Update the PR `appgardenstudios/hyaline-example/1` by updating the comment identified by `appgardenstudios/hyaline-example/2916854796` with the recommendations in `./results.json` (including the sha `b4c5c73`) and output the resulting comment metadata to `./comment-metadata.json`

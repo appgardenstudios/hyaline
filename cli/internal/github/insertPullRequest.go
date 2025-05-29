@@ -17,7 +17,7 @@ func InsertPullRequest(ref string, token string, systemID string, db *sql.DB) (e
 
 	// Get PR
 	client := github.NewClient(nil).WithAuthToken(token)
-	pr, _, err := client.PullRequests.Get(context.Background(), owner, repo, id)
+	pr, _, err := client.PullRequests.Get(context.Background(), owner, repo, int(id))
 	if err != nil {
 		return
 	}

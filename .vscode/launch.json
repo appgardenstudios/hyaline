@@ -161,6 +161,41 @@
         "--output", "./results.json",
         "--check-completeness"
       ]
+    },{
+      "name": "Update PR",
+      "type": "go",
+      "request": "launch",
+      "mode": "debug",
+      "preLaunchTask": "cleanup-update-pr",
+      "cwd": "${workspaceFolder}/cli/",
+      "program": "${workspaceFolder}/cli/cmd/hyaline.go",
+      "envFile": "${workspaceFolder}/cli/.env",
+      "args":[
+        "--debug",
+        "update", "pr",
+        "--config", "./_example/config.yml",
+        "--pull-request", "appgardenstudios/hyaline-example/1",
+        "--recommendations", "./results.json",
+        "--output", "./comment.json"
+      ]
+    },{
+      "name": "Update PR with Comment",
+      "type": "go",
+      "request": "launch",
+      "mode": "debug",
+      "preLaunchTask": "cleanup-update-pr",
+      "cwd": "${workspaceFolder}/cli/",
+      "program": "${workspaceFolder}/cli/cmd/hyaline.go",
+      "envFile": "${workspaceFolder}/cli/.env",
+      "args":[
+        "--debug",
+        "update", "pr",
+        "--config", "./_example/config.yml",
+        "--pull-request", "appgardenstudios/hyaline-example/1",
+        "--comment", "appgardenstudios/hyaline-example/2917391402",
+        "--recommendations", "./results.json",
+        "--output", "./comment.json"
+      ]
     }
   ]
 }
