@@ -14,7 +14,7 @@ func UpdateComment(ref string, body string, token string) (err error) {
 		return
 	}
 
-	// Add Comment
+	// Update Comment
 	client := github.NewClient(nil).WithAuthToken(token)
 	_, _, err = client.Issues.EditComment(context.Background(), owner, repo, id, &github.IssueComment{
 		Body: &body,
