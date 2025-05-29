@@ -374,7 +374,7 @@ func formatPRComment(comment *UpdatePRComment) string {
 	md.WriteString(fmt.Sprintf("%s\n", RECOMMENDATIONS_START))
 	if len(comment.Recommendations) > 0 {
 		md.WriteString("Review and update (if needed) the following document(s) and/or section(s). ")
-		md.WriteString("Once each item has been reviewed and updated (if needed), check it off below\n")
+		md.WriteString("Once each item has been reviewed and updated (if needed), check it off below.\n")
 		for _, rec := range comment.Recommendations {
 			checked := " "
 			if rec.Checked {
