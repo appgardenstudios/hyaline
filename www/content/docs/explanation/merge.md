@@ -7,7 +7,7 @@ Hyaline has the ability to merge data sets together. This can be used to create 
 
 ![Overview](_img/merge-overview.svg)
 
-Merging happens at the system level. If a system being merged in does not yet exist in the data set it is pulled in wholesale. When a system exist, code sources, documentation sources, changes, and tasks are added if they do not exists or overwritten if they do.
+Merging happens at the system level. If a system being merged in does not yet exist in the data set the system is pulled in wholesale. IF a system exists, code sources, documentation sources, changes, and tasks are added if they do not exists or overwritten if they do.
 
 # Example
 ![Example](_img/merge-example.svg)
