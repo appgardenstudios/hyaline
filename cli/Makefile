@@ -144,14 +144,14 @@ update-pr:
 	rm -f ./comment.json
 	make build
 	echo "---"
-	./hyaline --debug update pr --config ./_example/config.yml --pull-request appgardenstudios/hyaline-example/1 --recommendations ./results.json --output ./comment.json
+	./hyaline --debug update pr --config ./_example/config.yml --pull-request appgardenstudios/hyaline-example/1 --sha b4c5c73 --recommendations ./results.json --output ./comment.json
 
 .PHONY: update-pr-comment
 update-pr-comment:
 	rm -f ./comment.json
 	make build
 	echo "---"
-	./hyaline --debug update pr --config ./_example/config.yml --pull-request appgardenstudios/hyaline-example/1 --comment appgardenstudios/hyaline-example/2917391402 --recommendations ./results.json --output ./comment.json
+	./hyaline --debug update pr --config ./_example/config.yml --pull-request appgardenstudios/hyaline-example/1 --comment appgardenstudios/hyaline-example/2917391402 --sha b4c5c73 --recommendations ./results.json --output ./comment.json
 
 .PHONY: release
 release:
