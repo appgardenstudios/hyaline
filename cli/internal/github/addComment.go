@@ -23,5 +23,5 @@ func AddComment(ref string, body string, token string) (err error) {
 		return
 	}
 
-	return nil
+	return
 }
