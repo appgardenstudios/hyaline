@@ -1,0 +1,15 @@
+on:
+  pull_request:
+    types: [opened, reopened, synchronize, ready_for_review]
+
+jobs:
+  test-setup:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.pull_request.draft == false }}
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+      - name: Setup Hyaline
+        uses: appgardenstudios/hyaline-actions/setup@v0
+      - name: Print Hyaline version
+        run: hyaline version
