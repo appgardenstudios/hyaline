@@ -14,6 +14,7 @@ systems:
           type: git
           options:
             path: ./
+            branch: origin/main
           include:
             - "cli/**/*.go"
             - "cli/go.mod"
@@ -28,6 +29,7 @@ systems:
           type: git
           options:
             path: ./
+            branch: origin/main
           include:
             - "cli/**/*.md"
           exclude:
@@ -40,5 +42,6 @@ systems:
           type: git
           options:
             path: ./
+            branch: origin/main
           include:
             - "www/content/docs/**/*.md"
