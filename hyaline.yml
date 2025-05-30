@@ -7,7 +7,7 @@ github:
   token: ${GITHUB_TOKEN}
 
 systems:
-  - id: app
+  - id: hyaline
     code:
       - id: cli
         extractor: 

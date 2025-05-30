@@ -17,6 +17,7 @@ jobs:
         uses: appgardenstudios/hyaline-actions/check-pr@120
         with:
           config: ./hyaline.yml
+          system: hyaline
           repository: ${{ github.repository }}
           pull_number: ${{ github.event.pull_request.number }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
