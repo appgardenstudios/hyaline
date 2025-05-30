@@ -13,3 +13,10 @@ jobs:
         uses: appgardenstudios/hyaline-actions/setup@v0
       - name: Print Hyaline version
         run: hyaline version
+      - name: Check PR
+        uses: appgardenstudios/hyaline-actions/check-pr@120
+        with:
+          config: ./hyaline.yml
+          repository: ${{ github.repository }}
+          pull_number: ${{ github.event.pull_request.number }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
