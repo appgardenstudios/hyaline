@@ -1,0 +1,30 @@
+on:
+  pull_request:
+    types: [opened, reopened, synchronize, ready_for_review]
+
+jobs:
+  test-setup:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.pull_request.draft == false }}
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Setup Hyaline
+        uses: appgardenstudios/hyaline-actions/setup@v0
+        with:
+          version: 2025-05-29-3b8ec05
+      - name: Print Hyaline version
+        run: hyaline version
+      - name: Check PR
+        uses: appgardenstudios/hyaline-actions/check-pr@120
+        with:
+          config: ./hyaline.yml
+          system: hyaline
+          repository: ${{ github.repository }}
+          pull_number: ${{ github.event.pull_request.number }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ANTHROPIC_KEY: ${{ secrets.ANTHROPIC_KEY }}
