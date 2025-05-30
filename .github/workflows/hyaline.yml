@@ -10,6 +10,6 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
       - name: Setup Hyaline
-        uses: appgardenstudios/hyaline-actions/setup@v0
+        uses: appgardenstudios/hyaline-actions/setup/action.yml@v0
       - name: Print Hyaline version
         run: hyaline version
