@@ -1,0 +1,44 @@
+llm:
+  provider: anthropic
+  model: claude-3-5-sonnet-20241022
+  key: ${ANTHROPIC_KEY}
+
+github:
+  token: ${GITHUB_TOKEN}
+
+systems:
+  - id: app
+    code:
+      - id: cli
+        extractor: 
+          type: git
+          options:
+            path: ./
+          include:
+            - "cli/**/*.go"
+            - "cli/go.mod"
+            - "cli/go.sum"
+            - "cli/Makefile"
+          exclude:
+            - "**/*_test.go"
+    documentation:
+      - id: cli
+        type: md
+        extractor:
+          type: git
+          options:
+            path: ./
+          include:
+            - "cli/**/*.md"
+          exclude:
+            - "cli/_example/**/*"
+            - "cli/e2e/**/*"
+            - "cli/internal/**/*"
+      - id: www
+        type: md
+        extractor:
+          type: git
+          options:
+            path: ./
+          include:
+            - "www/content/docs/**/*.md"
