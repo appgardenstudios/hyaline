@@ -28,6 +28,6 @@ jobs:
           pull_number: ${{ github.event.pull_request.number }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
         env:
-          # Setn env vars needed by the hyaline CLI when interpolating the hyaline config
+          # Set env vars needed by the hyaline CLI when interpolating the hyaline config
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           ANTHROPIC_KEY: ${{ secrets.ANTHROPIC_KEY }}
