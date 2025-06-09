@@ -4,20 +4,27 @@
   <div class="container mx-auto px-4 sm:px-6 lg:px-8">
     <div class="max-w-4xl mx-auto">
       <div class="w-full mb-10">
-        {{ $svg := resources.Get "images/infographic.svg" }}
-        {{ $svg.Content | safeHTML }}
+        {{ $svg := resources.Get "images/infographic.svg" }} {{ $svg.Content |
+        safeHTML }}
       </div>
-      <h1 class="text-4xl md:text-5xl font-bold text-center text-gray-900 mb-6">Your documentation <span
-          class="text-blue-600">made useful</span></h1>
-      <p class="text-xl text-center text-gray-600 mb-8 max-w-2xl mx-auto">Hyaline keeps your documentation updated and
-        accessible to both humans and AI tools.</p>
+      <h1 class="text-4xl md:text-5xl font-bold text-center text-gray-900 mb-6">
+        Your documentation <span class="text-blue-600">made useful</span>
+      </h1>
+      <p class="text-xl text-center text-gray-600 mb-8 max-w-2xl mx-auto">
+        Hyaline keeps your documentation updated and accessible to both humans
+        and AI tools.
+      </p>
       <div class="flex justify-center gap-4">
-        <a href="#learn-more"
-          class="px-8 py-3 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 transition-colors">Learn
-          more</a>
-        <a href="#"
-          class="px-8 py-3 border border-gray-300 text-gray-700 font-medium rounded-md hover:bg-gray-50 transition-colors">View
-          demo</a>
+        <a
+          href="#learn-more"
+          class="px-8 py-3 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 transition-colors"
+          >Learn more</a
+        >
+        <a
+          href="#"
+          class="px-8 py-3 border border-gray-300 text-gray-700 font-medium rounded-md hover:bg-gray-50 transition-colors"
+          >View demo</a
+        >
       </div>
     </div>
   </div>
@@ -26,110 +33,186 @@
 <section id="learn-more" class="py-16 md:py-24 bg-gray-100">
   <div class="container mx-auto px-4 sm:px-6 lg:px-8">
     <div class="text-center mb-16 fade-in">
-      <h2 class="text-4xl md:text-5xl font-bold mb-6">
-        How does it work?
-      </h2>
+      <h2 class="text-4xl md:text-5xl font-bold mb-6">How does it work?</h2>
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-16">
       <div class="lg:col-span-1">
-        <div class="space-y-2" id="tabs-container" role="tablist" aria-label="Product features">
+        <div
+          class="space-y-2"
+          id="tabs-container"
+          role="tablist"
+          aria-label="Product features"
+        >
           <!-- Tab 1 -->
           <div
-            class="p-4 rounded-xl cursor-pointer transition-all duration-300 transform hover:scale-102
-                  aria-selected:bg-blue-600 aria-selected:text-white aria-selected:shadow-lg 
-                  aria-[selected='false']:bg-white aria-[selected='false']:hover:bg-gray-100 aria-[selected='false']:text-gray-800 aria-[selected='false']:shadow-md"
-            id="tab-collab" 
+            class="p-4 rounded-xl cursor-pointer transition-all duration-300 transform hover:scale-102 aria-selected:bg-blue-600 aria-selected:text-white aria-selected:shadow-lg aria-[selected='false']:bg-white aria-[selected='false']:hover:bg-gray-100 aria-[selected='false']:text-gray-800 aria-[selected='false']:shadow-md"
+            id="tab-collab"
             role="tab"
             aria-selected="true"
             aria-controls="panel-collab"
-            tabindex="0">
+            tabindex="0"
+          >
             <div class="flex items-center">
-              <div class="w-10 h-10 rounded-full flex items-center justify-center mr-4 
-                        aria-selected:bg-white/20 aria-[selected='false']:bg-white">
-                <div class="aria-selected:text-white aria-[selected='false']:text-blue-600">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 24 24" fill="none"
-                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <div
+                class="w-10 h-10 rounded-full flex items-center justify-center mr-4 aria-selected:bg-white/20 aria-[selected='false']:bg-white"
+              >
+                <div
+                  class="aria-selected:text-white aria-[selected='false']:text-blue-600"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-6 w-6"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
                     <path
-                      d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                      d="M15.1754 22V21.0117L15.1754 20.9908C15.1805 20.4457 15.6274 20.0051 16.1801 20L16.2551 19.9999C17.6867 19.9885 18.9166 18.9942 19.2087 17.612L19.2193 17.5601L19.7385 15L20.6798 14.5359C21.1836 14.2875 21.4354 14.1633 21.4899 13.9356C21.5444 13.7079 21.3755 13.4857 21.0376 13.0414L19.1301 10.5333C18.9403 10.2837 18.8454 10.1589 18.7945 10.0269C18.7437 9.89486 18.728 9.70775 18.6968 9.33353C18.3533 5.22708 14.8649 2 10.6123 2C6.13198 2 2.5 5.58172 2.5 10C2.5 12.7497 3.90669 15.1753 6.04911 16.6153M6.04911 16.6153V22M6.04911 16.6153C6.66896 17.0319 7.3504 17.366 8.07717 17.6016"
+                    ></path>
+                    <path
+                      d="M14 9L14.9199 9.79289C15.3066 10.1262 15.5 10.2929 15.5 10.5C15.5 10.7071 15.3066 10.8738 14.9199 11.2071L14 12"
+                    ></path>
+                    <path
+                      d="M7 9L6.08009 9.79289C5.69337 10.1262 5.5 10.2929 5.5 10.5C5.5 10.7071 5.69336 10.8738 6.08009 11.2071L7 12"
+                    ></path>
+                    <path d="M11.5 8L9.5 13"></path>
                   </svg>
                 </div>
               </div>
-              <h3 class="text-lg font-semibold">Collaborative Development</h3>
+              <h3 class="text-lg font-semibold">Build with AI</h3>
             </div>
           </div>
 
           <!-- Tab 2 -->
           <div
-            class="p-4 rounded-xl cursor-pointer transition-all duration-300 transform hover:scale-102
-                  aria-selected:bg-blue-600 aria-selected:text-white aria-selected:shadow-lg 
-                  aria-[selected='false']:bg-white aria-[selected='false']:hover:bg-gray-100 aria-[selected='false']:text-gray-800 aria-[selected='false']:shadow-md"
-            id="tab-updated" 
+            class="p-4 rounded-xl cursor-pointer transition-all duration-300 transform hover:scale-102 aria-selected:bg-blue-600 aria-selected:text-white aria-selected:shadow-lg aria-[selected='false']:bg-white aria-[selected='false']:hover:bg-gray-100 aria-[selected='false']:text-gray-800 aria-[selected='false']:shadow-md"
+            id="tab-updated"
             role="tab"
             aria-selected="false"
             aria-controls="panel-updated"
-            tabindex="-1">
+            tabindex="-1"
+          >
             <div class="flex items-center">
-              <div class="w-10 h-10 rounded-full flex items-center justify-center mr-4 
-                        aria-selected:bg-white/20 aria-[selected='false']:bg-white">
-                <div class="aria-selected:text-white aria-[selected='false']:text-blue-600">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 24 24" fill="none"
-                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <div
+                class="w-10 h-10 rounded-full flex items-center justify-center mr-4 aria-selected:bg-white/20 aria-[selected='false']:bg-white"
+              >
+                <div
+                  class="aria-selected:text-white aria-[selected='false']:text-blue-600"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-6 w-6"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
                     <path
-                      d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                      d="M3.49994 11.7501L11.6717 3.57855C12.7762 2.47398 14.5672 2.47398 15.6717 3.57855C16.7762 4.68312 16.7762 6.47398 15.6717 7.57855M15.6717 7.57855L9.49994 13.7501M15.6717 7.57855C16.7762 6.47398 18.5672 6.47398 19.6717 7.57855C20.7762 8.68312 20.7762 10.474 19.6717 11.5785L12.7072 18.543C12.3167 18.9335 12.3167 19.5667 12.7072 19.9572L13.9999 21.2499"
+                    ></path>
+                    <path
+                      d="M17.4999 9.74921L11.3282 15.921C10.2237 17.0255 8.43272 17.0255 7.32823 15.921C6.22373 14.8164 6.22373 13.0255 7.32823 11.921L13.4999 5.74939"
+                    ></path>
                   </svg>
                 </div>
               </div>
-              <h3 class="text-lg font-semibold">Always Updated</h3>
+              <h3 class="text-lg font-semibold">MCP-powered Documentation</h3>
             </div>
           </div>
 
           <!-- Tab 3 -->
           <div
-            class="p-4 rounded-xl cursor-pointer transition-all duration-300 transform hover:scale-102
-                  aria-selected:bg-blue-600 aria-selected:text-white aria-selected:shadow-lg 
-                  aria-[selected='false']:bg-white aria-[selected='false']:hover:bg-gray-100 aria-[selected='false']:text-gray-800 aria-[selected='false']:shadow-md"
-            id="tab-internal" 
+            class="p-4 rounded-xl cursor-pointer transition-all duration-300 transform hover:scale-102 aria-selected:bg-blue-600 aria-selected:text-white aria-selected:shadow-lg aria-[selected='false']:bg-white aria-[selected='false']:hover:bg-gray-100 aria-[selected='false']:text-gray-800 aria-[selected='false']:shadow-md"
+            id="tab-internal"
             role="tab"
             aria-selected="false"
             aria-controls="panel-internal"
-            tabindex="-1">
+            tabindex="-1"
+          >
             <div class="flex items-center">
-              <div class="w-10 h-10 rounded-full flex items-center justify-center mr-4 
-                        aria-selected:bg-white/20 aria-[selected='false']:bg-white">
-                <div class="aria-selected:text-white aria-[selected='false']:text-blue-600">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 24 24" fill="none"
-                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <div
+                class="w-10 h-10 rounded-full flex items-center justify-center mr-4 aria-selected:bg-white/20 aria-[selected='false']:bg-white"
+              >
+                <div
+                  class="aria-selected:text-white aria-[selected='false']:text-blue-600"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-6 w-6"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
                     <path
-                      d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                      d="M11.9998 7C9.23833 7 6.99976 9.23857 6.99976 12C6.99976 14.7614 9.23833 17 11.9998 17C14.7612 17 16.9998 14.7614 16.9998 12C16.9998 9.23858 14.7612 7 11.9998 7Z"
+                    ></path>
+                    <path
+                      d="M17.7364 6.26337L21.4998 2.5M17.7364 6.26337C17.2968 5.82377 17.5831 4.02148 17.6964 3M17.7364 6.26337C18.176 6.70297 19.9783 6.41666 20.9998 6.30336"
+                    ></path>
+                    <path
+                      d="M6.26313 17.7366L2.49976 21.5M6.26313 17.7366C5.82353 17.297 4.02124 17.5833 2.99976 17.6966M6.26313 17.7366C6.70273 18.1762 6.41642 19.9785 6.30312 21"
+                    ></path>
+                    <path
+                      d="M17.7364 17.7366L21.4998 21.5M17.7364 17.7366C18.176 17.297 19.9783 17.5833 20.9998 17.6966M17.7364 17.7366C17.2968 18.1762 17.5831 19.9785 17.6964 21"
+                    ></path>
+                    <path
+                      d="M6.26313 6.26337L2.49976 2.5M6.26313 6.26337C6.70273 5.82377 6.41642 4.02148 6.30312 3M6.26313 6.26337C5.82353 6.70297 4.02124 6.41666 2.99976 6.30336"
+                    ></path>
                   </svg>
                 </div>
               </div>
-              <h3 class="text-lg font-semibold">Internal & External</h3>
+              <h3 class="text-lg font-semibold">Centralized Knowledge Base</h3>
             </div>
           </div>
 
           <!-- Tab 4 -->
           <div
-            class="p-4 rounded-xl cursor-pointer transition-all duration-300 transform hover:scale-102
-                  aria-selected:bg-blue-600 aria-selected:text-white aria-selected:shadow-lg 
-                  aria-[selected='false']:bg-white aria-[selected='false']:hover:bg-gray-100 aria-[selected='false']:text-gray-800 aria-[selected='false']:shadow-md"
-            id="tab-access" 
+            class="p-4 rounded-xl cursor-pointer transition-all duration-300 transform hover:scale-102 aria-selected:bg-blue-600 aria-selected:text-white aria-selected:shadow-lg aria-[selected='false']:bg-white aria-[selected='false']:hover:bg-gray-100 aria-[selected='false']:text-gray-800 aria-[selected='false']:shadow-md"
+            id="tab-access"
             role="tab"
             aria-selected="false"
             aria-controls="panel-access"
-            tabindex="-1">
+            tabindex="-1"
+          >
             <div class="flex items-center">
-              <div class="w-10 h-10 rounded-full flex items-center justify-center mr-4 
-                        aria-selected:bg-white/20 aria-[selected='false']:bg-white">
-                <div class="aria-selected:text-white aria-[selected='false']:text-blue-600">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 24 24" fill="none"
-                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M13 10V3L4 14h7v7l9-11h-7z" />
+              <div
+                class="w-10 h-10 rounded-full flex items-center justify-center mr-4 aria-selected:bg-white/20 aria-[selected='false']:bg-white"
+              >
+                <div
+                  class="aria-selected:text-white aria-[selected='false']:text-blue-600"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-6 w-6"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M21 3L13 11.5"></path>
+                    <path
+                      d="M9.44573 11.0854C6.96539 12.0368 4.98269 11.8736 3 11.0885C3.50059 17.531 6.50414 20.0089 10.5089 21C10.5089 21 13.5261 18.8664 13.961 13.8074C14.0081 13.2595 14.0317 12.9856 13.9178 12.6769C13.8038 12.3682 13.5802 12.1468 13.1329 11.704C12.3973 10.9757 12.0295 10.6116 11.5929 10.5204C11.1564 10.4293 10.5862 10.648 9.44573 11.0854Z"
+                    ></path>
+                    <path d="M4.5 16.4464C4.5 16.4464 7 16.9286 9.5 15"></path>
+                    <path
+                      d="M8.5 7.25C8.5 7.94036 7.94036 8.5 7.25 8.5C6.55964 8.5 6 7.94036 6 7.25C6 6.55964 6.55964 6 7.25 6C7.94036 6 8.5 6.55964 8.5 7.25Z"
+                    ></path>
+                    <path d="M11 4V4.1"></path>
                   </svg>
                 </div>
               </div>
-              <h3 class="text-lg font-semibold">Universal Access</h3>
+              <h3 class="text-lg font-semibold">Up-to-date Documentation</h3>
             </div>
           </div>
         </div>
@@ -138,112 +221,145 @@
       <div class="lg:col-span-2 mt-8 lg:mt-0 relative">
         <div id="tab-content-container">
           <!-- Content 1 -->
-          <div class="bg-white rounded-2xl shadow-xl overflow-hidden transition-all duration-500 ease-in-out
-                     hidden:invisible hidden:opacity-0 hidden:transform hidden:translate-y-5 hidden:absolute hidden:w-full
-                     not-hidden:visible not-hidden:opacity-100 not-hidden:transform not-hidden:translate-y-0 not-hidden:relative" 
-               id="panel-collab"
-               role="tabpanel"
-               aria-labelledby="tab-collab"
-               tabindex="0">
+          <div
+            class="bg-white rounded-2xl shadow-xl overflow-hidden transition-all duration-500 ease-in-out hidden:invisible hidden:opacity-0 hidden:transform hidden:translate-y-5 hidden:absolute hidden:w-full not-hidden:visible not-hidden:opacity-100 not-hidden:transform not-hidden:translate-y-0 not-hidden:relative"
+            id="panel-collab"
+            role="tabpanel"
+            aria-labelledby="tab-collab"
+            tabindex="0"
+          >
             <div class="grid grid-cols-1 md:grid-cols-2">
               <div class="p-8">
-                <h3 class="text-2xl font-bold mb-4 text-blue-600">Collaborative Development</h3>
+                <h3 class="text-2xl font-bold mb-4 text-blue-600">
+                  Build with AI
+                </h3>
                 <p class="text-gray-600 text-lg leading-relaxed">
-                  Hyaline bridges the gap between human developers and AI tools, creating a seamless documentation
-                  workflow that enhances collaboration and reduces friction in the development process.
+                  You and your team rely on documentation to build software
+                  systems with AI assistance. Modern development relies on
+                  having the right information at the right time to make
+                  informed decisions and ship quality products.
                 </p>
                 <button
-                  class="mt-8 px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors">
+                  class="mt-8 px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors"
+                >
                   Learn more
                 </button>
               </div>
               <div class="bg-gray-100 flex items-center justify-center">
-                <img src="/placeholder.svg?height=400&width=600" alt="Collaborative Development"
-                  class="w-full h-full object-cover" />
+                <img
+                  src="/placeholder.svg?height=400&width=600"
+                  alt=""
+                  class="w-full h-full object-cover"
+                />
               </div>
             </div>
           </div>
 
           <!-- Content 2 -->
-          <div class="bg-white rounded-2xl shadow-xl overflow-hidden transition-all duration-500 ease-in-out
-                     hidden:invisible hidden:opacity-0 hidden:transform hidden:translate-y-5 hidden:absolute hidden:w-full
-                     not-hidden:visible not-hidden:opacity-100 not-hidden:transform not-hidden:translate-y-0 not-hidden:relative" 
-               id="panel-updated"
-               role="tabpanel"
-               aria-labelledby="tab-updated"
-               tabindex="0"
-               hidden>
+          <div
+            class="bg-white rounded-2xl shadow-xl overflow-hidden transition-all duration-500 ease-in-out hidden:invisible hidden:opacity-0 hidden:transform hidden:translate-y-5 hidden:absolute hidden:w-full not-hidden:visible not-hidden:opacity-100 not-hidden:transform not-hidden:translate-y-0 not-hidden:relative"
+            id="panel-updated"
+            role="tabpanel"
+            aria-labelledby="tab-updated"
+            tabindex="0"
+            hidden
+          >
             <div class="grid grid-cols-1 md:grid-cols-2">
               <div class="p-8">
-                <h3 class="text-2xl font-bold mb-4 text-blue-600">Always Updated</h3>
+                <h3 class="text-2xl font-bold mb-4 text-blue-600">
+                  MCP-powered Documentation
+                </h3>
                 <p class="text-gray-600 text-lg leading-relaxed">
-                  Say goodbye to outdated documentation. Hyaline automatically keeps your docs in sync with your
-                  codebase, ensuring that your team and users always have access to the most current information.
+                  Hyaline provides your documentation directly to AI tools
+                  through an MCP server. Your AI assistants can instantly access
+                  system documentation, product documentation, API specs, and
+                  process guides to help you build better software faster.
                 </p>
                 <button
-                  class="mt-8 px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors">
+                  class="mt-8 px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors"
+                >
                   Learn more
                 </button>
               </div>
               <div class="bg-gray-100 flex items-center justify-center">
-                <img src="/placeholder.svg?height=400&width=600" alt="Always Updated"
-                  class="w-full h-full object-cover" />
+                <img
+                  src="/placeholder.svg?height=400&width=600"
+                  alt=""
+                  class="w-full h-full object-cover"
+                />
               </div>
             </div>
           </div>
 
           <!-- Content 3 -->
-          <div class="bg-white rounded-2xl shadow-xl overflow-hidden transition-all duration-500 ease-in-out
-                     hidden:invisible hidden:opacity-0 hidden:transform hidden:translate-y-5 hidden:absolute hidden:w-full
-                     not-hidden:visible not-hidden:opacity-100 not-hidden:transform not-hidden:translate-y-0 not-hidden:relative" 
-               id="panel-internal"
-               role="tabpanel"
-               aria-labelledby="tab-internal"
-               tabindex="0"
-               hidden>
+          <div
+            class="bg-white rounded-2xl shadow-xl overflow-hidden transition-all duration-500 ease-in-out hidden:invisible hidden:opacity-0 hidden:transform hidden:translate-y-5 hidden:absolute hidden:w-full not-hidden:visible not-hidden:opacity-100 not-hidden:transform not-hidden:translate-y-0 not-hidden:relative"
+            id="panel-internal"
+            role="tabpanel"
+            aria-labelledby="tab-internal"
+            tabindex="0"
+            hidden
+          >
             <div class="grid grid-cols-1 md:grid-cols-2">
               <div class="p-8">
-                <h3 class="text-2xl font-bold mb-4 text-blue-600">Internal & External</h3>
+                <h3 class="text-2xl font-bold mb-4 text-blue-600">
+                  Centralized Knowledge Base
+                </h3>
                 <p class="text-gray-600 text-lg leading-relaxed">
-                  One platform to manage both your internal team documentation and customer-facing guides. Hyaline
-                  intelligently separates and connects these knowledge bases for maximum efficiency.
+                  Your documentation lives across repositories, wikis,
+                  documentation sites, internal tools, and knowledge bases.
+                  Hyaline extracts and unifies information from all these
+                  sources into a single, searchable dataset that stays current
+                  as your documentation is updated.
                 </p>
                 <button
-                  class="mt-8 px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors">
+                  class="mt-8 px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors"
+                >
                   Learn more
                 </button>
               </div>
               <div class="bg-gray-100 flex items-center justify-center">
-                <img src="/placeholder.svg?height=400&width=600" alt="Internal & External"
-                  class="w-full h-full object-cover" />
+                <img
+                  src="/placeholder.svg?height=400&width=600"
+                  alt=""
+                  class="w-full h-full object-cover"
+                />
               </div>
             </div>
           </div>
 
           <!-- Content 4 -->
-          <div class="bg-white rounded-2xl shadow-xl overflow-hidden transition-all duration-500 ease-in-out
-                     hidden:invisible hidden:opacity-0 hidden:transform hidden:translate-y-5 hidden:absolute hidden:w-full
-                     not-hidden:visible not-hidden:opacity-100 not-hidden:transform not-hidden:translate-y-0 not-hidden:relative" 
-               id="panel-access"
-               role="tabpanel"
-               aria-labelledby="tab-access"
-               tabindex="0"
-               hidden>
+          <div
+            class="bg-white rounded-2xl shadow-xl overflow-hidden transition-all duration-500 ease-in-out hidden:invisible hidden:opacity-0 hidden:transform hidden:translate-y-5 hidden:absolute hidden:w-full not-hidden:visible not-hidden:opacity-100 not-hidden:transform not-hidden:translate-y-0 not-hidden:relative"
+            id="panel-access"
+            role="tabpanel"
+            aria-labelledby="tab-access"
+            tabindex="0"
+            hidden
+          >
             <div class="grid grid-cols-1 md:grid-cols-2">
               <div class="p-8">
-                <h3 class="text-2xl font-bold mb-4 text-blue-600">Universal Access</h3>
+                <h3 class="text-2xl font-bold mb-4 text-blue-600">
+                  Up-to-date Documentation
+                </h3>
                 <p class="text-gray-600 text-lg leading-relaxed">
-                  Documentation that works for everyone. Hyaline creates content that's optimized for both human
-                  readers and AI systems, ensuring your knowledge is accessible across your entire tech stack.
+                  As you make changes to your systems, Hyaline automatically
+                  identifies which documentation needs updates. It keeps both
+                  your team's internal documentation and customer-facing guides
+                  accurate and current with your evolving codebase.
                 </p>
                 <button
-                  class="mt-8 px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors">
+                  class="mt-8 px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors"
+                >
                   Learn more
                 </button>
               </div>
               <div class="bg-gray-100 flex items-center justify-center">
-                <img src="/placeholder.svg?height=400&width=600" alt="Universal Access"
-                  class="w-full h-full object-cover" />
+                <img
+                  src="/placeholder.svg?height=400&width=600"
+                  alt=""
+                  class="w-full h-full object-cover"
+                />
               </div>
             </div>
           </div>
@@ -255,107 +371,123 @@
 
 <!-- Now in Beta Section -->
 <section class="py-16 md:py-24 bg-blue-900 text-white">
-    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="max-w-6xl mx-auto text-center">
-            <div class="inline-flex items-center px-4 py-2 bg-emerald-600 text-white text-sm font-medium rounded-full mb-8">
-                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7"></path>
-                </svg>
-                Now in Beta
-            </div>
-            <h2 class="text-4xl md:text-5xl font-bold mb-6">
-                Ready to transform your documentation?
-            </h2>
-            <p class="text-xl text-gray-300 mb-8 max-w-2xl mx-auto">
-                Join our beta program and help us shape Hyaline while getting early access to all features.
-            </p>
-            <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
-                <a href="/download" class="px-8 py-4 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors text-lg">
-                    Try it now
-                </a>
-            </div>
-            <p class="text-sm text-gray-300 mt-6">
-                Free during beta • No credit card required • Full feature access
-            </p>
-        </div>
+  <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="max-w-6xl mx-auto text-center">
+      <div
+        class="inline-flex items-center px-4 py-2 bg-emerald-600 text-white text-sm font-medium rounded-full mb-8"
+      >
+        <svg
+          class="w-4 h-4 mr-2"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M13 10V3L4 14h7v7l9-11h-7"
+          ></path>
+        </svg>
+        Now in Beta
+      </div>
+      <h2 class="text-4xl md:text-5xl font-bold mb-6">
+        Ready to transform your documentation?
+      </h2>
+      <p class="text-xl text-gray-300 mb-8 max-w-2xl mx-auto">
+        Join our beta program and help us shape Hyaline while getting early
+        access to all features.
+      </p>
+      <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
+        <a
+          href="/download"
+          class="px-8 py-4 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors text-lg"
+        >
+          Try it now
+        </a>
+      </div>
+      <p class="text-sm text-gray-300 mt-6">
+        Free during beta • No credit card required • Full feature access
+      </p>
     </div>
+  </div>
 </section>
 
 <script>
   // Tab functionality for "How does it work" section
-  document.addEventListener('DOMContentLoaded', function () {
+  document.addEventListener("DOMContentLoaded", function () {
     // Tab functionality
-    const tabList = document.getElementById('tabs-container');
+    const tabList = document.getElementById("tabs-container");
     const tabs = Array.from(tabList.querySelectorAll('[role="tab"]'));
     const panels = document.querySelectorAll('[role="tabpanel"]');
-    
+
     // Add click event listeners to tabs
     tabs.forEach((tab) => {
-      tab.addEventListener('click', (e) => {
+      tab.addEventListener("click", (e) => {
         e.preventDefault();
         activateTab(tab);
       });
-      
+
       // Add keyboard event listeners for accessibility
-      tab.addEventListener('keydown', (e) => {
+      tab.addEventListener("keydown", (e) => {
         const index = tabs.indexOf(tab);
-        
+
         // Handle keyboard navigation
         switch (e.key) {
-          case 'ArrowLeft':
+          case "ArrowLeft":
             e.preventDefault();
             focusTab(index - 1 >= 0 ? index - 1 : tabs.length - 1);
             break;
-          case 'ArrowRight':
+          case "ArrowRight":
             e.preventDefault();
             focusTab(index + 1 < tabs.length ? index + 1 : 0);
             break;
-          case 'Home':
+          case "Home":
             e.preventDefault();
             focusTab(0);
             break;
-          case 'End':
+          case "End":
             e.preventDefault();
             focusTab(tabs.length - 1);
             break;
-          case 'Enter':
-          case ' ':
+          case "Enter":
+          case " ":
             e.preventDefault();
             activateTab(tab);
             break;
         }
       });
     });
-    
+
     // Focus a tab and optionally activate it
     function focusTab(index) {
       tabs[index].focus();
       activateTab(tabs[index]);
     }
-    
+
     // Activate a tab - update ARIA states and display the panel
     function activateTab(tab) {
       // Deactivate all tabs
-      tabs.forEach(t => {
-        t.setAttribute('aria-selected', 'false');
+      tabs.forEach((t) => {
+        t.setAttribute("aria-selected", "false");
         t.tabIndex = -1;
       });
-      
+
       // Activate the selected tab
-      tab.setAttribute('aria-selected', 'true');
+      tab.setAttribute("aria-selected", "true");
       tab.tabIndex = 0;
-      
+
       // Hide all panels
-      panels.forEach(panel => {
+      panels.forEach((panel) => {
         panel.hidden = true;
       });
-      
+
       // Show the selected panel
-      const panelId = tab.getAttribute('aria-controls');
+      const panelId = tab.getAttribute("aria-controls");
       const panel = document.getElementById(panelId);
       panel.hidden = false;
     }
-    
+
     // Initialize with first tab active
     activateTab(tabs[0]);
   });
