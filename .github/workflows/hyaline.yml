@@ -8,8 +8,6 @@ jobs:
     # Only run if PR is NOT a draft
     if: ${{ github.event.pull_request.draft == false }}
     permissions:
-      contents: read
-      issues: write
       pull-requests: write
     steps:
       - name: Checkout repo
