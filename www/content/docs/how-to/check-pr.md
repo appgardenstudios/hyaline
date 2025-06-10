@@ -6,7 +6,7 @@ purpose: How to check a PR using the Hyaline CLI
 Use hyaline to check a pull request in GitHub.
 
 # Prerequisite(s)
-* A repository on GitHub with [GitHub Actions](https://github.com/features/actions) available
+* A repository on GitHub with [GitHub Actions](https://github.com/features/actions) available.
 
 # Steps
 
