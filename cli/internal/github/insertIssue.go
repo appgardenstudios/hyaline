@@ -17,7 +17,7 @@ func InsertIssue(ref string, token string, systemID string, db *sql.DB) (err err
 
 	// Get Issue
 	client := github.NewClient(nil).WithAuthToken(token)
-	issue, _, err := client.Issues.Get(context.Background(), owner, repo, id)
+	issue, _, err := client.Issues.Get(context.Background(), owner, repo, int(id))
 	if err != nil {
 		return
 	}

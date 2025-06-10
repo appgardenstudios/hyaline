@@ -23,24 +23,34 @@ TAG="$DATE-$HASH"
 
 # Build/zip binaries
 GOOS=darwin GOARCH=amd64 go build -o ./dist/hyaline -ldflags="-X 'main.Version=$TAG'" ./cmd/hyaline.go
-zip -9 ./dist/hyaline-darwin-amd64.zip ./dist/hyaline
-rm -f ./dist/hyaline
+cd ./dist
+zip -9 ./hyaline-darwin-amd64.zip ./hyaline
+rm -f ./hyaline
+cd ../
 
 GOOS=darwin GOARCH=arm64 go build -o ./dist/hyaline -ldflags="-X 'main.Version=$TAG'" ./cmd/hyaline.go
-zip -9 ./dist/hyaline-darwin-arm64.zip ./dist/hyaline
-rm -f ./dist/hyaline
+cd ./dist
+zip -9 ./hyaline-darwin-arm64.zip ./hyaline
+rm -f ./hyaline
+cd ../
 
 GOOS=linux GOARCH=amd64 go build -o ./dist/hyaline -ldflags="-X 'main.Version=$TAG'" ./cmd/hyaline.go
-zip -9 ./dist/hyaline-linux-amd64.zip ./dist/hyaline
-rm -f ./dist/hyaline
+cd ./dist
+zip -9 ./hyaline-linux-amd64.zip ./hyaline
+rm -f ./hyaline
+cd ../
 
 GOOS=linux GOARCH=arm64 go build -o ./dist/hyaline -ldflags="-X 'main.Version=$TAG'" ./cmd/hyaline.go
-zip -9 ./dist/hyaline-linux-arm64.zip ./dist/hyaline
-rm -f ./dist/hyaline
+cd ./dist
+zip -9 ./hyaline-linux-arm64.zip ./hyaline
+rm -f ./hyaline
+cd ../
 
 GOOS=windows GOARCH=amd64 go build -o ./dist/hyaline.exe -ldflags="-X 'main.Version=$TAG'" ./cmd/hyaline.go
-zip -9 ./dist/hyaline-windows-amd64.zip ./dist/hyaline.exe
-rm -f ./dist/hyaline.exe
+cd ./dist
+zip -9 ./hyaline-windows-amd64.zip ./hyaline.exe
+rm -f ./hyaline.exe
+cd ../
 
 # Create Tag
 git tag $TAG

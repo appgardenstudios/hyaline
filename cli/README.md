@@ -7,13 +7,15 @@
 * `make`
 * `go` (v1.24+)
 * `diff` (gnu version) for testing (`brew install diffutils`)
-* `gh` (github cli) for releasing (`brew install gh`)
+* `gh` (github cli) for testing and releasing (`brew install gh`)
 
 ## Running Locally
 ```sh
 $ make
 $ ./hyaline
 ```
+
+Note that you can also use `make install` to build and install Hyaline locally for testing.
 
 ## Debugging
 There is a `.vscode/launch.json` file checked in that has various debugger launch configurations. They use the config stored in `cli/_example/config.yml` and rely on a `cli/.env` file being present to work (which is .gitignored). The .env file should look like:
@@ -31,6 +33,8 @@ Unit tests are run with `make test`, and there are e2e tests that invoke the act
 Note that the following env vars must be set for the `e2e` tests to work and pass:
 * **HYALINE_SSH_PEM** (with access to `github.com/appgardenstudios/hyaline-example`)
 * **HYALINE_GITHUB_PAT** (with access to `github.com/appgardenstudios/hyaline-example`)
+
+Note that the e2e test [updatePR_test.go](./e2e/updatePR_test.go) creates a comment on a PR and cleans it up using the GitHub CLI (`gh`).
 
 ## Releasing
 Release by checking out the appropriate commit on the main branch and then running `make release`.

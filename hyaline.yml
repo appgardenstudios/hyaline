@@ -1,0 +1,146 @@
+llm:
+  provider: anthropic
+  model: claude-3-5-sonnet-20241022
+  key: ${ANTHROPIC_KEY}
+
+github:
+  token: ${GITHUB_TOKEN}
+
+systems:
+  - id: hyaline
+    code:
+      - id: cli
+        extractor: 
+          type: git
+          options:
+            path: ./
+            branch: origin/main
+          include:
+            - "cli/**/*.go"
+            - "cli/go.mod"
+            - "cli/go.sum"
+            - "cli/Makefile"
+          exclude:
+            - "**/*_test.go"
+    documentation:
+      - id: cli
+        type: md
+        extractor:
+          type: git
+          options:
+            path: ./
+            branch: origin/main
+          include:
+            - "cli/**/*.md"
+          exclude:
+            - "cli/_example/**/*"
+            - "cli/e2e/**/*"
+            - "cli/internal/**/*"
+        documents:
+          - name: cli/README.md
+            purpose: Provide a high-level introduction of the Hyaline CLI and provide guidance for developing, testing, running, and releasing Hyaline.
+            required: true
+            sections:
+              - name: Hyaline CLI
+                ignore: true
+              - name: Developing
+                required: true
+                sections:
+                  - name: Dependencies
+                    purpose: Document any additional dependencies required to develop, test, or release Hyaline.
+                    required: true
+                  - name: Running Locally
+                    purpose: Document how to run Hyaline locally.
+                    required: true
+                  - name: Debugging
+                    purpose: Document how to debug Hyaline locally.
+                    required: true
+                  - name: Testing
+                    purpose: Document how to test Hyaline locally.
+                    required: true
+                  - name: Releasing
+                    purpose: Document how to release Hyaline.
+                    required: true
+      - id: www
+        type: md
+        extractor:
+          type: git
+          options:
+            path: ./
+            branch: origin/main
+          include:
+            - "www/content/docs/**/*.md"
+        documents:
+          - name: www/content/docs/reference/cli.md
+            purpose: Document the usage and options for every Hyaline command
+            required: true
+            updateIf:
+              touched:
+                - glob: "cli/cmd/**/*"
+            sections:
+              - name: Overview
+                ignore: true
+              - name: Commands
+                purpose: Document the usage and options for every Hyaline command
+                required: true
+                sections:
+                  - name: help
+                    purpose: Document the usage and options for the help command
+                    required: true
+                  - name: version
+                    purpose: Document the usage and options for the version command
+                    required: true
+                  - name: extract current
+                    purpose: Document the usage and options for the  extract current command
+                    required: true
+                  - name: extract change
+                    purpose: Document the usage and options for the extract change command
+                    required: true
+                  - name: check current
+                    purpose: Document the usage and options for the check current command
+                    required: true
+                  - name: check change
+                    purpose: Document the usage and options for the check change command
+                    required: true
+                  - name: generate config
+                    purpose: Document the usage and options for the generate config command
+                    required: true
+                  - name: merge
+                    purpose: Document the usage and options for the merge command
+                    required: true
+                  - name: update pr
+                    purpose: Document the usage and options for the update pr command
+                    required: true
+          - name: www/content/docs/reference/config.md
+            purpose: Document every option in the Hyaline configuration file
+            required: true
+            sections:
+              - name: Overview
+                ignore: true
+              - name: LLM
+                ignore: true
+              - name: GitHub
+                ignore: true
+              - name: Systems
+                ignore: true
+              - name: Common Documents
+                ignore: true
+          - name: www/content/docs/reference/data-set.md
+            purpose: Document the sqlite schema used by Hyaline to store current and change data sets
+            required: true
+            sections:
+              - name: Overview
+                ignore: true
+              - name: Tables
+                ignore: true
+              - name: Enums
+                ignore: true
+          - name: www/content/docs/reference/results.md
+            required: true
+            sections:
+              - name: Overview
+                ignore: true
+              - name: Check Current
+                ignore: true
+              - name: Check Change
+                ignore: true

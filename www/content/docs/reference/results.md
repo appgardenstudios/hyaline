@@ -5,7 +5,7 @@ purpose: Detail the output results for the check current and check change comman
 # Overview
 This documents the results produced by the `check current` and `check change` commands.
 
-## Check Current
+# Check Current
 ```js
 {
   "results": [
@@ -58,7 +58,7 @@ This documents the results produced by the `check current` and `check change` co
 }
 ```
 
-### Fields
+## Fields
 A list of fields, their types, and a description of each.
 
 | Field | Type | Description |
@@ -74,7 +74,7 @@ A list of fields, their types, and a description of each.
 | results[n].result | String | The result of the check |
 | results[n].message | String | The message (may be an empty string) |
 
-### Checks
+## Checks
 The list of available checks, what cli option is required to perform the chck (if any), and a description of the check
 
 | Check | CLI Option | Description |
@@ -84,7 +84,7 @@ The list of available checks, what cli option is required to perform the chck (i
 | MATCHES_PURPOSE | --check-purpose | If the document or section contents match the stated purpose in the config |
 | REQUIRED | (none) | If the document or section is present if marked as required in the config |
 
-### Results
+## Results
 The list of possible results and a description of the result
 
 | Check | Description |
@@ -94,7 +94,7 @@ The list of possible results and a description of the result
 | SKIPPED | The check was skipped due to the document or section being ignored |
 | WARN | The document or section does not have a stated purpose |
 
-## Check Change
+# Check Change
 
 ```js
 {
@@ -116,7 +116,7 @@ The list of possible results and a description of the result
 }
 ```
 
-### Fields
+## Fields
 A list of fields, their types, and a description of each.
 
 | Field | Type | Description |
