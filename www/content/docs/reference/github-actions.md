@@ -26,6 +26,14 @@ steps:
       version: "YYYY-MM-DD-HASH"
 ```
 
+# Inputs
+The action supports the following inputs:
+
+* `version` - (optional) The version of the Hyaline CLI to install. This version must be present as a tagged [GitHub Release](https://github.com/appgardenstudios/hyaline/releases) and must be later than `2025-05-26`.
+
+# Outputs
+This action is not configured to provide any outputs.
+
 # Check PR
 The [check-pr action](https://github.com/appgardenstudios/hyaline-actions/tree/main/check-pr) provides the ability to check a pull request.
 
@@ -70,3 +78,19 @@ jobs:
 ```
 
 Note that `check-pr` requires the permission `pull-requests: write` to leave a comment on the pull request.
+
+## Inputs
+The action supports the following inputs:
+
+* `config` - (required) The path to the hyaline configuration file relative to the root of the repository.
+* `system` - (required) The system to use when extracting and checking the change.
+* `repository`  - (optional) The current GitHub repository (owner/repo).
+* `pr_number` - (required) The pull request number.
+* `github_token` - (required) The GitHub token to use when reading and updating the PR's comments. This must have read/write to the repositories issues (because a pull request comment is actually an issue comment in GitHub).
+
+## Outputs
+This action provides the following outputs:
+
+* `completed_recommendations` - The number of recommendations that have been checked and marked as completed.
+* `outstanding_recommendations` - The number of recommendations that are unchecked and not marked as completed.
+* `total_recommendations` - The total number of recommendations (sum of `completed_recommendations` and `outstanding_recommendations`)
