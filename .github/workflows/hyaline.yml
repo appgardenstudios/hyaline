@@ -27,7 +27,7 @@ jobs:
           config: ./hyaline.yml
           system: hyaline
           repository: ${{ github.repository }}
-          pull_number: ${{ github.event.pull_request.number }}
+          pr_number: ${{ github.event.pull_request.number }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
         env:
           # Set env vars needed by the hyaline CLI when interpolating the hyaline config
