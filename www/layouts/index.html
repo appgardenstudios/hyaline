@@ -199,11 +199,7 @@
                 </button>
               </div>
               <div class="bg-gray-100 flex items-center justify-center">
-                <img
-                  src="/placeholder.svg?height=400&width=600"
-                  alt=""
-                  class="w-full h-full object-cover"
-                />
+                <img src="TODO" alt="" class="w-full h-full object-cover" />
               </div>
             </div>
           </div>
@@ -235,11 +231,7 @@
                 </button>
               </div>
               <div class="bg-gray-100 flex items-center justify-center">
-                <img
-                  src="/placeholder.svg?height=400&width=600"
-                  alt=""
-                  class="w-full h-full object-cover"
-                />
+                <img src="TODO" alt="" class="w-full h-full object-cover" />
               </div>
             </div>
           </div>
@@ -271,11 +263,7 @@
                 </button>
               </div>
               <div class="bg-gray-100 flex items-center justify-center">
-                <img
-                  src="/placeholder.svg?height=400&width=600"
-                  alt=""
-                  class="w-full h-full object-cover"
-                />
+                <img src="TODO" alt="" class="w-full h-full object-cover" />
               </div>
             </div>
           </div>
@@ -337,7 +325,7 @@
     const tabs = Array.from(tabList.querySelectorAll('[role="tab"]'));
     const panels = document.querySelectorAll('[role="tabpanel"]');
 
-    // Add click event listeners to tabs
+    // Add event listeners to each tab
     tabs.forEach((tab) => {
       tab.addEventListener("click", (e) => {
         e.preventDefault();
@@ -348,7 +336,6 @@
       tab.addEventListener("keydown", (e) => {
         const index = tabs.indexOf(tab);
 
-        // Handle keyboard navigation
         switch (e.key) {
           case "ArrowLeft":
             e.preventDefault();
@@ -375,7 +362,7 @@
       });
     });
 
-    // Focus a tab and optionally activate it
+    // Focus and activate tab
     function focusTab(index) {
       tabs[index].focus();
       activateTab(tabs[index]);
