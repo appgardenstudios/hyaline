@@ -15,6 +15,8 @@ $ make
 $ ./hyaline
 ```
 
+Note that you can also use `make install` to build and install Hyaline locally for testing.
+
 ## Debugging
 There is a `.vscode/launch.json` file checked in that has various debugger launch configurations. They use the config stored in `cli/_example/config.yml` and rely on a `cli/.env` file being present to work (which is .gitignored). The .env file should look like:
 
