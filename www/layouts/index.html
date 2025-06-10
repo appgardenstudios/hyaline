@@ -17,13 +17,8 @@
       <div class="flex justify-center gap-4">
         <a
           href="#learn-more"
-          class="px-8 py-3 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 transition-colors"
+          class="px-8 py-3 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
           >Learn more</a
-        >
-        <a
-          href="#"
-          class="px-8 py-3 border border-gray-300 text-gray-700 font-medium rounded-md hover:bg-gray-50 transition-colors"
-          >View demo</a
         >
       </div>
     </div>
@@ -46,94 +41,12 @@
         >
           <!-- Tab 1 -->
           <div
-            class="p-4 rounded-xl cursor-pointer transition-all duration-300 transform hover:scale-102 aria-selected:bg-blue-600 aria-selected:text-white aria-selected:shadow-lg aria-[selected='false']:bg-white aria-[selected='false']:hover:bg-gray-100 aria-[selected='false']:text-gray-800 aria-[selected='false']:shadow-md"
-            id="tab-collab"
+            class="p-4 rounded-xl cursor-pointer transition-all duration-300 transform hover:scale-102 aria-selected:bg-blue-600 aria-selected:text-white aria-selected:shadow-lg aria-[selected='false']:bg-white aria-[selected='false']:hover:bg-gray-100 aria-[selected='false']:text-gray-800 aria-[selected='false']:shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            id="tab-centralized"
             role="tab"
             aria-selected="true"
-            aria-controls="panel-collab"
+            aria-controls="panel-centralized"
             tabindex="0"
-          >
-            <div class="flex items-center">
-              <div
-                class="w-10 h-10 rounded-full flex items-center justify-center mr-4 aria-selected:bg-white/20 aria-[selected='false']:bg-white"
-              >
-                <div
-                  class="aria-selected:text-white aria-[selected='false']:text-blue-600"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    class="h-6 w-6"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  >
-                    <path
-                      d="M15.1754 22V21.0117L15.1754 20.9908C15.1805 20.4457 15.6274 20.0051 16.1801 20L16.2551 19.9999C17.6867 19.9885 18.9166 18.9942 19.2087 17.612L19.2193 17.5601L19.7385 15L20.6798 14.5359C21.1836 14.2875 21.4354 14.1633 21.4899 13.9356C21.5444 13.7079 21.3755 13.4857 21.0376 13.0414L19.1301 10.5333C18.9403 10.2837 18.8454 10.1589 18.7945 10.0269C18.7437 9.89486 18.728 9.70775 18.6968 9.33353C18.3533 5.22708 14.8649 2 10.6123 2C6.13198 2 2.5 5.58172 2.5 10C2.5 12.7497 3.90669 15.1753 6.04911 16.6153M6.04911 16.6153V22M6.04911 16.6153C6.66896 17.0319 7.3504 17.366 8.07717 17.6016"
-                    ></path>
-                    <path
-                      d="M14 9L14.9199 9.79289C15.3066 10.1262 15.5 10.2929 15.5 10.5C15.5 10.7071 15.3066 10.8738 14.9199 11.2071L14 12"
-                    ></path>
-                    <path
-                      d="M7 9L6.08009 9.79289C5.69337 10.1262 5.5 10.2929 5.5 10.5C5.5 10.7071 5.69336 10.8738 6.08009 11.2071L7 12"
-                    ></path>
-                    <path d="M11.5 8L9.5 13"></path>
-                  </svg>
-                </div>
-              </div>
-              <h3 class="text-lg font-semibold">Build with AI</h3>
-            </div>
-          </div>
-
-          <!-- Tab 2 -->
-          <div
-            class="p-4 rounded-xl cursor-pointer transition-all duration-300 transform hover:scale-102 aria-selected:bg-blue-600 aria-selected:text-white aria-selected:shadow-lg aria-[selected='false']:bg-white aria-[selected='false']:hover:bg-gray-100 aria-[selected='false']:text-gray-800 aria-[selected='false']:shadow-md"
-            id="tab-updated"
-            role="tab"
-            aria-selected="false"
-            aria-controls="panel-updated"
-            tabindex="-1"
-          >
-            <div class="flex items-center">
-              <div
-                class="w-10 h-10 rounded-full flex items-center justify-center mr-4 aria-selected:bg-white/20 aria-[selected='false']:bg-white"
-              >
-                <div
-                  class="aria-selected:text-white aria-[selected='false']:text-blue-600"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    class="h-6 w-6"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  >
-                    <path
-                      d="M3.49994 11.7501L11.6717 3.57855C12.7762 2.47398 14.5672 2.47398 15.6717 3.57855C16.7762 4.68312 16.7762 6.47398 15.6717 7.57855M15.6717 7.57855L9.49994 13.7501M15.6717 7.57855C16.7762 6.47398 18.5672 6.47398 19.6717 7.57855C20.7762 8.68312 20.7762 10.474 19.6717 11.5785L12.7072 18.543C12.3167 18.9335 12.3167 19.5667 12.7072 19.9572L13.9999 21.2499"
-                    ></path>
-                    <path
-                      d="M17.4999 9.74921L11.3282 15.921C10.2237 17.0255 8.43272 17.0255 7.32823 15.921C6.22373 14.8164 6.22373 13.0255 7.32823 11.921L13.4999 5.74939"
-                    ></path>
-                  </svg>
-                </div>
-              </div>
-              <h3 class="text-lg font-semibold">MCP-powered Documentation</h3>
-            </div>
-          </div>
-
-          <!-- Tab 3 -->
-          <div
-            class="p-4 rounded-xl cursor-pointer transition-all duration-300 transform hover:scale-102 aria-selected:bg-blue-600 aria-selected:text-white aria-selected:shadow-lg aria-[selected='false']:bg-white aria-[selected='false']:hover:bg-gray-100 aria-[selected='false']:text-gray-800 aria-[selected='false']:shadow-md"
-            id="tab-internal"
-            role="tab"
-            aria-selected="false"
-            aria-controls="panel-internal"
-            tabindex="-1"
           >
             <div class="flex items-center">
               <div
@@ -170,17 +83,56 @@
                   </svg>
                 </div>
               </div>
-              <h3 class="text-lg font-semibold">Centralized Knowledge Base</h3>
+              <h3 class="text-lg font-semibold">Centralized</h3>
             </div>
           </div>
 
-          <!-- Tab 4 -->
+          <!-- Tab 2 -->
           <div
-            class="p-4 rounded-xl cursor-pointer transition-all duration-300 transform hover:scale-102 aria-selected:bg-blue-600 aria-selected:text-white aria-selected:shadow-lg aria-[selected='false']:bg-white aria-[selected='false']:hover:bg-gray-100 aria-[selected='false']:text-gray-800 aria-[selected='false']:shadow-md"
-            id="tab-access"
+            class="p-4 rounded-xl cursor-pointer transition-all duration-300 transform hover:scale-102 aria-selected:bg-blue-600 aria-selected:text-white aria-selected:shadow-lg aria-[selected='false']:bg-white aria-[selected='false']:hover:bg-gray-100 aria-[selected='false']:text-gray-800 aria-[selected='false']:shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            id="tab-mcp-powered"
             role="tab"
             aria-selected="false"
-            aria-controls="panel-access"
+            aria-controls="panel-mcp-powered"
+            tabindex="-1"
+          >
+            <div class="flex items-center">
+              <div
+                class="w-10 h-10 rounded-full flex items-center justify-center mr-4 aria-selected:bg-white/20 aria-[selected='false']:bg-white"
+              >
+                <div
+                  class="aria-selected:text-white aria-[selected='false']:text-blue-600"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-6 w-6"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path
+                      d="M3.49994 11.7501L11.6717 3.57855C12.7762 2.47398 14.5672 2.47398 15.6717 3.57855C16.7762 4.68312 16.7762 6.47398 15.6717 7.57855M15.6717 7.57855L9.49994 13.7501M15.6717 7.57855C16.7762 6.47398 18.5672 6.47398 19.6717 7.57855C20.7762 8.68312 20.7762 10.474 19.6717 11.5785L12.7072 18.543C12.3167 18.9335 12.3167 19.5667 12.7072 19.9572L13.9999 21.2499"
+                    ></path>
+                    <path
+                      d="M17.4999 9.74921L11.3282 15.921C10.2237 17.0255 8.43272 17.0255 7.32823 15.921C6.22373 14.8164 6.22373 13.0255 7.32823 11.921L13.4999 5.74939"
+                    ></path>
+                  </svg>
+                </div>
+              </div>
+              <h3 class="text-lg font-semibold">MCP-powered</h3>
+            </div>
+          </div>
+
+          <!-- Tab 3 -->
+          <div
+            class="p-4 rounded-xl cursor-pointer transition-all duration-300 transform hover:scale-102 aria-selected:bg-blue-600 aria-selected:text-white aria-selected:shadow-lg aria-[selected='false']:bg-white aria-[selected='false']:hover:bg-gray-100 aria-[selected='false']:text-gray-800 aria-[selected='false']:shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            id="tab-up-to-date"
+            role="tab"
+            aria-selected="false"
+            aria-controls="panel-up-to-date"
             tabindex="-1"
           >
             <div class="flex items-center">
@@ -212,7 +164,7 @@
                   </svg>
                 </div>
               </div>
-              <h3 class="text-lg font-semibold">Up-to-date Documentation</h3>
+              <h3 class="text-lg font-semibold">Up-to-date</h3>
             </div>
           </div>
         </div>
@@ -223,24 +175,25 @@
           <!-- Content 1 -->
           <div
             class="bg-white rounded-2xl shadow-xl overflow-hidden transition-all duration-500 ease-in-out hidden:invisible hidden:opacity-0 hidden:transform hidden:translate-y-5 hidden:absolute hidden:w-full not-hidden:visible not-hidden:opacity-100 not-hidden:transform not-hidden:translate-y-0 not-hidden:relative"
-            id="panel-collab"
+            id="panel-centralized"
             role="tabpanel"
-            aria-labelledby="tab-collab"
+            aria-labelledby="tab-centralized"
             tabindex="0"
           >
             <div class="grid grid-cols-1 md:grid-cols-2">
               <div class="p-8">
                 <h3 class="text-2xl font-bold mb-4 text-blue-600">
-                  Build with AI
+                  Centralized
                 </h3>
                 <p class="text-gray-600 text-lg leading-relaxed">
-                  You and your team rely on documentation to build software
-                  systems with AI assistance. Modern development relies on
-                  having the right information at the right time to make
-                  informed decisions and ship quality products.
+                  Your documentation lives across repositories, wikis,
+                  documentation sites, internal tools, and knowledge bases.
+                  Hyaline extracts and unifies information from all these
+                  sources into a single, searchable dataset that stays current
+                  as your documentation is updated.
                 </p>
                 <button
-                  class="mt-8 px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors"
+                  class="mt-8 px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 cursor-pointer"
                 >
                   Learn more
                 </button>
@@ -258,25 +211,25 @@
           <!-- Content 2 -->
           <div
             class="bg-white rounded-2xl shadow-xl overflow-hidden transition-all duration-500 ease-in-out hidden:invisible hidden:opacity-0 hidden:transform hidden:translate-y-5 hidden:absolute hidden:w-full not-hidden:visible not-hidden:opacity-100 not-hidden:transform not-hidden:translate-y-0 not-hidden:relative"
-            id="panel-updated"
+            id="panel-mcp-powered"
             role="tabpanel"
-            aria-labelledby="tab-updated"
+            aria-labelledby="tab-mcp-powered"
             tabindex="0"
             hidden
           >
             <div class="grid grid-cols-1 md:grid-cols-2">
               <div class="p-8">
                 <h3 class="text-2xl font-bold mb-4 text-blue-600">
-                  MCP-powered Documentation
+                  MCP-powered
                 </h3>
                 <p class="text-gray-600 text-lg leading-relaxed">
                   Hyaline provides your documentation directly to AI tools
                   through an MCP server. Your AI assistants can instantly access
-                  system documentation, product documentation, API specs, and
-                  process guides to help you build better software faster.
+                  product and system documentation to help you build better
+                  software faster.
                 </p>
                 <button
-                  class="mt-8 px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors"
+                  class="mt-8 px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                 >
                   Learn more
                 </button>
@@ -294,53 +247,16 @@
           <!-- Content 3 -->
           <div
             class="bg-white rounded-2xl shadow-xl overflow-hidden transition-all duration-500 ease-in-out hidden:invisible hidden:opacity-0 hidden:transform hidden:translate-y-5 hidden:absolute hidden:w-full not-hidden:visible not-hidden:opacity-100 not-hidden:transform not-hidden:translate-y-0 not-hidden:relative"
-            id="panel-internal"
+            id="panel-up-to-date"
             role="tabpanel"
-            aria-labelledby="tab-internal"
+            aria-labelledby="tab-up-to-date"
             tabindex="0"
             hidden
           >
             <div class="grid grid-cols-1 md:grid-cols-2">
               <div class="p-8">
                 <h3 class="text-2xl font-bold mb-4 text-blue-600">
-                  Centralized Knowledge Base
-                </h3>
-                <p class="text-gray-600 text-lg leading-relaxed">
-                  Your documentation lives across repositories, wikis,
-                  documentation sites, internal tools, and knowledge bases.
-                  Hyaline extracts and unifies information from all these
-                  sources into a single, searchable dataset that stays current
-                  as your documentation is updated.
-                </p>
-                <button
-                  class="mt-8 px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors"
-                >
-                  Learn more
-                </button>
-              </div>
-              <div class="bg-gray-100 flex items-center justify-center">
-                <img
-                  src="/placeholder.svg?height=400&width=600"
-                  alt=""
-                  class="w-full h-full object-cover"
-                />
-              </div>
-            </div>
-          </div>
-
-          <!-- Content 4 -->
-          <div
-            class="bg-white rounded-2xl shadow-xl overflow-hidden transition-all duration-500 ease-in-out hidden:invisible hidden:opacity-0 hidden:transform hidden:translate-y-5 hidden:absolute hidden:w-full not-hidden:visible not-hidden:opacity-100 not-hidden:transform not-hidden:translate-y-0 not-hidden:relative"
-            id="panel-access"
-            role="tabpanel"
-            aria-labelledby="tab-access"
-            tabindex="0"
-            hidden
-          >
-            <div class="grid grid-cols-1 md:grid-cols-2">
-              <div class="p-8">
-                <h3 class="text-2xl font-bold mb-4 text-blue-600">
-                  Up-to-date Documentation
+                  Up-to-date
                 </h3>
                 <p class="text-gray-600 text-lg leading-relaxed">
                   As you make changes to your systems, Hyaline automatically
@@ -349,7 +265,7 @@
                   accurate and current with your evolving codebase.
                 </p>
                 <button
-                  class="mt-8 px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors"
+                  class="mt-8 px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                 >
                   Learn more
                 </button>
@@ -392,7 +308,7 @@
         Now in Beta
       </div>
       <h2 class="text-4xl md:text-5xl font-bold mb-6">
-        Ready to transform your documentation?
+        Ready to make your documentation useful?
       </h2>
       <p class="text-xl text-gray-300 mb-8 max-w-2xl mx-auto">
         Join our beta program and help us shape Hyaline while getting early
@@ -401,7 +317,7 @@
       <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
         <a
           href="/download"
-          class="px-8 py-4 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors text-lg"
+          class="px-8 py-4 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors text-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
         >
           Try it now
         </a>

@@ -1,130 +1,206 @@
 <!DOCTYPE html>
 <html lang="en" charset="utf-8" class="h-full">
+  <head>
+    <!-- TODO set title and description-->
+    {{ partialCached "css.html" . }}
+  </head>
 
-<head>
-  <!-- TODO set title and description-->
-  {{ partialCached "css.html" . }}
-</head>
-
-<body class="bg-white">
-  <!-- Navigation Bar -->
-  <header class="sticky top-0 bg-white shadow-sm z-50">
-    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="flex justify-between items-center py-4">
-        <div class="flex items-center">
-          <a href="/" class="text-gray-900 inline-block" aria-label="hyaline">
-            <svg width="90" height="16" viewBox="0 0 208 39" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-              <path d="M27.448 2.296V37H22.84V21.784H4.648V37H-0.0079999V2.296H4.648V17.368H22.84V2.296H27.448ZM46.6611 25.432L33.7971 2.296H39.5091L49.8291 21.448L48.3891 21.544L58.6131 2.296H64.2771L51.3171 25.432V37H46.6611V25.432ZM62.536 37L77.704 0.855999H77.992L93.112 37H87.784L76.456 8.152L79.768 5.992L67.096 37H62.536ZM71.416 23.848H84.328L85.864 27.88H70.072L71.416 23.848ZM99.6483 2.296H104.304V32.536H121.92V37H99.6483V2.296ZM129.508 2.296H134.164V37H129.508V2.296ZM174.181 38.104L147.349 10.888L148.693 11.224L148.789 37H144.133V1.24H144.373L170.917 28.552L169.813 28.312L169.717 2.296H174.325V38.104H174.181ZM184.305 2.296H206.865V6.76H188.961V17.32H204.945V21.784H188.961V32.536H207.536V37H184.305V2.296Z" fill="currentColor"/>
-            </svg>
-          </a>
+  <body class="bg-white">
+    <!-- Navigation Bar -->
+    <header class="sticky top-0 bg-white shadow-sm z-50">
+      <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-center py-4">
+          <div class="flex items-center">
+            <a href="/" class="text-gray-900 inline-block" aria-label="hyaline">
+              <svg
+                width="90"
+                height="16"
+                viewBox="0 0 208 39"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                aria-hidden="true"
+              >
+                <path
+                  d="M27.448 2.296V37H22.84V21.784H4.648V37H-0.0079999V2.296H4.648V17.368H22.84V2.296H27.448ZM46.6611 25.432L33.7971 2.296H39.5091L49.8291 21.448L48.3891 21.544L58.6131 2.296H64.2771L51.3171 25.432V37H46.6611V25.432ZM62.536 37L77.704 0.855999H77.992L93.112 37H87.784L76.456 8.152L79.768 5.992L67.096 37H62.536ZM71.416 23.848H84.328L85.864 27.88H70.072L71.416 23.848ZM99.6483 2.296H104.304V32.536H121.92V37H99.6483V2.296ZM129.508 2.296H134.164V37H129.508V2.296ZM174.181 38.104L147.349 10.888L148.693 11.224L148.789 37H144.133V1.24H144.373L170.917 28.552L169.813 28.312L169.717 2.296H174.325V38.104H174.181ZM184.305 2.296H206.865V6.76H188.961V17.32H204.945V21.784H188.961V32.536H207.536V37H184.305V2.296Z"
+                  fill="currentColor"
+                />
+              </svg>
+            </a>
+          </div>
+          <nav class="hidden md:flex space-x-8">
+            <a
+              href="/docs"
+              class="text-gray-700 hover:text-blue-600 transition-colors"
+              >Documentation</a
+            >
+            <a
+              href="/articles"
+              class="text-gray-700 hover:text-blue-600 transition-colors"
+              >Articles</a
+            >
+            <a
+              href="/download"
+              class="text-gray-700 hover:text-blue-600 transition-colors"
+              >Download</a
+            >
+            <a
+              href="/#pricing"
+              class="text-gray-700 hover:text-blue-600 transition-colors"
+              >Pricing</a
+            >
+          </nav>
+          <div class="md:hidden">
+            <button
+              id="mobile-menu-button"
+              type="button"
+              class="text-gray-700 hover:text-blue-600 focus:outline-none focus:ring-4 focus:ring-blue-300 focus:ring-offset-2 rounded-md cursor-pointer"
+              aria-expanded="false"
+              aria-label="Toggle navigation"
+            >
+              <svg
+                id="menu-icon"
+                class="h-6 w-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M4 6h16M4 12h16M4 18h16"
+                ></path>
+              </svg>
+              <svg
+                id="close-icon"
+                class="h-6 w-6 hidden"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M6 18L18 6M6 6l12 12"
+                ></path>
+              </svg>
+            </button>
+          </div>
         </div>
-        <nav class="hidden md:flex space-x-8">
-          <a href="/docs" class="text-gray-700 hover:text-blue-600 transition-colors">Documentation</a>
-          <a href="/articles" class="text-gray-700 hover:text-blue-600 transition-colors">Articles</a>
-          <a href="/download" class="text-gray-700 hover:text-blue-600 transition-colors">Download</a>
-          <a href="/#pricing" class="text-gray-700 hover:text-blue-600 transition-colors">Pricing</a>
-        </nav>
-        <div class="md:hidden">
-          <button id="mobile-menu-button" type="button" class="text-gray-700 hover:text-blue-600 focus:outline-none"
-            aria-expanded="false" aria-label="Toggle navigation">
-            <svg id="menu-icon" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-            </svg>
-            <svg id="close-icon" class="h-6 w-6 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-            </svg>
-          </button>
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="md:hidden hidden">
+          <div
+            class="px-2 pt-2 pb-4 space-y-1 bg-white border-t border-gray-200"
+          >
+            <a
+              href="#"
+              class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50"
+              >Documentation</a
+            >
+            <a
+              href="#"
+              class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50"
+              >Articles</a
+            >
+            <a
+              href="#"
+              class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50"
+              >Download</a
+            >
+            <a
+              href="#"
+              class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50"
+              >Pricing</a
+            >
+          </div>
         </div>
       </div>
-      <!-- Mobile Menu -->
-      <div id="mobile-menu" class="md:hidden hidden">
-        <div class="px-2 pt-2 pb-4 space-y-1 bg-white border-t border-gray-200">
-          <a href="#"
-            class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50">Documentation</a>
-          <a href="#"
-            class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50">Articles</a>
-          <a href="#"
-            class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50">Download</a>
-          <a href="#"
-            class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50">Pricing</a>
+    </header>
+
+    <main>{{ block "main" . }} {{ end }}</main>
+
+    <footer class="bg-gray-100 py-8 bg-white">
+      <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-center">
+          <p class="text-gray-600">
+            &copy; 2025 App Garden Studios, LLC. All rights reserved.
+          </p>
+          <a
+            href="/about"
+            class="text-gray-600 hover:text-blue-600 transition-colors"
+            >About</a
+          >
         </div>
       </div>
-    </div>
-  </header>
+    </footer>
 
-  <main>
-    {{ block "main" . }}
-    {{ end }}
-  </main>
+    <script>
+      // Mobile Menu Toggle
+      document.addEventListener("DOMContentLoaded", function () {
+        const mobileMenuButton = document.getElementById("mobile-menu-button");
+        const mobileMenu = document.getElementById("mobile-menu");
+        const menuIcon = document.getElementById("menu-icon");
+        const closeIcon = document.getElementById("close-icon");
 
-  <footer class="bg-gray-100 py-8 bg-white">
-    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="flex justify-between items-center">
-        <p class="text-gray-600">&copy; 2025 Hyaline. All rights reserved.</p>
-        <a href="/about" class="text-gray-600 hover:text-blue-600 transition-colors">About</a>
-      </div>
-    </div>
-  </footer>
+        // Function to toggle menu visibility
+        function toggleMenu() {
+          const isExpanded =
+            mobileMenuButton.getAttribute("aria-expanded") === "true";
 
-  <script>
-    // Mobile Menu Toggle
-    document.addEventListener('DOMContentLoaded', function () {
-      const mobileMenuButton = document.getElementById('mobile-menu-button');
-      const mobileMenu = document.getElementById('mobile-menu');
-      const menuIcon = document.getElementById('menu-icon');
-      const closeIcon = document.getElementById('close-icon');
+          // Toggle aria-expanded attribute
+          mobileMenuButton.setAttribute("aria-expanded", !isExpanded);
 
-      // Function to toggle menu visibility
-      function toggleMenu() {
-        const isExpanded = mobileMenuButton.getAttribute('aria-expanded') === 'true';
-
-        // Toggle aria-expanded attribute
-        mobileMenuButton.setAttribute('aria-expanded', !isExpanded);
-
-        // Toggle menu visibility
-        if (isExpanded) {
-          mobileMenu.classList.add('hidden');
-          menuIcon.classList.remove('hidden');
-          closeIcon.classList.add('hidden');
-        } else {
-          mobileMenu.classList.remove('hidden');
-          menuIcon.classList.add('hidden');
-          closeIcon.classList.remove('hidden');
+          // Toggle menu visibility
+          if (isExpanded) {
+            mobileMenu.classList.add("hidden");
+            menuIcon.classList.remove("hidden");
+            closeIcon.classList.add("hidden");
+          } else {
+            mobileMenu.classList.remove("hidden");
+            menuIcon.classList.add("hidden");
+            closeIcon.classList.remove("hidden");
+          }
         }
-      }
 
-      // Add click event listener to the menu button
-      mobileMenuButton.addEventListener('click', toggleMenu);
+        // Add click event listener to the menu button
+        mobileMenuButton.addEventListener("click", toggleMenu);
 
-      // Close menu when clicking outside
-      document.addEventListener('click', function (event) {
-        const isClickInsideMenu = mobileMenu.contains(event.target);
-        const isClickOnButton = mobileMenuButton.contains(event.target);
+        // Close menu when clicking outside
+        document.addEventListener("click", function (event) {
+          const isClickInsideMenu = mobileMenu.contains(event.target);
+          const isClickOnButton = mobileMenuButton.contains(event.target);
 
-        if (!isClickInsideMenu && !isClickOnButton && mobileMenu.classList.contains('hidden') === false) {
-          toggleMenu();
-        }
-      });
+          if (
+            !isClickInsideMenu &&
+            !isClickOnButton &&
+            mobileMenu.classList.contains("hidden") === false
+          ) {
+            toggleMenu();
+          }
+        });
 
-      // Close menu when window is resized to desktop size
-      window.addEventListener('resize', function () {
-        if (window.innerWidth >= 768 && mobileMenu.classList.contains('hidden') === false) {
-          mobileMenu.classList.add('hidden');
-          menuIcon.classList.remove('hidden');
-          closeIcon.classList.add('hidden');
-          mobileMenuButton.setAttribute('aria-expanded', 'false');
-        }
-      });
+        // Close menu when window is resized to desktop size
+        window.addEventListener("resize", function () {
+          if (
+            window.innerWidth >= 768 &&
+            mobileMenu.classList.contains("hidden") === false
+          ) {
+            mobileMenu.classList.add("hidden");
+            menuIcon.classList.remove("hidden");
+            closeIcon.classList.add("hidden");
+            mobileMenuButton.setAttribute("aria-expanded", "false");
+          }
+        });
 
-      // Close menu when clicking on a mobile menu link (smooth navigation)
-      const mobileMenuLinks = mobileMenu.querySelectorAll('a');
-      mobileMenuLinks.forEach(link => {
-        link.addEventListener('click', function () {
-          toggleMenu();
+        // Close menu when clicking on a mobile menu link (smooth navigation)
+        const mobileMenuLinks = mobileMenu.querySelectorAll("a");
+        mobileMenuLinks.forEach((link) => {
+          link.addEventListener("click", function () {
+            toggleMenu();
+          });
         });
       });
-    });
-  </script>
-</body>
-
+    </script>
+  </body>
 </html>
