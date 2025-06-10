@@ -1,7 +1,11 @@
 <!DOCTYPE html>
 <html lang="en" charset="utf-8" class="h-full">
   <head>
-    <!-- TODO set title and description-->
+    <title>{{ .Title }}</title>
+    <meta
+      name="description"
+      content="{{ if .Description }}{{ .Description }}{{ else }}Hyaline - Documentation maintenance tool that helps teams keep documentation in sync with code{{ end }}"
+    />
     {{ partialCached "css.html" . }}
   </head>
 
@@ -42,11 +46,6 @@
               href="/download"
               class="text-gray-700 hover:text-blue-600 transition-colors"
               >Download</a
-            >
-            <a
-              href="/#pricing"
-              class="text-gray-700 hover:text-blue-600 transition-colors"
-              >Pricing</a
             >
           </nav>
           <div class="md:hidden">
@@ -107,11 +106,6 @@
               href="#"
               class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50"
               >Download</a
-            >
-            <a
-              href="#"
-              class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50"
-              >Pricing</a
             >
           </div>
         </div>
