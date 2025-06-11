@@ -5,9 +5,9 @@ purpose: Detail the functionality and usage of Hyaline within GitHub Actions
 # Overview
 Hyaline provides a set of [GitHub Actions](https://github.com/features/actions) that allows you to setup and use Hyaline within a GitHub workflow.
 
-TODO image of overall flow
+![Overview](_img/github-actions-overview.svg)
 
-TODO explanation of image
+When a developer pushes code to a Pull Request in GitHub, one or more GitHub Actions are triggered. Those actions can then run jobs such as checking out code, installing Hyaline, checking that a pull request is updating all applicable documentation, etc.
 
 # Setup
 The [setup action](https://github.com/appgardenstudios/hyaline-actions/tree/main/setup) provides an easy way to download and install the Hyaline CLI on your GitHub Actions runner so you can run Hyaline commands.
@@ -37,13 +37,13 @@ This action is not configured to provide any outputs.
 # Check PR
 The [check-pr action](https://github.com/appgardenstudios/hyaline-actions/tree/main/check-pr) provides the ability to check a pull request.
 
-TODO image of the steps check PR does (extract current, extract change, check change, update pr)
+![Check PR](_img/github-actions-check-pr.svg)
 
-TODO explanation of image
+When a developer pushes changes to a Pull Request a GitHub Action is triggered. That GitHub Action can then checkout the source code, install Hyaline, and use Hyaline to check the PR for documentation updates and recommendations (the results of which are added as a comment on the Pull Request).
 
-TODO Note about how Hyaline will update a comment if it already exists
+Note that Hyaline will update (overwrite) older versions of its own comment so that you only have a single comment from Hyaline containing all of its recommendations.
 
-For example, you can configure Hyaline to check your PR using the following workflow:
+This is a sample workflow file that will configure Hyaline to check your PRs when they are not in a draft state:
 ```yaml
 on:
   pull_request:
@@ -60,7 +60,7 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          fetch-depth: 0 # Needed to compare had and base branches
       - name: Setup Hyaline
         uses: appgardenstudios/hyaline-actions/setup@v0
       - name: Check PR
@@ -77,7 +77,7 @@ jobs:
           ANTHROPIC_KEY: ${{ secrets.ANTHROPIC_KEY }}
 ```
 
-Note that `check-pr` requires the permission `pull-requests: write` to leave a comment on the pull request.
+Note that the `check-pr` job above requires the permission `pull-requests: write` to leave a comment on the pull request.
 
 ## Inputs
 The action supports the following inputs:
