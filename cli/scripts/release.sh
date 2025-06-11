@@ -59,4 +59,4 @@ git tag $TAG
 git push origin $TAG
 
 # Create Draft Release (will print link to release when done)
-gh release create $TAG --draft --verify-tag --fail-on-no-commits --generate-notes --latest ./dist/*.zip
+gh release create $TAG --draft --verify-tag --fail-on-no-commits --generate-notes --notes-file ./scripts/assets/release-notes.md --latest ./dist/*.zip
