@@ -370,10 +370,10 @@ systems:
     documentation:
       - id: documentationSource1
         extractor:
-          type: fs
+          type: http
           options:
             baseUrl: https://www.hyaline.dev/
-            start: ./docs
+            start: ./documentation
             headers:
               custom-header: My Header Value
 ```
