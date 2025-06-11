@@ -1,6 +1,8 @@
+{{/* Custom link renderer that opens external links in new window with security attributes */}}
 {{- $url := .Destination -}}
 {{- $isExternal := false -}}
 
+{{/* Check if the link is external (different host than site) */}}
 {{- if or (strings.HasPrefix $url "http://") (strings.HasPrefix $url "https://") -}}
   {{- $parsedURL := urls.Parse $url -}}
   {{- $siteURL := urls.Parse site.BaseURL -}}
@@ -9,6 +11,7 @@
   {{- end -}}
 {{- end -}}
 
+{{/* Render link with security attributes for external links */}}
 <a href="{{ .Destination | safeURL }}"
    {{- with .Title }} title="{{ . }}"{{ end }}
    {{- if $isExternal }} rel="noreferrer noopener" target="_blank"{{ end -}}
