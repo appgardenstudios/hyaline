@@ -6,30 +6,37 @@ import (
 	"hyaline/internal/repo"
 	"hyaline/internal/sqlite"
 	"log/slog"
+	"slices"
 	"strings"
 
 	"github.com/go-git/go-git/v5"
 	"github.com/go-git/go-git/v5/utils/merkletrie"
 )
 
-func ExtractChange(system *config.System, head string, base string, db *sql.DB) (err error) {
+func ExtractChange(system *config.System, head string, base string, documentationIDs []string, db *sql.DB) (err error) {
 	// Process each docs source
-	for _, d := range system.Docs {
+	for _, d := range system.DocumentationSources {
+		// Only extract if this documentation ID is passed in
+		if !slices.Contains(documentationIDs, d.ID) {
+			slog.Debug("docs.ExtractChange skipping non-included documentation source", "system", system.ID, "doc", d.ID)
+			continue
+		}
+
 		// Only extract changed code for git sources
-		if d.Extractor != config.ExtractorGit {
-			slog.Debug("code.ExtractChange skipping non-git code source", "system", system.ID, "doc", d.ID)
+		if d.Extractor.Type != config.ExtractorTypeGit {
+			slog.Debug("docs.ExtractChange skipping non-git documentation source", "system", system.ID, "doc", d.ID)
 			continue
 		}
 		slog.Debug("docs.ExtractChange extracting docs", "system", system.ID, "doc", d.ID, "head", head, "base", base)
 
 		// Get document path
-		path := d.GitOptions.Path
+		path := d.Extractor.Options.Path
 		if path == "" {
-			path = d.GitOptions.Repo
+			path = d.Extractor.Options.Repo
 		}
 
 		// Insert Documentation
-		err = sqlite.InsertDocumentation(sqlite.Documentation{
+		err = sqlite.InsertSystemDocumentation(sqlite.SystemDocumentation{
 			ID:       d.ID,
 			SystemID: system.ID,
 			Type:     d.Type.String(),
@@ -42,7 +49,7 @@ func ExtractChange(system *config.System, head string, base string, db *sql.DB) 
 
 		// Initialize go-git repo (on disk or in mem)
 		var r *git.Repository
-		r, err = repo.GetRepo(d.GitOptions)
+		r, err = repo.GetRepo(d.Extractor.Options)
 		if err != nil {
 			slog.Debug("code.ExtractChange could not get repo", "error", err)
 			return
@@ -72,7 +79,7 @@ func ExtractChange(system *config.System, head string, base string, db *sql.DB) 
 			case merkletrie.Insert:
 				fallthrough
 			case merkletrie.Modify:
-				if config.PathIsIncluded(change.To.Name, d.Include, d.Exclude) {
+				if config.PathIsIncluded(change.To.Name, d.Extractor.Include, d.Extractor.Exclude) {
 					slog.Debug("docs.ExtractChange inserting document", "document", change.To.Name, "action", action)
 					bytes, err := repo.GetBlobBytes(to.Blob)
 					if err != nil {
@@ -84,7 +91,7 @@ func ExtractChange(system *config.System, head string, base string, db *sql.DB) 
 					var extractedData string
 					switch d.Type {
 					case config.DocTypeHTML:
-						extractedData, err = extractHTMLDocument(string(bytes), d.HTML.Selector)
+						extractedData, err = extractHTMLDocument(string(bytes), d.Options.Selector)
 						if err != nil {
 							slog.Debug("docs.ExtractCurrentFs could not extract html document", "error", err, "doc", change.To.Name)
 							return err
@@ -94,12 +101,13 @@ func ExtractChange(system *config.System, head string, base string, db *sql.DB) 
 					}
 					extractedData = strings.ReplaceAll(extractedData, "\r", "")
 
-					err = sqlite.InsertDocument(sqlite.Document{
+					err = sqlite.InsertSystemDocument(sqlite.SystemDocument{
 						ID:              change.To.Name,
 						DocumentationID: d.ID,
 						SystemID:        system.ID,
 						Type:            d.Type.String(),
-						Action:          action.String(),
+						Action:          sqlite.MapAction(action, change.From.Name, change.To.Name),
+						OriginalID:      change.From.Name,
 						RawData:         string(bytes),
 						ExtractedData:   extractedData,
 					}, db)
@@ -117,14 +125,15 @@ func ExtractChange(system *config.System, head string, base string, db *sql.DB) 
 					}
 				}
 			case merkletrie.Delete:
-				if config.PathIsIncluded(change.To.Name, d.Include, d.Exclude) {
+				if config.PathIsIncluded(change.To.Name, d.Extractor.Include, d.Extractor.Exclude) {
 					slog.Debug("docs.ExtractChange inserting document", "document", change.From.Name, "action", action)
-					err = sqlite.InsertDocument(sqlite.Document{
+					err = sqlite.InsertSystemDocument(sqlite.SystemDocument{
 						ID:              change.From.Name,
 						DocumentationID: d.ID,
 						SystemID:        system.ID,
 						Type:            d.Type.String(),
-						Action:          action.String(),
+						Action:          sqlite.ActionDelete,
+						OriginalID:      "",
 						RawData:         "",
 					}, db)
 					if err != nil {

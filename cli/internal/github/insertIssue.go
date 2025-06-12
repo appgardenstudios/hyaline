@@ -17,15 +17,16 @@ func InsertIssue(ref string, token string, systemID string, db *sql.DB) (err err
 
 	// Get Issue
 	client := github.NewClient(nil).WithAuthToken(token)
-	issue, _, err := client.Issues.Get(context.Background(), owner, repo, id)
+	issue, _, err := client.Issues.Get(context.Background(), owner, repo, int(id))
 	if err != nil {
 		return
 	}
 
 	// Insert PR
-	err = sqlite.InsertIssue(sqlite.Issue{
+	err = sqlite.InsertSystemTask(sqlite.SystemTask{
 		ID:       ref,
 		SystemID: systemID,
+		Type:     "GITHUB_ISSUE",
 		Title:    *issue.Title,
 		Body:     *issue.Body,
 	}, db)

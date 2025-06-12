@@ -17,15 +17,16 @@ func InsertPullRequest(ref string, token string, systemID string, db *sql.DB) (e
 
 	// Get PR
 	client := github.NewClient(nil).WithAuthToken(token)
-	pr, _, err := client.PullRequests.Get(context.Background(), owner, repo, id)
+	pr, _, err := client.PullRequests.Get(context.Background(), owner, repo, int(id))
 	if err != nil {
 		return
 	}
 
 	// Insert PR
-	err = sqlite.InsertPullRequest(sqlite.PullRequest{
+	err = sqlite.InsertSystemChange(sqlite.SystemChange{
 		ID:       ref,
 		SystemID: systemID,
+		Type:     "GITHUB_PULL_REQUEST",
 		Title:    *pr.Title,
 		Body:     *pr.Body,
 	}, db)

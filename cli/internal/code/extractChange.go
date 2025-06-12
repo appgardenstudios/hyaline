@@ -6,29 +6,36 @@ import (
 	"hyaline/internal/repo"
 	"hyaline/internal/sqlite"
 	"log/slog"
+	"slices"
 
 	"github.com/go-git/go-git/v5"
 	"github.com/go-git/go-git/v5/utils/merkletrie"
 )
 
-func ExtractChange(system *config.System, head string, base string, db *sql.DB) (err error) {
+func ExtractChange(system *config.System, head string, base string, codeIDs []string, db *sql.DB) (err error) {
 	// Process each code source
-	for _, c := range system.Code {
+	for _, c := range system.CodeSources {
+		// Only extract if this code ID is passed in
+		if !slices.Contains(codeIDs, c.ID) {
+			slog.Debug("code.ExtractChange skipping non-included code source", "system", system.ID, "code", c.ID)
+			continue
+		}
+
 		// Only extract changed code for git sources
-		if c.Extractor != config.ExtractorGit {
+		if c.Extractor.Type != config.ExtractorTypeGit {
 			slog.Debug("code.ExtractChange skipping non-git code source", "system", system.ID, "code", c.ID)
 			continue
 		}
 		slog.Debug("code.ExtractChange extracting code", "system", system.ID, "code", c.ID, "head", head, "base", base)
 
 		// Get document path
-		path := c.GitOptions.Path
+		path := c.Extractor.Options.Path
 		if path == "" {
-			path = c.GitOptions.Repo
+			path = c.Extractor.Options.Repo
 		}
 
 		// Insert Code
-		err = sqlite.InsertCode(sqlite.Code{
+		err = sqlite.InsertSystemCode(sqlite.SystemCode{
 			ID:       c.ID,
 			SystemID: system.ID,
 			Path:     path,
@@ -40,7 +47,7 @@ func ExtractChange(system *config.System, head string, base string, db *sql.DB) 
 
 		// Initialize go-git repo (on disk or in mem)
 		var r *git.Repository
-		r, err = repo.GetRepo(c.GitOptions)
+		r, err = repo.GetRepo(c.Extractor.Options)
 		if err != nil {
 			slog.Debug("code.ExtractChange could not get repo", "error", err)
 			return
@@ -70,19 +77,20 @@ func ExtractChange(system *config.System, head string, base string, db *sql.DB) 
 			case merkletrie.Insert:
 				fallthrough
 			case merkletrie.Modify:
-				if config.PathIsIncluded(change.To.Name, c.Include, c.Exclude) {
+				if config.PathIsIncluded(change.To.Name, c.Extractor.Include, c.Extractor.Exclude) {
 					slog.Debug("code.ExtractChange inserting file", "file", change.To.Name, "action", action)
 					bytes, err := repo.GetBlobBytes(to.Blob)
 					if err != nil {
 						slog.Debug("code.ExtractChange could not retrieve blob from diff", "error", err)
 						return err
 					}
-					err = sqlite.InsertFile(sqlite.File{
-						ID:       change.To.Name,
-						CodeID:   c.ID,
-						SystemID: system.ID,
-						Action:   action.String(),
-						RawData:  string(bytes),
+					err = sqlite.InsertSystemFile(sqlite.SystemFile{
+						ID:         change.To.Name,
+						CodeID:     c.ID,
+						SystemID:   system.ID,
+						Action:     sqlite.MapAction(action, change.From.Name, change.To.Name),
+						OriginalID: change.From.Name,
+						RawData:    string(bytes),
 					}, db)
 					if err != nil {
 						slog.Debug("code.ExtractChange could not insert file", "error", err)
@@ -90,14 +98,15 @@ func ExtractChange(system *config.System, head string, base string, db *sql.DB) 
 					}
 				}
 			case merkletrie.Delete:
-				if config.PathIsIncluded(change.To.Name, c.Include, c.Exclude) {
+				if config.PathIsIncluded(change.To.Name, c.Extractor.Include, c.Extractor.Exclude) {
 					slog.Debug("code.ExtractChange inserting file", "file", change.From.Name, "action", action)
-					err = sqlite.InsertFile(sqlite.File{
-						ID:       change.From.Name,
-						CodeID:   c.ID,
-						SystemID: system.ID,
-						Action:   action.String(),
-						RawData:  "",
+					err = sqlite.InsertSystemFile(sqlite.SystemFile{
+						ID:         change.From.Name,
+						CodeID:     c.ID,
+						SystemID:   system.ID,
+						Action:     sqlite.ActionDelete,
+						OriginalID: "",
+						RawData:    "",
 					}, db)
 					if err != nil {
 						slog.Debug("code.ExtractChange could not insert file", "error", err)

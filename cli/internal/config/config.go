@@ -1,58 +1,47 @@
 package config
 
-import (
-	"errors"
-	"fmt"
-	"log/slog"
-	"os"
-	"path/filepath"
-	"strings"
-
-	"github.com/bmatcuk/doublestar/v4"
-	"gopkg.in/yaml.v3"
-)
-
 type Config struct {
-	LLM     LLM      `yaml:"llm"`
-	GitHub  GitHub   `yaml:"github"`
-	Systems []System `yaml:"systems"`
+	LLM             LLM           `yaml:"llm,omitempty"`
+	GitHub          GitHub        `yaml:"github,omitempty"`
+	Systems         []System      `yaml:"systems,omitempty"`
+	CommonDocuments []DocumentSet `yaml:"commonDocuments,omitempty"`
+}
+
+func (c *Config) GetSystem(id string) (system System, found bool) {
+	for _, s := range c.Systems {
+		if s.ID == id {
+			return s, true
+		}
+	}
+
+	return
+}
+
+func (c *Config) GetCommonDocumentSet(id string) (documentSet DocumentSet, found bool) {
+	for _, s := range c.CommonDocuments {
+		if s.ID == id {
+			return s, true
+		}
+	}
+
+	return
 }
 
 type LLM struct {
-	Provider string `yaml:"provider"`
-	Model    string `yaml:"model"`
-	Key      string `yaml:"key"`
+	Provider LLMProvider `yaml:"provider,omitempty"`
+	Model    string      `yaml:"model,omitempty"`
+	Key      string      `yaml:"key,omitempty"`
 }
 
-type GitHub struct {
-	Token string `yaml:"token"`
+type LLMProvider string
+
+func (p LLMProvider) String() string {
+	return string(p)
 }
 
-type System struct {
-	ID     string  `yaml:"id"`
-	Code   []Code  `yaml:"code"`
-	Docs   []Doc   `yaml:"docs"`
-	Checks []Check `yaml:"checks"`
-}
-
-type Extractor string
-
-func (e Extractor) String() string {
-	return string(e)
-}
-
-func (e Extractor) IsValidCodeExtractor() bool {
-	switch e {
-	case ExtractorFs, ExtractorGit:
-		return true
-	default:
-		return false
-	}
-}
-
-func (e Extractor) IsValidDocExtractor() bool {
-	switch e {
-	case ExtractorFs, ExtractorGit, ExtractorHttp:
+func (p LLMProvider) IsValidLLMProvider() bool {
+	switch p {
+	case LLMProviderAnthropic, LLMProviderTesting:
 		return true
 	default:
 		return false
@@ -60,60 +49,159 @@ func (e Extractor) IsValidDocExtractor() bool {
 }
 
 const (
-	ExtractorFs   Extractor = "fs"
-	ExtractorGit  Extractor = "git"
-	ExtractorHttp Extractor = "http"
+	LLMProviderAnthropic LLMProvider = "anthropic"
+	LLMProviderTesting   LLMProvider = "testing"
 )
 
-type FsOptions struct {
-	Path string `yaml:"path"`
+type GitHub struct {
+	Token string `yaml:"token,omitempty"`
 }
 
-type GitOptions struct {
-	Repo     string             `yaml:"repo"`
-	Branch   string             `yaml:"branch"`
-	Path     string             `yaml:"path"`
-	Clone    bool               `yaml:"clone"`
-	HTTPAuth GitHTTPAuthOptions `yaml:"httpAuth"`
-	SSHAuth  GitSSHAuthOptions  `yaml:"sshAuth"`
+type System struct {
+	ID                   string                `yaml:"id,omitempty"`
+	CodeSources          []CodeSource          `yaml:"code,omitempty"`
+	DocumentationSources []DocumentationSource `yaml:"documentation,omitempty"`
 }
 
-type HttpOptions struct {
-	BaseURL string            `yaml:"baseUrl"`
-	Start   string            `yaml:"start"`
-	Headers map[string]string `yaml:"headers"`
+func (s *System) GetDocumentationSource(id string) (doc DocumentationSource, found bool) {
+	for _, d := range s.DocumentationSources {
+		if d.ID == id {
+			return d, true
+		}
+	}
+
+	return
 }
 
-type GitHTTPAuthOptions struct {
-	Username string `yaml:"username"`
-	Password string `yaml:"password"`
+type Extractor struct {
+	Type    ExtractorType    `yaml:"type,omitempty"`
+	Options ExtractorOptions `yaml:"options,omitempty"`
+	Include []string         `yaml:"include,omitempty"`
+	Exclude []string         `yaml:"exclude,omitempty"`
 }
 
-type GitSSHAuthOptions struct {
-	User     string `yaml:"user"`
-	PEM      string `yaml:"pem"`
-	Password string `yaml:"password"`
+type ExtractorType string
+
+func (e ExtractorType) String() string {
+	return string(e)
 }
 
-type Code struct {
-	ID         string     `yaml:"id"`
-	Extractor  Extractor  `yaml:"extractor"`
-	FsOptions  FsOptions  `yaml:"fs"`
-	GitOptions GitOptions `yaml:"git"`
-	Include    []string   `yaml:"include"`
-	Exclude    []string   `yaml:"exclude"`
+func (e ExtractorType) IsValidCodeExtractor() bool {
+	switch e {
+	case ExtractorTypeFs, ExtractorTypeGit:
+		return true
+	default:
+		return false
+	}
 }
 
-type Doc struct {
-	ID          string         `yaml:"id"`
-	Type        DocType        `yaml:"type"`
-	HTML        DocHTMLOptions `yaml:"html"`
-	Extractor   Extractor      `yaml:"extractor"`
-	FsOptions   FsOptions      `yaml:"fs"`
-	GitOptions  GitOptions     `yaml:"git"`
-	HttpOptions HttpOptions    `yaml:"http"`
-	Include     []string       `yaml:"include"`
-	Exclude     []string       `yaml:"exclude"`
+func (e ExtractorType) IsValidDocExtractor() bool {
+	switch e {
+	case ExtractorTypeFs, ExtractorTypeGit, ExtractorTypeHttp:
+		return true
+	default:
+		return false
+	}
+}
+
+const (
+	ExtractorTypeFs   ExtractorType = "fs"
+	ExtractorTypeGit  ExtractorType = "git"
+	ExtractorTypeHttp ExtractorType = "http"
+)
+
+// Note: there should be a better way rather than crunching everything together
+type ExtractorOptions struct {
+	Path    string            `yaml:"path,omitempty"`
+	Repo    string            `yaml:"repo,omitempty"`
+	Branch  string            `yaml:"branch,omitempty"`
+	Clone   bool              `yaml:"clone,omitempty"`
+	Auth    ExtractorAuth     `yaml:"auth,omitempty"`
+	BaseURL string            `yaml:"baseUrl,omitempty"`
+	Start   string            `yaml:"start,omitempty"`
+	Headers map[string]string `yaml:"headers,omitempty"`
+}
+
+type ExtractorAuthType string
+
+func (e ExtractorAuthType) String() string {
+	return string(e)
+}
+
+const (
+	ExtractorAuthHTTP ExtractorAuthType = "http"
+	ExtractorAuthSSH  ExtractorAuthType = "ssh"
+)
+
+type ExtractorAuth struct {
+	Type    ExtractorAuthType    `yaml:"type,omitempty"`
+	Options ExtractorAuthOptions `yaml:"options,omitempty"`
+}
+
+type ExtractorAuthOptions struct {
+	Username string `yaml:"username,omitempty"`
+	Password string `yaml:"password,omitempty"`
+	User     string `yaml:"user,omitempty"`
+	PEM      string `yaml:"pem,omitempty"`
+}
+
+type CodeSource struct {
+	ID        string    `yaml:"id,omitempty"`
+	Extractor Extractor `yaml:"extractor,omitempty"`
+}
+
+type DocumentationSource struct {
+	ID               string                     `yaml:"id,omitempty"`
+	Type             DocType                    `yaml:"type,omitempty"`
+	Options          DocumentationSourceOptions `yaml:"options,omitempty"`
+	Extractor        Extractor                  `yaml:"extractor,omitempty"`
+	IncludeDocuments []string                   `yaml:"includeDocuments,omitempty"`
+	Documents        []Document                 `yaml:"documents,omitempty"`
+}
+
+func (d *DocumentationSource) GetDocuments(c *Config) (documents []Document) {
+	// create a map of added documents so we can see what we have already added
+	documentMap := map[string]struct{}{}
+
+	// Add all documents from our documentation source first
+	for _, document := range d.Documents {
+		_, found := documentMap[document.Name]
+		if !found {
+			documentMap[document.Name] = struct{}{}
+			documents = append(documents, document)
+		}
+
+	}
+
+	// Add documents from our common documents so that documents in later sets take priority of those
+	// in earlier sets as defined by the order of the commonDocument IDs.
+	for i := len(d.IncludeDocuments) - 1; i >= 0; i-- {
+		documentSetID := d.IncludeDocuments[i]
+		docSet, docSetFound := c.GetCommonDocumentSet(documentSetID)
+		if !docSetFound {
+			continue
+		}
+
+		for _, document := range docSet.Documents {
+			_, found := documentMap[document.Name]
+			if !found {
+				documentMap[document.Name] = struct{}{}
+				documents = append(documents, document)
+			}
+		}
+	}
+
+	return
+}
+
+func (d *DocumentationSource) GetDocument(c *Config, path string) (document Document, found bool) {
+	for _, doc := range d.GetDocuments(c) {
+		if doc.Name == path {
+			return doc, true
+		}
+	}
+
+	return
 }
 
 type DocType string
@@ -136,178 +224,42 @@ const (
 	DocTypeHTML     DocType = "html"
 )
 
-type DocHTMLOptions struct {
-	Selector string `yaml:"selector"`
+type DocumentationSourceOptions struct {
+	Selector string `yaml:"selector,omitempty"`
 }
 
-type Check struct {
-	ID          string                 `yaml:"id"`
-	Description string                 `yaml:"description"`
-	Rule        string                 `yaml:"rule"`
-	Options     map[string]interface{} `yaml:"options"`
+type DocumentSet struct {
+	ID        string     `yaml:"id,omitempty"`
+	Documents []Document `yaml:"documents,omitempty"`
 }
 
-func Load(path string) (cfg *Config, err error) {
-	slog.Debug("config.Load config starting")
-	// Read file from disk
-	absPath, err := filepath.Abs(path)
-	if err != nil {
-		slog.Debug("config.Load could not get an absolute path from the provided path", "path", path, "error", err)
-		return
-	}
-	slog.Debug("config.Load resolved absolute path for config", "path", path, "absPath", absPath)
-	data, err := os.ReadFile(absPath)
-	if err != nil {
-		slog.Debug("config.Load could not read config file from disk", "error", err)
-		return
-	}
-
-	// Replace any env references ($KEY or ${KEY} with the contents of KEY from env)
-	data = []byte(os.Expand(string(data), getEscapedEnv))
-
-	// Parse file into the struct
-	cfg = &Config{}
-	err = yaml.Unmarshal(data, cfg)
-	if err != nil {
-		slog.Debug("config.Load could not unmarshal yaml config", "error", err)
-		return
-	}
-
-	// Validate
-	err = validate(cfg)
-	if err != nil {
-		slog.Debug("config.Load found an invalid config", "error", err)
-		return
-	}
-
-	slog.Debug("config.Load config complete")
-	return
+type Document struct {
+	Name     string            `yaml:"name,omitempty"`
+	Purpose  string            `yaml:"purpose,omitempty"`
+	Required bool              `yaml:"required,omitempty"`
+	Ignore   bool              `yaml:"ignore,omitempty"`
+	UpdateIf UpdateIf          `yaml:"updateIf,omitempty"`
+	Sections []DocumentSection `yaml:"sections,omitempty"`
 }
 
-// Handle cases where an env var contains newlines by escaping them and
-// wrapping the value in double quotes so that \n will be expanded back out
-// in the final string value (ex. PEM files). This is done so our env var
-// substitution does not mess up the yaml config file.
-func getEscapedEnv(key string) string {
-	val := os.Getenv(key)
-
-	// If the value contains the 2 character sequence "\"+"n", replace it with a newline character.
-	if strings.Contains(val, "\\n") {
-		val = strings.ReplaceAll(val, "\\n", "\n")
-	}
-
-	// If the value contains a newline character, escape the entire string and enclose it in "" so
-	// that the yaml parser interprets the \n as newline characters when parsing it.
-	if strings.Contains(val, "\n") {
-		// Strip out carriage returns (just in case)
-		val = strings.ReplaceAll(val, "\r", "")
-		// Escape all newlines and double quotes
-		val = strings.ReplaceAll(val, "\"", "\\\"")
-		val = strings.ReplaceAll(val, "\n", "\\n")
-		return fmt.Sprintf("\"%s\"", val)
-	}
-
-	return val
+type DocumentSection struct {
+	Name     string            `yaml:"name,omitempty"`
+	Purpose  string            `yaml:"purpose,omitempty"`
+	Required bool              `yaml:"required,omitempty"`
+	Ignore   bool              `yaml:"ignore,omitempty"`
+	UpdateIf UpdateIf          `yaml:"updateIf,omitempty"`
+	Sections []DocumentSection `yaml:"sections,omitempty"`
 }
 
-func validate(cfg *Config) (err error) {
-	// Validate Systems
-	for _, system := range cfg.Systems {
-
-		// Validate code block
-		codeIDs := map[string]struct{}{}
-		for _, code := range system.Code {
-			// Ensure that system/code combinations are unique
-			if _, ok := codeIDs[code.ID]; ok {
-				err = errors.New("duplicate code id detected: " + system.ID + " > " + code.ID)
-				slog.Debug("config.Validate found duplicate code id", "system", system.ID, "code", code.ID, "error", err)
-				return
-			}
-			codeIDs[code.ID] = struct{}{}
-
-			// Ensure extractor is valid
-			if !code.Extractor.IsValidCodeExtractor() {
-				err = errors.New("invalid code extractor detected: " + system.ID + " > " + code.ID + " > " + code.Extractor.String())
-				slog.Debug("config.Validate found invalid code extractor", "extractor", code.Extractor.String(), "system", system.ID, "code", code.ID, "error", err)
-				return
-			}
-
-			// Ensure include patterns are valid
-			for _, include := range code.Include {
-				if !doublestar.ValidatePattern(include) {
-					err = errors.New("invalid code include pattern detected: " + system.ID + " > " + code.ID + " > " + include)
-					slog.Debug("config.Validate found invalid include pattern", "include", include, "system", system.ID, "code", code.ID, "error", err)
-					return
-				}
-			}
-
-			// Ensure exclude patterns are valid
-			for _, exclude := range code.Exclude {
-				if !doublestar.ValidatePattern(exclude) {
-					err = errors.New("invalid code exclude pattern detected: " + system.ID + " > " + code.ID + " > " + exclude)
-					slog.Debug("config.Validate found invalid exclude pattern", "exclude", exclude, "system", system.ID, "code", code.ID, "error", err)
-					return
-				}
-			}
-		}
-
-		// Validate docs block
-		docIDs := map[string]struct{}{}
-		for _, doc := range system.Docs {
-			// Ensure that system/docs combinations are unique
-			if _, ok := docIDs[doc.ID]; ok {
-				err = errors.New("duplicate docs id detected: " + system.ID + " > " + doc.ID)
-				slog.Debug("config.Validate found duplicate docs id", "system", system.ID, "doc", doc.ID, "error", err)
-				return
-			}
-			docIDs[doc.ID] = struct{}{}
-
-			// Ensure that doc type is valid
-			if !doc.Type.IsValid() {
-				err = errors.New("invalid doc type '" + doc.Type.String() + "' detected: " + system.ID + " > " + doc.ID)
-				slog.Debug("config.Validate found invalid doc type", "system", system.ID, "doc", doc.ID, "type", doc.Type.String(), "error", err)
-				return
-			}
-
-			// Ensure extractor is valid
-			if !doc.Extractor.IsValidDocExtractor() {
-				err = errors.New("invalid doc extractor detected: " + system.ID + " > " + doc.ID + " > " + doc.Extractor.String())
-				slog.Debug("config.Validate found invalid doc extractor", "extractor", doc.Extractor.String(), "system", system.ID, "doc", doc.ID, "error", err)
-				return
-			}
-
-			// Ensure include patterns are valid
-			for _, include := range doc.Include {
-				if !doublestar.ValidatePattern(include) {
-					err = errors.New("invalid doc include pattern detected: " + system.ID + " > " + doc.ID + " > " + include)
-					slog.Debug("config.Validate found invalid doc include", "include", include, "system", system.ID, "doc", doc.ID, "error", err)
-					return
-				}
-			}
-
-			// Ensure exclude patterns are valid
-			for _, exclude := range doc.Exclude {
-				if !doublestar.ValidatePattern(exclude) {
-					err = errors.New("invalid doc exclude pattern detected: " + system.ID + " > " + doc.ID + " > " + exclude)
-					slog.Debug("config.Validate found invalid doc exclude", "exclude", exclude, "system", system.ID, "doc", doc.ID, "error", err)
-					return
-				}
-			}
-		}
-	}
-	return
+type UpdateIf struct {
+	Touched  []UpdateIfEntry `yaml:"touched,omitempty"`
+	Added    []UpdateIfEntry `yaml:"added,omitempty"`
+	Modified []UpdateIfEntry `yaml:"modified,omitempty"`
+	Deleted  []UpdateIfEntry `yaml:"deleted,omitempty"`
+	Renamed  []UpdateIfEntry `yaml:"renamed,omitempty"`
 }
 
-func GetSystem(system string, cfg *Config) (targetSystem *System, err error) {
-	for _, s := range cfg.Systems {
-		if s.ID == system {
-			targetSystem = &s
-		}
-	}
-	if targetSystem == nil {
-		slog.Debug("config.GetSystem target system not found", "system", system)
-		err = errors.New("system not found: " + system)
-	}
-
-	return
+type UpdateIfEntry struct {
+	CodeSource string `yaml:"codeID,omitempty"`
+	Glob       string `yaml:"glob,omitempty"`
 }

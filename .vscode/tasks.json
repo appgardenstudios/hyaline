@@ -13,6 +13,36 @@
       "presentation":{
         "reveal": "silent"
       }
+    },{
+      "label": "cleanup-generate",
+      "type": "shell",
+      "command": "rm -f generated-config.yml",
+      "options":{
+        "cwd": "${workspaceFolder}/cli/"
+      },
+      "presentation":{
+        "reveal": "silent"
+      }
+    },{
+      "label": "cleanup-check",
+      "type": "shell",
+      "command": "rm -f results.json",
+      "options":{
+        "cwd": "${workspaceFolder}/cli/"
+      },
+      "presentation":{
+        "reveal": "silent"
+      }
+    },{
+      "label": "cleanup-update-pr",
+      "type": "shell",
+      "command": "rm -f comment.json",
+      "options":{
+        "cwd": "${workspaceFolder}/cli/"
+      },
+      "presentation":{
+        "reveal": "silent"
+      }
     }
   ]
 }

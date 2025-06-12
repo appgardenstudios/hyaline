@@ -1,6 +1,7 @@
 package e2e
 
 import (
+	"bytes"
 	"database/sql"
 	"flag"
 	"io"
@@ -177,4 +178,33 @@ func getRows(table string, db *sql.DB, t *testing.T) [][]interface{} {
 	}
 
 	return rows
+}
+
+func compareFiles(path1 string, path2 string, t *testing.T) {
+	// Get abs path for both files
+	absPath1, err := filepath.Abs(path1)
+	t.Log("absPath1", absPath1)
+	if err != nil {
+		t.Fatal(err)
+	}
+	absPath2, err := filepath.Abs(path2)
+	t.Log("absPath2", absPath2)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	// Read content of both files
+	path1bytes, err := os.ReadFile(absPath1)
+	if err != nil {
+		t.Fatal(err)
+	}
+	path2bytes, err := os.ReadFile(absPath2)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	// Compare
+	if !bytes.Equal(path1bytes, path2bytes) {
+		t.Fatal("path1 and path2 do not have the same contents")
+	}
 }

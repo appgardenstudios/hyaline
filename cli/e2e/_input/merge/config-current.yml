@@ -1,0 +1,97 @@
+github:
+  token: ${HYALINE_GITHUB_PAT}
+
+systems:
+  - id: git
+    code:
+      - id: app-path
+        extractor:
+          type: git
+          options:
+            path: ../../hyaline-example/
+            branch: main
+          include:
+            - package.json
+            - "**/*.js"
+          exclude:
+            - "**/*.test.js"
+      - id: app-ssh
+        extractor:
+          type: git
+          options:
+            repo: git@github.com:appgardenstudios/hyaline-example.git
+            # path: /Users/johnmclark/code/hyaline-code-ssh
+            branch: main
+            clone: true
+            auth:
+              type: ssh
+              options:
+                user: git
+                pem: ${HYALINE_SSH_PEM}
+                password: ${HYALINE_SSH_PASSWORD}
+          include:
+            - package.json
+            - "**/*.js"
+          exclude:
+            - "**/*.test.js"
+      - id: app-http
+        extractor:
+          type: git
+          options:
+            repo: https://github.com/appgardenstudios/hyaline-example.git
+            # path: /Users/johnmclark/code/hyaline-code-http
+            branch: main
+            clone: true
+            auth:
+              type: http
+              options:
+                username: git
+                password: ${HYALINE_GITHUB_PAT}
+          include:
+            - package.json
+            - "**/*.js"
+          exclude:
+            - "**/*.test.js"
+    documentation:
+      - id: app-path
+        type: md
+        extractor:
+          type: git
+          options:
+            path: ../../hyaline-example/
+            branch: main
+          include:
+            - "**/*.md"
+      - id: app-ssh
+        type: md
+        extractor:
+          type: git
+          options:
+            repo: git@github.com:appgardenstudios/hyaline-example.git
+            # path: /Users/johnmclark/code/hyaline-docs-ssh
+            branch: main
+            clone: true
+            auth:
+              type: ssh
+              options:
+                user: git
+                pem: ${HYALINE_SSH_PEM}
+                password: ${HYALINE_SSH_PASSWORD}
+          include:
+            - "**/*.md"
+      - id: app-http
+        type: md
+        extractor:
+          type: git
+          options:
+            repo: https://github.com/appgardenstudios/hyaline-example.git
+            # path: /Users/johnmclark/code/hyaline-docs-http
+            branch: main
+            clone: true
+            auth:
+              type: http
+              options:
+                username: git
+                password: ${HYALINE_GITHUB_PAT}
+          include:
+            - "**/*.md"

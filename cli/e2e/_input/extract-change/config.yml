@@ -5,29 +5,35 @@ systems:
   - id: my-app
     code:
       - id: app-ssh
-        extractor: git
-        git:
-          repo: git@github.com:appgardenstudios/hyaline-example.git
-          branch: main
-          clone: true
-          sshAuth:
-            user: git
-            pem: ${HYALINE_SSH_PEM}
-        include:
-          - package.json
-          - "**/*.js"
-        exclude:
-          - "**/*.test.js"
-    docs:
+        extractor:
+          type: git
+          options:
+            repo: git@github.com:appgardenstudios/hyaline-example.git
+            branch: main
+            clone: true
+            auth:
+              type: ssh
+              options:
+                user: git
+                pem: ${HYALINE_SSH_PEM}
+          include:
+            - package.json
+            - "**/*.js"
+          exclude:
+            - "**/*.test.js"
+    documentation:
       - id: md-ssh
         type: md
-        extractor: git
-        git:
-          repo: git@github.com:appgardenstudios/hyaline-example.git
-          branch: main
-          clone: true
-          sshAuth:
-            user: git
-            pem: ${HYALINE_SSH_PEM}
-        include:
-          - "**/*.md"
+        extractor:
+          type: git
+          options:
+            repo: git@github.com:appgardenstudios/hyaline-example.git
+            branch: main
+            clone: true
+            auth:
+              type: ssh
+              options:
+                user: git
+                pem: ${HYALINE_SSH_PEM}
+          include:
+            - "**/*.md"

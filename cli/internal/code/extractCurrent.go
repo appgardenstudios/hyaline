@@ -18,23 +18,23 @@ import (
 
 func ExtractCurrent(system *config.System, db *sql.DB) (err error) {
 	// Process each code source
-	for _, c := range system.Code {
+	for _, c := range system.CodeSources {
 		slog.Debug("code.ExtractCurrent extracting code", "system", system.ID, "code", c.ID)
 
 		// Get document path
 		var path string
-		switch c.Extractor {
-		case config.ExtractorFs:
-			path = c.FsOptions.Path
-		case config.ExtractorGit:
-			path = c.GitOptions.Path
+		switch c.Extractor.Type {
+		case config.ExtractorTypeFs:
+			path = c.Extractor.Options.Path
+		case config.ExtractorTypeGit:
+			path = c.Extractor.Options.Path
 			if path == "" {
-				path = c.GitOptions.Repo
+				path = c.Extractor.Options.Repo
 			}
 		}
 
 		// Insert Code
-		err = sqlite.InsertCode(sqlite.Code{
+		err = sqlite.InsertSystemCode(sqlite.SystemCode{
 			ID:       c.ID,
 			SystemID: system.ID,
 			Path:     path,
@@ -45,33 +45,33 @@ func ExtractCurrent(system *config.System, db *sql.DB) (err error) {
 		}
 
 		// Extract based on the extractor
-		switch c.Extractor {
-		case config.ExtractorFs:
+		switch c.Extractor.Type {
+		case config.ExtractorTypeFs:
 			err = ExtractCurrentFs(system.ID, &c, db)
 			if err != nil {
 				slog.Debug("code.ExtractCurrent could not extract code using fs extractor", "error", err, "code", c.ID)
 				return
 			}
-		case config.ExtractorGit:
+		case config.ExtractorTypeGit:
 			err = ExtractCurrentGit(system.ID, &c, db)
 			if err != nil {
 				slog.Debug("code.ExtractCurrent could not extract code using git extractor", "error", err, "code", c.ID)
 				return
 			}
 		default:
-			slog.Debug("code.ExtractCurrent unknown extractor", "extractor", c.Extractor.String(), "code", c.ID)
-			return errors.New("Unknown Extractor '" + c.Extractor.String() + "' for code " + c.ID)
+			slog.Debug("code.ExtractCurrent unknown extractor", "extractor", c.Extractor.Type.String(), "code", c.ID)
+			return errors.New("Unknown Extractor '" + c.Extractor.Type.String() + "' for code " + c.ID)
 		}
 	}
 
 	return
 }
 
-func ExtractCurrentFs(systemID string, c *config.Code, db *sql.DB) (err error) {
+func ExtractCurrentFs(systemID string, c *config.CodeSource, db *sql.DB) (err error) {
 	// Get our absolute path
-	absPath, err := filepath.Abs(c.FsOptions.Path)
+	absPath, err := filepath.Abs(c.Extractor.Options.Path)
 	if err != nil {
-		slog.Debug("code.ExtractCurrentFs could not determine absolute code path", "error", err, "path", c.FsOptions.Path)
+		slog.Debug("code.ExtractCurrentFs could not determine absolute code path", "error", err, "path", c.Extractor.Options.Path)
 		return err
 	}
 	slog.Debug("code.ExtractCurrentFs extracting code from path", "absPath", absPath)
@@ -81,7 +81,7 @@ func ExtractCurrentFs(systemID string, c *config.Code, db *sql.DB) (err error) {
 	// https://pkg.go.dev/os@go1.24.1#Root
 	root, err := os.OpenRoot(absPath)
 	if err != nil {
-		slog.Debug("code.ExtractCurrentFs could not open fs root", "error", err, "path", c.FsOptions.Path)
+		slog.Debug("code.ExtractCurrentFs could not open fs root", "error", err, "path", c.Extractor.Options.Path)
 		return err
 	}
 	fsRoot := root.FS()
@@ -90,7 +90,7 @@ func ExtractCurrentFs(systemID string, c *config.Code, db *sql.DB) (err error) {
 	files := map[string]struct{}{}
 
 	// Loop through our includes and get files
-	for _, include := range c.Include {
+	for _, include := range c.Extractor.Include {
 		slog.Debug("code.ExtractCurrentFs extracting code using include", "include", include, "code", c.ID)
 
 		// Get matched files
@@ -104,7 +104,7 @@ func ExtractCurrentFs(systemID string, c *config.Code, db *sql.DB) (err error) {
 		for _, file := range matches {
 			// See if we have a match for at least one of our excludes
 			match := false
-			for _, exclude := range c.Exclude {
+			for _, exclude := range c.Extractor.Exclude {
 				match = doublestar.MatchUnvalidated(exclude, file)
 				if match {
 					slog.Debug("code.ExtractCurrentFs file excluded", "file", file, "exclude", exclude)
@@ -125,11 +125,13 @@ func ExtractCurrentFs(systemID string, c *config.Code, db *sql.DB) (err error) {
 			return err
 		}
 
-		err = sqlite.InsertFile(sqlite.File{
-			ID:       file,
-			CodeID:   c.ID,
-			SystemID: systemID,
-			RawData:  string(contents),
+		err = sqlite.InsertSystemFile(sqlite.SystemFile{
+			ID:         file,
+			CodeID:     c.ID,
+			SystemID:   systemID,
+			Action:     sqlite.ActionNone,
+			OriginalID: "",
+			RawData:    string(contents),
 		}, db)
 		if err != nil {
 			slog.Debug("code.ExtractCurrentFs could not insert file", "error", err)
@@ -140,10 +142,10 @@ func ExtractCurrentFs(systemID string, c *config.Code, db *sql.DB) (err error) {
 	return
 }
 
-func ExtractCurrentGit(systemID string, c *config.Code, db *sql.DB) (err error) {
+func ExtractCurrentGit(systemID string, c *config.CodeSource, db *sql.DB) (err error) {
 	// Initialize go-git repo (on disk or in mem)
 	var r *git.Repository
-	r, err = repo.GetRepo(c.GitOptions)
+	r, err = repo.GetRepo(c.Extractor.Options)
 	if err != nil {
 		slog.Debug("code.ExtractCurrentGit could not get repo", "error", err)
 		return
@@ -151,15 +153,15 @@ func ExtractCurrentGit(systemID string, c *config.Code, db *sql.DB) (err error) 
 
 	// Extract files from branch
 	branch := "main"
-	if c.GitOptions.Branch != "" {
-		branch = c.GitOptions.Branch
+	if c.Extractor.Options.Branch != "" {
+		branch = c.Extractor.Options.Branch
 	}
 	err = repo.GetFiles(branch, r, func(f *object.File) error {
-		for _, include := range c.Include {
+		for _, include := range c.Extractor.Include {
 			if doublestar.MatchUnvalidated(include, f.Name) {
 				// If excluded, skip this file and continue
 				excluded := false
-				for _, exclude := range c.Exclude {
+				for _, exclude := range c.Extractor.Exclude {
 					if doublestar.MatchUnvalidated(exclude, f.Name) {
 						excluded = true
 						break
@@ -176,11 +178,13 @@ func ExtractCurrentGit(systemID string, c *config.Code, db *sql.DB) (err error) 
 					slog.Debug("code.ExtractCurrentGit could not get blob bytes", "error", err)
 					return err
 				}
-				err = sqlite.InsertFile(sqlite.File{
-					ID:       f.Name,
-					CodeID:   c.ID,
-					SystemID: systemID,
-					RawData:  string(bytes),
+				err = sqlite.InsertSystemFile(sqlite.SystemFile{
+					ID:         f.Name,
+					CodeID:     c.ID,
+					SystemID:   systemID,
+					Action:     sqlite.ActionNone,
+					OriginalID: "",
+					RawData:    string(bytes),
 				}, db)
 				if err != nil {
 					slog.Debug("code.ExtractCurrentFs could not insert file", "error", err)
