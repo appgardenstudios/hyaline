@@ -1,0 +1,228 @@
+<!-- Reusable Table of Contents Layout -->
+<div class="flex min-h-screen">
+  <!-- Desktop ToC Sidebar (Always visible on desktop) -->
+  <aside 
+    id="desktop-toc" 
+    class="hidden md:flex md:flex-col min-w-72 bg-gray-50 border-r border-gray-200 sticky top-16 overflow-y-auto"
+    aria-label="Table of Contents"
+  >
+    <div class="p-6">
+      <nav>
+        {{ .tocContent }}
+      </nav>
+    </div>
+  </aside>
+
+
+  <!-- Mobile ToC Sidebar -->
+  <aside 
+    id="mobile-toc-sidebar" 
+    class="md:hidden fixed left-0 top-0 w-full h-full bg-white shadow-xl z-50 transform -translate-x-full transition-transform duration-300 ease-in-out overflow-y-auto"
+    aria-label="Table of Contents"
+  >
+    <div class="p-6">
+      <div class="flex justify-end items-center">
+        <button
+          id="close-mobile-toc"
+          type="button"
+          class="text-gray-400 hover:text-gray-600 focus:outline-none focus:ring-4 focus:ring-blue-300 focus:ring-offset-2 rounded-md"
+          aria-label="Close table of contents"
+        >
+          <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+      
+      <nav>
+        {{ .tocContent }}
+      </nav>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="flex-1 min-w-0">
+    <!-- Mobile Top Bar with Breadcrumbs -->
+    <div class="md:hidden bg-white border-b border-gray-200 px-4 py-3">
+      <div class="flex items-center space-x-3">
+        <button
+          id="mobile-toc-button"
+          type="button"
+          class="text-gray-600 hover:text-blue-600 focus:outline-none focus:ring-4 focus:ring-blue-300 focus:ring-offset-2 rounded-md p-1"
+          aria-label="Open table of contents"
+        >
+          <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        </button>
+        
+        <!-- Breadcrumbs -->
+        <nav class="flex items-center text-sm text-gray-600 min-w-0" aria-label="Breadcrumb">
+          {{ $pathParts := split .currentPage.File.Path "/" }}
+          {{ if eq (len $pathParts) 2 }}
+            <!-- Root level page -->
+            <span class="text-gray-900 font-medium truncate">{{ .currentPage.Title }}</span>
+          {{ else if eq (len $pathParts) 3 }}
+            <!-- Category page -->
+            {{ $categoryName := index $pathParts 1 }}
+            {{ $categoryTitle := "" }}
+            {{ if eq $categoryName "02-how-to" }}
+              {{ $categoryTitle = "How-to" }}
+            {{ else }}
+              {{ $categoryTitle = $categoryName | replaceRE "^[0-9]+-" "" | replaceRE "-" " " | title }}
+            {{ end }}
+            
+            <a href="/documentation" class="hover:text-blue-600 truncate">Documentation</a>
+            <svg class="h-4 w-4 mx-2 text-gray-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+            </svg>
+            <span class="text-gray-900 font-medium truncate">{{ .currentPage.Title }}</span>
+          {{ end }}
+        </nav>
+      </div>
+    </div>
+    
+    <div class="px-4 sm:px-6 lg:px-8 py-8">
+      <div class="max-w-5xl mx-auto text-center">
+        <div class="text-left">
+        <!-- Document Header -->
+        <header class="mb-8">
+          <h1 class="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+            {{ .currentPage.Title }}
+          </h1>
+          {{ if .currentPage.Params.author }}
+            <div class="text-gray-600 mb-6">
+              <span class="font-medium">{{ .currentPage.Params.author }}</span>
+              {{ if .currentPage.Date }}
+                - <time datetime="{{ .currentPage.Date.Format "2006-01-02" }}">Published {{ .currentPage.Date.Format "January 2, 2006" }}</time>
+              {{ end }}
+            </div>
+          {{ else if .currentPage.Date }}
+            <div class="text-gray-600 mb-6">
+              <time datetime="{{ .currentPage.Date.Format "2006-01-02" }}">Published {{ .currentPage.Date.Format "January 2, 2006" }}</time>
+            </div>
+          {{ end }}
+        </header>
+
+        <!-- Document Content -->
+        <div class="space-y-8 prose prose-lg max-w-none prose-a:text-blue-600 prose-code:before:hidden prose-code:after:hidden break-words">
+          {{ .currentPage.Content }}
+        </div>
+
+        <!-- Document Footer -->
+        <footer class="mt-12 pt-8 border-t border-gray-200">
+          <div class="text-center text-gray-600">
+            {{ if .currentPage.Params.footnotes }}
+              <div class="mb-4">
+                <strong>Footnotes</strong>
+                <div class="mt-2 text-sm">{{ .currentPage.Params.footnotes | markdownify }}</div>
+              </div>
+            {{ end }}
+            
+            {{ if or .currentPage.Params.lastEditBy .currentPage.Params.lastEditDate }}
+              {{ if and .currentPage.Params.lastEditBy (ne .currentPage.Params.lastEditBy .currentPage.Params.author) }}
+                <p class="text-sm">
+                  Last edited by: <strong>{{ .currentPage.Params.lastEditBy }}</strong>
+                  {{ if .currentPage.Params.lastEditDate }}
+                    on <time datetime="{{ .currentPage.Params.lastEditDate }}">{{ dateFormat "January 2, 2006" .currentPage.Params.lastEditDate }}</time>
+                  {{ end }}
+                </p>
+              {{ else if .currentPage.Params.lastEditDate }}
+                <p class="text-sm">
+                  Last updated: <time datetime="{{ .currentPage.Params.lastEditDate }}">{{ dateFormat "January 2, 2006" .currentPage.Params.lastEditDate }}</time>
+                </p>
+              {{ end }}
+            {{ end }}
+          </div>
+        </footer>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  // Mobile ToC Toggle
+  const mobileTocButton = document.getElementById("mobile-toc-button");
+  const mobileTocSidebar = document.getElementById("mobile-toc-sidebar");
+  const closeMobileToc = document.getElementById("close-mobile-toc");
+  function openMobileToc() {
+    if (mobileTocSidebar) {
+      mobileTocSidebar.classList.remove("-translate-x-full");
+      mobileTocSidebar.setAttribute("aria-hidden", "false");
+      
+      // Focus management for accessibility
+      if (closeMobileToc) {
+        closeMobileToc.focus();
+      }
+      
+      // Trap focus within the sidebar
+      document.addEventListener("keydown", trapFocus);
+      
+      // Disable body scroll
+      document.body.style.overflow = "hidden";
+    }
+  }
+
+  function closeMobileTocFn() {
+    if (mobileTocSidebar && mobileTocButton) {
+      mobileTocSidebar.classList.add("-translate-x-full");
+      mobileTocSidebar.setAttribute("aria-hidden", "true");
+      
+      // Return focus to the button that opened the sidebar
+      mobileTocButton.focus();
+      
+      // Remove focus trap
+      document.removeEventListener("keydown", trapFocus);
+      
+      // Re-enable body scroll
+      document.body.style.overflow = "";
+    }
+  }
+
+  function trapFocus(e) {
+    if (e.key === "Escape") {
+      closeMobileTocFn();
+      return;
+    }
+
+    if (e.key === "Tab" && mobileTocSidebar) {
+      const focusableElements = mobileTocSidebar.querySelectorAll(
+        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+      );
+      const firstElement = focusableElements[0];
+      const lastElement = focusableElements[focusableElements.length - 1];
+
+      if (e.shiftKey) {
+        if (document.activeElement === firstElement) {
+          lastElement.focus();
+          e.preventDefault();
+        }
+      } else {
+        if (document.activeElement === lastElement) {
+          firstElement.focus();
+          e.preventDefault();
+        }
+      }
+    }
+  }
+
+  // Event listeners for mobile ToC
+  if (mobileTocButton) {
+    mobileTocButton.addEventListener("click", openMobileToc);
+  }
+
+  if (closeMobileToc) {
+    closeMobileToc.addEventListener("click", closeMobileTocFn);
+  }
+
+  // Handle window resize
+  window.addEventListener("resize", function () {
+    // Close mobile ToC on desktop
+    if (window.innerWidth >= 768) {
+      closeMobileTocFn();
+    }
+  });
+});
+</script>
