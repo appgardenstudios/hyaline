@@ -1,5 +1,5 @@
 ---
-name: Feature
+name: Feature (Internal)
 about: A Product Feature.
 title: ''
 labels: ''

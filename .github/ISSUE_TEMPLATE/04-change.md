@@ -1,5 +1,5 @@
 ---
-name: Change
+name: Change (Internal)
 about: A System Change.
 title: ''
 labels: ''
