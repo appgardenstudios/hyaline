@@ -1,19 +1,20 @@
 ---
 title: How To build the Hyaline CLI
 purpose: Document how to build the Hyaline CLI
+url: documentation/how-to/build-cli
 ---
-# Purpose
+## Purpose
 Build the hyaline cli locally or on a remote machine.
 
-# Prerequisite(s)
+## Prerequisite(s)
 * [Go Toolchain](https://go.dev/) (version 1.24+)
 
-# Steps
+## Steps
 
-## 1. Clone/Checkout Hyaline Repo
+### 1. Clone/Checkout Hyaline Repo
 Ensure that the [Hyaline Repository](https://github.com/appgardenstudios/hyaline) is cloned and checked out to the version you wish to build.
 
-## 2. Determine the Version
+### 2. Determine the Version
 Hyaline uses the commit date and short hash to specify the version being build. This can be determined by running the following commands in the root of the repository with the desired commit checked out.
 
 ```bash
@@ -23,7 +24,7 @@ HASH=`git rev-parse --short HEAD`
 VERSION="$DATE-$HASH"
 ```
 
-## 3. Run Go Build
+### 3. Run Go Build
 Once the version is specified you can build hyaline using the following command (from the root of the repo):
 
 ```bash
@@ -36,12 +37,12 @@ You can specify the OS and architecture to use by setting the appropriate [GOOS/
 $ GOOS=darwin GOARCH=arm64 go build -o ./dist/hyaline -ldflags="-X 'main.Version=$TAG'" ./cmd/hyaline.go
 ```
 
-## 4. Test Executable
+### 4. Test Executable
 Make sure you test that the resulting executable was built sucessfully and at the right version by running:
 
 ```bash
 $ ./hyaline version
 ```
 
-# Next Steps
-Visit [CLI Reference](../reference/cli.md).
+## Next Steps
+Visit [CLI Reference]({{< relref "/documentation/04-reference/02-cli.md" >}}).

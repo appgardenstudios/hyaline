@@ -1,8 +1,9 @@
 ---
 title: Hyaline config
 purpose: Document the configuration options for Hyaline
+url: documentation/reference/config
 ---
-# Overview
+## Overview
 This documents the configuration options and format present in the Hyaline configuration file.
 
 ## Secrets
@@ -20,7 +21,7 @@ github:
 
 In the configuration example above `llm.key` will be set to the value of the environment variable `HYALINE_ANTHROPIC_KEY`, and `github.token` will be set to the value of the environment variable `HYALINE_GITHUB_PAT`
 
-# LLM
+## LLM
 The connection information to use when calling out to an LLM.
 
 ```yaml
@@ -36,7 +37,7 @@ llm:
 
 **key**: The API key to use in requests. Note that this should be pulled from the environment and not hard-coded in the configuration file itself (see Secrets above)
 
-# GitHub
+## GitHub
 The configuration for calling out to GitHub (not used for extraction, just for PR and issue retrieval)
 
 ```yaml
@@ -46,7 +47,7 @@ github:
 
 **token**: The GitHub token. Should be able to read pull requests and issues from relevant repositories.
 
-# Systems
+## Systems
 Stores the configuration for each system known to Hyaline. Defined as a list of system objects.
 
 ```yaml
@@ -125,7 +126,7 @@ Extract source code from a file system path. Note that code sources using this e
 
 Note that Include and Exclude globs are relative to the path specified.
 
-Please see the explanation of [Extract Current](../explanation/extract-current.md) for more information.
+Please see the explanation of [Extract Current]({{< relref "/documentation/03-explanation/02-extract-current.md" >}}) for more information.
 
 ```yaml
 systems:
@@ -141,7 +142,7 @@ systems:
 **path**: The path that code will be extracted from. If the path is not absolute it is joined with the current working directory to turn it into an absolute path. Note that the fs extractor uses [Root](https://pkg.go.dev/os@go1.24.1#Root) when scanning a directory, meaning that while symlinks are followed they must be within the Root.
 
 ##### Code Source Extractor Options (git)
-Extract source code from a git repository (local or remote). For more information on how extraction works please see the documentation for [Extract Current](../explanation/extract-current.md) and [Extract Change](../explanation/extract-change.md).
+Extract source code from a git repository (local or remote). For more information on how extraction works please see the documentation for [Extract Current]({{< relref "/documentation/03-explanation/02-extract-current.md" >}}) and [Extract Change]({{< relref "/documentation/03-explanation/03-extract-change.md" >}}).
 
 Note that Include and Exclude globs are relative to the root of the repository.
 
@@ -247,7 +248,7 @@ systems:
           selector: "#main"
 ```
 
-**selector**: A css-style selector used to extract system documentation when the type of documentation is html. Uses [Cascadia](https://pkg.go.dev/github.com/andybalholm/cascadia). See [Extract Current](../explanation/extract-current.md) and [Extract Change](../explanation/extract-change.md) for more information.
+**selector**: A css-style selector used to extract system documentation when the type of documentation is html. Uses [Cascadia](https://pkg.go.dev/github.com/andybalholm/cascadia). See [Extract Current]({{< relref "/documentation/03-explanation/02-extract-current.md" >}}) and [Extract Change]({{< relref "/documentation/03-explanation/03-extract-change.md" >}}) for more information.
 
 #### Documentation Source Extractor
 An extractor that specifies how documentation is extracted for this Documentation Source and placed into a data set.
@@ -277,7 +278,7 @@ Extract documentation from a file system path. Note that documentation sources u
 
 Note that Include and Exclude globs are relative to the path specified.
 
-Please see the explanation of [Extract Current](../explanation/extract-current.md) for more information.
+Please see the explanation of [Extract Current]({{< relref "/documentation/03-explanation/02-extract-current.md" >}}) for more information.
 
 ```yaml
 systems:
@@ -293,7 +294,7 @@ systems:
 **path**: The path that documentation will be extracted from. If the path is not absolute it is joined with the current working directory to turn it into an absolute path. Note that the fs extractor uses [Root](https://pkg.go.dev/os@go1.24.1#Root) when scanning a directory, meaning that while symlinks are followed they must be within the Root.
 
 ##### Documentation Source Extractor Options (git)
-Extract documentation from a git repository (local or remote). For more information on how extraction works please see the documentation for [Extract Current](../explanation/extract-current.md) and [Extract Change](../explanation/extract-change.md).
+Extract documentation from a git repository (local or remote). For more information on how extraction works please see the documentation for [Extract Current]({{< relref "/documentation/03-explanation/02-extract-current.md" >}}) and [Extract Change]({{< relref "/documentation/03-explanation/03-extract-change.md" >}}).
 
 Note that Include and Exclude globs are relative to the root of the repository.
 
@@ -362,7 +363,7 @@ Extract documentation from an http(s) source via crawling. Note that documentati
 
 Note that Include and Exclude globs are relative to the baseURL.
 
-Please see the explanation of [Extract Current](../explanation/extract-current.md) for more information.
+Please see the explanation of [Extract Current]({{< relref "/documentation/03-explanation/02-extract-current.md" >}}) for more information.
 
 ```yaml
 systems:
@@ -520,7 +521,7 @@ commonDocuments:
         ...
 ```
 
-# Common Documents
+## Common Documents
 A set of common document that can be referenced by documentation sources to reduce duplicate configuration and enforce consistency across systems (e.g. common formats for a README.md document, for example)
 
 ```yaml

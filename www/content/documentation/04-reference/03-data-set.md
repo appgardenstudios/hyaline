@@ -1,13 +1,14 @@
 ---
 title: Hyaline Data Set
 purpose: Detail the schema and usage of the Hyaline data set
+url: documentation/reference/data-set
 ---
-# Overview
+## Overview
 This documents the database schema of the Hyaline Change Set as generated and stored in sqlite. Note that both current and change data sets share the same schema.
 
-![Data Set Schema](_img/data-set-schema.svg)
+![Data Set Schema](/documentation/04-reference/_img/data-set-schema.svg)
 
-# Tables
+## Tables
 The following tables make up a Hyaline Data Set.
 
 ## SYSTEM
@@ -78,7 +79,7 @@ Documents belonging to system documentation sources within Hyaline.
 | ACTION | TEXT | Only set when extracting changes. The git action associated with this document in the case that a change is extracted. See **Enums > Action** below for possible values |
 | ORIGINAL_ID | TEXT | Only set when extracting changes. The original document ID of this document if it was renamed |
 | RAW_DATA | TEXT | The raw contents of this document |
-| EXTRACTED_DATA | TEXT | The data extracted from this document in markdown format. See [Extract Current](../explanation/extract-current.md) for how markdown is extracted from documents |
+| EXTRACTED_DATA | TEXT | The data extracted from this document in markdown format. See [Extract Current]({{< relref "/documentation/03-explanation/02-extract-current.md" >}}) for how markdown is extracted from documents |
 
 ## SYSTEM_SECTION
 Document sections extracted from documents belonging to system documentation sources within Hyaline.
@@ -126,7 +127,7 @@ The Change ID is constructed based on the Type of change. The format for each ty
 | BODY | TEXT | The contents of the task (in markdown) |
 
 
-# Enums
+## Enums
 The following enums exist and are used in Hyaline data sets
 
 ## Action
