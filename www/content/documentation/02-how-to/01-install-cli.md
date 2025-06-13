@@ -28,4 +28,4 @@ Depending on your operating system you will need to do one or more of the follow
 * Add `hyaline` to your PATH (if desired)
 
 ## Next Steps
-Visit [How To Run the CLI]({{< relref "/documentation/02-how-to/02-run-cli.md" >}}) or the [CLI Reference]({{< relref "/documentation/04-reference/02-cli.md" >}}).
+Visit [How To Run the CLI](./02-run-cli.md) or the [CLI Reference](../04-reference/02-cli.md).

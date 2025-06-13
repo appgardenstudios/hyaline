@@ -15,8 +15,8 @@ This documentation follows the concepts of [Diátaxis](https://diataxis.fr/) and
 * Roadmap - A high-level overview of the current and future focus of Hyaline's development
 
 ## Next Steps
-To learn how to get started and install Hyaline please visit [How To Install the CLI]({{< relref "/documentation/02-how-to/01-install-cli.md" >}})
+To learn how to get started and install Hyaline please visit [How To Install the CLI](./02-how-to/01-install-cli.md)
 
-For an in depth explanation of Hyaline itself please visit the [Explanation of Hyaline]({{< relref "/documentation/03-explanation/01-hyaline.md" >}})
+For an in depth explanation of Hyaline itself please visit the [Explanation of Hyaline](./03-explanation/01-hyaline.md)
 
-For a reference guide to the CLI please visit the [CLI Reference]({{< relref "/documentation/04-reference/02-cli.md" >}})
+For a reference guide to the CLI please visit the [CLI Reference](./04-reference/02-cli.md)

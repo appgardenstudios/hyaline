@@ -7,12 +7,12 @@ url: documentation/explanation/update-pr
 ## Overview
 Hyaline has the ability to create or update a comment on a GitHub PR with the results from a previous run of `check change`. When updating, it merges previous recommendations with new ones, as well as maintaining the status of items that have been addressed (either manually or via changes detected by `check change`).
 
-![Overview](/documentation/03-explanation/_img/update-pr-overview.svg)
+![Overview](./_img/update-pr-overview.svg)
 
 The overall flow is `extract current` pulls code and documentation from the base branch to produce a current data set. `extract change` pulls code and documentation from the base branch, along with other change metadata, to produce a change data set. Both data sets are then used by `check change` to produce a set of recommendations. Those recommendations are then used by `update pr` to either add or update a comment on the GitHub Pull Request so humans can take appropriate action.
 
 ## Algorithm
-![Algorithm](/documentation/03-explanation/_img/update-pr-algorithm.svg)
+![Algorithm](./_img/update-pr-algorithm.svg)
 
 The behavior of `update pr` depends on wether or not a pull request comment id is passed in. If one is not present Hyaline formats the contents of the comment based on the recommendations and creates a new comment on the pull request. If a pull request commend ID is passed in Hyaline will retrieve the comment and merge the recommendations and current state of any check marks into the set of newer recommendations to produce the merged set of recommendations that will be used for the comment. Hyaline then uses the merged set of recommendations to format the comment and then updates the existing comment.
 
@@ -46,7 +46,7 @@ The behavior of check marks on the comment depends on the state of the previous 
 </table>
 
 ## Data Displayed
-![Screenshot](/documentation/03-explanation/_img/update-pr-screenshot.png)
+![Screenshot](./_img/update-pr-screenshot.png)
 
 Hyaline places the following information into the Pull Request comment:
 

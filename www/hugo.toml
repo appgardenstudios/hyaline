@@ -18,6 +18,10 @@ enableGitInfo = true
     source = 'assets'
     target = 'assets'
   [[module.mounts]]
+    includeFiles = ['/documentation/**.svg','/documentation/**.png']
+    source = 'content'
+    target = 'assets'
+  [[module.mounts]]
     disableWatch = true
     source = 'hugo_stats.json'
     target = 'assets/notwatching/hugo_stats.json'

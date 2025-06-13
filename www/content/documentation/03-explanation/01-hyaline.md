@@ -36,19 +36,19 @@ A process is any discrete set of tasks that are completed to accomplish a goal. 
 ### Team
 A team is a set of people that use processes to build, maintain, and ship one or more products and/or systems.
 
-![Team](/documentation/03-explanation/_img/hyaline-team.svg)
+![Team](./_img/hyaline-team.svg)
 
 ## Workflow
 Hyaline is built to support the conceptual workflow as follows:
 
-![Team](/documentation/03-explanation/_img/hyaline-workflow.svg)
+![Workflow](./_img/hyaline-workflow.svg)
 
 In this workflow people, assisted by AI, build products and systems. While doing so they create and update Documentation. That documentation is then read and used by people to build products and systems, and the cycle continues. Hyaline sits in between People/AI and Documentation, and is intended to assist in both creating/updating documentation and reading/using documentation to build products and systems.
 
 ## Use Documentation
 Zooming in a bit on the People/AI using Documentation part of the diagram above, we see the following:
 
-![Team](/documentation/03-explanation/_img/hyaline-use.svg)
+![Usage](./_img/hyaline-use.svg)
 
 In the image above you can see the Hyaline extracts code, documentation, and other metadata from a variety of sources. Each system can have multiple code and documentation sources, and Hyaline supports an unlimited number of systems. In the future Hyaline will also support pulling product, process, and team documentation and metadata.
 
@@ -61,14 +61,14 @@ Hyaline also has the ability to scan the current set of an organizations documen
 ## Update Documentation
 Zooming in a bit on the People/AI updating Documentation part of the diagram above, we see the following:
 
-![Team](/documentation/03-explanation/_img/hyaline-update.svg)
+![Update](./_img/hyaline-update.svg)
 
 In the image above you can see that Hyaline looks at system changes to determine what documentation should be updated. It does this by extracting the change and associated metadata (tickets, issues, PRs, etc.) and then determining what documentation in your current data set needs to be updated. It then makes those results available in your existing processes (usually via a comment on your PR) and helps both people and AI make the appropriate changes to the appropriate documentation both inside and outside the repository.
 
 ## Components
 The following items are components of Hyaline:
 
-![Team](/documentation/03-explanation/_img/hyaline-components.svg)
+![Components](./_img/hyaline-components.svg)
 
 ## Documentation
 Your organization's documentation. It can be plain text, markdown, or html, and can be extracted from a file system, git repo, or HTTP(s) server.
@@ -83,25 +83,25 @@ Your organization's metadata, such as issues and pull requests. They can be extr
 A conceptual boundary or unit that can contain any number of code and documentation sources. A system is the primary unit of operation within Hyaline, and there are no limits to the number of systems you can have. It is up to you and your team to split up your code and documentation in a way that makes the most sense to you.
 
 ## Extract
-The process of extracting code, documentation, and other metadata from their respective sources. This extraction process results in a Data Set stored in an SQLite database that can be used by Hyaline or other processes that need access to the code, documentation, and other metadata. For more information on the extraction process please see [hyaline extract current]({{< relref "/documentation/04-reference/02-cli.md#extract-current" >}}) and/or [hyaline extract change]({{< relref "/documentation/04-reference/02-cli.md#extract-change" >}})
+The process of extracting code, documentation, and other metadata from their respective sources. This extraction process results in a Data Set stored in an SQLite database that can be used by Hyaline or other processes that need access to the code, documentation, and other metadata. For more information on the extraction process please see [hyaline extract current](../04-reference/02-cli.md#extract-current) and/or [hyaline extract change](../04-reference/02-cli.md#extract-change)
 
 ## Data Set (Current & Change)
-The result of an extraction, the Data Set holds all of the extracted code, documentation, and other metadata. It consists of a single SQLite database. Please see the [Data Set reference]({{< relref "/documentation/04-reference/03-data-set.md" >}}) for more information.
+The result of an extraction, the Data Set holds all of the extracted code, documentation, and other metadata. It consists of a single SQLite database. Please see the [Data Set reference](../04-reference/03-data-set.md) for more information.
 
 ## Config
-The configuration that Hyaline uses. It is currently supplied via a yaml file. Please see the [Config reference]({{< relref "/documentation/04-reference/01-config.md" >}}) for more information.
+The configuration that Hyaline uses. It is currently supplied via a yaml file. Please see the [Config reference](../04-reference/01-config.md) for more information.
 
 ## Check
 The process of checking either a specific change or an entire set of documentation for issues, recommendations, or suggestions. This produces one or more results with information specific to the actual check that was performed. Please see the documentation for each process linked below:
 
-* [hyaline check current]({{< relref "/documentation/04-reference/02-cli.md#check-current" >}})
-* [hyaline check change]({{< relref "/documentation/04-reference/02-cli.md#check-change" >}})
+* [hyaline check current](../04-reference/02-cli.md#check-current)
+* [hyaline check change](../04-reference/02-cli.md#check-change)
 
 ## Result(s)
 The outcome of a check, the result holds actionable information on what was found and how to address it. Please see the links to the reference documentation for more information:
 
-* [hyaline check current results]({{< relref "/documentation/04-reference/04-results.md#check-current" >}})
-* [hyaline check change results]({{< relref "/documentation/04-reference/04-results.md#check-change" >}})
+* [hyaline check current results](../04-reference/04-results.md#check-current)
+* [hyaline check change results](../04-reference/04-results.md#check-change)
 
 ## Next Steps
-Continue reading about various Hyaline concepts such as [extract current]({{< relref "/documentation/03-explanation/02-extract-current.md" >}}), or get started by visiting [how to install the cli]({{< relref "/documentation/02-how-to/01-install-cli.md" >}}).
+Continue reading about various Hyaline concepts such as [extract current](./02-extract-current.md), or get started by visiting [how to install the cli](../02-how-to/01-install-cli.md).
