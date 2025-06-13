@@ -1,5 +1,6 @@
 ---
-title: How To build the Hyaline CLI
+title: "How To: Build the Hyaline CLI"
+linkTitle: Build the Hyaline CLI
 purpose: Document how to build the Hyaline CLI
 url: documentation/how-to/build-cli
 ---

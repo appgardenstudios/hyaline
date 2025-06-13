@@ -2,6 +2,7 @@ baseURL = 'https://hyaline.dev/'
 languageCode = 'en-us'
 title = 'Hyaline'
 disableKinds = ['taxonomy', 'term']
+enableGitInfo = true
 
 [build]
   [build.buildStats]
@@ -20,3 +21,7 @@ disableKinds = ['taxonomy', 'term']
     disableWatch = true
     source = 'hugo_stats.json'
     target = 'assets/notwatching/hugo_stats.json'
+[markup]
+  [markup.goldmark]
+    [markup.goldmark.renderer]
+      unsafe = true

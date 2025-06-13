@@ -1,5 +1,6 @@
 ---
 title: Overview
+linkTitle: Overview
 purpose: Give an overview of Hyaline and the documentation
 url: documentation/overview
 ---

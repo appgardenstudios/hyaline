@@ -1,5 +1,6 @@
 ---
-title: Extract Current
+title: "Explanation: Extract Current"
+linkTitle: Extract Current
 purpose: Explain how Hyaline extracts current documentation, code, and other metadata
 url: documentation/explanation/extract-current
 ---

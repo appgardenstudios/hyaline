@@ -3,7 +3,7 @@
   <!-- Desktop ToC Sidebar (Always visible on desktop) -->
   <aside 
     id="desktop-toc" 
-    class="hidden md:flex md:flex-col min-w-72 bg-gray-50 border-r border-gray-200 sticky top-16 overflow-y-auto"
+    class="hidden md:flex md:flex-col min-w-72 bg-gray-50 border-r border-gray-200 overflow-y-auto"
     aria-label="Table of Contents"
   >
     <div class="p-6">
@@ -12,7 +12,6 @@
       </nav>
     </div>
   </aside>
-
 
   <!-- Mobile ToC Sidebar -->
   <aside 
@@ -40,19 +39,18 @@
     </div>
   </aside>
 
-  <!-- Main Content -->
-  <main class="flex-1 min-w-0">
+  <div class="flex-1 min-w-0">
     <!-- Mobile Top Bar with Breadcrumbs -->
-    <div class="md:hidden bg-white border-b border-gray-200 px-4 py-3">
+    <div class="md:hidden bg-white px-2 py-2 sticky top-14 shadow-sm border-t border-gray-100">
       <div class="flex items-center space-x-3">
         <button
           id="mobile-toc-button"
           type="button"
-          class="text-gray-600 hover:text-blue-600 focus:outline-none focus:ring-4 focus:ring-blue-300 focus:ring-offset-2 rounded-md p-1"
+          class="text-gray-600 hover:text-blue-600 focus:outline-none focus:ring-4 focus:ring-blue-300 focus:ring-offset-2 rounded-md p-1 border border-gray-300 cursor-pointer"
           aria-label="Open table of contents"
         >
-          <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25" />
           </svg>
         </button>
         
@@ -65,18 +63,13 @@
           {{ else if eq (len $pathParts) 3 }}
             <!-- Category page -->
             {{ $categoryName := index $pathParts 1 }}
-            {{ $categoryTitle := "" }}
-            {{ if eq $categoryName "02-how-to" }}
-              {{ $categoryTitle = "How-to" }}
-            {{ else }}
-              {{ $categoryTitle = $categoryName | replaceRE "^[0-9]+-" "" | replaceRE "-" " " | title }}
-            {{ end }}
+            {{ $categoryTitle := $categoryName | replaceRE "^[0-9]+-" "" | replaceRE "-" " " | title }}
             
-            <a href="/documentation" class="hover:text-blue-600 truncate">Documentation</a>
+            <span class="truncate">{{ $categoryTitle }}</span>
             <svg class="h-4 w-4 mx-2 text-gray-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
             </svg>
-            <span class="text-gray-900 font-medium truncate">{{ .currentPage.Title }}</span>
+            <span class="text-gray-900 font-medium truncate">{{ .currentPage.LinkTitle }}</span>
           {{ end }}
         </nav>
       </div>
@@ -93,13 +86,13 @@
           {{ if .currentPage.Params.author }}
             <div class="text-gray-600 mb-6">
               <span class="font-medium">{{ .currentPage.Params.author }}</span>
-              {{ if .currentPage.Date }}
-                - <time datetime="{{ .currentPage.Date.Format "2006-01-02" }}">Published {{ .currentPage.Date.Format "January 2, 2006" }}</time>
+              {{ if .currentPage.Lastmod }}
+                - <time datetime="{{ .currentPage.Lastmod.Format "2006-01-02" }}">Last modified {{ .currentPage.Lastmod.Format "January 2, 2006" }}</time>
               {{ end }}
             </div>
-          {{ else if .currentPage.Date }}
+          {{ else if .currentPage.Lastmod }}
             <div class="text-gray-600 mb-6">
-              <time datetime="{{ .currentPage.Date.Format "2006-01-02" }}">Published {{ .currentPage.Date.Format "January 2, 2006" }}</time>
+              <time datetime="{{ .currentPage.Lastmod.Format "2006-01-02" }}">Last modified {{ .currentPage.Lastmod.Format "January 2, 2006" }}</time>
             </div>
           {{ end }}
         </header>
@@ -108,37 +101,9 @@
         <div class="space-y-8 prose max-w-none prose-a:text-blue-600 prose-code:before:hidden prose-code:after:hidden break-words">
           {{ .currentPage.Content }}
         </div>
-
-        <!-- Document Footer -->
-        <footer class="mt-12 pt-8 border-t border-gray-200">
-          <div class="text-center text-gray-600">
-            {{ if .currentPage.Params.footnotes }}
-              <div class="mb-4">
-                <strong>Footnotes</strong>
-                <div class="mt-2 text-sm">{{ .currentPage.Params.footnotes | markdownify }}</div>
-              </div>
-            {{ end }}
-            
-            {{ if or .currentPage.Params.lastEditBy .currentPage.Params.lastEditDate }}
-              {{ if and .currentPage.Params.lastEditBy (ne .currentPage.Params.lastEditBy .currentPage.Params.author) }}
-                <p class="text-sm">
-                  Last edited by: <strong>{{ .currentPage.Params.lastEditBy }}</strong>
-                  {{ if .currentPage.Params.lastEditDate }}
-                    on <time datetime="{{ .currentPage.Params.lastEditDate }}">{{ dateFormat "January 2, 2006" .currentPage.Params.lastEditDate }}</time>
-                  {{ end }}
-                </p>
-              {{ else if .currentPage.Params.lastEditDate }}
-                <p class="text-sm">
-                  Last updated: <time datetime="{{ .currentPage.Params.lastEditDate }}">{{ dateFormat "January 2, 2006" .currentPage.Params.lastEditDate }}</time>
-                </p>
-              {{ end }}
-            {{ end }}
-          </div>
-        </footer>
-        </div>
       </div>
     </div>
-  </main>
+  </div>
 </div>
 
 <script>
@@ -147,10 +112,22 @@ document.addEventListener("DOMContentLoaded", function () {
   const mobileTocButton = document.getElementById("mobile-toc-button");
   const mobileTocSidebar = document.getElementById("mobile-toc-sidebar");
   const closeMobileToc = document.getElementById("close-mobile-toc");
+  
+  // Initialize mobile TOC as unfocusable since it starts collapsed
+  if (mobileTocSidebar) {
+    const focusableElements = mobileTocSidebar.querySelectorAll(
+      'a, button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+    );
+    focusableElements.forEach(el => el.setAttribute('tabindex', '-1'));
+  }
   function openMobileToc() {
     if (mobileTocSidebar) {
       mobileTocSidebar.classList.remove("-translate-x-full");
       mobileTocSidebar.setAttribute("aria-hidden", "false");
+      
+      // Make all focusable elements in the sidebar focusable
+      const focusableElements = mobileTocSidebar.querySelectorAll('[tabindex="-1"]');
+      focusableElements.forEach(el => el.removeAttribute('tabindex'));
       
       // Focus management for accessibility
       if (closeMobileToc) {
@@ -169,6 +146,12 @@ document.addEventListener("DOMContentLoaded", function () {
     if (mobileTocSidebar && mobileTocButton) {
       mobileTocSidebar.classList.add("-translate-x-full");
       mobileTocSidebar.setAttribute("aria-hidden", "true");
+      
+      // Make all focusable elements in the sidebar unfocusable
+      const focusableElements = mobileTocSidebar.querySelectorAll(
+        'a, button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+      );
+      focusableElements.forEach(el => el.setAttribute('tabindex', '-1'));
       
       // Return focus to the button that opened the sidebar
       mobileTocButton.focus();

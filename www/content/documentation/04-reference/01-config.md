@@ -1,5 +1,6 @@
 ---
-title: Hyaline config
+title: "Reference: Hyaline config"
+linkTitle: Hyaline config
 purpose: Document the configuration options for Hyaline
 url: documentation/reference/config
 ---

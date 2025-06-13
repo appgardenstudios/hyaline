@@ -1,5 +1,6 @@
 ---
-title: GitHub Actions
+title: "Reference: GitHub Actions"
+linkTitle: GitHub Actions
 purpose: Detail the functionality and usage of Hyaline within GitHub Actions
 url: documentation/reference/github-actions
 ---

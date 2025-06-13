@@ -1,5 +1,6 @@
 ---
-title: Check Change
+title: "Explanation: Check Change"
+linkTitle: Check Change
 purpose: Explain how Hyaline checks a change for what documentation needs to be updated
 url: documentation/explanation/check-change
 ---

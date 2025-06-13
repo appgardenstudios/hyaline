@@ -1,5 +1,6 @@
 ---
-title: Check Current
+title: "Explanation: Check Current"
+linkTitle: Check Current
 purpose: Explain how Hyaline checks current documentation for issues
 url: documentation/explanation/check-current
 ---

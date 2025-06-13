@@ -1,5 +1,6 @@
 ---
-title: Extract Change
+title: "Explanation: Extract Change"
+linkTitle: Extract Change
 purpose: Explain how Hyaline extracts changed documentation, code, and other metadata
 url: documentation/explanation/extract-change
 ---

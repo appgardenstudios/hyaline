@@ -1,5 +1,6 @@
 ---
-title: How to check a PR using the Hyaline CLI
+title: "How To: Check a PR using the Hyaline CLI"
+linkTitle: Check a PR using the Hyaline CLI
 purpose: How to check a PR using the Hyaline CLI
 url: documentation/how-to/check-pr
 ---

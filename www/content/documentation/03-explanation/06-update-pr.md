@@ -1,5 +1,6 @@
 ---
-title: Update PR
+title: "Explanation: Update PR"
+linkTitle: Update PR
 purpose: Explain how Hyaline updates a PR
 url: documentation/explanation/update-pr
 ---

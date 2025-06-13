@@ -1,5 +1,6 @@
 ---
-title: Merge
+title: "Explanation: Merge"
+linkTitle: Merge
 purpose: Explain how Hyaline merge works
 url: documentation/explanation/merge
 ---
