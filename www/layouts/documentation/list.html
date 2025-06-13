@@ -1,5 +1,4 @@
 {{ define "main" }}
-{{ $tocContent := partial "toc-generator.html" (dict "currentPage" . "sectionName" "documentation") }}
 {{ $pages := .Pages }}
 {{ $firstPage := "" }}
 {{ range $pages }}
@@ -12,5 +11,5 @@
     {{ end }}
   {{ end }}
 {{ end }}
-{{ partial "toc-layout.html" (dict "currentPage" $firstPage "tocContent" $tocContent) }}
+{{ partial "toc.html" (dict "currentPage" $firstPage "sectionName" "documentation") }}
 {{ end }}

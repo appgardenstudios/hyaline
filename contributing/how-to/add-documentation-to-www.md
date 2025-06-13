@@ -84,10 +84,3 @@ Example:
 [How To Install the CLI](./02-how-to/01-install-cli.md)
 [CLI Reference](../04-reference/02-cli.md)
 ```
-
-## Development Workflow
-
-1. **Add your documentation files** following the naming and frontmatter conventions
-2. **Test locally** by running `make` in the `www/` directory
-3. **Verify navigation** appears correctly in the sidebar
-4. **Check links and images** render properly

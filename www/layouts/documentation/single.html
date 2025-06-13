@@ -1,4 +1,3 @@
 {{ define "main" }}
-{{ $tocContent := partial "toc-generator.html" (dict "currentPage" . "sectionName" "documentation") }}
-{{ partial "toc-layout.html" (dict "currentPage" . "tocContent" $tocContent) }}
+{{ partial "toc.html" (dict "currentPage" . "sectionName" "documentation") }}
 {{ end }}

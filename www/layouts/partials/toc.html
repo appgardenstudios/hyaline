@@ -1,4 +1,69 @@
-<!-- Reusable Table of Contents Layout -->
+{{/* 
+  Reusable Table of Contents with Layout
+  Params:
+  - sectionName: The section name (e.g. "documentation", "articles")
+  - currentPage: The current page context
+*/}}
+
+{{ $currentPage := .currentPage }}
+{{ $sectionName := .sectionName }}
+{{ $section := .currentPage.Site.GetPage "section" $sectionName }}
+{{ $pages := $section.Pages }}
+
+<!-- Generate ToC structure -->
+{{ $tocData := dict }}
+{{ $tocOrder := slice }}
+{{ $isIndexPage := eq .currentPage.Kind "section" }}
+{{ $firstPageSet := false }}
+
+{{ range $pages }}
+  {{ $pathParts := split .File.Path "/" }}
+  {{ if eq (len $pathParts) 2 }}
+    {{ $fileName := index $pathParts 1 }}
+    {{ $fileNameWithoutExt := strings.TrimSuffix $fileName ".md" }}
+    {{ $tocOrder = $tocOrder | append (dict "type" "file" "name" $fileNameWithoutExt "page" . "order" $fileName) }}
+  {{ else if eq (len $pathParts) 3 }}
+    {{ $categoryName := index $pathParts 1 }}
+    {{ $fileName := index $pathParts 2 }}
+    {{ $fileNameWithoutExt := strings.TrimSuffix $fileName ".md" }}
+    
+    {{ if not (index $tocData $categoryName) }}
+      {{ $tocData = merge $tocData (dict $categoryName (slice)) }}
+      {{ $tocOrder = $tocOrder | append (dict "type" "category" "name" $categoryName "order" $categoryName) }}
+    {{ end }}
+    
+    {{ $categoryPages := index $tocData $categoryName }}
+    {{ $categoryPages = $categoryPages | append . }}
+    {{ $tocData = merge $tocData (dict $categoryName $categoryPages) }}
+  {{ end }}
+{{ end }}
+
+<!-- Sort tocOrder -->
+{{ $tocOrder = sort $tocOrder "order" }}
+
+<!-- Render ToC Content -->
+{{ $tocContent := "" }}
+{{ range $index, $item := $tocOrder }}
+  {{ if eq .type "file" }}
+    <!-- Single file -->
+    {{ $isCurrentOrFirst := or (eq $currentPage .page) (and $isIndexPage (eq $index 0)) }}
+    {{ $tocContent = printf "%s<div class=\"mb-2\"><a href=\"%s\" class=\"toc-link block px-3 py-2 font-medium %s rounded-md -ml-3\"%s>%s</a></div>" $tocContent .page.Permalink (cond $isCurrentOrFirst "text-blue-600 bg-blue-50" "text-gray-900 hover:text-blue-600 hover:bg-gray-100") (cond $isCurrentOrFirst " aria-current=\"page\"" "") .page.LinkTitle }}
+  {{ else if eq .type "category" }}
+    <!-- Category with files -->
+    {{ $categoryName := .name }}
+    {{ $categoryPages := index $tocData $categoryName }}
+    {{ $categoryTitle := $categoryName | replaceRE "^[0-9]+-" "" | replaceRE "-" " " | title }}
+    
+    {{ $tocContent = printf "%s<div class=\"mb-4\"><h3 class=\"font-medium text-gray-900 mb-2\">%s</h3><ul class=\"space-y-1\">" $tocContent $categoryTitle }}
+    {{ range sort $categoryPages ".File.Path" }}
+      {{ $isCurrentPage := eq $currentPage . }}
+      {{ $tocContent = printf "%s<li><a href=\"%s\" class=\"toc-link block px-3 py-2 %s rounded-md\"%s>%s</a></li>" $tocContent .Permalink (cond $isCurrentPage "text-blue-600 bg-blue-50 font-medium" "text-gray-700 hover:text-blue-600 hover:bg-gray-100") (cond $isCurrentPage " aria-current=\"page\"" "") .LinkTitle }}
+    {{ end }}
+    {{ $tocContent = printf "%s</ul></div>" $tocContent }}
+  {{ end }}
+{{ end }}
+
+<!-- Complete Layout with ToC -->
 <div class="flex min-h-screen">
   <!-- Desktop ToC Sidebar (Always visible on desktop) -->
   <aside 
@@ -8,7 +73,7 @@
   >
     <div class="p-6">
       <nav>
-        {{ .tocContent }}
+        {{ $tocContent | safeHTML }}
       </nav>
     </div>
   </aside>
@@ -34,7 +99,7 @@
       </div>
       
       <nav>
-        {{ .tocContent }}
+        {{ $tocContent | safeHTML }}
       </nav>
     </div>
   </aside>
