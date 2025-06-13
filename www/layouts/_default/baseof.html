@@ -2,6 +2,7 @@
 <html lang="en" charset="utf-8" class="h-full">
   <head>
     <title>{{ .Title }}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta
       name="description"
       content="{{ if .Description }}{{ .Description }}{{ else }}Hyaline - Documentation maintenance tool that helps teams keep documentation in sync with code{{ end }}"
@@ -12,8 +13,8 @@
   <body class="bg-white">
     <!-- Navigation Bar -->
     <header class="sticky top-0 bg-white shadow-sm z-50 h-14">
-      <div class="mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex justify-between items-center py-4">
+      <div class="mx-auto px-4 sm:px-6 lg:px-8 h-full">
+        <div class="flex justify-between items-center h-full">
           <div class="flex items-center">
             <a href="/" class="text-gray-900 inline-block" aria-label="hyaline">
               <svg
@@ -90,7 +91,7 @@
         <!-- Mobile Menu -->
         <div id="mobile-menu" class="md:hidden hidden">
           <div
-            class="px-2 pt-2 pb-4 space-y-1 bg-white border-t border-gray-200"
+            class="px-2 pt-2 pb-4 space-y-1 bg-white border border-gray-200"
           >
             <a
               href="/documentation"

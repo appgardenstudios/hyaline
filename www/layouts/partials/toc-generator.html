@@ -49,7 +49,7 @@
     <div class="mb-2">
       <a 
         href="{{ .page.Permalink }}" 
-        class="toc-link block px-3 py-2 text-sm font-medium {{ if $isCurrentOrFirst }}text-blue-600 bg-blue-50{{ else }}text-gray-900 hover:text-blue-600 hover:bg-gray-100{{ end }} rounded-md -ml-3"
+        class="toc-link block px-3 py-2 font-medium {{ if $isCurrentOrFirst }}text-blue-600 bg-blue-50{{ else }}text-gray-900 hover:text-blue-600 hover:bg-gray-100{{ end }} rounded-md -ml-3"
         {{ if $isCurrentOrFirst }}aria-current="page"{{ end }}
       >
         {{ .page.LinkTitle }}
@@ -62,13 +62,13 @@
     {{ $categoryTitle := $categoryName | replaceRE "^[0-9]+-" "" | replaceRE "-" " " | title }}
     
     <div class="mb-4">
-      <h3 class="text-sm font-medium text-gray-900 mb-2">{{ $categoryTitle }}</h3>
+      <h3 class="font-medium text-gray-900 mb-2">{{ $categoryTitle }}</h3>
       <ul class="space-y-1">
         {{ range sort $categoryPages ".File.Path" }}
           <li>
             <a 
               href="{{ .Permalink }}" 
-              class="toc-link block px-3 py-2 text-sm {{ if eq $currentPage . }}text-blue-600 bg-blue-50 font-medium{{ else }}text-gray-700 hover:text-blue-600 hover:bg-gray-100{{ end }} rounded-md"
+              class="toc-link block px-3 py-2 {{ if eq $currentPage . }}text-blue-600 bg-blue-50 font-medium{{ else }}text-gray-700 hover:text-blue-600 hover:bg-gray-100{{ end }} rounded-md"
               {{ if eq $currentPage . }}aria-current="page"{{ end }}
             >
               {{ .LinkTitle }}
