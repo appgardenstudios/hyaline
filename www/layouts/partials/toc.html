@@ -176,19 +176,26 @@ document.addEventListener("DOMContentLoaded", function () {
   const mobileTocSidebar = document.getElementById("mobile-toc-sidebar");
   const closeMobileToc = document.getElementById("close-mobile-toc");
   
-  // Initialize mobile TOC as unfocusable since it starts collapsed
-  if (mobileTocSidebar) {
-    const links = mobileTocSidebar.querySelectorAll('a');
-    links.forEach(el => el.setAttribute('tabindex', '-1'));
+  function setLinksTabIndex(value) {
+    if (mobileTocSidebar) {
+      const links = mobileTocSidebar.querySelectorAll('a');
+      if (value === null) {
+        links.forEach(el => el.removeAttribute('tabindex'));
+      } else {
+        links.forEach(el => el.setAttribute('tabindex', value));
+      }
+    }
   }
+
+  // Initialize mobile TOC as unfocusable since it starts collapsed
+  setLinksTabIndex('-1');
   function openMobileToc() {
     if (mobileTocSidebar) {
       mobileTocSidebar.classList.remove("-translate-x-full");
       mobileTocSidebar.setAttribute("aria-hidden", "false");
       
       // Make all links in the sidebar focusable
-      const links = mobileTocSidebar.querySelectorAll('a');
-      links.forEach(el => el.removeAttribute('tabindex'));
+      setLinksTabIndex(null);
       
       // Focus management for accessibility
       if (closeMobileToc) {
@@ -209,8 +216,7 @@ document.addEventListener("DOMContentLoaded", function () {
       mobileTocSidebar.setAttribute("aria-hidden", "true");
       
       // Make all links in the sidebar unfocusable
-      const links = mobileTocSidebar.querySelectorAll('a');
-      links.forEach(el => el.setAttribute('tabindex', '-1'));
+      setLinksTabIndex('-1');
       
       // Return focus to the button that opened the sidebar
       mobileTocButton.focus();
