@@ -1,0 +1,15 @@
+{{ define "main" }}
+{{ $pages := .Pages }}
+{{ $firstPage := "" }}
+{{ range $pages }}
+  {{ $pathParts := split .File.Path "/" }}
+  {{ if eq (len $pathParts) 2 }}
+    {{ if not $firstPage }}
+      {{ $firstPage = . }}
+    {{ else if lt .File.Path $firstPage.File.Path }}
+      {{ $firstPage = . }}
+    {{ end }}
+  {{ end }}
+{{ end }}
+{{ partial "toc.html" (dict "currentPage" $firstPage "sectionName" "documentation") }}
+{{ end }}

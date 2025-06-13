@@ -2,6 +2,8 @@ baseURL = 'https://hyaline.dev/'
 languageCode = 'en-us'
 title = 'Hyaline'
 disableKinds = ['taxonomy', 'term']
+# Enabling GitInfo allows the use of git information in the site (e.g. last modified date)
+enableGitInfo = true
 
 [build]
   [build.buildStats]
@@ -17,6 +19,15 @@ disableKinds = ['taxonomy', 'term']
     source = 'assets'
     target = 'assets'
   [[module.mounts]]
+    includeFiles = ['/documentation/**.svg','/documentation/**.png']
+    source = 'content'
+    target = 'assets'
+  [[module.mounts]]
     disableWatch = true
     source = 'hugo_stats.json'
     target = 'assets/notwatching/hugo_stats.json'
+[markup]
+  [markup.goldmark]
+    [markup.goldmark.renderer]
+      # Enables HTML rendering from Markdown files
+      unsafe = true

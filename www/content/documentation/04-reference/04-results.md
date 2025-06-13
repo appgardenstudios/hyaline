@@ -1,11 +1,13 @@
 ---
-title: Hyaline Check Results
+title: "Reference: Hyaline Check Results"
+linkTitle: Hyaline Check Results
 purpose: Detail the output results for the check current and check change commands
+url: documentation/reference/results
 ---
-# Overview
+## Overview
 This documents the results produced by the `check current` and `check change` commands.
 
-# Check Current
+## Check Current
 ```js
 {
   "results": [
@@ -94,7 +96,7 @@ The list of possible results and a description of the result
 | SKIPPED | The check was skipped due to the document or section being ignored |
 | WARN | The document or section does not have a stated purpose |
 
-# Check Change
+## Check Change
 
 ```js
 {

@@ -1,0 +1,24 @@
+{{/* Hugo image renderer that attempts to resolve image paths from page resources to enable relative paths. */}}
+{{/* First, try to find the image in the current page's resources */}}
+{{- $img := .Page.Resources.GetMatch .Destination -}}
+
+{{/* If not found in page resources and page has a file, try global resources */}}
+{{- if and (not $img) .Page.File -}}
+  {{/* Build path relative to the page's directory */}}
+  {{ $path := path.Join .Page.File.Dir .Destination }}
+  {{/* Attempt to get the image from global resources */}}
+  {{- $img = resources.Get $path -}}
+{{- end -}}
+
+{{/* If image was resolved, use the processed resource */}}
+{{- with $img -}}
+  <img src="{{ $img.RelPermalink }}" alt="{{ $.Text }}" />
+{{- else -}}
+  {{/* Check if this is a local path that we couldn't resolve */}}
+  {{- if not (or (strings.HasPrefix .Destination "http") (strings.HasPrefix .Destination "data:")) -}}
+    {{/* Print warning for local paths that couldn't be found */}}
+    {{ printf "WARNING: Unable to find image: %s" .Destination | warnf }}
+  {{- end -}}
+  {{/* Fallback: use the original destination path */}}
+  <img src="{{ .Destination | safeURL }}" alt="{{ $.Text }}" />
+{{- end -}}

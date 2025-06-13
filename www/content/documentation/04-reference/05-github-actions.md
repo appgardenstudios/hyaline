@@ -1,6 +1,8 @@
 ---
-title: GitHub Actions
+title: "Reference: GitHub Actions"
+linkTitle: GitHub Actions
 purpose: Detail the functionality and usage of Hyaline within GitHub Actions
+url: documentation/reference/github-actions
 ---
 ## Overview
 Hyaline provides a set of [GitHub Actions](https://github.com/features/actions) that allows you to setup and use Hyaline within a GitHub workflow.
