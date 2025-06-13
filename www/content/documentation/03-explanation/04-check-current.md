@@ -7,7 +7,7 @@ url: documentation/explanation/check-current
 ## Overview
 Hyaline has the ability to check the current set of documentation against the configuration and look for issues that should be addressed. The goal is to verify that each piece of documentation (each document/section) that is extant is present in the configuration with a purpose, and that each document or section present in the configuration exists, matches its purpose, and is complete.
 
-![Overview](./_img/check-current-overview.svg)
+![Overview](_img/check-current-overview.svg)
 
 In this diagram you can see on the left we have our set of desired documents and sections defined in the config, and on the right we have our actual documents and sections that were extracted into our current data set. Hyaline pulls both sets of documents and sections in and runs a series of checks, calling out to an LLM when necessary. Hyaline then compiles the results and outputs them so they can be acted along.
 
@@ -22,7 +22,7 @@ Note that there are 4 primary checks that Hyaline can perform on current documen
 ## Check Desired Document Exists
 This check, identified by `DESIRED_DOCUMENT_EXISTS`, is intended to help identify those documents and/or sections that are present in the actual extracted documentation but are not present in the configuration.
 
-![Check Desired Document Exists](./_img/check-current-desired-document-exists.svg)
+![Check Desired Document Exists](_img/check-current-desired-document-exists.svg)
 
 In the image above the desired documents and sections (from the configuration) are on the left and the actual documents and section (extracted and stored in the current data set) are on the right. When Hyaline checks that a desired document exists, it loops through all of the actual documents and sections and checks for a corresponding desired document or section in the config. For example, document A has an actual section that does not have a corresponding desired section, so it would be flagged. Likewise, Document F and all of its sections do not have a corresponding desired document or sections, and would be flagged as well.
 
@@ -35,7 +35,7 @@ This check will have one of the following results:
 ## Check Required
 This check, identified by `REQUIRED`, is intended to identify those documents and/or sections that are marked as required in the configuration but do not exist in the extracted documentation.
 
-![Check Required](./_img/check-current-required.svg)
+![Check Required](_img/check-current-required.svg)
 
 In the image above the desired documents and sections (from the configuration) are on the left and the actual documents and section (extracted and stored in the current data set) are on the right. When Hyaline checks required documents and sections it loops through all of the desired documents and sections and, for those marked as required, it looks for the corresponding document or section in the actual documents and sections that were extracted. For example, document C is marked as required in the desired documents and sections but is not present in the actual documents and sections, so it would be flagged.
 
@@ -49,7 +49,7 @@ This check will have one of the following results:
 ## Check Purpose
 This check, identified by `MATCHES_PURPOSE`, is intended to identify those documents and/or sections that do not match the purpose of that document or section as defined in the configuration.
 
-![Check Purpose](./_img/check-current-purpose.svg)
+![Check Purpose](_img/check-current-purpose.svg)
 
 When check current runs it looks at each document and section in the set of desired documents and sections that has a declared purpose, and then calls an LLM with the corresponding actual extracted document or section (along with some other metadata) to see if the actual document or section matches its declared purpose. If it does not it is flagged.
 
@@ -64,7 +64,7 @@ This check will have one of the following results:
 ## Check Completeness
 This check, identified by `COMPLETE`, is intended to identify those documents that are incomplete as defined by the purpose of that document or section in the configuration.
 
-![Check Completeness](./_img/check-current-completeness.svg)
+![Check Completeness](_img/check-current-completeness.svg)
 
 When check current runs it looks at each document and section in the set of desired documents and sections that has a declared purpose, and then calls an LLM with the corresponding actual extracted document or section (along with some other metadata) to see if the actual document or section is complete based on its declared purpose. Hyaline makes other documents and code available to the LLM so it can reference them when determining if the document or section is complete.
 

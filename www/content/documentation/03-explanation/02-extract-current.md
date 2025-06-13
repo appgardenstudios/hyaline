@@ -7,7 +7,7 @@ url: documentation/explanation/extract-current
 ## Overview
 Hyaline has the ability to extract code and documentation into a current data set that can be used to build systems and products as well as verify that existing documentation is accurate and complete.
 
-![Overview](./_img/extract-current-overview.svg)
+![Overview](_img/extract-current-overview.svg)
 
 In the example above you can see a variety of code and documentation spread over multiple repositories and documentation sites. Hyaline's extraction process can take all of this code and documentation and place it into a single, unified data set organized by system. This data set can then be used to [run checks](./04-check-current.md) and support building/maintaining products and systems via an mcp server.
 
@@ -18,7 +18,7 @@ System source code is extracted for each defined code source in the [configurati
 
 Note that you usually only want to extract the source code and configuration, and not tests and/or other miscellaneous files. This is because Hyaline is focused on using and updating documentation, which does not _usually_ rely on and is not _usually_ impacted by tests.
 
-![Extracting Code](./_img/extract-current-extracting-code.svg)
+![Extracting Code](_img/extract-current-extracting-code.svg)
 
 The code that is extracted is organized into systems and stored as files associated with a code source. You can have any number of files associated with a code source, and any number of code sources associated with a system. For example, you could have frontend source code separated from backend source code separated from infrastructure code.
 
@@ -27,7 +27,7 @@ The code that is extracted is placed into a data set that is stored in sqlite. P
 ### Extracting Code - fs
 The `fs` extractor extracts source code from the local file system.
 
-![Extracting Code fs](./_img/extract-current-extracting-code-fs.svg)
+![Extracting Code fs](_img/extract-current-extracting-code-fs.svg)
 
 In this example we are extracting source code from the local file system directory `~/my-app`, which is also the current working directory (CWD). The hyaline configuration file specifies that the path of the source code is `./`, and that we should include any files matching `**/*.code` and `code.cfg` while excluding any files matching `test/**/*` and `**/*.test.code`. Said another way, Hyaline will extract files that match at least one include glob and do not match any exclude globs. Hyaline crawls the directory structure starting at `~/my-app/ + ./` and extracts the following files:
 
@@ -54,7 +54,7 @@ Note that Hyaline extracts code from a specific branch as specified in the confi
 For more detail on git extractor options please see the [configuration reference](../04-reference/01-config.md).
 
 ### Local Repo
-![Local Repo](./_img/extract-current-local-repo.svg)
+![Local Repo](_img/extract-current-local-repo.svg)
 
 In this scenario we are extracting source code from a git repository located on the local file system at `~/my-app`, which is also the current working directory (CWD). The hyaline configuration file specifies that the path of this repository is `./`, and that we should include any files matching `**/*.code` and `code.cfg` while excluding any files matching `test/**/*` and `**/*.test.code`. Said another way, Hyaline will extract files that match at least one include glob and do not match any exclude globs. Hyaline crawls the git repository structure starting at it's root and extracts the following files:
 
@@ -72,7 +72,7 @@ The following files are _not_ extracted:
 For more detail on git extractor options please see the [configuration reference](../04-reference/01-config.md).
 
 ### Remote Repo, Cloned Locally
-![Remote Repo Cloned Locally](./_img/extract-current-remote-repo-cloned-locally.svg)
+![Remote Repo Cloned Locally](_img/extract-current-remote-repo-cloned-locally.svg)
 
 In this scenario we are extracting source code from the remote git repository `github.com/my-org/my-app` and running Hyaline from the current working directory (CWD) `~/hyaline/`. Based on the configuration Hyaline will clone the repo into the path `~/hyaline/ + ./my-app` (CWD joined with `path`) and extract code from the repository. The hyaline configuration file specifies that we should include any files matching `**/*.code` and `code.cfg` while excluding any files matching `test/**/*` and `**/*.test.code`. Said another way, Hyaline will extract files that match at least one include glob and do not match any exclude globs. Hyaline crawls the git repository structure starting at it's root and extracts the following files:
 
@@ -90,7 +90,7 @@ The following files are _not_ extracted:
 For more detail on git extractor options please see the [configuration reference](../04-reference/01-config.md).
 
 ### Remote Repo, Cloned In Memory
-![Remote Repo Cloned In Memory](./_img/extract-current-remote-repo-cloned-in-memory.svg)
+![Remote Repo Cloned In Memory](_img/extract-current-remote-repo-cloned-in-memory.svg)
 
 In this scenario Hyaline clones a remote repository into a local in-memory filesystem, and then uses that in-memory repository to extract code from.
 
@@ -112,7 +112,7 @@ For more detail on git extractor options please see the [configuration reference
 ## Extracting Documentation
 System documentation is extracted for each defined documentation source in the [configuration](../04-reference/01-config.md). Documentation can be extracted using one of three available extractors: `fs`, `git`, and `http`. These 3 extractors are explained below.
 
-![Extracting Documentation](./_img/extract-current-extracting-documentation.svg)
+![Extracting Documentation](_img/extract-current-extracting-documentation.svg)
 
 The documentation that is extracted is organized into systems and stored as document associated with a documentation source. Each document also has one or more sections associated with it as well. You can have any number of sections associated with a document, any number of documents associated with a documentation source, and any number of documentation sources associated with a system. For example, you could have system documentation that comes from a repository as well as system documentation that comes from a documentation site (a wiki, for example).
 
@@ -120,34 +120,34 @@ The documentation that is extracted is placed into a data set that is stored in 
 
 ## Documentation Sections
 
-![Extracting Documentation Sections](./_img/extract-current-extracting-documentation-sections.svg)
+![Extracting Documentation Sections](_img/extract-current-extracting-documentation-sections.svg)
 
 Section extraction is done by scanning through a document and dividing it up into sections based on the markdown heading hierarchy encountered in the document (e.g. `#` is heading level1, `##` is heading level 2, and so forth). Each section contains the text of the section and any child sections.
 
 ## Non-Markdown Documentation
 
-![HTML to Markdown](./_img/extract-current-html-to-markdown.svg)
+![HTML to Markdown](_img/extract-current-html-to-markdown.svg)
 
 Hyaline converts non-markdown documentation into markdown. For HTML documentation sources, Hyaline uses a css-style selector to extract only the documentation from the html document and then converts that extracted section of html to markdown. The selection process uses the library [Cascadia](https://pkg.go.dev/github.com/andybalholm/cascadia).
 
 ### Extracting Documentation - fs
 The `fs` extractor extracts documentation from the local file system.
 
-![Extracting Documentation fs](./_img/extract-current-extracting-documentation-fs.svg)
+![Extracting Documentation fs](_img/extract-current-extracting-documentation-fs.svg)
 
 It operates the same way as the Code `fs` extractor (See **Extracting Code - fs** above).
 
 ### Extracting Documentation - git
 The `git` extractor extracts documentation from a local or remote git repository.
 
-![Extracting Documentation git](./_img/extract-current-extracting-documentation-git.svg)
+![Extracting Documentation git](_img/extract-current-extracting-documentation-git.svg)
 
 It operates the same way as the Code `git` extractor and supports the same set of setups (See **Extracting Code - git** above).
 
 ### Extracting Documentation - http
 The `http` extractor extracts documentation from an http(s) server via crawling.
 
-![Extracting Documentation http](./_img/extract-current-extracting-documentation-http.svg)
+![Extracting Documentation http](_img/extract-current-extracting-documentation-http.svg)
 
 In this example we are extracting documentation from the http(s) site `https://www.my-site.com` and and running Hyaline from the current working directory (CWD) `~/hyaline/`. The hyaline configuration file specifies that we should start crawling at `https://www.my-site.com/docs` (baseUrl `https://www.my-site.com` + start `./docs`), and that we should include any files matching `docs/**/*` and `app/about` while excluding any files matching `docs/feature`. Said another way, Hyaline will crawl and visit pages that match at least one include glob and do not match any exclude globs. In this example Hyaline crawls the site extracts the following files:
 

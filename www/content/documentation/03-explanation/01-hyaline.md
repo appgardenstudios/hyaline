@@ -36,19 +36,19 @@ A process is any discrete set of tasks that are completed to accomplish a goal. 
 ### Team
 A team is a set of people that use processes to build, maintain, and ship one or more products and/or systems.
 
-![Team](./_img/hyaline-team.svg)
+![Team](_img/hyaline-team.svg)
 
 ## Workflow
 Hyaline is built to support the conceptual workflow as follows:
 
-![Workflow](./_img/hyaline-workflow.svg)
+![Workflow](_img/hyaline-workflow.svg)
 
 In this workflow people, assisted by AI, build products and systems. While doing so they create and update Documentation. That documentation is then read and used by people to build products and systems, and the cycle continues. Hyaline sits in between People/AI and Documentation, and is intended to assist in both creating/updating documentation and reading/using documentation to build products and systems.
 
 ## Use Documentation
 Zooming in a bit on the People/AI using Documentation part of the diagram above, we see the following:
 
-![Usage](./_img/hyaline-use.svg)
+![Usage](_img/hyaline-use.svg)
 
 In the image above you can see the Hyaline extracts code, documentation, and other metadata from a variety of sources. Each system can have multiple code and documentation sources, and Hyaline supports an unlimited number of systems. In the future Hyaline will also support pulling product, process, and team documentation and metadata.
 
@@ -61,14 +61,14 @@ Hyaline also has the ability to scan the current set of an organizations documen
 ## Update Documentation
 Zooming in a bit on the People/AI updating Documentation part of the diagram above, we see the following:
 
-![Update](./_img/hyaline-update.svg)
+![Update](_img/hyaline-update.svg)
 
 In the image above you can see that Hyaline looks at system changes to determine what documentation should be updated. It does this by extracting the change and associated metadata (tickets, issues, PRs, etc.) and then determining what documentation in your current data set needs to be updated. It then makes those results available in your existing processes (usually via a comment on your PR) and helps both people and AI make the appropriate changes to the appropriate documentation both inside and outside the repository.
 
 ## Components
 The following items are components of Hyaline:
 
-![Components](./_img/hyaline-components.svg)
+![Components](_img/hyaline-components.svg)
 
 ## Documentation
 Your organization's documentation. It can be plain text, markdown, or html, and can be extracted from a file system, git repo, or HTTP(s) server.

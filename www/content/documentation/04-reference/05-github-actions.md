@@ -7,7 +7,7 @@ url: documentation/reference/github-actions
 ## Overview
 Hyaline provides a set of [GitHub Actions](https://github.com/features/actions) that allows you to setup and use Hyaline within a GitHub workflow.
 
-![Overview](./_img/github-actions-overview.svg)
+![Overview](_img/github-actions-overview.svg)
 
 When a developer pushes code to a Pull Request in GitHub, one or more GitHub Actions are triggered. Those actions can then run jobs such as checking out code, installing Hyaline, checking that a pull request is updating all applicable documentation, etc.
 
@@ -39,7 +39,7 @@ This action is not configured to provide any outputs.
 ## Check PR
 The [check-pr action](https://github.com/appgardenstudios/hyaline-actions/tree/main/check-pr) provides the ability to check a pull request.
 
-![Check PR](./_img/github-actions-check-pr.svg)
+![Check PR](_img/github-actions-check-pr.svg)
 
 When a developer pushes changes to a Pull Request a GitHub Action is triggered. That GitHub Action can then checkout the source code, install Hyaline, and use Hyaline to check the PR for documentation updates and recommendations (the results of which are added as a comment on the Pull Request).
 

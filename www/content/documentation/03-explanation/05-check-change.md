@@ -7,7 +7,7 @@ url: documentation/explanation/check-change
 ## Overview
 Hyaline has the ability to check the current set of documentation against a changed set of code and documentation to determine which pieces of documentation (if any) need to be updated. The goal is to identify each piece of documentation that could be affected and present that list to the human making the change. Hyaline also has the ability to call out to an LLM to generate a suggested change to each piece of documentation if desired.
 
-![Overview](./_img/check-change-overview.svg)
+![Overview](_img/check-change-overview.svg)
 
 In the diagram above you can see that we have 2 data sets, a change data set and a current data set. The change data set has changed files, documents, and other change metadata like the pull request and related issues. It was extracted using [Extract Change](./03-extract-change.md) The current data set has the current set of files and documents for the system, and was extracted using [Extract Current](./02-extract-current.md). Check Change uses both data sets, the [Hyaline Config](../04-reference/01-config.md), and multiple calls to an LLM to determine the resulting set of system documentation (documents and/or sections) that may need to be updated as a result of the change.
 
@@ -25,7 +25,7 @@ Hyaline loops through each code change and conceptually examines the links betwe
 ## Directly via updateIf
 Hyaline's configuration has the ability to express direct relationships between documentation and code via a set of updateIf statements. These statements direct Hyaline to mark documentation as needing an update if any code matching a glob is updated in a certain way in the change. For example:
 
-![Directly via updateIf](./_img/check-change-direct-updateIf.svg)
+![Directly via updateIf](_img/check-change-direct-updateIf.svg)
 
 In this example we have a Change Data Set that has a modification to the file `package.json`. In our configuration we have an updateIf statement that tells us that we may need to update `README.md` if `package.json` is modified. Based on that information Hyaline adds a entry to update the `README.md` file to the results.
 
@@ -51,17 +51,17 @@ Hyaline will call out to an LLM to determine which documentation (if any) should
 
 The LLM then responds with an indication of the set of documents and/or sections that should be updated or with an indication that no updates are needed based on the supplied information. For example:
 
-![Indirectly via LLM](./_img/check-change-indirect-llm.svg)
+![Indirectly via LLM](_img/check-change-indirect-llm.svg)
 
 In this example we have a Change Data Set that has several file modifications. Hyaline takes those changes and calculates diffs, and then for each diff calls the llm and asks which documents and/or sections need to be updated based on that change. The context to the llm includes the change metadata mentioned above if it is available. If the LLM responds with a set of documents and/or sections that need to be updated Hyaline adds entries for each document/section to the results along with the reason for the recommendation.
 
 ## Compilation of results
-![Compilation of Results](./_img/check-change-results.svg)
+![Compilation of Results](_img/check-change-results.svg)
 
 The resulting entries from both the updateIfs and LLM calls are combined and compiled into a single list of documents and sections needing to be looked at. If a document or section was identified as needing to be updated for more than one reason, a list of reasons for that update are returned. There will always be at least one reason for each entry in the list of results.
 
 ## Suggestions
-![Suggestions](./_img/check-change-suggestions.svg)
+![Suggestions](_img/check-change-suggestions.svg)
 
 If configured to do so, Hyaline will take the list of recommendation results and ask an LLM what updates should be made to each document or section. To do that Hyaline formats the following information and includes it as context in the LLM call:
 

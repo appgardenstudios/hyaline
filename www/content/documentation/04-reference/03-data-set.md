@@ -7,7 +7,7 @@ url: documentation/reference/data-set
 ## Overview
 This documents the database schema of the Hyaline Change Set as generated and stored in sqlite. Note that both current and change data sets share the same schema.
 
-![Data Set Schema](./_img/data-set-schema.svg)
+![Data Set Schema](_img/data-set-schema.svg)
 
 ## Tables
 The following tables make up a Hyaline Data Set.
