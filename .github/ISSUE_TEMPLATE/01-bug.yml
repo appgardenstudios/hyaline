@@ -1,0 +1,33 @@
+name: Bug
+description: File a bug report.
+title: "Bug: "
+type: Bug
+projects: [appgardenstudios/5]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to file a bug report!
+  - type: textarea
+    id: detail
+    attributes:
+      label: Detail
+      description: What did you expect to happen? What actually happened?
+      placeholder: What happened
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to Reproduce
+      description: If you can, please tell us the steps needed to reproduce this issue.
+      placeholder: The steps needed to reproduce this issue
+    validations:
+      required: false
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: What version of Hyaline were you using?
+    validations:
+      required: true

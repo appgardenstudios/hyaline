@@ -1,11 +1,10 @@
 ---
-name: Change
+name: Change (Internal)
 about: A System Change.
 title: ''
 labels: ''
 assignees: ''
 type: Change
-
 ---
 # Description
 TODO A short (1-2 sentence) description of this change.
@@ -35,10 +34,10 @@ TODO Provide an estimate of the amount of time needed to implement the plan (Exe
 TODO The date and person who endorsed the plan (i.e. YYYY-MM-DD user).
 
 # Implementation
-TODO Link(s) to the PR.
+* TODO Link(s) to the PR.
 
 ## Execution Result
-TODO Link(s) to the commits on the main branch.
+* TODO Link(s) to the commits on the main branch.
 
 ## Communication
 TODO Link(s) to communications sent.
@@ -59,7 +58,7 @@ TODO The results of the evaluation of the outcome, process, and/or anything enco
 TODO The results of the validation ensuring that the final outcome meets the originally stated Outcome above.
 
 ## Follow Up
-TODO The list of follow-up items identified in the review (if any). Once complete they should be marked such with a date and person (i.e. Completed YYYY-MM-DD user).
+* TODO The list of follow-up items identified in the review (if any). Once complete they should be marked such with a date and person (i.e. Completed YYYY-MM-DD user).
 
 # Finished
 TODO The date and person who marked this change finished (i.e. YYYY-MM-DD user).
