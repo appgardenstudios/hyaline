@@ -61,14 +61,14 @@ func GetRepo(options config.ExtractorOptions) (r *git.Repository, err error) {
 			}
 			r, err = git.PlainClone(absPath, false, cloneOptions)
 			if err != nil {
-				slog.Debug("repo.GetRepo could clone repo", "error", err, "path", options.Path, "repo", options.Repo)
+				slog.Debug("repo.GetRepo could not clone repo to disk", "error", err, "path", options.Path, "repo", options.Repo)
 				return
 			}
 		} else {
 			// Clone into a memory fs
 			r, err = git.Clone(memory.NewStorage(), nil, cloneOptions)
 			if err != nil {
-				slog.Debug("repo.GetRepo could clone repo", "error", err, "path", options.Path, "repo", options.Repo)
+				slog.Debug("repo.GetRepo could not clone repo to memory", "error", err, "path", options.Path, "repo", options.Repo)
 				return
 			}
 		}
