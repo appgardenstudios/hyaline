@@ -119,12 +119,19 @@ func ExtractCurrentFs(systemID string, d *config.DocumentationSource, db *sql.DB
 			return err
 		}
 
-		// Loop through docs and add those that match includes and don't match excludes
+		// Loop through docs and add those that aren't in our excludes
 		for _, doc := range matches {
-			if config.PathIsIncluded(doc, []string{include}, d.Extractor.Exclude) {
+			// See if we have a excludeMatch for at least one of our excludes
+			excludeMatch := false
+			for _, exclude := range d.Extractor.Exclude {
+				excludeMatch = doublestar.MatchUnvalidated(exclude, doc)
+				if excludeMatch {
+					slog.Debug("docs.ExtractCurrentFs doc excluded", "doc", doc, "exclude", exclude)
+					break
+				}
+			}
+			if !excludeMatch {
 				docs[doc] = struct{}{}
-			} else {
-				slog.Debug("docs.ExtractCurrentFs doc excluded", "doc", doc)
 			}
 		}
 	}

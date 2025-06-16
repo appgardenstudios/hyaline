@@ -100,12 +100,19 @@ func ExtractCurrentFs(systemID string, c *config.CodeSource, db *sql.DB) (err er
 			return err
 		}
 
-		// Loop through files and add those that match includes and don't match excludes
+		// Loop through files and add those that aren't in our excludes
 		for _, file := range matches {
-			if config.PathIsIncluded(file, []string{include}, c.Extractor.Exclude) {
+			// See if we have a match for at least one of our excludes
+			match := false
+			for _, exclude := range c.Extractor.Exclude {
+				match = doublestar.MatchUnvalidated(exclude, file)
+				if match {
+					slog.Debug("code.ExtractCurrentFs file excluded", "file", file, "exclude", exclude)
+					break
+				}
+			}
+			if !match {
 				files[file] = struct{}{}
-			} else {
-				slog.Debug("code.ExtractCurrentFs file excluded", "file", file)
 			}
 		}
 	}
