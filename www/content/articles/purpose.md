@@ -31,22 +31,46 @@ And the purpose of documentation is not limited to just people anymore. With the
 </div>
 
 # Persons to Personas
+You might be tempted to just dive in at this point and start making documentation for everyone, but it usually is not practical to make a different set of documentation for each person. Instead, we create a set of personas (defined), and then create documentation for a persona instead. Talk about history of personas, how they are used in marketing and other fields, and how they apply here.
+
+TODO |vertical| image of persons being combined into a set of personas
+Team Lead, Sr. Dev, Intern
+PO, UX, QA
+Manager, Director, Stakeholder
 
 ## Example(s)
 
 # Grouping your Goals
+Now that we've grouped our people into personas, we now need to group our goals into objectives at about the same level of granularity
+
+
+TODO image of goals being combined into a singe goal
+
+TODO groups of goals
 
 ## Example(s)
 
 # Deciding on Documentation
+Now that we have Personas and Objectives, we need to decide on the set of documentation that should exist that allows said persona to complete their objective. To do this we need to take into account 3 main things: What does that persona need to know, what do we need to leave out, and how much will it cost to create/maintain the documentation
+
+How detailed to make it/what needs to be included (granularity/detail)
+What to leave out
+How much does it cost to create/maintain
+
+
+TODO image
 
 ## Example(s)
 
 # Weighing the Costs
 
+TODO image of options and costs associated with creating said documentation
+
 ## Example(s)
 
 # Writing with Purpose
+
+TODO image of Documentation created for a specific set of goals for a specific persona(s)
 
 ## Example(s)
 
