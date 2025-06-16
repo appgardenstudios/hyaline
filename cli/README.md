@@ -27,6 +27,8 @@ HYALINE_SSH_PEM= #A SSH key that has pull access to github.com/appgardenstudios/
 HYALINE_SSH_PASSWORD= #A password for the PEM above (blank if PEM is not password protected)
 ```
 
+Note that you must have the `github.com/appgardenstudios/hyaline-example` repository cloned as a sibling directory to hyaline for some of the launch configurations to work properly.
+
 ## Testing
 Unit tests are run with `make test`, and there are e2e tests that invoke the actual hyaline binary that you can run with `make e2e`.
 
