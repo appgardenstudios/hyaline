@@ -2,13 +2,63 @@
 title: "Purpose"
 ---
 
+Landscape
+1080/3 = 360h
+1920/3 = 640v
+
+
+Square
+1080/3 = 360h
+1080/3 = 360w
+
+Portrait
+1920/3 = 640v
+1080/3 = 360h
+
+Font Size: 16*3 = 48px
+
+# Purpose of Documentation
+TODO use goals or objectives?
+
+<img src="./_img/purpose-purpose.svg" style="background-color:white;">
+
+
+In the process of developing software products we have many different people involved. Product owners, product managers, and designers; developers, engineers, and qa; team leads, program mangers, and stakeholders; all are working toward a set of goals. These goals are varied and often overlap. Some examples include drafting product designs and plans, designing user interfaces and flows, writing code and developing software, testing products and releasing them, and understanding what everyone is doing and who is responsible for what. And the common element/thing that enables each person to reach their goals is the knowledge of how to perform the process(es) that lead to their goals. This knowledge can be in many forms, such as having done it before, asking someone else how to do it, intuition, trial and error, reading through what others have done before, etc. But of all of the available options, one of the quickest and most cost effective ways is reading a document describing the process of how to accomplish that goal. And the set of documents that contain the knowledge of how to accomplish those goals is called documentation. Stated another way, the **purpose of documentation is to help people achieve their goals**.
+
+And the purpose of documentation is not limited to just people anymore. With the general availability of large language models and specialized agents, the purpose of documentation has been expanded to help people __and AI__ achieve their goals.
+
+<div style="clear:both"></div>
+# Persons to Personas
+
+## Example(s)
+
+# Grouping your Goals
+
+## Example(s)
+
+# Deciding on Documentation
+
+## Example(s)
+
+# Weighing the Costs
+
+## Example(s)
+
+# Writing with Purpose
+
+## Example(s)
+
+# You Can Do It!? (Something else here)
+
+
+
 # The Purpose of Documentation
 An explanation of why every piece of documentation needs a purpose
 
 # Introduction
 If you are a developer you have undoubtedly either heard or uttered the words "don't forget to update the documentation".
 We as developers understand the usefulness of good documentation, and enjoy it when it is present. Likewise we feel the sting of a lack of documentation, especially when the human counterpart for that information is missing or otherwise unavailable.
-For the most part engineers and companies agree that documentation is good, and that we need more of it. But just like having "more |food| isn't necessarily goot when we're hungry, just creating more documentation isn't necessarily good either. We need to create the _right kind(s)_ of documentation. And how do we do that? By understanding the purpose of our documentation and creating/writing our documentation to fit that purpose.
+For the most part engineers and companies agree that documentation is good, and that we need more of it. But just like having "more |food| isn't necessarily good when we're hungry, just creating more documentation isn't necessarily good either. We need to create the _right kind(s)_ of documentation. And how do we do that? By understanding the purpose of our documentation and creating/writing our documentation to fit that purpose.
 
 # Purpose
 TODO image here
