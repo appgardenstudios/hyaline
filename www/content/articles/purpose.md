@@ -20,14 +20,16 @@ Font Size: 16*3 = 48px
 # Purpose of Documentation
 TODO use goals or objectives?
 
-<img src="./_img/purpose-purpose.svg" style="background-color:white;">
+<div class="portrait">
 
+![Purpose of Documentation](./_img/purpose-purpose.svg)
 
 In the process of developing software products we have many different people involved. Product owners, product managers, and designers; developers, engineers, and qa; team leads, program mangers, and stakeholders; all are working toward a set of goals. These goals are varied and often overlap. Some examples include drafting product designs and plans, designing user interfaces and flows, writing code and developing software, testing products and releasing them, and understanding what everyone is doing and who is responsible for what. And the common element/thing that enables each person to reach their goals is the knowledge of how to perform the process(es) that lead to their goals. This knowledge can be in many forms, such as having done it before, asking someone else how to do it, intuition, trial and error, reading through what others have done before, etc. But of all of the available options, one of the quickest and most cost effective ways is reading a document describing the process of how to accomplish that goal. And the set of documents that contain the knowledge of how to accomplish those goals is called documentation. Stated another way, the **purpose of documentation is to help people achieve their goals**.
 
 And the purpose of documentation is not limited to just people anymore. With the general availability of large language models and specialized agents, the purpose of documentation has been expanded to help people __and AI__ achieve their goals.
 
-<div style="clear:both"></div>
+</div>
+
 # Persons to Personas
 
 ## Example(s)
