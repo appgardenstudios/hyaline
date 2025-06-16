@@ -119,19 +119,12 @@ func ExtractCurrentFs(systemID string, d *config.DocumentationSource, db *sql.DB
 			return err
 		}
 
-		// Loop through docs and add those that aren't in our excludes
+		// Loop through docs and add those that match includes and don't match excludes
 		for _, doc := range matches {
-			// See if we have a excludeMatch for at least one of our excludes
-			excludeMatch := false
-			for _, exclude := range d.Extractor.Exclude {
-				excludeMatch = doublestar.MatchUnvalidated(exclude, doc)
-				if excludeMatch {
-					slog.Debug("docs.ExtractCurrentFs doc excluded", "doc", doc, "exclude", exclude)
-					break
-				}
-			}
-			if !excludeMatch {
+			if config.PathIsIncluded(doc, []string{include}, d.Extractor.Exclude) {
 				docs[doc] = struct{}{}
+			} else {
+				slog.Debug("docs.ExtractCurrentFs doc excluded", "doc", doc)
 			}
 		}
 	}
@@ -202,31 +195,18 @@ func ExtractCurrentGit(systemID string, d *config.DocumentationSource, db *sql.D
 		branch = d.Extractor.Options.Branch
 	}
 	err = repo.GetFiles(branch, r, func(f *object.File) error {
-		for _, include := range d.Extractor.Include {
-			if doublestar.MatchUnvalidated(include, f.Name) {
-				// If excluded, skip this file and continue
-				excluded := false
-				for _, exclude := range d.Extractor.Exclude {
-					if doublestar.MatchUnvalidated(exclude, f.Name) {
-						excluded = true
-						break
-					}
-				}
-				if excluded {
-					continue
-				}
+		if config.PathIsIncluded(f.Name, d.Extractor.Include, d.Extractor.Exclude) {
+			// Get contents of file and insert into db
+			var bytes []byte
+			bytes, err = repo.GetBlobBytes(f.Blob)
+			if err != nil {
+				slog.Debug("docs.ExtractCurrentGit could not get blob bytes", "error", err)
+				return err
+			}
 
-				// Get contents of file and insert into db
-				var bytes []byte
-				bytes, err = repo.GetBlobBytes(f.Blob)
-				if err != nil {
-					slog.Debug("docs.ExtractCurrentGit could not get blob bytes", "error", err)
-					return err
-				}
-
-				// Extract and clean data (trim whitespace and remove carriage returns)
-				var extractedData string
-				switch d.Type {
+			// Extract and clean data (trim whitespace and remove carriage returns)
+			var extractedData string
+			switch d.Type {
 				case config.DocTypeHTML:
 					extractedData, err = extractHTMLDocument(string(bytes), d.Options.Selector)
 					if err != nil {
@@ -254,13 +234,12 @@ func ExtractCurrentGit(systemID string, d *config.DocumentationSource, db *sql.D
 					return err
 				}
 
-				// Get and insert sections
-				sections := getMarkdownSections(strings.Split(extractedData, "\n"))
-				err = insertMarkdownSectionAndChildren(sections, 0, f.Name, d.ID, systemID, db)
-				if err != nil {
-					slog.Debug("docs.ExtractCurrentGit could not insert section", "error", err)
-					return err
-				}
+			// Get and insert sections
+			sections := getMarkdownSections(strings.Split(extractedData, "\n"))
+			err = insertMarkdownSectionAndChildren(sections, 0, f.Name, d.ID, systemID, db)
+			if err != nil {
+				slog.Debug("docs.ExtractCurrentGit could not insert section", "error", err)
+				return err
 			}
 		}
 		return nil
@@ -344,22 +323,11 @@ func ExtractCurrentHttp(systemID string, d *config.DocumentationSource, db *sql.
 		}
 
 		// Only visit if this path matches an include (and does not match an exclude)
-		for _, include := range includes {
-			if doublestar.MatchUnvalidated(include, u.Path) {
-				excludeMatch := false
-				for _, exclude := range excludes {
-					excludeMatch = doublestar.MatchUnvalidated(exclude, u.Path)
-					if excludeMatch {
-						slog.Debug("docs.ExtractCurrentHttp URL excluded", "href", href, "url", u.String(), "exclude", exclude)
-						break
-					}
-				}
-				if !excludeMatch {
-					slog.Debug("docs.ExtractCurrentHttp visiting URL", "href", href, "url", u.String(), "currentPage", e.Request.URL.String())
-					e.Request.Visit(href)
-					return
-				}
-			}
+		if config.PathIsIncluded(u.Path, includes, excludes) {
+			slog.Debug("docs.ExtractCurrentHttp visiting URL", "href", href, "url", u.String(), "currentPage", e.Request.URL.String())
+			e.Request.Visit(href)
+		} else {
+			slog.Debug("docs.ExtractCurrentHttp URL excluded", "href", href, "url", u.String())
 		}
 	})
 

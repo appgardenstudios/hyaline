@@ -100,19 +100,12 @@ func ExtractCurrentFs(systemID string, c *config.CodeSource, db *sql.DB) (err er
 			return err
 		}
 
-		// Loop through files and add those that aren't in our excludes
+		// Loop through files and add those that match includes and don't match excludes
 		for _, file := range matches {
-			// See if we have a match for at least one of our excludes
-			match := false
-			for _, exclude := range c.Extractor.Exclude {
-				match = doublestar.MatchUnvalidated(exclude, file)
-				if match {
-					slog.Debug("code.ExtractCurrentFs file excluded", "file", file, "exclude", exclude)
-					break
-				}
-			}
-			if !match {
+			if config.PathIsIncluded(file, []string{include}, c.Extractor.Exclude) {
 				files[file] = struct{}{}
+			} else {
+				slog.Debug("code.ExtractCurrentFs file excluded", "file", file)
 			}
 		}
 	}
@@ -157,39 +150,25 @@ func ExtractCurrentGit(systemID string, c *config.CodeSource, db *sql.DB) (err e
 		branch = c.Extractor.Options.Branch
 	}
 	err = repo.GetFiles(branch, r, func(f *object.File) error {
-		for _, include := range c.Extractor.Include {
-			if doublestar.MatchUnvalidated(include, f.Name) {
-				// If excluded, skip this file and continue
-				excluded := false
-				for _, exclude := range c.Extractor.Exclude {
-					if doublestar.MatchUnvalidated(exclude, f.Name) {
-						excluded = true
-						break
-					}
-				}
-				if excluded {
-					continue
-				}
-
-				// Get contents of file and insert into db
-				var bytes []byte
-				bytes, err = repo.GetBlobBytes(f.Blob)
-				if err != nil {
-					slog.Debug("code.ExtractCurrentGit could not get blob bytes", "error", err)
-					return err
-				}
-				err = sqlite.InsertSystemFile(sqlite.SystemFile{
-					ID:         f.Name,
-					CodeID:     c.ID,
-					SystemID:   systemID,
-					Action:     sqlite.ActionNone,
-					OriginalID: "",
-					RawData:    string(bytes),
-				}, db)
-				if err != nil {
-					slog.Debug("code.ExtractCurrentFs could not insert file", "error", err)
-					return err
-				}
+		if config.PathIsIncluded(f.Name, c.Extractor.Include, c.Extractor.Exclude) {
+			// Get contents of file and insert into db
+			var bytes []byte
+			bytes, err = repo.GetBlobBytes(f.Blob)
+			if err != nil {
+				slog.Debug("code.ExtractCurrentGit could not get blob bytes", "error", err)
+				return err
+			}
+			err = sqlite.InsertSystemFile(sqlite.SystemFile{
+				ID:         f.Name,
+				CodeID:     c.ID,
+				SystemID:   systemID,
+				Action:     sqlite.ActionNone,
+				OriginalID: "",
+				RawData:    string(bytes),
+			}, db)
+			if err != nil {
+				slog.Debug("code.ExtractCurrentFs could not insert file", "error", err)
+				return err
 			}
 		}
 		return nil
