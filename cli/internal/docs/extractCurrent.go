@@ -207,32 +207,32 @@ func ExtractCurrentGit(systemID string, d *config.DocumentationSource, db *sql.D
 			// Extract and clean data (trim whitespace and remove carriage returns)
 			var extractedData string
 			switch d.Type {
-				case config.DocTypeHTML:
-					extractedData, err = extractHTMLDocument(string(bytes), d.Options.Selector)
-					if err != nil {
-						slog.Debug("docs.ExtractCurrentGit could not extract html document", "error", err, "doc", f.Name)
-						return err
-					}
-				default:
-					extractedData = strings.TrimSpace(string(bytes))
-				}
-				extractedData = strings.ReplaceAll(extractedData, "\r", "")
-
-				// Insert our document
-				err = sqlite.InsertSystemDocument(sqlite.SystemDocument{
-					ID:              f.Name,
-					DocumentationID: d.ID,
-					SystemID:        systemID,
-					Type:            d.Type.String(),
-					Action:          sqlite.ActionNone,
-					OriginalID:      "",
-					RawData:         string(bytes),
-					ExtractedData:   extractedData,
-				}, db)
+			case config.DocTypeHTML:
+				extractedData, err = extractHTMLDocument(string(bytes), d.Options.Selector)
 				if err != nil {
-					slog.Debug("docs.ExtractCurrentGit could not insert document", "error", err)
+					slog.Debug("docs.ExtractCurrentGit could not extract html document", "error", err, "doc", f.Name)
 					return err
 				}
+			default:
+				extractedData = strings.TrimSpace(string(bytes))
+			}
+			extractedData = strings.ReplaceAll(extractedData, "\r", "")
+
+			// Insert our document
+			err = sqlite.InsertSystemDocument(sqlite.SystemDocument{
+				ID:              f.Name,
+				DocumentationID: d.ID,
+				SystemID:        systemID,
+				Type:            d.Type.String(),
+				Action:          sqlite.ActionNone,
+				OriginalID:      "",
+				RawData:         string(bytes),
+				ExtractedData:   extractedData,
+			}, db)
+			if err != nil {
+				slog.Debug("docs.ExtractCurrentGit could not insert document", "error", err)
+				return err
+			}
 
 			// Get and insert sections
 			sections := getMarkdownSections(strings.Split(extractedData, "\n"))
