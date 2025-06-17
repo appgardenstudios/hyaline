@@ -198,6 +198,8 @@ func updatePRUpdateComment(sha string, newRecs []CheckChangeOutputEntry, pr stri
 
 // Merge new recs into existing recs and return the resulting list (sorted)
 func mergeRecs(newRecs []CheckChangeOutputEntry, existingRecs []UpdatePRCommentRecommendation) (mergedRecs []UpdatePRCommentRecommendation) {
+	// Initialize to empty slice to avoid returning nil
+	mergedRecs = []UpdatePRCommentRecommendation{}
 	// Copy over existing recs as is
 	mergedRecs = append(mergedRecs, existingRecs...)
 
