@@ -264,7 +264,7 @@ func newRecMatchesExisting(newRec *CheckChangeOutputEntry, existingRec *UpdatePR
 
 func updatePRAddComment(sha string, recommendations []CheckChangeOutputEntry, pr string, token string) (*UpdatePRComment, error) {
 	// Format recs
-	var recs []UpdatePRCommentRecommendation
+	recs := []UpdatePRCommentRecommendation{}
 	for _, rec := range recommendations {
 		recs = append(recs, UpdatePRCommentRecommendation{
 			Checked:  rec.Changed,
