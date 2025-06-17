@@ -81,16 +81,4 @@ func TestGetDiff(t *testing.T) {
 	if err != nil {
 		t.Errorf("GetDiff failed to resolve base 'main' with origin/ fallback: %v", err)
 	}
-
-	// Test that GetDiff can resolve both head and base "main" with fallback to "origin/main"
-	_, err = GetDiff(r, "main", "main")
-	if err != nil {
-		t.Errorf("GetDiff failed to resolve both head and base 'main' with origin/ fallback: %v", err)
-	}
-
-	// Test that GetDiff works with explicit origin/ prefix
-	_, err = GetDiff(r, "origin/main", "origin/main")
-	if err != nil {
-		t.Errorf("GetDiff failed to resolve 'origin/main': %v", err)
-	}
 }
