@@ -5,7 +5,7 @@ purpose: Explain how Hyaline updates a PR
 url: documentation/explanation/update-pr
 ---
 ## Overview
-Hyaline has the ability to create or update a comment on a GitHub PR with the results from a previous run of `check change`. When updating, it merges previous recommendations with new ones, as well as maintaining the status of items that have been addressed (either manually or via changes detected by `check change`). **Hyaline automatically detects when documentation changes are made** and will check off corresponding recommendations in the PR comment.
+Hyaline has the ability to create or update a comment on a GitHub PR with the results from a previous run of `check change`. When updating, it merges previous recommendations with new ones, as well as maintaining the status of items that have been addressed (either manually or via changes detected by `check change`). **Hyaline automatically detects when documentation changes are committed in the PR** and will check off corresponding recommendations in the PR comment.
 
 ![Overview](_img/update-pr-overview.svg)
 

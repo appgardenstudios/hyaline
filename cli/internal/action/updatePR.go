@@ -372,7 +372,7 @@ func formatPRComment(comment *UpdatePRComment) string {
 	// Note: This starting line always needs to be present because we use it as a sentinel for getting the check marks
 	md.WriteString(fmt.Sprintf("%s\n", RECOMMENDATIONS_START))
 	if len(comment.Recommendations) > 0 {
-		md.WriteString("**Hyaline automatically detects documentation changes** and will check off items as you update them. ")
+		md.WriteString("**Hyaline automatically detects documentation changes committed in this PR** and will check off items as you update them. ")
 		md.WriteString("Review the recommendations below and manually update any remaining items as needed.\n")
 		for _, rec := range comment.Recommendations {
 			checked := " "
