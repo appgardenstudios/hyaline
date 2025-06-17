@@ -29,19 +29,14 @@ Note that you should be cognizant of the issues that come when creating personas
 </div>
 
 ## Grouping your Goals
-Now that we've grouped our people into personas, we now need to group our goals into objectives at about the same level of granularity
 
+<div class="portrait">
 
-TODO image of goals being combined into a singe goal
+![Grouping your Goals](./_img/purpose-goals.svg)
 
-Build, Maintain, Debug -> Develop System(s)
-page of code, hammer/wrench, Bug
+Now that we've grouped our people into personas, we now need to group our goals into objectives at about the same level of granularity. TODO
 
-Research, Design, Describe -> Build Products
-Magnifying Glass, Screenshot w/ comment, Feature Tickets
-
-Meet, Track, Predict -> Run Teams
-Calendar, Checklist, Timeline/Ghantt
+</div>
 
 ## Deciding on Documentation
 Now that we have Personas and Objectives, we need to decide on the set of documentation that should exist that allows said persona to complete their objective. To do this we need to take into account 3 main things: What does that persona need to know, what do we need to leave out, and how much will it cost to create/maintain the documentation
