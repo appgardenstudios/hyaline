@@ -372,8 +372,7 @@ func formatPRComment(comment *UpdatePRComment) string {
 	// Note: This starting line always needs to be present because we use it as a sentinel for getting the check marks
 	md.WriteString(fmt.Sprintf("%s\n", RECOMMENDATIONS_START))
 	if len(comment.Recommendations) > 0 {
-		md.WriteString("**Hyaline automatically detects documentation changes committed in this PR** and will check off items as you update them. ")
-		md.WriteString("Review the recommendations below and manually update any remaining items as needed.\n")
+		md.WriteString("Review the following recommendations and update the corresponding documentation as needed:\n")
 		for _, rec := range comment.Recommendations {
 			checked := " "
 			if rec.Checked {
@@ -392,6 +391,7 @@ func formatPRComment(comment *UpdatePRComment) string {
 			md.WriteString(fmt.Sprintf("<details><summary>Reasons</summary><ul><li>%s</li></ul></details>", reasons))
 			md.WriteString("\n")
 		}
+		md.WriteString("\nNote: Hyaline will automatically detect documentation updated in this PR and mark corresponding recommendations as reviewed.\n")
 	} else {
 		md.WriteString("Hyaline did not find any documentation related to the contents of this PR. If you are aware of documentation that should have been updated please update it and let your Hyaline administrator know about this message. Thanks!\n")
 	}
