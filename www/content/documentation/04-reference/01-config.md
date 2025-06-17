@@ -189,7 +189,7 @@ systems:
 
 **repo**: The remote git repository to use. Can be an ssh or http(s) URL. Only required if `clone` is true.
 
-**branch**: The branch to extract source code from. If not set will default to `main`.
+**branch**: The branch to extract source code from. If not set will default to `main`. If the specified branch cannot be resolved locally and doesn't contain a `/`, the system will attempt to resolve `origin/<branch>` as a fallback.
 
 **clone**: Boolean specifying wether or not to clone the repository before opening. If true `repo` is also required. Defaults to false.
 
@@ -341,7 +341,7 @@ systems:
 
 **repo**: The remote git repository to use. Can be an ssh or http(s) URL. Only required if `clone` is true.
 
-**branch**: The branch to extract documentation from. If not set will default to `main`.
+**branch**: The branch to extract documentation from. If not set will default to `main`. If the specified branch cannot be resolved locally and doesn't contain a `/`, the system will attempt to resolve `origin/<branch>` as a fallback.
 
 **clone**: Boolean specifying wether or not to clone the repository before opening. If true `repo` is also required. Defaults to false.
 

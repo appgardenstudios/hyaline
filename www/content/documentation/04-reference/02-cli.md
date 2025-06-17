@@ -60,8 +60,8 @@ Extract code and documentation from the system `app` using the config file found
 **Options**:
 * `--config` - (required) Path to the config file
 * `--system` - (required) ID of the system to extract
-* `--base` - (required) Base branch (where changes will be applied)
-* `--head` - (required) Head branch (which changes will be applied)
+* `--base` - (required) Base branch (where changes will be applied). If the branch cannot be resolved locally and doesn't contain a `/`, the system will attempt to resolve `origin/<branch>` as a fallback.
+* `--head` - (required) Head branch (which changes will be applied). If the branch cannot be resolved locally and doesn't contain a `/`, the system will attempt to resolve `origin/<branch>` as a fallback.
 * `--code-id` - (optional, multiple allowed) ID of the code source(s) that will be extracted
 * `--documentation-id` - (optional, multiple allowed) ID of the documentation source(s) that will be extracted
 * `--pull-request` - (optional) GitHub Pull Request to include in the change (OWNER/REPO/PR_NUMBER)
