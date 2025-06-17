@@ -31,12 +31,14 @@ And the purpose of documentation is not limited to just people anymore. With the
 </div>
 
 # Persons to Personas
+
+<div class="portrait">
+
+![Persons to Personas](./_img/purpose-personas.svg)
+
 You might be tempted to just dive in at this point and start making documentation for everyone, but it usually is not practical to make a different set of documentation for each person. Instead, we create a set of personas (defined), and then create documentation for a persona instead. Talk about history of personas, how they are used in marketing and other fields, and how they apply here.
 
-TODO |vertical| image of persons being combined into a set of personas
-Team Lead, Sr. Dev, Intern
-PO, UX, QA
-Manager, Director, Stakeholder
+</div>
 
 ## Example(s)
 
