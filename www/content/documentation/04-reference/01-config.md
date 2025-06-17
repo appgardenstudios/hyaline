@@ -122,6 +122,8 @@ systems:
 
 **exclude**: The set of globs to exclude from the set of source code during the extraction process. This uses the [doublestar](https://pkg.go.dev/github.com/bmatcuk/doublestar/v4) package to match paths. See extractor details below for how path comparisons are made and how relative glob paths work.
 
+**Note**: For a file to be processed, it must first match at least one include pattern. If it matches an include pattern, it is then checked against all exclude patterns. If it matches any exclude pattern, it is excluded. Files that don't match any include patterns are excluded by default.
+
 ##### Code Source Extractor Options (fs)
 Extract source code from a file system path. Note that code sources using this extractor will not be eligible to be included in a change data set. If you have a local git repository use the git extractor with the `path` option.
 
@@ -189,7 +191,7 @@ systems:
 
 **repo**: The remote git repository to use. Can be an ssh or http(s) URL. Only required if `clone` is true.
 
-**branch**: The branch to extract source code from. If not set will default to `main`.
+**branch**: The branch to extract source code from. If not set will default to `main`. If the specified branch cannot be resolved locally and doesn't contain a `/`, the system will attempt to resolve `origin/<branch>` as a fallback.
 
 **clone**: Boolean specifying wether or not to clone the repository before opening. If true `repo` is also required. Defaults to false.
 
@@ -274,6 +276,8 @@ systems:
 
 **exclude**: The set of globs to exclude from the set of documentation during the extraction process. This uses the [doublestar](https://pkg.go.dev/github.com/bmatcuk/doublestar/v4) package to match paths. See extractor details below for how path comparisons are made and how relative glob paths work.
 
+**Note**: For a document to be processed, it must first match at least one include pattern. If it matches an include pattern, it is then checked against all exclude patterns. If it matches any exclude pattern, it is excluded. Documents that don't match any include patterns are excluded by default.
+
 ##### Documentation Source Extractor Options (fs)
 Extract documentation from a file system path. Note that documentation sources using this extractor will not be eligible to be included in a change data set. If you have a local git repository use the git extractor with the `path` option.
 
@@ -341,7 +345,7 @@ systems:
 
 **repo**: The remote git repository to use. Can be an ssh or http(s) URL. Only required if `clone` is true.
 
-**branch**: The branch to extract documentation from. If not set will default to `main`.
+**branch**: The branch to extract documentation from. If not set will default to `main`. If the specified branch cannot be resolved locally and doesn't contain a `/`, the system will attempt to resolve `origin/<branch>` as a fallback.
 
 **clone**: Boolean specifying wether or not to clone the repository before opening. If true `repo` is also required. Defaults to false.
 

@@ -19,6 +19,8 @@ For more information please reference the following documents:
 * [Extract Current](./02-extract-current.md)
 * [Results](../04-reference/04-results.md)
 
+**Note**: The files and documents available for checking are determined by the include/exclude patterns in the configuration. For a file or document to be available for checking, it must first match at least one include pattern. If it matches an include pattern, it is then checked against all exclude patterns. If it matches any exclude pattern, it is excluded. Files and documents that don't match any include patterns are excluded by default.
+
 ## Recommendations
 Hyaline loops through each code change and conceptually examines the links between the code and documentation and asks an LLM "based on this change and the associated metadata, what documentation should be updated and why?". Hyaline then compiles the set of documentation (documents and sections) that needs to be updated into a unified list of recommendations and presents those results to the human(s) that made the change.
 

@@ -3,6 +3,7 @@ package repo
 import (
 	"context"
 	"log/slog"
+	"strings"
 
 	"github.com/go-git/go-git/v5"
 	"github.com/go-git/go-git/v5/plumbing"
@@ -13,8 +14,18 @@ func GetDiff(r *git.Repository, head string, base string) (diff object.Changes, 
 	// Get a list of files change between head and base
 	headRef, err := r.ResolveRevision(plumbing.Revision(head))
 	if err != nil {
-		slog.Debug("repo.GetDiff could not resolve head", "error", err, "head", head)
-		return
+		// If resolution fails and branch doesn't already have a remote prefix, try with origin/
+		if !strings.Contains(head, "/") {
+			slog.Debug("repo.GetDiff could not resolve head, trying with origin/", "error", err, "head", head)
+			headRef, err = r.ResolveRevision(plumbing.Revision("origin/" + head))
+			if err != nil {
+				slog.Debug("repo.GetDiff could not resolve head with origin/ prefix", "error", err, "head", "origin/"+head)
+				return
+			}
+		} else {
+			slog.Debug("repo.GetDiff could not resolve head", "error", err, "head", head)
+			return
+		}
 	}
 	headCommit, err := r.CommitObject(*headRef)
 	if err != nil {
@@ -28,8 +39,18 @@ func GetDiff(r *git.Repository, head string, base string) (diff object.Changes, 
 	}
 	baseRef, err := r.ResolveRevision(plumbing.Revision(base))
 	if err != nil {
-		slog.Debug("repo.GetDiff could not resolve base", "error", err, "base", base)
-		return
+		// If resolution fails and branch doesn't already have a remote prefix, try with origin/
+		if !strings.Contains(base, "/") {
+			slog.Debug("repo.GetDiff could not resolve base, trying with origin/", "error", err, "base", base)
+			baseRef, err = r.ResolveRevision(plumbing.Revision("origin/" + base))
+			if err != nil {
+				slog.Debug("repo.GetDiff could not resolve base with origin/ prefix", "error", err, "base", "origin/"+base)
+				return
+			}
+		} else {
+			slog.Debug("repo.GetDiff could not resolve base", "error", err, "base", base)
+			return
+		}
 	}
 	baseCommit, err := r.CommitObject(*baseRef)
 	if err != nil {

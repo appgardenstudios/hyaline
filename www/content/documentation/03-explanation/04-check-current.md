@@ -13,6 +13,8 @@ In this diagram you can see on the left we have our set of desired documents and
 
 Please see [Extract Current](./02-extract-current.md), the [Configuration Reference](../04-reference/01-config.md), and the [Results Reference](../04-reference/04-results.md) documentation for more details.
 
+**Note**: The files and documents available for checking are determined by the include/exclude patterns in the configuration. For a file or document to be available for checking, it must first match at least one include pattern. If it matches an include pattern, it is then checked against all exclude patterns. If it matches any exclude pattern, it is excluded. Files and documents that don't match any include patterns are excluded by default.
+
 Note that there are 4 primary checks that Hyaline can perform on current documentation:
 * Check that the desired documents and sections exists in the configuration
 * Check that documents and sections marked as required in the configuration actually exist

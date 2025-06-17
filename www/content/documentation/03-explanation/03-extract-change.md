@@ -20,13 +20,15 @@ When extracting a change for a system you may have situations where a system is 
 For more details on the schema of the change data set, including the information captured when extracting changed code, documentation, and change metadata please see the [data set reference](../04-reference/03-data-set.md).
 
 ## Extracting Changed Code
-System source code that changed is extracted for each targeted code source in the system. Note that the code source must be configured to use the `git` extractor for change extraction to work, as Hyaline compares two branches to extract the diffs used when extracting the change.
+System source code that changed is extracted for each targeted code source in the system. Note that the code source must be configured to use the `git` extractor for change extraction to work, as Hyaline compares two branches to extract the diffs used when extracting the change. If specified branches cannot be resolved locally and don't contain a `/`, Hyaline will attempt to resolve `origin/<branch>` as a fallback before failing.
 
 The extraction process uses the same configuration as the extract current process does, so if you haven't read up on how [extract current](./02-extract-current.md) works it would be helpful to do so now.
 
 ![Extracting Changed Code](_img/extract-change-code.svg)
 
 In this scenario we are extracting changed source code from a git repository located on the local file system at `~/my-app`, which is also the current working directory (CWD). The hyaline configuration file specifies that the path of this repository is `./`, and that we should include any files matching `**/*.code` and `code.cfg` while excluding any files matching `test/**/*` and `**/*.test.code`. Said another way, Hyaline will extract changed files that match at least one include glob and do not match any exclude globs. Hyaline loops through the diffs between `main` and `my-feat` (represented by color here) and extracts the following files:
+
+**Note**: For a changed file to be extracted, it must first match at least one include pattern. If it matches an include pattern, it is then checked against all exclude patterns. If it matches any exclude pattern, it is excluded. Changed files that don't match any include patterns are excluded by default.
 
 * `~/my-app/code.cfg` - This is extracted because it matches the include `code.cfg`, does not match an exclude statement, and was changed.
 * `~/my-app/src/app.code` - This is extracted because it matches the include `**/*.code`, does not match an exclude statement, and was changed.
@@ -45,7 +47,7 @@ For more details on git extractor options please see the [configuration referenc
 For more details on the schema of the change data set please see the [data set reference](../04-reference/03-data-set.md).
 
 ## Extracting Changed Documentation
-System documentation that changed is extracted for each targeted documentation source in the system. Note that the documentation source must be configured to use the `git` extractor for change extraction to work, as Hyaline compares two branches to extract the diffs used when extracting the change.
+System documentation that changed is extracted for each targeted documentation source in the system. Note that the documentation source must be configured to use the `git` extractor for change extraction to work, as Hyaline compares two branches to extract the diffs used when extracting the change. If specified branches cannot be resolved locally and don't contain a `/`, Hyaline will attempt to resolve `origin/<branch>` as a fallback before failing.
 
 The extraction process uses the same configuration as the extract current process does, so if you haven't read up on how [extract current](./02-extract-current.md) works it would be helpful to do so now.
 
