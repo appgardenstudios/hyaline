@@ -2,23 +2,7 @@
 title: "Purpose"
 ---
 
-Landscape
-1080/3 = 360h
-1920/3 = 640v
-
-
-Square
-1080/3 = 360h
-1080/3 = 360w
-
-Portrait
-1920/3 = 640v
-1080/3 = 360h
-
-Font Size: 16*3 = 48px
-
 # Purpose of Documentation
-TODO use goals or objectives?
 
 <div class="portrait">
 
@@ -36,7 +20,11 @@ And the purpose of documentation is not limited to just people anymore. With the
 
 ![Persons to Personas](./_img/purpose-personas.svg)
 
-You might be tempted to just dive in at this point and start making documentation for everyone, but it usually is not practical to make a different set of documentation for each person. Instead, we create a set of personas (defined), and then create documentation for a persona instead. Talk about history of personas, how they are used in marketing and other fields, and how they apply here.
+You might be tempted to just dive in at this point and start making documentation for everyone, but it usually is not practical to make a different set of documentation for each person. Instead we create a set of personas, which are a semi-abstract representation of the set of people in a group based on knowledge and experience with that group of people. Then, once we have these personas, or groups of individuals, we create documentation for them.
+
+For example, software development teams are typically made up of many different types of developers and engineers that all play a part in building, maintaining, and debugging a system. Rather than create documentation specific to each individual engineer on each team, we usually want to create sets of documentation for each archetype of developer or engineer. This pattern also works for handling product and business documentation, where there are usually logical groupings of individuals (sometimes defined by roles) that can be treated as a conceptual group. And then once grouped you can create the documentation needed by the group itself.
+
+Note that you should be cognizant of the issues that come when creating personas for groups of individuals where the knowledge or skill level varies a lot. For example, individuals with only a little knowledge or experience in the area being documented often require significantly more detail than individuals with much more knowledge or experience. In those cases it is wise to craft your personas so they are not too large, and it can often be helpful to document the minimum level of knowledge or experience for each persona.
 
 </div>
 
@@ -48,7 +36,15 @@ Now that we've grouped our people into personas, we now need to group our goals 
 
 TODO image of goals being combined into a singe goal
 
-TODO groups of goals
+Build, Maintain, Debug -> Develop System(s)
+page of code, hammer/wrench, ???, Bug
+
+Research, Design, Describe -> Build Products
+Magnifying Glass, Screenshot w/ comment, Feature Tickets
+
+Meet, Track, Predict -> Run Teams
+Calendar, Checklist, Timeline/Ghantt
+
 
 ## Example(s)
 
