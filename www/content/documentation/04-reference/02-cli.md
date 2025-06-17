@@ -43,8 +43,6 @@ $ hyaline version
 ## extract current
 `hyaline extract current` extracts current code and documentation for a system. Please visit the explanation documentation for [extract current](../03-explanation/02-extract-current.md) for more details.
 
-**Note**: Files and documents are extracted based on include/exclude patterns. For a file or document to be extracted, it must first match at least one include pattern. If it matches an include pattern, it is then checked against all exclude patterns. If it matches any exclude pattern, it is excluded. Files and documents that don't match any include patterns are excluded by default.
-
 **Options**:
 * `--config` - (required) Path to the config file
 * `--system` - (required) ID of the system to extract
@@ -58,8 +56,6 @@ Extract code and documentation from the system `app` using the config file found
 
 ## extract change
 `hyaline extract change` extracts changed code, documentation, and metadata for a system based on a change. Please visit the explanation documentation for [extract change](../03-explanation/03-extract-change.md) for more details.
-
-**Note**: Changed files and documents are extracted based on include/exclude patterns. For a changed file or document to be extracted, it must first match at least one include pattern. If it matches an include pattern, it is then checked against all exclude patterns. If it matches any exclude pattern, it is excluded. Changed files and documents that don't match any include patterns are excluded by default.
 
 **Options**:
 * `--config` - (required) Path to the config file
@@ -87,8 +83,6 @@ Extract code and documentation from the system `app` using the config file found
 ## check current
 `hyaline check current` checks current code and documentation for a system. Please visit the explanation documentation for [check current](../03-explanation/04-check-current.md) for more details.
 
-**Note**: Files and documents are checked based on the include/exclude patterns used during extraction. For a file or document to be available for checking, it must have been extracted (which requires matching at least one include pattern while not matching any exclude patterns).
-
 **Options**:
 * `--config` - (required) Path to the config file
 * `--current` - (required) Path to the current data set to check (output of `hyaline extract current`)
@@ -111,8 +105,6 @@ Check the documentation for the system `app` from `./current.db` using the confi
 
 ## check change
 `hyaline check change` checks changed code and documentation for a system. Please visit the explanation documentation for [check change](../03-explanation/05-check-change.md) for more details.
-
-**Note**: Changed files and documents are checked based on the include/exclude patterns used during extraction. For a changed file or document to be available for checking, it must have been extracted (which requires matching at least one include pattern while not matching any exclude patterns).
 
 **Options**:
 * `--config` - (required) Path to the config file

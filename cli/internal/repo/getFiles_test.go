@@ -3,15 +3,15 @@ package repo
 import (
 	"testing"
 
+	"github.com/go-git/go-billy/v5/memfs"
 	"github.com/go-git/go-git/v5"
 	"github.com/go-git/go-git/v5/config"
 	"github.com/go-git/go-git/v5/plumbing"
 	"github.com/go-git/go-git/v5/plumbing/object"
 	"github.com/go-git/go-git/v5/storage/memory"
-	"github.com/go-git/go-billy/v5/memfs"
 )
 
-func TestGetFilesWithOriginFallback(t *testing.T) {
+func TestGetFiles(t *testing.T) {
 	// Create an in-memory repository with worktree
 	storage := memory.NewStorage()
 	fs := memfs.New()
@@ -78,6 +78,9 @@ func TestGetFilesWithOriginFallback(t *testing.T) {
 	})
 	if err != nil {
 		t.Errorf("GetFiles failed to resolve 'main' with origin/ fallback: %v", err)
+	}
+	if fileCount != 1 {
+		t.Errorf("Expected 1 file, got %d", fileCount)
 	}
 
 	// Test that GetFiles works with explicit origin/ prefix
