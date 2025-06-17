@@ -26,6 +26,8 @@ For example, software development teams are typically made up of many different 
 
 Note that you should be cognizant of the issues that come when creating personas for groups of individuals where the knowledge or skill level varies a lot. For example, individuals with only a little knowledge or experience in the area being documented often require significantly more detail than individuals with much more knowledge or experience. In those cases it is wise to craft your personas so they are not too large, and it can often be helpful to document the minimum level of knowledge or experience for each persona.
 
+Note that ideally the delivery mechanism for your documentation should be local to or easily accessible by the people using it
+
 </div>
 
 ## Grouping your Goals
@@ -35,6 +37,8 @@ Note that you should be cognizant of the issues that come when creating personas
 ![Grouping your Goals](./_img/purpose-goals.svg)
 
 Now that we've grouped our people into personas, we now need to group our goals into objectives at about the same level of granularity. TODO
+
+format, layout, structure of documentation commonly flows out of your objectives. See diataxis
 
 </div>
 
@@ -47,9 +51,9 @@ How much does it cost to create/maintain
 
 
 TODO image
-mountain with levels
-suitcase w/ things to pack
-Menu with costs
+suitcase w/ things to pack - what to include/how comprehensive
+mountain with levels - how granular
+Menu with costs - how expensive
 
 
 ## Writing with Purpose
@@ -57,6 +61,10 @@ Menu with costs
 TODO image of Documentation created for a specific set of goals for a specific persona(s)
 
 high-level goal with image of low level goals beneath
+
+examples
+
+
 
 
 
