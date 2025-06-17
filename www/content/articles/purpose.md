@@ -2,7 +2,7 @@
 title: "Purpose"
 ---
 
-# Purpose of Documentation
+## Purpose of Documentation
 
 <div class="portrait">
 
@@ -14,7 +14,7 @@ And the purpose of documentation is not limited to just people anymore. With the
 
 </div>
 
-# Persons to Personas
+## Persons to Personas
 
 <div class="portrait">
 
@@ -28,16 +28,14 @@ Note that you should be cognizant of the issues that come when creating personas
 
 </div>
 
-## Example(s)
-
-# Grouping your Goals
+## Grouping your Goals
 Now that we've grouped our people into personas, we now need to group our goals into objectives at about the same level of granularity
 
 
 TODO image of goals being combined into a singe goal
 
 Build, Maintain, Debug -> Develop System(s)
-page of code, hammer/wrench, ???, Bug
+page of code, hammer/wrench, Bug
 
 Research, Design, Describe -> Build Products
 Magnifying Glass, Screenshot w/ comment, Feature Tickets
@@ -45,10 +43,7 @@ Magnifying Glass, Screenshot w/ comment, Feature Tickets
 Meet, Track, Predict -> Run Teams
 Calendar, Checklist, Timeline/Ghantt
 
-
-## Example(s)
-
-# Deciding on Documentation
+## Deciding on Documentation
 Now that we have Personas and Objectives, we need to decide on the set of documentation that should exist that allows said persona to complete their objective. To do this we need to take into account 3 main things: What does that persona need to know, what do we need to leave out, and how much will it cost to create/maintain the documentation
 
 How detailed to make it/what needs to be included (granularity/detail)
@@ -57,22 +52,18 @@ How much does it cost to create/maintain
 
 
 TODO image
+mountain with levels
+suitcase w/ things to pack
+Menu with costs
 
-## Example(s)
 
-# Weighing the Costs
-
-TODO image of options and costs associated with creating said documentation
-
-## Example(s)
-
-# Writing with Purpose
+## Writing with Purpose
 
 TODO image of Documentation created for a specific set of goals for a specific persona(s)
 
-## Example(s)
+high-level goal with image of low level goals beneath
 
-# You Can Do It!? (Something else here)
+
 
 
 
