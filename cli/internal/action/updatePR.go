@@ -367,14 +367,13 @@ func formatPRComment(comment *UpdatePRComment) string {
 	// Note: The comment MUST start with "# Hyaline" filled with 0-width spaces
 	md.WriteString("# H\u200By\u200Ba\u200Bl\u200Bi\u200Bn\u200Be PR Check\n")
 	md.WriteString(fmt.Sprintf("**ref**: %s\n", html.EscapeString(comment.Sha)))
-	md.WriteString("- [ ] Trigger Re-run\n")
 	md.WriteString("\n")
 
 	// Note: This starting line always needs to be present because we use it as a sentinel for getting the check marks
 	md.WriteString(fmt.Sprintf("%s\n", RECOMMENDATIONS_START))
 	if len(comment.Recommendations) > 0 {
-		md.WriteString("Review and update (if needed) the following document(s) and/or section(s). ")
-		md.WriteString("Once each item has been reviewed and updated (if needed), check it off below.\n")
+		md.WriteString("**Hyaline automatically detects documentation changes** and will check off items as you update them. ")
+		md.WriteString("Review the recommendations below and manually update any remaining items as needed.\n")
 		for _, rec := range comment.Recommendations {
 			checked := " "
 			if rec.Checked {
@@ -389,7 +388,7 @@ func formatPRComment(comment *UpdatePRComment) string {
 				cleanReasons = append(cleanReasons, html.EscapeString(reason))
 			}
 			reasons := strings.Join(cleanReasons, "</li><li>")
-			md.WriteString(fmt.Sprintf("- [%s] %s%s in %s/%s", checked, html.EscapeString(rec.Document), html.EscapeString(sections), html.EscapeString(rec.System), html.EscapeString(rec.Source)))
+			md.WriteString(fmt.Sprintf("- [%s] **%s**%s in `%s/%s`", checked, html.EscapeString(rec.Document), html.EscapeString(sections), html.EscapeString(rec.System), html.EscapeString(rec.Source)))
 			md.WriteString(fmt.Sprintf("<details><summary>Reasons</summary><ul><li>%s</li></ul></details>", reasons))
 			md.WriteString("\n")
 		}
