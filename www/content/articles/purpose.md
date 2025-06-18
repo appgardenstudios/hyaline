@@ -43,6 +43,11 @@ format, layout, structure of documentation commonly flows out of your objectives
 </div>
 
 ## Deciding on Documentation
+
+<div class="portrait">
+
+![Deciding on Documentation](./_img/purpose-deciding.svg)
+
 Now that we have Personas and Objectives, we need to decide on the set of documentation that should exist that allows said persona to complete their objective. To do this we need to take into account 3 main things: What does that persona need to know, what do we need to leave out, and how much will it cost to create/maintain the documentation
 
 How detailed to make it/what needs to be included (granularity/detail)
@@ -50,11 +55,7 @@ What to leave out
 How much does it cost to create/maintain
 
 
-TODO image
-suitcase w/ things to pack - what to include/how comprehensive
-mountain with levels - how granular
-Menu with costs - how expensive
-
+</div>
 
 ## Writing with Purpose
 
