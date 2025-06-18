@@ -108,7 +108,7 @@ systems:
             branch: main
             clone: true
             auth:
-              type: http
+              type: ssh
               options:
                 user: git
                 pem: ${HYALINE_SSH_PEM}

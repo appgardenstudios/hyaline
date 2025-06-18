@@ -69,9 +69,9 @@ systems:
             path: ./
             branch: origin/main
           include:
-            - "www/content/docs/**/*.md"
+            - "www/content/documentation/**/*.md"
         documents:
-          - name: www/content/docs/reference/cli.md
+          - name: www/content/documentation/reference/cli.md
             purpose: Document the usage and options for every Hyaline command
             required: true
             updateIf:
@@ -111,7 +111,7 @@ systems:
                   - name: update pr
                     purpose: Document the usage and options for the update pr command
                     required: true
-          - name: www/content/docs/reference/config.md
+          - name: www/content/documentation/reference/config.md
             purpose: Document every option in the Hyaline configuration file
             required: true
             sections:
@@ -125,7 +125,7 @@ systems:
                 ignore: true
               - name: Common Documents
                 ignore: true
-          - name: www/content/docs/reference/data-set.md
+          - name: www/content/documentation/reference/data-set.md
             purpose: Document the sqlite schema used by Hyaline to store current and change data sets
             required: true
             sections:
@@ -135,7 +135,7 @@ systems:
                 ignore: true
               - name: Enums
                 ignore: true
-          - name: www/content/docs/reference/results.md
+          - name: www/content/documentation/reference/results.md
             required: true
             sections:
               - name: Overview

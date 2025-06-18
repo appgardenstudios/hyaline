@@ -198,6 +198,8 @@ func updatePRUpdateComment(sha string, newRecs []CheckChangeOutputEntry, pr stri
 
 // Merge new recs into existing recs and return the resulting list (sorted)
 func mergeRecs(newRecs []CheckChangeOutputEntry, existingRecs []UpdatePRCommentRecommendation) (mergedRecs []UpdatePRCommentRecommendation) {
+	// Initialize to empty slice to avoid returning nil
+	mergedRecs = []UpdatePRCommentRecommendation{}
 	// Copy over existing recs as is
 	mergedRecs = append(mergedRecs, existingRecs...)
 
@@ -264,7 +266,7 @@ func newRecMatchesExisting(newRec *CheckChangeOutputEntry, existingRec *UpdatePR
 
 func updatePRAddComment(sha string, recommendations []CheckChangeOutputEntry, pr string, token string) (*UpdatePRComment, error) {
 	// Format recs
-	var recs []UpdatePRCommentRecommendation
+	recs := []UpdatePRCommentRecommendation{}
 	for _, rec := range recommendations {
 		recs = append(recs, UpdatePRCommentRecommendation{
 			Checked:  rec.Changed,
@@ -367,14 +369,12 @@ func formatPRComment(comment *UpdatePRComment) string {
 	// Note: The comment MUST start with "# Hyaline" filled with 0-width spaces
 	md.WriteString("# H\u200By\u200Ba\u200Bl\u200Bi\u200Bn\u200Be PR Check\n")
 	md.WriteString(fmt.Sprintf("**ref**: %s\n", html.EscapeString(comment.Sha)))
-	md.WriteString("- [ ] Trigger Re-run\n")
 	md.WriteString("\n")
 
 	// Note: This starting line always needs to be present because we use it as a sentinel for getting the check marks
 	md.WriteString(fmt.Sprintf("%s\n", RECOMMENDATIONS_START))
 	if len(comment.Recommendations) > 0 {
-		md.WriteString("Review and update (if needed) the following document(s) and/or section(s). ")
-		md.WriteString("Once each item has been reviewed and updated (if needed), check it off below.\n")
+		md.WriteString("Review the following recommendations and update the corresponding documentation as needed:\n")
 		for _, rec := range comment.Recommendations {
 			checked := " "
 			if rec.Checked {
@@ -389,10 +389,11 @@ func formatPRComment(comment *UpdatePRComment) string {
 				cleanReasons = append(cleanReasons, html.EscapeString(reason))
 			}
 			reasons := strings.Join(cleanReasons, "</li><li>")
-			md.WriteString(fmt.Sprintf("- [%s] %s%s in %s/%s", checked, html.EscapeString(rec.Document), html.EscapeString(sections), html.EscapeString(rec.System), html.EscapeString(rec.Source)))
+			md.WriteString(fmt.Sprintf("- [%s] **%s**%s in `%s/%s`", checked, html.EscapeString(rec.Document), html.EscapeString(sections), html.EscapeString(rec.System), html.EscapeString(rec.Source)))
 			md.WriteString(fmt.Sprintf("<details><summary>Reasons</summary><ul><li>%s</li></ul></details>", reasons))
 			md.WriteString("\n")
 		}
+		md.WriteString("\nNote: Hyaline will automatically detect documentation updated in this PR and mark corresponding recommendations as reviewed.\n")
 	} else {
 		md.WriteString("Hyaline did not find any documentation related to the contents of this PR. If you are aware of documentation that should have been updated please update it and let your Hyaline administrator know about this message. Thanks!\n")
 	}

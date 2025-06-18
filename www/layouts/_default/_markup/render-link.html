@@ -1,0 +1,21 @@
+{{/* Custom link renderer that resolves relative links and opens external links in new window */}}
+{{ $link := .Destination }}
+{{ $isExternal := strings.HasPrefix $link "http" }}
+
+{{- if not $isExternal -}}
+  {{ $url := urls.Parse .Destination }}
+  {{- if $url.Path -}}
+    {{ $fragment := "" }}
+    {{- with $url.Fragment }}{{ $fragment = printf "#%s" . }}{{ end -}}
+    {{- with .Page.GetPage $url.Path }}
+      {{ $link = printf "%s%s" .RelPermalink $fragment }}
+    {{ else }}
+      {{ warnf "%q not found from %q" $url.Path $.Page.Path }}
+    {{ end }}
+  {{ end -}}
+{{- end -}}
+
+<a href="{{ $link | safeURL }}"
+   {{- with .Title }} title="{{ . }}"{{ end }}
+   {{- if $isExternal }} rel="noreferrer noopener" target="_blank"{{ end -}}
+>{{ .Text | safeHTML }}</a>
