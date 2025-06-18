@@ -1,6 +1,6 @@
 ---
-title: Purpose
-linkTitle: Purpose
+title: Document with Purpose
+subtitle: How to purposely write documentation.
 url: articles/purpose
 ---
 
