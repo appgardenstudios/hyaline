@@ -21,7 +21,7 @@ jobs:
       - name: Print Hyaline version
         run: hyaline version
       - name: Check PR
-        uses: appgardenstudios/hyaline-actions/check-pr@v0
+        uses: appgardenstudios/hyaline-actions/check-pr@d4660d10c39123fda8361f2075024e3c1ad17916
         with:
           config: ./hyaline.yml
           system: hyaline
