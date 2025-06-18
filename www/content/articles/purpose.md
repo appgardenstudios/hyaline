@@ -59,12 +59,19 @@ How much does it cost to create/maintain
 
 ## Writing with Purpose
 
+<div class="portrait">
+
+![Writing with Purpose](./_img/purpose-writing.svg)
+
 TODO image of Documentation created for a specific set of goals for a specific persona(s)
 
 high-level goal with image of low level goals beneath
 
+Now go forth, and write documentation!
+
 examples
 
+</div>
 
 
 
