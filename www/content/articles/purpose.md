@@ -1,5 +1,7 @@
 ---
-title: "Purpose"
+title: Purpose
+linkTitle: Purpose
+url: articles/purpose
 ---
 
 ## Purpose of Documentation
