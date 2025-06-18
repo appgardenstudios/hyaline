@@ -1,6 +1,6 @@
 ---
 title: Document with Purpose
-subtitle: How to purposely write documentation.
+subtitle: How to purposefully write documentation.
 url: articles/purpose
 ---
 
