@@ -1,6 +1,7 @@
 ---
 title: Document with Purpose
 subtitle: How to purposefully write documentation.
+author: John Clark
 url: articles/purpose
 ---
 
