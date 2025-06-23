@@ -1,0 +1,56 @@
+{{ define "main" }}
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  <header class="mb-12 text-center">
+    <h1 class="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+      Articles
+    </h1>
+    <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+      A collection of articles to help software product development teams with their documentation.
+    </p>
+  </header>
+
+  <!-- Latest Articles Section -->
+  <section id="latest" class="mb-12">
+    <div class="mb-8">
+      <h2 class="text-3xl font-bold text-gray-900">Latest</h2>
+    </div>
+
+    <!-- Article Cards -->
+    <div class="space-y-6">
+      {{ range first 3 .Pages }}
+      <article class="group">
+        <a 
+          href="{{ .Permalink }}" 
+          class="flex bg-white border border-blue-200 rounded-lg p-6 hover:border-blue-400 hover:shadow-md transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+          aria-label="Read article: {{ .Title }}"
+        >
+          <div class="flex-shrink-0 w-36 h-36 bg-gray-100 rounded-lg mr-6 flex items-center justify-center overflow-hidden">
+            {{ if .Params.thumbnail }}
+            <img src="{{ .Params.thumbnail }}" alt="" class="w-full h-full object-cover">
+            {{ else }}
+            <svg class="w-12 h-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+            <span class="sr-only">Article thumbnail</span>
+            {{ end }}
+          </div>
+          <div class="flex-1 min-w-0">
+            <h3 class="text-xl font-semibold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">
+              {{ .Title }}
+            </h3>
+            <p class="text-gray-600 mb-3 line-clamp-3">
+              {{ if .Summary }}{{ .Summary | plainify }}{{ else }}{{ .Content | plainify | truncate 120 }}{{ end }}
+            </p>
+            {{ if .Date }}
+            <time class="text-sm text-gray-500" datetime="{{ .Date.Format "2006-01-02" }}">
+              {{ .Date.Format "January 2, 2006" }}
+            </time>
+            {{ end }}
+          </div>
+        </a>
+      </article>
+      {{ end }}
+    </div>
+  </section>
+</div>
+{{ end }}

@@ -1,0 +1,62 @@
+{{ define "main" }}
+<style>
+  .portrait img {
+    max-width: 360px;
+    margin: 0 auto 1rem auto;
+    display: block;
+  }
+  
+  /* Small viewports and up: float image right */
+  @media (min-width: 640px) {
+    .portrait {
+      display: flow-root;
+    }
+    .portrait img {
+      float: right;
+      margin-left: 1rem;
+    }
+  }
+</style>
+<div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  <div class="max-w-5xl mx-auto">
+    <nav class="flex items-center text-base text-gray-600 mb-8" aria-label="Breadcrumb">
+      <a href="/articles" class="text-gray-700 hover:text-blue-600">Articles</a>
+      <svg class="h-4 w-4 mx-2 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+      </svg>
+      <span class="text-gray-900 font-medium">{{ .Title }}</span>
+    </nav>
+
+    <div class="mb-12">
+      <!-- Article Title -->
+      <h1 class="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+        {{ .Title }}
+      </h1>
+      
+      {{ if .Params.subtitle }}
+      <!-- Article Subtitle -->
+      <p class="text-xl text-gray-600 mb-6">
+        {{ .Params.subtitle }}
+      </p>
+      {{ end }}
+
+      <!-- Author and Date -->
+      {{ if or .Params.author .Date }}
+      <div class="text-gray-600 mb-8">
+        {{ if .Params.author }}
+          <span>{{ .Params.author }}</span>
+          {{ if .Date }} - {{ end }}
+        {{ end }}
+        {{ if .Date }}
+          <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "January 2, 2006" }}</time>
+        {{ end }}
+      </div>
+      {{ end }}
+    </div>
+
+    <div class="space-y-8 prose max-w-none prose-a:text-blue-600 prose-code:before:hidden prose-code:after:hidden break-words">
+      {{ .Content }}
+    </div>
+  </div>
+</div>
+{{ end }}
