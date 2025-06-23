@@ -1,6 +1,24 @@
 {{ define "main" }}
+<style>
+  .portrait img {
+    max-width: 360px;
+    margin: 0 auto 1rem auto;
+    display: block;
+  }
+  
+  /* Small viewports and up: float image right */
+  @media (min-width: 640px) {
+    .portrait {
+      display: flow-root;
+    }
+    .portrait img {
+      float: right;
+      margin-left: 1rem;
+    }
+  }
+</style>
 <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
-  <div class="max-w-3xl mx-auto">
+  <div class="max-w-5xl mx-auto">
     <nav class="flex items-center text-base text-gray-600 mb-8" aria-label="Breadcrumb">
       <a href="/articles" class="text-gray-700 hover:text-blue-600">Articles</a>
       <svg class="h-4 w-4 mx-2 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">

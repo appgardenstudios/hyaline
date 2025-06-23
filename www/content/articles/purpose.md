@@ -3,6 +3,7 @@ title: Document with Purpose
 subtitle: How to purposefully write documentation.
 author: John Clark
 url: articles/purpose
+thumbnail: ./_img/purpose-thumbnail.svg
 ---
 
 ## Purpose of Documentation
