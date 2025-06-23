@@ -44,7 +44,7 @@
       {{ if or .Params.author .Date }}
       <div class="text-gray-600 mb-8">
         {{ if .Params.author }}
-          <span>By: {{ .Params.author }}</span>
+          <span>{{ .Params.author }}</span>
           {{ if .Date }} - {{ end }}
         {{ end }}
         {{ if .Date }}
