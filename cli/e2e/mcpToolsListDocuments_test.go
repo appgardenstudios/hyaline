@@ -31,7 +31,6 @@ func TestMCPListDocumentsAll(t *testing.T) {
 		t.Fatal("expected content to be of type TextContent")
 	}
 
-	// Write output for golden file comparison
 	goldenPath := "./_golden/mcp-list-documents-all.txt"
 	outputPath := fmt.Sprintf("./_output/mcp-list-documents-all-%d.txt", time.Now().UnixMilli())
 
@@ -71,7 +70,6 @@ func TestMCPListDocumentsSystemLevel(t *testing.T) {
 		t.Fatal("expected content to be of type TextContent")
 	}
 
-	// Write output for golden file comparison
 	goldenPath := "./_golden/mcp-list-documents-system.txt"
 	outputPath := fmt.Sprintf("./_output/mcp-list-documents-system-%d.txt", time.Now().UnixMilli())
 
@@ -111,7 +109,6 @@ func TestMCPListDocumentsDocumentationLevel(t *testing.T) {
 		t.Fatal("expected content to be of type TextContent")
 	}
 
-	// Write output for golden file comparison
 	goldenPath := "./_golden/mcp-list-documents-docs.txt"
 	outputPath := fmt.Sprintf("./_output/mcp-list-documents-docs-%d.txt", time.Now().UnixMilli())
 
@@ -151,7 +148,6 @@ func TestMCPListDocumentsInvalidURI(t *testing.T) {
 		t.Fatal("expected content to be of type TextContent")
 	}
 
-	// Write output for golden file comparison
 	goldenPath := "./_golden/mcp-list-documents-error.txt"
 	outputPath := fmt.Sprintf("./_output/mcp-list-documents-error-%d.txt", time.Now().UnixMilli())
 

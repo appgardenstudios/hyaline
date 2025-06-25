@@ -36,41 +36,41 @@ func NewServer(db *sql.DB) (*Server, error) {
 		server.WithToolCapabilities(false), // Tools don't change dynamically
 	)
 
-	srv := &Server{
+	hyalineMCPServer := &Server{
 		mcpServer: mcpServer,
 		data:      mcpData,
 	}
 
 	// Register tools and prompts
-	srv.registerTools()
-	srv.registerPrompts()
+	hyalineMCPServer.registerTools()
+	hyalineMCPServer.registerPrompts()
 
 	slog.Debug("mcp.NewServer complete")
-	return srv, nil
+	return hyalineMCPServer, nil
 }
 
 // ServeStdio starts the MCP server using stdio transport
-func (s *Server) ServeStdio() error {
-	return server.ServeStdio(s.mcpServer)
+func (hyalineMCPServer *Server) ServeStdio() error {
+	return server.ServeStdio(hyalineMCPServer.mcpServer)
 }
 
 // registerTools registers all MCP tools
-func (s *Server) registerTools() {
+func (hyalineMCPServer *Server) registerTools() {
 	// list_documents tool
-	s.mcpServer.AddTool(tools.ListDocumentsTool(), func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
-		return tools.HandleListDocuments(ctx, request, s.data)
+	hyalineMCPServer.mcpServer.AddTool(tools.ListDocumentsTool(), func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+		return tools.HandleListDocuments(ctx, request, hyalineMCPServer.data)
 	})
 
 	// get_documents tool
-	s.mcpServer.AddTool(tools.GetDocumentsTool(), func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
-		return tools.HandleGetDocuments(ctx, request, s.data)
+	hyalineMCPServer.mcpServer.AddTool(tools.GetDocumentsTool(), func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+		return tools.HandleGetDocuments(ctx, request, hyalineMCPServer.data)
 	})
 }
 
 // registerPrompts registers all MCP prompts
-func (s *Server) registerPrompts() {
+func (hyalineMCPServer *Server) registerPrompts() {
 	// answer_question prompt
-	s.mcpServer.AddPrompt(prompts.AnswerQuestionPrompt(), func(ctx context.Context, request mcp.GetPromptRequest) (*mcp.GetPromptResult, error) {
+	hyalineMCPServer.mcpServer.AddPrompt(prompts.AnswerQuestionPrompt(), func(ctx context.Context, request mcp.GetPromptRequest) (*mcp.GetPromptResult, error) {
 		return prompts.HandleAnswerQuestion(ctx, request)
 	})
 

@@ -31,10 +31,8 @@ func TestMCPGetDocumentsAll(t *testing.T) {
 		t.Fatal("expected content to be of type TextContent")
 	}
 
-	// The test captures whatever response we get for golden file comparison
 	t.Logf("Response content: %s", textContent.Text)
 
-	// Write output for golden file comparison
 	goldenPath := "./_golden/mcp-get-documents-all.txt"
 	outputPath := fmt.Sprintf("./_output/mcp-get-documents-all-%d.txt", time.Now().UnixMilli())
 
@@ -74,10 +72,8 @@ func TestMCPGetDocumentsSingle(t *testing.T) {
 		t.Fatal("expected content to be of type TextContent")
 	}
 
-	// The test captures whatever response we get for golden file comparison
 	t.Logf("Response content: %s", textContent.Text)
 
-	// Write output for golden file comparison
 	goldenPath := "./_golden/mcp-get-documents-single.txt"
 	outputPath := fmt.Sprintf("./_output/mcp-get-documents-single-%d.txt", time.Now().UnixMilli())
 
@@ -117,10 +113,8 @@ func TestMCPGetDocumentsMultiple(t *testing.T) {
 		t.Fatal("expected content to be of type TextContent")
 	}
 
-	// The test captures whatever response we get for golden file comparison
 	t.Logf("Response content: %s", textContent.Text)
 
-	// Write output for golden file comparison
 	goldenPath := "./_golden/mcp-get-documents-multiple.txt"
 	outputPath := fmt.Sprintf("./_output/mcp-get-documents-multiple-%d.txt", time.Now().UnixMilli())
 
@@ -162,7 +156,6 @@ func TestMCPGetDocumentsNotFound(t *testing.T) {
 
 	t.Logf("Response content: %s", textContent.Text)
 
-	// Write output for golden file comparison
 	goldenPath := "./_golden/mcp-get-documents-notfound.txt"
 	outputPath := fmt.Sprintf("./_output/mcp-get-documents-notfound-%d.txt", time.Now().UnixMilli())
 
@@ -202,7 +195,6 @@ func TestMCPGetDocumentsInvalidURI(t *testing.T) {
 		t.Fatal("expected content to be of type TextContent")
 	}
 
-	// Write output for golden file comparison
 	goldenPath := "./_golden/mcp-get-documents-error.txt"
 	outputPath := fmt.Sprintf("./_output/mcp-get-documents-error-%d.txt", time.Now().UnixMilli())
 

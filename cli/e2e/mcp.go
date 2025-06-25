@@ -34,7 +34,7 @@ func setupMCPClient(t *testing.T, dbPath string) *mcpClient.Client {
 
 	// Set coverage environment
 	envVars := []string{"GOCOVERDIR=../.coverdata"}
-	
+
 	t.Logf("Starting MCP client with args: %v", args)
 	client, err := mcpClient.NewStdioMCPClient(binaryPath, envVars, args...)
 	if err != nil {
