@@ -50,7 +50,7 @@ func HandleGetDocuments(_ context.Context, request mcp.CallToolRequest, mcpData 
 
 	// Wrap the content with systems XML tag and description
 	var result strings.Builder
-	result.WriteString("The <systems> XML structure contains all requested systems, documentation sources, and documents. Each <document> has the <document_content> which are the contents of the document.\n\n")
+	result.WriteString("The <systems> XML structure contains all requested systems, documentation sources, and documents. Each <document> has the <document_content> which contains the contents of the document.\n\n")
 	result.WriteString("<systems>\n")
 	result.WriteString(results.Result.String())
 	result.WriteString("</systems>")

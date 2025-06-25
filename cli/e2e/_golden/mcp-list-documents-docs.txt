@@ -8,15 +8,12 @@ The <systems> XML structure contains all available systems, documentation source
           <document id="document://system/mcp-test/docs-fs/docs/doc.html">
             <sections>
               <section>
-                <id>docs/doc.html#First Section</id>
                 <name>First Section</name>
               </section>
               <section>
-                <id>docs/doc.html#First Section#Sub Section 1</id>
                 <name>Sub Section 1</name>
               </section>
               <section>
-                <id>docs/doc.html#First Section#Sub Section 2</id>
                 <name>Sub Section 2</name>
               </section>
             </sections>

@@ -8,15 +8,12 @@ The <systems> XML structure contains all available systems, documentation source
           <document id="document://system/mcp-test/docs-fs/docs/doc.html">
             <sections>
               <section>
-                <id>docs/doc.html#First Section</id>
                 <name>First Section</name>
               </section>
               <section>
-                <id>docs/doc.html#First Section#Sub Section 1</id>
                 <name>Sub Section 1</name>
               </section>
               <section>
-                <id>docs/doc.html#First Section#Sub Section 2</id>
                 <name>Sub Section 2</name>
               </section>
             </sections>
@@ -36,15 +33,12 @@ The <systems> XML structure contains all available systems, documentation source
           <document id="document://system/mcp-test/docs-http//docs/doc.html">
             <sections>
               <section>
-                <id>/docs/doc.html#First Section</id>
                 <name>First Section</name>
               </section>
               <section>
-                <id>/docs/doc.html#First Section#Sub Section 1</id>
                 <name>Sub Section 1</name>
               </section>
               <section>
-                <id>/docs/doc.html#First Section#Sub Section 2</id>
                 <name>Sub Section 2</name>
               </section>
             </sections>
@@ -56,15 +50,12 @@ The <systems> XML structure contains all available systems, documentation source
           <document id="document://system/mcp-test/docs-http-git/README.md">
             <sections>
               <section>
-                <id>README.md#Example</id>
                 <name>Example</name>
               </section>
               <section>
-                <id>README.md#Example#Subsection 1</id>
                 <name>Subsection 1</name>
               </section>
               <section>
-                <id>README.md#Example#Subsection 2</id>
                 <name>Subsection 2</name>
               </section>
             </sections>
@@ -72,7 +63,6 @@ The <systems> XML structure contains all available systems, documentation source
           <document id="document://system/mcp-test/docs-http-git/docs/docsDoc.md">
             <sections>
               <section>
-                <id>docs/docsDoc.md#This is a test</id>
                 <name>This is a test</name>
               </section>
             </sections>
@@ -80,7 +70,6 @@ The <systems> XML structure contains all available systems, documentation source
           <document id="document://system/mcp-test/docs-http-git/docs/preDoc.md">
             <sections>
               <section>
-                <id>docs/preDoc.md#A Random Heading</id>
                 <name>A Random Heading</name>
               </section>
             </sections>
@@ -92,15 +81,12 @@ The <systems> XML structure contains all available systems, documentation source
           <document id="document://system/mcp-test/docs-ssh/README.md">
             <sections>
               <section>
-                <id>README.md#Example</id>
                 <name>Example</name>
               </section>
               <section>
-                <id>README.md#Example#Subsection 1</id>
                 <name>Subsection 1</name>
               </section>
               <section>
-                <id>README.md#Example#Subsection 2</id>
                 <name>Subsection 2</name>
               </section>
             </sections>
@@ -108,7 +94,6 @@ The <systems> XML structure contains all available systems, documentation source
           <document id="document://system/mcp-test/docs-ssh/docs/docsDoc.md">
             <sections>
               <section>
-                <id>docs/docsDoc.md#This is a test</id>
                 <name>This is a test</name>
               </section>
             </sections>
@@ -116,7 +101,6 @@ The <systems> XML structure contains all available systems, documentation source
           <document id="document://system/mcp-test/docs-ssh/docs/preDoc.md">
             <sections>
               <section>
-                <id>docs/preDoc.md#A Random Heading</id>
                 <name>A Random Heading</name>
               </section>
             </sections>

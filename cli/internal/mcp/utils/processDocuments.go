@@ -184,7 +184,6 @@ func processSectionsForDocument(results *Results, mcpData *MCPData, document *sq
 			}
 
 			fmt.Fprintf(&results.Result, "              <section>\n")
-			fmt.Fprintf(&results.Result, "                <id>%s</id>\n", section.ID)
 			fmt.Fprintf(&results.Result, "                <name>%s</name>\n", section.Name)
 			results.Result.WriteString("              </section>\n")
 		}

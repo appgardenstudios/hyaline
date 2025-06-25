@@ -1,4 +1,4 @@
-The <systems> XML structure contains all requested systems, documentation sources, and documents. Each <document> has the <document_content> which are the contents of the document.
+The <systems> XML structure contains all requested systems, documentation sources, and documents. Each <document> has the <document_content> which contains the contents of the document.
 
 <systems>
   <system id="document://system/mcp-test">
