@@ -11,8 +11,6 @@ systems:
             path: ./e2e/_input/mcp/
           include:
             - "docs/**/*.html"
-          exclude:
-            - "docs/irrelevant.html"
       - id: docs-http
         type: html
         options:
@@ -24,8 +22,6 @@ systems:
             start: "./docs"
           include:
             - "docs/**/*"
-          exclude:
-            - "docs/irrelevant.html"
       - id: docs-ssh
         type: md
         extractor:
