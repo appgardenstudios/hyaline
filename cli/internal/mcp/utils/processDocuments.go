@@ -142,16 +142,16 @@ func processDocument(results *Results, mcpData *MCPData, document *sqlite.System
 	}
 	fullURI := documentURI.String()
 
+	fmt.Fprintf(&results.Result, "          <document id=\"%s\">\n", fullURI)
+
+	// Always include source regardless of includeContent
+	if docData, exists := mcpData.Documentation[document.SystemID][document.DocumentationID]; exists {
+		sourceURL := generateSourceURL(docData.Path, document.ID)
+		fmt.Fprintf(&results.Result, "            <source>%s</source>\n", sourceURL)
+	}
+
 	if includeContent {
 		// Format for get_documents: include content
-		fmt.Fprintf(&results.Result, "          <document id=\"%s\">\n", fullURI)
-
-		// Get the SystemDocumentation to obtain the Path
-		if docData, exists := mcpData.Documentation[document.SystemID][document.DocumentationID]; exists {
-			sourceURL := generateSourceURL(docData.Path, document.ID)
-			fmt.Fprintf(&results.Result, "            <source>%s</source>\n", sourceURL)
-		}
-
 		results.Result.WriteString("            <document_content>\n")
 
 		// Use ExtractedData if available, otherwise RawData
@@ -161,17 +161,17 @@ func processDocument(results *Results, mcpData *MCPData, document *sqlite.System
 		}
 
 		results.Result.WriteString(content)
-		results.Result.WriteString("\n            </document_content>\n          </document>\n")
+		results.Result.WriteString("\n            </document_content>\n")
 	} else {
 		// Format for list_documents: metadata only
-		fmt.Fprintf(&results.Result, "          <document id=\"%s\">\n", fullURI)
 		results.Result.WriteString("            <sections>\n")
 
 		processSectionsForDocument(results, mcpData, document)
 
 		results.Result.WriteString("            </sections>\n")
-		results.Result.WriteString("          </document>\n")
 	}
+
+	results.Result.WriteString("          </document>\n")
 }
 
 func processSectionsForDocument(results *Results, mcpData *MCPData, document *sqlite.SystemDocument) {
