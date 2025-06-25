@@ -9,7 +9,6 @@ import (
 	"github.com/mark3labs/mcp-go/mcp"
 )
 
-// ListDocumentsTool creates the list_documents tool definition
 func ListDocumentsTool() mcp.Tool {
 	return mcp.NewTool("list_documents",
 		mcp.WithDescription("List all documents at or under the specified URI path, or all documents if no URI provided. Document URIs follow this pattern: `document://system/<system-id>/<documentation-id>/<document-path>`"),
@@ -19,7 +18,6 @@ func ListDocumentsTool() mcp.Tool {
 	)
 }
 
-// HandleListDocuments handles the list_documents tool call
 func HandleListDocuments(_ context.Context, request mcp.CallToolRequest, mcpData *utils.MCPData) (*mcp.CallToolResult, error) {
 
 	// Get the optional document_uri parameter
@@ -31,28 +29,26 @@ func HandleListDocuments(_ context.Context, request mcp.CallToolRequest, mcpData
 	}
 
 	// Parse the URI if provided
-	var docURI *utils.DocumentURI
+	var documentURI *utils.DocumentURI
 	if documentURIStr != "" {
 		parsedURI, err := utils.NewDocumentURI(documentURIStr)
 		if err != nil {
 			return mcp.NewToolResultError(fmt.Sprintf("invalid URI format: %s", err.Error())), nil
 		}
 
-		docURI = parsedURI
+		documentURI = parsedURI
 	}
 
 	// Build the document list in XML format
-	results := utils.ProcessDocuments(mcpData, docURI, false)
+	results := utils.ProcessDocuments(mcpData, documentURI, false)
 
 	if results.Total == 0 {
 		return mcp.NewToolResultText("No documents found matching the specified URI."), nil
 	}
 
-	var result strings.Builder
-	result.WriteString("The <systems> XML structure contains all available systems, documentation sources, documents, and sections with their corresponding document URIs.\n\n")
-	result.WriteString("<systems>\n")
-	result.WriteString(results.Result.String())
-	result.WriteString("</systems>\n")
+	var response strings.Builder
+	response.WriteString("The <systems> XML structure contains all available systems, documentation sources, documents, and sections with their corresponding document URIs.\n\n")
+	response.WriteString(results.Result.String())
 
-	return mcp.NewToolResultText(result.String()), nil
+	return mcp.NewToolResultText(response.String()), nil
 }

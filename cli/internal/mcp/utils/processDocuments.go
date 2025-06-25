@@ -17,10 +17,13 @@ type Results struct {
 	Result strings.Builder
 }
 
-// ProcessDocuments processes documents matching the filter and builds output
+// ProcessDocuments processes documents matching the filter and builds output with <systems> wrapper
 // If includeContent is true, includes document content; otherwise just metadata
 func ProcessDocuments(mcpData *MCPData, filter *DocumentURI, includeContent bool) *Results {
 	results := &Results{}
+
+	// Add opening <systems> tag
+	results.Result.WriteString("<systems>\n")
 
 	// Sort systems alphabetically by ID
 	systemIDs := make([]string, 0, len(mcpData.Systems))
@@ -35,6 +38,9 @@ func ProcessDocuments(mcpData *MCPData, filter *DocumentURI, includeContent bool
 			processSystem(results, mcpData, system, filter, includeContent)
 		}
 	}
+
+	// Close <systems> tag
+	results.Result.WriteString("</systems>")
 
 	return results
 }
