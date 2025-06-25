@@ -19,23 +19,23 @@ type Results struct {
 
 // ProcessDocuments processes documents matching the filter and builds output with <systems> wrapper
 // If includeContent is true, includes document content; otherwise just metadata
-func ProcessDocuments(mcpData *MCPData, filter *DocumentURI, includeContent bool) *Results {
+func ProcessDocuments(documentationData *DocumentationData, filter *DocumentURI, includeContent bool) *Results {
 	results := &Results{}
 
 	// Add opening <systems> tag
 	results.Result.WriteString("<systems>\n")
 
 	// Sort systems alphabetically by ID
-	systemIDs := make([]string, 0, len(mcpData.Systems))
-	for systemID := range mcpData.Systems {
+	systemIDs := make([]string, 0, len(documentationData.Systems))
+	for systemID := range documentationData.Systems {
 		systemIDs = append(systemIDs, systemID)
 	}
 	sort.Strings(systemIDs)
 
 	for _, systemID := range systemIDs {
-		system := mcpData.Systems[systemID]
+		system := documentationData.Systems[systemID]
 		if filter == nil || filter.SystemID == "" || filter.SystemID == system.ID {
-			processSystem(results, mcpData, system, filter, includeContent)
+			processSystem(results, documentationData, system, filter, includeContent)
 		}
 	}
 
@@ -45,21 +45,21 @@ func ProcessDocuments(mcpData *MCPData, filter *DocumentURI, includeContent bool
 	return results
 }
 
-func processSystem(results *Results, mcpData *MCPData, system *sqlite.System, filter *DocumentURI, includeContent bool) {
+func processSystem(results *Results, documentationData *DocumentationData, system *sqlite.System, filter *DocumentURI, includeContent bool) {
 	systemURI := &DocumentURI{
 		SystemID: system.ID,
 	}
 	fmt.Fprintf(&results.Result, "  <system id=\"%s\">\n", systemURI.String())
 	results.Result.WriteString("    <documentation>\n")
 
-	processDocumentation(results, mcpData, system, filter, includeContent)
+	processDocumentation(results, documentationData, system, filter, includeContent)
 
 	results.Result.WriteString("    </documentation>\n")
 	results.Result.WriteString("  </system>\n")
 }
 
-func processDocumentation(results *Results, mcpData *MCPData, system *sqlite.System, filter *DocumentURI, includeContent bool) {
-	if documentationSources, exists := mcpData.Documentation[system.ID]; exists {
+func processDocumentation(results *Results, documentationData *DocumentationData, system *sqlite.System, filter *DocumentURI, includeContent bool) {
+	if documentationSources, exists := documentationData.Documentation[system.ID]; exists {
 		// Sort documentation source IDs alphabetically
 		documentationIDS := make([]string, 0, len(documentationSources))
 		for documentationID := range documentationSources {
@@ -70,13 +70,13 @@ func processDocumentation(results *Results, mcpData *MCPData, system *sqlite.Sys
 		for _, documentationID := range documentationIDS {
 			documentation := documentationSources[documentationID]
 			if filter == nil || filter.DocumentationID == "" || filter.DocumentationID == documentation.ID {
-				processDocumentationSource(results, mcpData, documentation, filter, includeContent)
+				processDocumentationSource(results, documentationData, documentation, filter, includeContent)
 			}
 		}
 	}
 }
 
-func processDocumentationSource(results *Results, mcpData *MCPData, documentation *sqlite.SystemDocumentation, filter *DocumentURI, includeContent bool) {
+func processDocumentationSource(results *Results, documentationData *DocumentationData, documentation *sqlite.SystemDocumentation, filter *DocumentURI, includeContent bool) {
 	documentationURI := &DocumentURI{
 		SystemID:        documentation.SystemID,
 		DocumentationID: documentation.ID,
@@ -84,14 +84,14 @@ func processDocumentationSource(results *Results, mcpData *MCPData, documentatio
 	fmt.Fprintf(&results.Result, "      <documentation_source id=\"%s\">\n", documentationURI.String())
 	results.Result.WriteString("        <documents>\n")
 
-	processDocuments(results, mcpData, documentation, filter, includeContent)
+	processDocuments(results, documentationData, documentation, filter, includeContent)
 
 	results.Result.WriteString("        </documents>\n")
 	results.Result.WriteString("      </documentation_source>\n")
 }
 
-func processDocuments(results *Results, mcpData *MCPData, documentation *sqlite.SystemDocumentation, filter *DocumentURI, includeContent bool) {
-	if documents, exists := mcpData.Documents[documentation.SystemID][documentation.ID]; exists {
+func processDocuments(results *Results, documentationData *DocumentationData, documentation *sqlite.SystemDocumentation, filter *DocumentURI, includeContent bool) {
+	if documents, exists := documentationData.Documents[documentation.SystemID][documentation.ID]; exists {
 		// Sort document paths alphabetically
 		documentPaths := make([]string, 0, len(documents))
 		for documentPath := range documents {
@@ -102,7 +102,7 @@ func processDocuments(results *Results, mcpData *MCPData, documentation *sqlite.
 		for _, documentPath := range documentPaths {
 			document := documents[documentPath]
 			if filter == nil || filter.DocumentPath == "" || strings.HasPrefix(document.ID, filter.DocumentPath) {
-				processDocument(results, mcpData, document, includeContent)
+				processDocument(results, documentationData, document, includeContent)
 				results.Total++
 			}
 		}
@@ -140,7 +140,7 @@ func generateSourceURL(basePath string, documentID string) string {
 	return sourceURL.String()
 }
 
-func processDocument(results *Results, mcpData *MCPData, document *sqlite.SystemDocument, includeContent bool) {
+func processDocument(results *Results, documentationData *DocumentationData, document *sqlite.SystemDocument, includeContent bool) {
 	documentURI := &DocumentURI{
 		SystemID:        document.SystemID,
 		DocumentationID: document.DocumentationID,
@@ -151,7 +151,7 @@ func processDocument(results *Results, mcpData *MCPData, document *sqlite.System
 	fmt.Fprintf(&results.Result, "          <document id=\"%s\">\n", fullURI)
 
 	// Always include source regardless of includeContent
-	if docData, exists := mcpData.Documentation[document.SystemID][document.DocumentationID]; exists {
+	if docData, exists := documentationData.Documentation[document.SystemID][document.DocumentationID]; exists {
 		sourceURL := generateSourceURL(docData.Path, document.ID)
 		fmt.Fprintf(&results.Result, "            <source>%s</source>\n", sourceURL)
 	}
@@ -172,7 +172,7 @@ func processDocument(results *Results, mcpData *MCPData, document *sqlite.System
 		// Format for list_documents: metadata only
 		results.Result.WriteString("            <sections>\n")
 
-		processSectionsForDocument(results, mcpData, document)
+		processSectionsForDocument(results, documentationData, document)
 
 		results.Result.WriteString("            </sections>\n")
 	}
@@ -180,8 +180,8 @@ func processDocument(results *Results, mcpData *MCPData, document *sqlite.System
 	results.Result.WriteString("          </document>\n")
 }
 
-func processSectionsForDocument(results *Results, mcpData *MCPData, document *sqlite.SystemDocument) {
-	if sections, exists := mcpData.Sections[document.SystemID][document.DocumentationID][document.ID]; exists && len(sections) > 0 {
+func processSectionsForDocument(results *Results, documentationData *DocumentationData, document *sqlite.SystemDocument) {
+	if sections, exists := documentationData.Sections[document.SystemID][document.DocumentationID][document.ID]; exists && len(sections) > 0 {
 		for _, section := range sections {
 			// Skip sections with empty names
 			// TODO: Should be able to remove this once https://github.com/appgardenstudios/hyaline/issues/157 is done

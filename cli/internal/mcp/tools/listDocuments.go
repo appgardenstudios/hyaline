@@ -18,7 +18,7 @@ func ListDocumentsTool() mcp.Tool {
 	)
 }
 
-func HandleListDocuments(_ context.Context, request mcp.CallToolRequest, mcpData *utils.MCPData) (*mcp.CallToolResult, error) {
+func HandleListDocuments(_ context.Context, request mcp.CallToolRequest, documentationData *utils.DocumentationData) (*mcp.CallToolResult, error) {
 
 	// Get the optional document_uri parameter
 	documentURIStr := ""
@@ -40,7 +40,7 @@ func HandleListDocuments(_ context.Context, request mcp.CallToolRequest, mcpData
 	}
 
 	// Build the document list in XML format
-	results := utils.ProcessDocuments(mcpData, documentURI, false)
+	results := utils.ProcessDocuments(documentationData, documentURI, false)
 
 	if results.Total == 0 {
 		return mcp.NewToolResultText("No documents found matching the specified URI."), nil

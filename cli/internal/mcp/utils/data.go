@@ -7,8 +7,8 @@ import (
 	"log/slog"
 )
 
-// MCPData holds all documentation data in memory for fast access
-type MCPData struct {
+// DocumentationData holds all documentation data in memory for fast access
+type DocumentationData struct {
 	Systems       map[string]*sqlite.System                                // systemID -> System
 	Documentation map[string]map[string]*sqlite.SystemDocumentation        // systemID -> docID -> Documentation
 	Documents     map[string]map[string]map[string]*sqlite.SystemDocument  // systemID -> docID -> documentID -> Document
@@ -16,10 +16,10 @@ type MCPData struct {
 }
 
 // LoadAllData loads all documentation data from the database into memory
-func LoadAllData(db *sql.DB) (*MCPData, error) {
+func LoadAllData(db *sql.DB) (*DocumentationData, error) {
 	slog.Debug("data.LoadAllData starting")
 
-	data := &MCPData{
+	data := &DocumentationData{
 		Systems:       make(map[string]*sqlite.System),
 		Documentation: make(map[string]map[string]*sqlite.SystemDocumentation),
 		Documents:     make(map[string]map[string]map[string]*sqlite.SystemDocument),

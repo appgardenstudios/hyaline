@@ -18,7 +18,7 @@ func GetDocumentsTool() mcp.Tool {
 	)
 }
 
-func HandleGetDocuments(_ context.Context, request mcp.CallToolRequest, mcpData *utils.MCPData) (*mcp.CallToolResult, error) {
+func HandleGetDocuments(_ context.Context, request mcp.CallToolRequest, documentationData *utils.DocumentationData) (*mcp.CallToolResult, error) {
 
 	// Get the optional document_uri parameter
 	documentURIStr := ""
@@ -40,7 +40,7 @@ func HandleGetDocuments(_ context.Context, request mcp.CallToolRequest, mcpData 
 	}
 
 	// Process matching documents with content
-	results := utils.ProcessDocuments(mcpData, documentURI, true)
+	results := utils.ProcessDocuments(documentationData, documentURI, true)
 
 	if results.Total == 0 {
 		return mcp.NewToolResultText("No documents found matching the specified URI."), nil
