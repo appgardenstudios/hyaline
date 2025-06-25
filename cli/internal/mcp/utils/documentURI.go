@@ -13,14 +13,14 @@ type DocumentURI struct {
 }
 
 // String returns the URI as a string
-func (d *DocumentURI) String() string {
+func (documentURI *DocumentURI) String() string {
 	result := "document://system"
-	if d.SystemID != "" {
-		result += "/" + d.SystemID
-		if d.DocumentationID != "" {
-			result += "/" + d.DocumentationID
-			if d.DocumentPath != "" {
-				result += "/" + d.DocumentPath
+	if documentURI.SystemID != "" {
+		result += "/" + documentURI.SystemID
+		if documentURI.DocumentationID != "" {
+			result += "/" + documentURI.DocumentationID
+			if documentURI.DocumentPath != "" {
+				result += "/" + documentURI.DocumentPath
 			}
 		}
 	}
@@ -41,7 +41,7 @@ func NewDocumentURI(uriStr string) (*DocumentURI, error) {
 		return &DocumentURI{}, nil
 	}
 
-	// Remove any fragment (section ID) - we no longer support section IDs in URIs
+	// Remove any fragment (section ID) - we don't currently support section IDs in URIs
 	if idx := strings.Index(path, "#"); idx != -1 {
 		path = path[:idx]
 	}

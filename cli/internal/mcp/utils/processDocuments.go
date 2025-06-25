@@ -17,12 +17,11 @@ type Results struct {
 	Result strings.Builder
 }
 
-// ProcessDocuments processes documents matching the filter and builds output with <systems> wrapper
+// ProcessDocuments processes documents matching the filter
 // If includeContent is true, includes document content; otherwise just metadata
 func ProcessDocuments(documentationData *DocumentationData, filter *DocumentURI, includeContent bool) *Results {
 	results := &Results{}
 
-	// Add opening <systems> tag
 	results.Result.WriteString("<systems>\n")
 
 	// Sort systems alphabetically by ID
@@ -39,7 +38,6 @@ func ProcessDocuments(documentationData *DocumentationData, filter *DocumentURI,
 		}
 	}
 
-	// Close <systems> tag
 	results.Result.WriteString("</systems>")
 
 	return results
