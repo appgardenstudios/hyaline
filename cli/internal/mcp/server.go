@@ -49,29 +49,22 @@ func NewServer(db *sql.DB) (*Server, error) {
 	return hyalineMCPServer, nil
 }
 
-// ServeStdio starts the MCP server using stdio transport
 func (hyalineMCPServer *Server) ServeStdio() error {
 	return server.ServeStdio(hyalineMCPServer.mcpServer)
 }
 
-// registerTools registers all MCP tools
 func (hyalineMCPServer *Server) registerTools() {
-	// list_documents tool
 	hyalineMCPServer.mcpServer.AddTool(tools.ListDocumentsTool(), func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
 		return tools.HandleListDocuments(ctx, request, hyalineMCPServer.data)
 	})
 
-	// get_documents tool
 	hyalineMCPServer.mcpServer.AddTool(tools.GetDocumentsTool(), func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
 		return tools.HandleGetDocuments(ctx, request, hyalineMCPServer.data)
 	})
 }
 
-// registerPrompts registers all MCP prompts
 func (hyalineMCPServer *Server) registerPrompts() {
-	// answer_question prompt
 	hyalineMCPServer.mcpServer.AddPrompt(prompts.AnswerQuestionPrompt(), func(ctx context.Context, request mcp.GetPromptRequest) (*mcp.GetPromptResult, error) {
 		return prompts.HandleAnswerQuestion(ctx, request)
 	})
-
 }
