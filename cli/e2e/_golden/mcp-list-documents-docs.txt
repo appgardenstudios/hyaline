@@ -1,0 +1,32 @@
+The <systems> XML structure contains all available systems, documentation sources, documents, and sections with their corresponding document URIs.
+
+<systems>
+  <system id="document://system/mcp-test">
+    <documentation>
+      <documentation_source id="document://system/mcp-test/docs-fs">
+        <documents>
+          <document id="document://system/mcp-test/docs-fs/docs/doc.html">
+            <sections>
+              <section>
+                <id>docs/doc.html#First Section</id>
+                <name>First Section</name>
+              </section>
+              <section>
+                <id>docs/doc.html#First Section#Sub Section 1</id>
+                <name>Sub Section 1</name>
+              </section>
+              <section>
+                <id>docs/doc.html#First Section#Sub Section 2</id>
+                <name>Sub Section 2</name>
+              </section>
+            </sections>
+          </document>
+          <document id="document://system/mcp-test/docs-fs/docs/index.html">
+            <sections>
+            </sections>
+          </document>
+        </documents>
+      </documentation_source>
+    </documentation>
+  </system>
+</systems>

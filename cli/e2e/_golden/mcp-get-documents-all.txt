@@ -1,0 +1,136 @@
+The <systems> XML structure contains all requested systems, documentation sources, and documents. Each <document> has the <document_content> which are the contents of the document.
+
+<systems>
+  <system id="document://system/mcp-test">
+    <documentation>
+      <documentation_source id="document://system/mcp-test/docs-fs">
+        <documents>
+          <document id="document://system/mcp-test/docs-fs/docs/doc.html">
+            <source>file://e2e/_input/mcp/docs/doc.html</source>
+            <document_content>
+I am the content
+
+# First Section
+
+Some section one content
+
+## Sub Section 1
+
+Some section one content
+
+## Sub Section 2
+
+Some section two content
+            </document_content>
+          </document>
+          <document id="document://system/mcp-test/docs-fs/docs/index.html">
+            <source>file://e2e/_input/mcp/docs/index.html</source>
+            <document_content>
+I am the index content
+            </document_content>
+          </document>
+        </documents>
+      </documentation_source>
+      <documentation_source id="document://system/mcp-test/docs-http">
+        <documents>
+          <document id="document://system/mcp-test/docs-http//docs/">
+            <source>http://127.0.0.1:8081/docs</source>
+            <document_content>
+I am the index content
+            </document_content>
+          </document>
+          <document id="document://system/mcp-test/docs-http//docs/doc.html">
+            <source>http://127.0.0.1:8081/docs/doc.html</source>
+            <document_content>
+I am the content
+
+# First Section
+
+Some section one content
+
+## Sub Section 1
+
+Some section one content
+
+## Sub Section 2
+
+Some section two content
+            </document_content>
+          </document>
+        </documents>
+      </documentation_source>
+      <documentation_source id="document://system/mcp-test/docs-http-git">
+        <documents>
+          <document id="document://system/mcp-test/docs-http-git/README.md">
+            <source>https://github.com/appgardenstudios/hyaline-example/blob/HEAD/README.md</source>
+            <document_content>
+# Example
+This is an example
+
+### Subsection 1
+Subsection 1 content
+
+### Subsection 2
+Subsection 2 content
+            </document_content>
+          </document>
+          <document id="document://system/mcp-test/docs-http-git/docs/docsDoc.md">
+            <source>https://github.com/appgardenstudios/hyaline-example/blob/HEAD/docs/docsDoc.md</source>
+            <document_content>
+# This is a test
+Testing, testing, 123
+
+This is a test.
+Repeat. This is a test.
+            </document_content>
+          </document>
+          <document id="document://system/mcp-test/docs-http-git/docs/preDoc.md">
+            <source>https://github.com/appgardenstudios/hyaline-example/blob/HEAD/docs/preDoc.md</source>
+            <document_content>
+Here is some pre text before the main header
+
+### A Random Heading
+Some more random text
+            </document_content>
+          </document>
+        </documents>
+      </documentation_source>
+      <documentation_source id="document://system/mcp-test/docs-ssh">
+        <documents>
+          <document id="document://system/mcp-test/docs-ssh/README.md">
+            <source>https://github.com/appgardenstudios/hyaline-example/blob/HEAD/README.md</source>
+            <document_content>
+# Example
+This is an example
+
+### Subsection 1
+Subsection 1 content
+
+### Subsection 2
+Subsection 2 content
+            </document_content>
+          </document>
+          <document id="document://system/mcp-test/docs-ssh/docs/docsDoc.md">
+            <source>https://github.com/appgardenstudios/hyaline-example/blob/HEAD/docs/docsDoc.md</source>
+            <document_content>
+# This is a test
+Testing, testing, 123
+
+This is a test.
+Repeat. This is a test.
+            </document_content>
+          </document>
+          <document id="document://system/mcp-test/docs-ssh/docs/preDoc.md">
+            <source>https://github.com/appgardenstudios/hyaline-example/blob/HEAD/docs/preDoc.md</source>
+            <document_content>
+Here is some pre text before the main header
+
+### A Random Heading
+Some more random text
+            </document_content>
+          </document>
+        </documents>
+      </documentation_source>
+    </documentation>
+  </system>
+</systems>
