@@ -167,6 +167,33 @@ $ hyaline merge --input ./current.db --input ./new1.db --input ./new2.db --outpu
 ```
 Merge `./new1.db` into `./current.db` followed by `./new2.db` and output the result to `./combined.db`
 
+## export llms-txt
+`hyaline export llms-txt` exports documentation from a hyaline database into llms.txt format for AI assistants. This command supports the [llms.txt specification](https://llmstxt.org), which provides a standardized way to present documentation to language models.
+
+**Options**:
+* `--current` - (required) Path to the current hyaline database (output of `hyaline extract current`)
+* `--output` - (required) Path for the output llms.txt file (file must not already exist)
+* `--document-uri` - (optional) Document URI pattern to filter the export. When provided, only documents matching this URI pattern will be included in the export
+* `--full` - (optional, boolean) Generate llms-full.txt format with complete document content inline instead of document links
+
+**Example**:
+```
+$ hyaline export llms-txt --current ./current.db --output ./llms.txt
+```
+Export all documentation from `./current.db` to `./llms.txt` in standard llms.txt format with document links.
+
+**Example**:
+```
+$ hyaline export llms-txt --current ./current.db --output ./llms-full.txt --full
+```
+Export all documentation from `./current.db` to `./llms-full.txt` with complete document content inline.
+
+**Example**:
+```
+$ hyaline export llms-txt --current ./current.db --output ./llms.txt --document-uri "docs"
+```
+Export only documentation that contains "docs" in the document URI from `./current.db` to `./llms.txt`.
+
 ## update pr
 `hyaline update pr` updates a GitHub pull request by adding or updating a comment with the recommendations output by `hyaline check change`. Please visit the explanation documentation for [update pr](../03-explanation/06-update-pr.md) for more details.
 
