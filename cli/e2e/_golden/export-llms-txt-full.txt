@@ -1,0 +1,90 @@
+# check-current Documentation
+
+> Documentation extracted from the check-current system
+
+## System: check-current
+
+### App
+
+#### README.md
+
+# Example
+This is an example
+
+### Subsection 1
+Subsection 1 content
+
+### Subsection 2
+Subsection 2 content
+
+#### 
+
+# Example
+This is an example
+
+### Subsection 1
+Subsection 1 content
+
+### Subsection 2
+Subsection 2 content
+
+##### Example
+
+This is an example
+
+### Subsection 1
+Subsection 1 content
+
+### Subsection 2
+Subsection 2 content
+
+###### Subsection 1
+
+Subsection 1 content
+
+###### Subsection 2
+
+Subsection 2 content
+
+#### docs/docsDoc.md
+
+# This is a test
+Testing, testing, 123
+
+This is a test.
+Repeat. This is a test.
+
+#### 
+
+# This is a test
+Testing, testing, 123
+
+This is a test.
+Repeat. This is a test.
+
+##### This is a test
+
+Testing, testing, 123
+
+This is a test.
+Repeat. This is a test.
+
+#### docs/preDoc.md
+
+Here is some pre text before the main header
+
+### A Random Heading
+Some more random text
+
+#### 
+
+Here is some pre text before the main header
+
+### A Random Heading
+Some more random text
+
+##### A Random Heading
+
+Some more random text
+
+

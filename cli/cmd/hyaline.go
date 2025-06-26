@@ -38,6 +38,7 @@ func main() {
 			hyaline.Version(Version, betaNote),
 			hyaline.Check(logLevel),
 			hyaline.Extract(logLevel),
+			hyaline.Export(logLevel),
 			hyaline.Generate(logLevel),
 			hyaline.Merge(logLevel),
 			hyaline.Update(logLevel),

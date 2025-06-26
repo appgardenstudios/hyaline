@@ -1,0 +1,11 @@
+# check-current Documentation
+
+> Documentation extracted from the check-current system
+
+## System: check-current
+
+### App
+
+- [This is a test](app/docs/docsDoc.md): md documentation
+- [docs/preDoc.md](app/docs/preDoc.md): md documentation
+
