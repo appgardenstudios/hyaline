@@ -17,7 +17,7 @@ jobs:
       - name: Setup Hyaline
         uses: appgardenstudios/hyaline-actions/setup@v0
         with:
-          version: 2025-06-17-bbafd00
+          version: 2025-06-23-1cd4eb7
       - name: Print Hyaline version
         run: hyaline version
       - name: Check PR
