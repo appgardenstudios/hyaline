@@ -189,3 +189,9 @@ Update the PR `appgardenstudios/hyaline-example/1` by adding a comment with the 
 $ hyaline update pr --config ./hyaline.yml --pull-request appgardenstudios/hyaline-example/1 --comment appgardenstudios/hyaline-example/2916854796 --sha b4c5c73 --recommendations ./results.json --output ./comment-metadata.json
 ```
 Update the PR `appgardenstudios/hyaline-example/1` by updating the comment identified by `appgardenstudios/hyaline-example/2916854796` with the recommendations in `./results.json` (including the sha `b4c5c73`) and output the resulting comment metadata to `./comment-metadata.json`
+
+## mcp stdio
+`hyaline mcp stdio` starts an MCP server running locally over stdio and serves up the documentation produced by running `hyaline extract current`. Please visit the explanation documentation for [mcp](../03-explanation/09-mcp.md) for more details.
+
+**Options**:
+* `--current` - (required) Path to the current data set to serve (output of `hyaline extract current`)
