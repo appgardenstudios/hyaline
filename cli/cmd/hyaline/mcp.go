@@ -31,8 +31,7 @@ func MCP(logLevel *slog.LevelVar, version string) *cli.Command {
 					// Execute action
 					err := action.MCPStdio(&action.MCPStdioArgs{
 						Current: cCtx.String("current"),
-						Version: version,
-					})
+					}, version)
 					if err != nil {
 						return cli.Exit(err.Error(), 1)
 					}

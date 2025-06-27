@@ -11,14 +11,13 @@ import (
 
 type MCPStdioArgs struct {
 	Current string
-	Version string
 }
 
-func MCPStdio(args *MCPStdioArgs) error {
+func MCPStdio(args *MCPStdioArgs, version string) error {
 	slog.Info("Starting MCP server")
 	slog.Debug("action.MCPStdio Args", slog.Group("args",
 		"current", args.Current,
-		"version", args.Version,
+		"version", version,
 	))
 
 	// Get absolute path to database
@@ -37,7 +36,7 @@ func MCPStdio(args *MCPStdioArgs) error {
 	defer db.Close()
 
 	// Create and start MCP server
-	server, err := mcp.NewServer(db, args.Version)
+	server, err := mcp.NewServer(db, version)
 	if err != nil {
 		slog.Debug("action.MCPStdio could not create MCP server", "error", err)
 		return err
