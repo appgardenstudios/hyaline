@@ -41,7 +41,7 @@ func main() {
 			hyaline.Generate(logLevel),
 			hyaline.Merge(logLevel),
 			hyaline.Update(logLevel),
-			hyaline.MCP(logLevel),
+			hyaline.MCP(logLevel, Version),
 		},
 	}
 

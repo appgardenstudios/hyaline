@@ -20,7 +20,7 @@ type Server struct {
 }
 
 // NewServer creates and initializes a new MCP server
-func NewServer(db *sql.DB) (*Server, error) {
+func NewServer(db *sql.DB, version string) (*Server, error) {
 	slog.Debug("mcp.NewServer starting")
 
 	// Load all data into memory
@@ -32,7 +32,7 @@ func NewServer(db *sql.DB) (*Server, error) {
 	// Create MCP server instance
 	mcpServer := server.NewMCPServer(
 		"Hyaline Documentation Server",
-		"1.0.0",
+		version,
 		server.WithToolCapabilities(false), // Tools don't change dynamically
 	)
 

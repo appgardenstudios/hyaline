@@ -7,7 +7,7 @@ import (
 	"github.com/urfave/cli/v2"
 )
 
-func MCP(logLevel *slog.LevelVar) *cli.Command {
+func MCP(logLevel *slog.LevelVar, version string) *cli.Command {
 	return &cli.Command{
 		Name:  "mcp",
 		Usage: "Model Context Protocol server for documentation access",
@@ -31,6 +31,7 @@ func MCP(logLevel *slog.LevelVar) *cli.Command {
 					// Execute action
 					err := action.MCPStdio(&action.MCPStdioArgs{
 						Current: cCtx.String("current"),
+						Version: version,
 					})
 					if err != nil {
 						return cli.Exit(err.Error(), 1)
