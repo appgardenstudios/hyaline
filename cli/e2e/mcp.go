@@ -64,3 +64,26 @@ func setupMCPClient(t *testing.T, dbPath string) *mcpClient.Client {
 
 	return client
 }
+
+// callMCPServer creates an MCP client, performs a request, and writes output to the provided path
+func callMCPServer(t *testing.T, dbPath string, request mcp.CallToolRequest, outputPath string) {
+	client := setupMCPClient(t, dbPath)
+	ctx := context.Background()
+
+	response, err := client.CallTool(ctx, request)
+	if err != nil {
+		t.Fatalf("expected to call '%s' tool successfully: %v", request.Params.Name, err)
+	}
+
+	textContent, ok := response.Content[0].(mcp.TextContent)
+	if !ok {
+		t.Fatal("expected content to be of type TextContent")
+	}
+
+	t.Logf("Response content: %s", textContent.Text)
+
+	err = os.WriteFile(outputPath, []byte(textContent.Text), 0644)
+	if err != nil {
+		t.Fatalf("expected to write output file: %v", err)
+	}
+}

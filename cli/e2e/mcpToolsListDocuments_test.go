@@ -11,33 +11,14 @@ import (
 )
 
 func TestMCPListDocumentsAll(t *testing.T) {
-	client := setupMCPClient(t, "./_input/mcp/current.sqlite")
-	ctx := context.Background()
-
 	// Test listing all documents with no URI parameter
 	request := mcp.CallToolRequest{}
 	request.Params.Name = "list_documents"
 
-	response, err := client.CallTool(ctx, request)
-	if err != nil {
-		t.Fatalf("expected to call 'list_documents' tool successfully: %v", err)
-	}
-	if response.IsError {
-		t.Fatalf("expected result not to be an error: %+v", response)
-	}
-
-	textContent, ok := response.Content[0].(mcp.TextContent)
-	if !ok {
-		t.Fatal("expected content to be of type TextContent")
-	}
-
 	goldenPath := "./_golden/mcp-list-documents-all.txt"
 	outputPath := fmt.Sprintf("./_output/mcp-list-documents-all-%d.txt", time.Now().UnixMilli())
 
-	err = os.WriteFile(outputPath, []byte(textContent.Text), 0644)
-	if err != nil {
-		t.Fatalf("expected to write output file: %v", err)
-	}
+	callMCPServer(t, "./_input/mcp/current.sqlite", request, outputPath)
 
 	if *update {
 		updateGolden(goldenPath, outputPath, t)
@@ -47,9 +28,6 @@ func TestMCPListDocumentsAll(t *testing.T) {
 }
 
 func TestMCPListDocumentsSystemLevel(t *testing.T) {
-	client := setupMCPClient(t, "./_input/mcp/current.sqlite")
-	ctx := context.Background()
-
 	// Test listing documents at system level
 	request := mcp.CallToolRequest{}
 	request.Params.Name = "list_documents"
@@ -57,26 +35,10 @@ func TestMCPListDocumentsSystemLevel(t *testing.T) {
 		"document_uri": "document://system/mcp-test",
 	}
 
-	response, err := client.CallTool(ctx, request)
-	if err != nil {
-		t.Fatalf("expected to call 'list_documents' tool successfully: %v", err)
-	}
-	if response.IsError {
-		t.Fatalf("expected result not to be an error: %+v", response)
-	}
-
-	textContent, ok := response.Content[0].(mcp.TextContent)
-	if !ok {
-		t.Fatal("expected content to be of type TextContent")
-	}
-
 	goldenPath := "./_golden/mcp-list-documents-system.txt"
 	outputPath := fmt.Sprintf("./_output/mcp-list-documents-system-%d.txt", time.Now().UnixMilli())
 
-	err = os.WriteFile(outputPath, []byte(textContent.Text), 0644)
-	if err != nil {
-		t.Fatalf("expected to write output file: %v", err)
-	}
+	callMCPServer(t, "./_input/mcp/current.sqlite", request, outputPath)
 
 	if *update {
 		updateGolden(goldenPath, outputPath, t)
@@ -86,9 +48,6 @@ func TestMCPListDocumentsSystemLevel(t *testing.T) {
 }
 
 func TestMCPListDocumentsDocumentationLevel(t *testing.T) {
-	client := setupMCPClient(t, "./_input/mcp/current.sqlite")
-	ctx := context.Background()
-
 	// Test listing documents at documentation level
 	request := mcp.CallToolRequest{}
 	request.Params.Name = "list_documents"
@@ -96,26 +55,10 @@ func TestMCPListDocumentsDocumentationLevel(t *testing.T) {
 		"document_uri": "document://system/mcp-test/docs-fs",
 	}
 
-	response, err := client.CallTool(ctx, request)
-	if err != nil {
-		t.Fatalf("expected to call 'list_documents' tool successfully: %v", err)
-	}
-	if response.IsError {
-		t.Fatalf("expected result not to be an error: %+v", response)
-	}
-
-	textContent, ok := response.Content[0].(mcp.TextContent)
-	if !ok {
-		t.Fatal("expected content to be of type TextContent")
-	}
-
 	goldenPath := "./_golden/mcp-list-documents-docs.txt"
 	outputPath := fmt.Sprintf("./_output/mcp-list-documents-docs-%d.txt", time.Now().UnixMilli())
 
-	err = os.WriteFile(outputPath, []byte(textContent.Text), 0644)
-	if err != nil {
-		t.Fatalf("expected to write output file: %v", err)
-	}
+	callMCPServer(t, "./_input/mcp/current.sqlite", request, outputPath)
 
 	if *update {
 		updateGolden(goldenPath, outputPath, t)

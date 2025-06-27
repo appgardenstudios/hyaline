@@ -11,35 +11,14 @@ import (
 )
 
 func TestMCPGetDocumentsAll(t *testing.T) {
-	client := setupMCPClient(t, "./_input/mcp/current.sqlite")
-	ctx := context.Background()
-
 	// Test getting all documents with no URI parameter
 	request := mcp.CallToolRequest{}
 	request.Params.Name = "get_documents"
 
-	response, err := client.CallTool(ctx, request)
-	if err != nil {
-		t.Fatalf("expected to call 'get_documents' tool successfully: %v", err)
-	}
-	if response.IsError {
-		t.Fatalf("expected result not to be an error: %+v", response)
-	}
-
-	textContent, ok := response.Content[0].(mcp.TextContent)
-	if !ok {
-		t.Fatal("expected content to be of type TextContent")
-	}
-
-	t.Logf("Response content: %s", textContent.Text)
-
 	goldenPath := "./_golden/mcp-get-documents-all.txt"
 	outputPath := fmt.Sprintf("./_output/mcp-get-documents-all-%d.txt", time.Now().UnixMilli())
 
-	err = os.WriteFile(outputPath, []byte(textContent.Text), 0644)
-	if err != nil {
-		t.Fatalf("expected to write output file: %v", err)
-	}
+	callMCPServer(t, "./_input/mcp/current.sqlite", request, outputPath)
 
 	if *update {
 		updateGolden(goldenPath, outputPath, t)
@@ -49,9 +28,6 @@ func TestMCPGetDocumentsAll(t *testing.T) {
 }
 
 func TestMCPGetDocumentsSingle(t *testing.T) {
-	client := setupMCPClient(t, "./_input/mcp/current.sqlite")
-	ctx := context.Background()
-
 	// Test getting a specific document
 	request := mcp.CallToolRequest{}
 	request.Params.Name = "get_documents"
@@ -59,28 +35,10 @@ func TestMCPGetDocumentsSingle(t *testing.T) {
 		"document_uri": "document://system/mcp-test/docs-fs/docs/index.html",
 	}
 
-	response, err := client.CallTool(ctx, request)
-	if err != nil {
-		t.Fatalf("expected to call 'get_documents' tool successfully: %v", err)
-	}
-	if response.IsError {
-		t.Fatalf("expected result not to be an error: %+v", response)
-	}
-
-	textContent, ok := response.Content[0].(mcp.TextContent)
-	if !ok {
-		t.Fatal("expected content to be of type TextContent")
-	}
-
-	t.Logf("Response content: %s", textContent.Text)
-
 	goldenPath := "./_golden/mcp-get-documents-single.txt"
 	outputPath := fmt.Sprintf("./_output/mcp-get-documents-single-%d.txt", time.Now().UnixMilli())
 
-	err = os.WriteFile(outputPath, []byte(textContent.Text), 0644)
-	if err != nil {
-		t.Fatalf("expected to write output file: %v", err)
-	}
+	callMCPServer(t, "./_input/mcp/current.sqlite", request, outputPath)
 
 	if *update {
 		updateGolden(goldenPath, outputPath, t)
@@ -90,9 +48,6 @@ func TestMCPGetDocumentsSingle(t *testing.T) {
 }
 
 func TestMCPGetDocumentsMultiple(t *testing.T) {
-	client := setupMCPClient(t, "./_input/mcp/current.sqlite")
-	ctx := context.Background()
-
 	// Test getting documents that match a specific doc from git sources
 	request := mcp.CallToolRequest{}
 	request.Params.Name = "get_documents"
@@ -100,28 +55,10 @@ func TestMCPGetDocumentsMultiple(t *testing.T) {
 		"document_uri": "document://system/mcp-test/docs-fs/docs",
 	}
 
-	response, err := client.CallTool(ctx, request)
-	if err != nil {
-		t.Fatalf("expected to call 'get_documents' tool successfully: %v", err)
-	}
-	if response.IsError {
-		t.Fatalf("expected result not to be an error: %+v", response)
-	}
-
-	textContent, ok := response.Content[0].(mcp.TextContent)
-	if !ok {
-		t.Fatal("expected content to be of type TextContent")
-	}
-
-	t.Logf("Response content: %s", textContent.Text)
-
 	goldenPath := "./_golden/mcp-get-documents-multiple.txt"
 	outputPath := fmt.Sprintf("./_output/mcp-get-documents-multiple-%d.txt", time.Now().UnixMilli())
 
-	err = os.WriteFile(outputPath, []byte(textContent.Text), 0644)
-	if err != nil {
-		t.Fatalf("expected to write output file: %v", err)
-	}
+	callMCPServer(t, "./_input/mcp/current.sqlite", request, outputPath)
 
 	if *update {
 		updateGolden(goldenPath, outputPath, t)
@@ -131,9 +68,6 @@ func TestMCPGetDocumentsMultiple(t *testing.T) {
 }
 
 func TestMCPGetDocumentsNotFound(t *testing.T) {
-	client := setupMCPClient(t, "./_input/mcp/current.sqlite")
-	ctx := context.Background()
-
 	// Test getting a non-existent document
 	request := mcp.CallToolRequest{}
 	request.Params.Name = "get_documents"
@@ -141,28 +75,10 @@ func TestMCPGetDocumentsNotFound(t *testing.T) {
 		"document_uri": "document://system/mcp-test/docs-fs/nonexistent.md",
 	}
 
-	response, err := client.CallTool(ctx, request)
-	if err != nil {
-		t.Fatalf("expected to call 'get_documents' tool successfully: %v", err)
-	}
-	if response.IsError {
-		t.Fatalf("expected result not to be an error: %+v", response)
-	}
-
-	textContent, ok := response.Content[0].(mcp.TextContent)
-	if !ok {
-		t.Fatal("expected content to be of type TextContent")
-	}
-
-	t.Logf("Response content: %s", textContent.Text)
-
 	goldenPath := "./_golden/mcp-get-documents-notfound.txt"
 	outputPath := fmt.Sprintf("./_output/mcp-get-documents-notfound-%d.txt", time.Now().UnixMilli())
 
-	err = os.WriteFile(outputPath, []byte(textContent.Text), 0644)
-	if err != nil {
-		t.Fatalf("expected to write output file: %v", err)
-	}
+	callMCPServer(t, "./_input/mcp/current.sqlite", request, outputPath)
 
 	if *update {
 		updateGolden(goldenPath, outputPath, t)
