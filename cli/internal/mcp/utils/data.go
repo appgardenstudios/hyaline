@@ -5,38 +5,47 @@ import (
 	"fmt"
 	"hyaline/internal/sqlite"
 	"log/slog"
+	"sort"
 )
+
+// System holds a system and its associated documentation
+type System struct {
+	System        *sqlite.System
+	Documentation []Documentation
+}
+
+// Documentation holds documentation and its associated documents
+type Documentation struct {
+	Documentation *sqlite.SystemDocumentation
+	Documents     []Document
+}
+
+// Document holds a document and its associated sections
+type Document struct {
+	Document *sqlite.SystemDocument
+	Sections []*sqlite.SystemSection
+}
 
 // DocumentationData holds all documentation data in memory for fast access
 type DocumentationData struct {
-	Systems       map[string]*sqlite.System                                // systemID -> System
-	Documentation map[string]map[string]*sqlite.SystemDocumentation        // systemID -> docID -> Documentation
-	Documents     map[string]map[string]map[string]*sqlite.SystemDocument  // systemID -> docID -> documentID -> Document
-	Sections      map[string]map[string]map[string][]*sqlite.SystemSection // systemID -> docID -> documentID -> []*Section
+	Systems []System
 }
 
 // LoadAllData loads all documentation data from the database into memory
 func LoadAllData(db *sql.DB) (*DocumentationData, error) {
 	slog.Debug("data.LoadAllData starting")
 
-	data := &DocumentationData{
-		Systems:       make(map[string]*sqlite.System),
-		Documentation: make(map[string]map[string]*sqlite.SystemDocumentation),
-		Documents:     make(map[string]map[string]map[string]*sqlite.SystemDocument),
-		Sections:      make(map[string]map[string]map[string][]*sqlite.SystemSection),
-	}
-
 	// Load systems
-	systems, err := sqlite.GetAllSystem(db)
+	sqliteSystems, err := sqlite.GetAllSystem(db)
 	if err != nil {
 		return nil, fmt.Errorf("failed to load systems: %w", err)
 	}
 
-	for _, sys := range systems {
-		data.Systems[sys.ID] = sys
-		data.Documentation[sys.ID] = make(map[string]*sqlite.SystemDocumentation)
-		data.Documents[sys.ID] = make(map[string]map[string]*sqlite.SystemDocument)
-		data.Sections[sys.ID] = make(map[string]map[string][]*sqlite.SystemSection)
+	var systems []System
+	for _, sys := range sqliteSystems {
+		system := System{
+			System: sys,
+		}
 
 		// Load documentation for this system
 		docs, err := sqlite.GetAllSystemDocumentation(sys.ID, db)
@@ -45,9 +54,9 @@ func LoadAllData(db *sql.DB) (*DocumentationData, error) {
 		}
 
 		for _, doc := range docs {
-			data.Documentation[sys.ID][doc.ID] = doc
-			data.Documents[sys.ID][doc.ID] = make(map[string]*sqlite.SystemDocument)
-			data.Sections[sys.ID][doc.ID] = make(map[string][]*sqlite.SystemSection)
+			documentation := Documentation{
+				Documentation: doc,
+			}
 
 			// Load documents for this documentation
 			documents, err := sqlite.GetAllSystemDocument(doc.ID, sys.ID, db)
@@ -56,17 +65,42 @@ func LoadAllData(db *sql.DB) (*DocumentationData, error) {
 			}
 
 			for _, document := range documents {
-				data.Documents[sys.ID][doc.ID][document.ID] = document
-
 				// Load sections for this document
 				sections, err := sqlite.GetAllSystemSectionsForDocument(document.ID, doc.ID, sys.ID, db)
 				if err != nil {
 					return nil, fmt.Errorf("failed to load sections for document %s: %w", document.ID, err)
 				}
 
-				data.Sections[sys.ID][doc.ID][document.ID] = sections
+				doc := Document{
+					Document: document,
+					Sections: sections,
+				}
+				documentation.Documents = append(documentation.Documents, doc)
 			}
+
+			// Sort documents alphabetically by ID
+			sort.Slice(documentation.Documents, func(i, j int) bool {
+				return documentation.Documents[i].Document.ID < documentation.Documents[j].Document.ID
+			})
+
+			system.Documentation = append(system.Documentation, documentation)
 		}
+
+		// Sort documentation alphabetically by ID
+		sort.Slice(system.Documentation, func(i, j int) bool {
+			return system.Documentation[i].Documentation.ID < system.Documentation[j].Documentation.ID
+		})
+
+		systems = append(systems, system)
+	}
+
+	// Sort systems alphabetically by ID
+	sort.Slice(systems, func(i, j int) bool {
+		return systems[i].System.ID < systems[j].System.ID
+	})
+
+	data := &DocumentationData{
+		Systems: systems,
 	}
 
 	slog.Debug("data.LoadAllData complete")

@@ -2,10 +2,8 @@ package utils
 
 import (
 	"fmt"
-	"hyaline/internal/sqlite"
 	"net/url"
 	"path"
-	"sort"
 	"strings"
 
 	giturls "github.com/whilp/git-urls"
@@ -24,17 +22,9 @@ func ProcessDocuments(documentationData *DocumentationData, filter *DocumentURI,
 
 	results.Result.WriteString("<systems>\n")
 
-	// Sort systems alphabetically by ID
-	systemIDs := make([]string, 0, len(documentationData.Systems))
-	for systemID := range documentationData.Systems {
-		systemIDs = append(systemIDs, systemID)
-	}
-	sort.Strings(systemIDs)
-
-	for _, systemID := range systemIDs {
-		system := documentationData.Systems[systemID]
-		if filter == nil || filter.SystemID == "" || filter.SystemID == system.ID {
-			processSystem(results, documentationData, system, filter, includeContent)
+	for _, system := range documentationData.Systems {
+		if filter == nil || filter.SystemID == "" || filter.SystemID == system.System.ID {
+			processSystem(results, &system, filter, includeContent)
 		}
 	}
 
@@ -43,68 +33,40 @@ func ProcessDocuments(documentationData *DocumentationData, filter *DocumentURI,
 	return results
 }
 
-func processSystem(results *Results, documentationData *DocumentationData, system *sqlite.System, filter *DocumentURI, includeContent bool) {
+func processSystem(results *Results, system *System, filter *DocumentURI, includeContent bool) {
 	systemURI := &DocumentURI{
-		SystemID: system.ID,
+		SystemID: system.System.ID,
 	}
 	fmt.Fprintf(&results.Result, "  <system id=\"%s\">\n", systemURI.String())
 	results.Result.WriteString("    <documentation>\n")
 
-	processDocumentation(results, documentationData, system, filter, includeContent)
+	for _, documentation := range system.Documentation {
+		if filter == nil || filter.DocumentationID == "" || filter.DocumentationID == documentation.Documentation.ID {
+			processDocumentationSource(results, &documentation, filter, includeContent)
+		}
+	}
 
 	results.Result.WriteString("    </documentation>\n")
 	results.Result.WriteString("  </system>\n")
 }
 
-func processDocumentation(results *Results, documentationData *DocumentationData, system *sqlite.System, filter *DocumentURI, includeContent bool) {
-	if documentationSources, exists := documentationData.Documentation[system.ID]; exists {
-		// Sort documentation source IDs alphabetically
-		documentationIDS := make([]string, 0, len(documentationSources))
-		for documentationID := range documentationSources {
-			documentationIDS = append(documentationIDS, documentationID)
-		}
-		sort.Strings(documentationIDS)
-
-		for _, documentationID := range documentationIDS {
-			documentation := documentationSources[documentationID]
-			if filter == nil || filter.DocumentationID == "" || filter.DocumentationID == documentation.ID {
-				processDocumentationSource(results, documentationData, documentation, filter, includeContent)
-			}
-		}
-	}
-}
-
-func processDocumentationSource(results *Results, documentationData *DocumentationData, documentation *sqlite.SystemDocumentation, filter *DocumentURI, includeContent bool) {
+func processDocumentationSource(results *Results, documentation *Documentation, filter *DocumentURI, includeContent bool) {
 	documentationURI := &DocumentURI{
-		SystemID:        documentation.SystemID,
-		DocumentationID: documentation.ID,
+		SystemID:        documentation.Documentation.SystemID,
+		DocumentationID: documentation.Documentation.ID,
 	}
 	fmt.Fprintf(&results.Result, "      <documentation_source id=\"%s\">\n", documentationURI.String())
 	results.Result.WriteString("        <documents>\n")
 
-	processDocuments(results, documentationData, documentation, filter, includeContent)
+	for _, document := range documentation.Documents {
+		if filter == nil || filter.DocumentPath == "" || strings.HasPrefix(document.Document.ID, filter.DocumentPath) {
+			processDocument(results, documentation, &document, includeContent)
+			results.Total++
+		}
+	}
 
 	results.Result.WriteString("        </documents>\n")
 	results.Result.WriteString("      </documentation_source>\n")
-}
-
-func processDocuments(results *Results, documentationData *DocumentationData, documentation *sqlite.SystemDocumentation, filter *DocumentURI, includeContent bool) {
-	if documents, exists := documentationData.Documents[documentation.SystemID][documentation.ID]; exists {
-		// Sort document paths alphabetically
-		documentPaths := make([]string, 0, len(documents))
-		for documentPath := range documents {
-			documentPaths = append(documentPaths, documentPath)
-		}
-		sort.Strings(documentPaths)
-
-		for _, documentPath := range documentPaths {
-			document := documents[documentPath]
-			if filter == nil || filter.DocumentPath == "" || strings.HasPrefix(document.ID, filter.DocumentPath) {
-				processDocument(results, documentationData, document, includeContent)
-				results.Total++
-			}
-		}
-	}
 }
 
 // generateSourceURL generates a source URL from a SystemDocumentation Path and document ID
@@ -138,39 +100,35 @@ func generateSourceURL(basePath string, documentID string) string {
 	return sourceURL.String()
 }
 
-func processDocument(results *Results, documentationData *DocumentationData, document *sqlite.SystemDocument, includeContent bool) {
+func processDocument(results *Results, documentation *Documentation, document *Document, includeContent bool) {
 	documentURI := &DocumentURI{
-		SystemID:        document.SystemID,
-		DocumentationID: document.DocumentationID,
-		DocumentPath:    document.ID,
+		SystemID:        document.Document.SystemID,
+		DocumentationID: document.Document.DocumentationID,
+		DocumentPath:    document.Document.ID,
 	}
 	fullURI := documentURI.String()
 
 	fmt.Fprintf(&results.Result, "          <document id=\"%s\">\n", fullURI)
 
-	// Always include source regardless of includeContent
-	if docData, exists := documentationData.Documentation[document.SystemID][document.DocumentationID]; exists {
-		sourceURL := generateSourceURL(docData.Path, document.ID)
-		fmt.Fprintf(&results.Result, "            <source>%s</source>\n", sourceURL)
-	}
+	// Generate source URL using the passed documentation
+	sourceURL := generateSourceURL(documentation.Documentation.Path, document.Document.ID)
+	fmt.Fprintf(&results.Result, "            <source>%s</source>\n", sourceURL)
 
 	if includeContent {
-		// Format for get_documents: include content
 		results.Result.WriteString("            <document_content>\n")
 
 		// Use ExtractedData if available, otherwise RawData
-		content := document.ExtractedData
+		content := document.Document.ExtractedData
 		if content == "" {
-			content = document.RawData
+			content = document.Document.RawData
 		}
 
 		results.Result.WriteString(content)
 		results.Result.WriteString("\n            </document_content>\n")
 	} else {
-		// Format for list_documents: metadata only
 		results.Result.WriteString("            <sections>\n")
 
-		processSectionsForDocument(results, documentationData, document)
+		processSectionsForDocument(results, document)
 
 		results.Result.WriteString("            </sections>\n")
 	}
@@ -178,18 +136,16 @@ func processDocument(results *Results, documentationData *DocumentationData, doc
 	results.Result.WriteString("          </document>\n")
 }
 
-func processSectionsForDocument(results *Results, documentationData *DocumentationData, document *sqlite.SystemDocument) {
-	if sections, exists := documentationData.Sections[document.SystemID][document.DocumentationID][document.ID]; exists && len(sections) > 0 {
-		for _, section := range sections {
-			// Skip sections with empty names
-			// TODO: Should be able to remove this once https://github.com/appgardenstudios/hyaline/issues/157 is done
-			if section.Name == "" {
-				continue
-			}
-
-			fmt.Fprintf(&results.Result, "              <section>\n")
-			fmt.Fprintf(&results.Result, "                <name>%s</name>\n", section.Name)
-			results.Result.WriteString("              </section>\n")
+func processSectionsForDocument(results *Results, document *Document) {
+	for _, section := range document.Sections {
+		// Skip sections with empty names
+		// TODO: Should be able to remove this once https://github.com/appgardenstudios/hyaline/issues/157 is done
+		if section.Name == "" {
+			continue
 		}
+
+		fmt.Fprintf(&results.Result, "              <section>\n")
+		fmt.Fprintf(&results.Result, "                <name>%s</name>\n", section.Name)
+		results.Result.WriteString("              </section>\n")
 	}
 }
