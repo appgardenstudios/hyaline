@@ -195,3 +195,9 @@ Update the PR `appgardenstudios/hyaline-example/1` by updating the comment ident
 
 **Options**:
 * `--current` - (required) Path to the current data set to serve (output of `hyaline extract current`)
+
+**Example**:
+```
+$ hyaline mcp stdio --current ./current.db
+```
+Start a local MCP server using the standard I/O transport and have it use the extracted documentation found in `./current.db`.
