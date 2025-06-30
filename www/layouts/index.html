@@ -4,8 +4,7 @@
   <div class="container mx-auto px-4 sm:px-6 lg:px-8">
     <div class="max-w-4xl mx-auto">
       <div class="w-full mb-12">
-        {{ $svg := resources.Get "images/infographic.svg" }} {{ $svg.Content |
-        safeHTML }}
+        {{ readFile "static/images/infographic.svg" | safeHTML }}
       </div>
       <h1 class="text-4xl md:text-5xl font-bold text-center text-gray-900 mb-6">
         Your documentation <span class="text-blue-600">made useful</span>
@@ -23,6 +22,14 @@
       </div>
     </div>
   </div>
+
+  <div class="px-4 sm:px-6 lg:px-8 mt-16">
+    <div class="container mx-auto max-w-2xl">
+      {{ partial "render-video.html" (dict "id" "overview-video" "image"
+      "static/images/problem.svg" "video"
+      "https://www.youtube.com/embed/8kzHXzhKA0A?autoplay=1") }}
+    </div>
+  </div>
 </section>
 
 <section id="learn-more" class="py-16 md:py-24 bg-gray-100">
@@ -31,7 +38,9 @@
       <h2 class="text-4xl md:text-5xl font-bold mb-6">How does it work?</h2>
     </div>
 
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-16">
+    <div
+      class="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-16 max-w-5xl mx-auto"
+    >
       <div class="lg:col-span-1">
         <div
           class="space-y-2"
@@ -42,10 +51,10 @@
           <!-- Tab 1 -->
           <div
             class="p-4 rounded-xl cursor-pointer transition-all duration-300 transform hover:scale-102 aria-selected:bg-blue-600 aria-selected:text-white aria-selected:shadow-lg aria-[selected='false']:bg-white aria-[selected='false']:hover:bg-gray-100 aria-[selected='false']:text-gray-800 aria-[selected='false']:shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-            id="tab-centralized"
+            id="tab-1"
             role="tab"
             aria-selected="true"
-            aria-controls="panel-centralized"
+            aria-controls="panel-1"
             tabindex="0"
           >
             <div class="flex items-center">
@@ -66,34 +75,49 @@
                     stroke-linejoin="round"
                   >
                     <path
-                      d="M11.9998 7C9.23833 7 6.99976 9.23857 6.99976 12C6.99976 14.7614 9.23833 17 11.9998 17C14.7612 17 16.9998 14.7614 16.9998 12C16.9998 9.23858 14.7612 7 11.9998 7Z"
-                    ></path>
+                      d="M18 8.5L5.9999 8.4999"
+                      stroke-width="1.5"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    />
                     <path
-                      d="M17.7364 6.26337L21.4998 2.5M17.7364 6.26337C17.2968 5.82377 17.5831 4.02148 17.6964 3M17.7364 6.26337C18.176 6.70297 19.9783 6.41666 20.9998 6.30336"
-                    ></path>
+                      d="M21 12.5L3 12.5"
+                      stroke-width="1.5"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    />
                     <path
-                      d="M6.26313 17.7366L2.49976 21.5M6.26313 17.7366C5.82353 17.297 4.02124 17.5833 2.99976 17.6966M6.26313 17.7366C6.70273 18.1762 6.41642 19.9785 6.30312 21"
-                    ></path>
+                      d="M16 21.5L16 15.5M16 15.5L18 17.5M16 15.5L14 17.5"
+                      stroke-width="1.5"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    />
                     <path
-                      d="M17.7364 17.7366L21.4998 21.5M17.7364 17.7366C18.176 17.297 19.9783 17.5833 20.9998 17.6966M17.7364 17.7366C17.2968 18.1762 17.5831 19.9785 17.6964 21"
-                    ></path>
+                      d="M12 8.5L12 2.5M12 2.5L14 4.5M12 2.5L10 4.5"
+                      stroke-width="1.5"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    />
                     <path
-                      d="M6.26313 6.26337L2.49976 2.5M6.26313 6.26337C6.70273 5.82377 6.41642 4.02148 6.30312 3M6.26313 6.26337C5.82353 6.70297 4.02124 6.41666 2.99976 6.30336"
-                    ></path>
+                      d="M8 21.5L8 15.5M8 15.5L10 17.5M8 15.5L6 17.5"
+                      stroke-width="1.5"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    />
                   </svg>
                 </div>
               </div>
-              <h3 class="text-lg font-semibold">Centralized</h3>
+              <h3 class="text-lg font-semibold">Extract</h3>
             </div>
           </div>
 
           <!-- Tab 2 -->
           <div
             class="p-4 rounded-xl cursor-pointer transition-all duration-300 transform hover:scale-102 aria-selected:bg-blue-600 aria-selected:text-white aria-selected:shadow-lg aria-[selected='false']:bg-white aria-[selected='false']:hover:bg-gray-100 aria-[selected='false']:text-gray-800 aria-[selected='false']:shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-            id="tab-mcp-powered"
+            id="tab-2"
             role="tab"
             aria-selected="false"
-            aria-controls="panel-mcp-powered"
+            aria-controls="panel-2"
             tabindex="-1"
           >
             <div class="flex items-center">
@@ -114,25 +138,57 @@
                     stroke-linejoin="round"
                   >
                     <path
-                      d="M3.49994 11.7501L11.6717 3.57855C12.7762 2.47398 14.5672 2.47398 15.6717 3.57855C16.7762 4.68312 16.7762 6.47398 15.6717 7.57855M15.6717 7.57855L9.49994 13.7501M15.6717 7.57855C16.7762 6.47398 18.5672 6.47398 19.6717 7.57855C20.7762 8.68312 20.7762 10.474 19.6717 11.5785L12.7072 18.543C12.3167 18.9335 12.3167 19.5667 12.7072 19.9572L13.9999 21.2499"
-                    ></path>
+                      d="M19 19.1414C17.1962 20.9097 14.7255 22 12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C14.7974 2 17.3265 3.14864 19.1414 5"
+                      stroke-width="1.5"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    />
                     <path
-                      d="M17.4999 9.74921L11.3282 15.921C10.2237 17.0255 8.43272 17.0255 7.32823 15.921C6.22373 14.8164 6.22373 13.0255 7.32823 11.921L13.4999 5.74939"
-                    ></path>
+                      d="M8 15C8.91212 16.2144 10.3643 17 12 17C12.7111 17 13.3875 16.8515 14 16.5839"
+                      stroke-width="1.5"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    />
+                    <path
+                      d="M8.00897 9L8 9"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    />
+                    <path
+                      d="M22 15L22 15M22 18L22 18M22 21L22 21"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    />
+                    <circle
+                      cx="16"
+                      cy="10"
+                      r="3"
+                      stroke-width="1.5"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    />
+                    <path
+                      d="M22 12C21.7927 11.6041 21.689 11.4062 21.552 11.2328C21.2015 10.7894 20.6784 10.4407 20.0558 10.2354C19.8124 10.1551 19.5416 10.1034 19 10"
+                      stroke-width="1.5"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    />
                   </svg>
                 </div>
               </div>
-              <h3 class="text-lg font-semibold">MCP-powered</h3>
+              <h3 class="text-lg font-semibold">Reference</h3>
             </div>
           </div>
 
           <!-- Tab 3 -->
           <div
             class="p-4 rounded-xl cursor-pointer transition-all duration-300 transform hover:scale-102 aria-selected:bg-blue-600 aria-selected:text-white aria-selected:shadow-lg aria-[selected='false']:bg-white aria-[selected='false']:hover:bg-gray-100 aria-[selected='false']:text-gray-800 aria-[selected='false']:shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-            id="tab-up-to-date"
+            id="tab-3"
             role="tab"
             aria-selected="false"
-            aria-controls="panel-up-to-date"
+            aria-controls="panel-3"
             tabindex="-1"
           >
             <div class="flex items-center">
@@ -152,19 +208,22 @@
                     stroke-linecap="round"
                     stroke-linejoin="round"
                   >
-                    <path d="M21 3L13 11.5"></path>
                     <path
-                      d="M9.44573 11.0854C6.96539 12.0368 4.98269 11.8736 3 11.0885C3.50059 17.531 6.50414 20.0089 10.5089 21C10.5089 21 13.5261 18.8664 13.961 13.8074C14.0081 13.2595 14.0317 12.9856 13.9178 12.6769C13.8038 12.3682 13.5802 12.1468 13.1329 11.704C12.3973 10.9757 12.0295 10.6116 11.5929 10.5204C11.1564 10.4293 10.5862 10.648 9.44573 11.0854Z"
+                      d="M6.53792 2.32172C6.69664 1.89276 7.30336 1.89276 7.46208 2.32172L8.1735 4.2443C8.27331 4.51403 8.48597 4.72669 8.7557 4.8265L10.6783 5.53792C11.1072 5.69664 11.1072 6.30336 10.6783 6.46208L8.7557 7.1735C8.48597 7.27331 8.27331 7.48597 8.1735 7.7557L7.46208 9.67828C7.30336 10.1072 6.69665 10.1072 6.53792 9.67828L5.8265 7.7557C5.72669 7.48597 5.51403 7.27331 5.2443 7.1735L3.32172 6.46208C2.89276 6.30336 2.89276 5.69665 3.32172 5.53792L5.2443 4.8265C5.51403 4.72669 5.72669 4.51403 5.8265 4.2443L6.53792 2.32172Z"
+                      stroke="currentColor"
+                      stroke-width="1.5"
                     ></path>
-                    <path d="M4.5 16.4464C4.5 16.4464 7 16.9286 9.5 15"></path>
                     <path
-                      d="M8.5 7.25C8.5 7.94036 7.94036 8.5 7.25 8.5C6.55964 8.5 6 7.94036 6 7.25C6 6.55964 6.55964 6 7.25 6C7.94036 6 8.5 6.55964 8.5 7.25Z"
+                      d="M14.4039 9.64136L15.8869 11.1244M6 22H7.49759C8.70997 22 9.31617 22 9.86124 21.7742C10.4063 21.5484 10.835 21.1198 11.6923 20.2625L19.8417 12.1131C20.3808 11.574 20.6503 11.3045 20.7944 11.0137C21.0685 10.4605 21.0685 9.81094 20.7944 9.25772C20.6503 8.96695 20.3808 8.69741 19.8417 8.15832C19.3026 7.61924 19.0331 7.3497 18.7423 7.20561C18.1891 6.93146 17.5395 6.93146 16.9863 7.20561C16.6955 7.3497 16.426 7.61924 15.8869 8.15832L7.73749 16.3077C6.8802 17.165 6.45156 17.5937 6.22578 18.1388C6 18.6838 6 19.29 6 20.5024V22Z"
+                      stroke="currentColor"
+                      stroke-width="1.5"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
                     ></path>
-                    <path d="M11 4V4.1"></path>
                   </svg>
                 </div>
               </div>
-              <h3 class="text-lg font-semibold">Up-to-date</h3>
+              <h3 class="text-lg font-semibold">Update</h3>
             </div>
           </div>
         </div>
@@ -175,96 +234,222 @@
           <!-- Content 1 -->
           <div
             class="bg-white rounded-2xl shadow-xl overflow-hidden transition-all duration-500 ease-in-out hidden:invisible hidden:opacity-0 hidden:transform hidden:translate-y-5 hidden:absolute hidden:w-full not-hidden:visible not-hidden:opacity-100 not-hidden:transform not-hidden:translate-y-0 not-hidden:relative"
-            id="panel-centralized"
+            id="panel-1"
             role="tabpanel"
-            aria-labelledby="tab-centralized"
+            aria-labelledby="tab-1"
             tabindex="0"
           >
-            <div class="grid grid-cols-1 md:grid-cols-2">
-              <div class="p-8">
-                <h3 class="text-2xl font-bold mb-4 text-blue-600">
-                  Centralized
-                </h3>
-                <p class="text-gray-600 text-lg leading-relaxed">
-                  Your documentation lives across repositories, wikis,
-                  documentation sites, internal tools, and knowledge bases.
-                  Hyaline extracts and unifies information from all these
-                  sources into a single, searchable dataset that stays current
-                  as your documentation is updated.
-                </p>
-                <button
-                  class="mt-8 px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 cursor-pointer"
+            {{ partial "render-video.html" (dict "id" "centralized-video"
+            "image" "static/images/extract.svg" "video"
+            "https://www.youtube.com/embed/ijSUNOPYPF0?autoplay=1") }}
+            <div class="p-8">
+              <div class="flex items-center mb-4">
+                <div
+                  class="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center mr-4"
                 >
-                  Learn more
-                </button>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-6 w-6 text-white"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path
+                      d="M18 8.5L5.9999 8.4999"
+                      stroke-width="1.5"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    />
+                    <path
+                      d="M21 12.5L3 12.5"
+                      stroke-width="1.5"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    />
+                    <path
+                      d="M16 21.5L16 15.5M16 15.5L18 17.5M16 15.5L14 17.5"
+                      stroke-width="1.5"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    />
+                    <path
+                      d="M12 8.5L12 2.5M12 2.5L14 4.5M12 2.5L10 4.5"
+                      stroke-width="1.5"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    />
+                    <path
+                      d="M8 21.5L8 15.5M8 15.5L10 17.5M8 15.5L6 17.5"
+                      stroke-width="1.5"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    />
+                  </svg>
+                </div>
+                <h3 class="text-2xl font-bold text-blue-600">
+                  Centralized Documentation
+                </h3>
               </div>
-              <div class="bg-gray-100 flex items-center justify-center">
-                <img src="TODO" alt="" class="w-full h-full object-cover" />
-              </div>
+              <p class="text-gray-600 text-lg leading-relaxed">
+                Your documentation lives across repositories, wikis,
+                documentation sites, internal tools, and knowledge bases.
+                Hyaline extracts and unifies information from all these sources
+                into a single, searchable dataset that stays current as your
+                documentation is updated.
+              </p>
+              <a
+                href="/documentation/explanation/extract-current"
+                class="mt-8 px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 cursor-pointer inline-block"
+              >
+                Learn more
+              </a>
             </div>
           </div>
 
           <!-- Content 2 -->
           <div
             class="bg-white rounded-2xl shadow-xl overflow-hidden transition-all duration-500 ease-in-out hidden:invisible hidden:opacity-0 hidden:transform hidden:translate-y-5 hidden:absolute hidden:w-full not-hidden:visible not-hidden:opacity-100 not-hidden:transform not-hidden:translate-y-0 not-hidden:relative"
-            id="panel-mcp-powered"
+            id="panel-2"
             role="tabpanel"
-            aria-labelledby="tab-mcp-powered"
+            aria-labelledby="tab-2"
             tabindex="0"
             hidden
           >
-            <div class="grid grid-cols-1 md:grid-cols-2">
-              <div class="p-8">
-                <h3 class="text-2xl font-bold mb-4 text-blue-600">
-                  MCP-powered
-                </h3>
-                <p class="text-gray-600 text-lg leading-relaxed">
-                  Hyaline provides your documentation directly to AI tools
-                  through an MCP server. Your AI assistants can instantly access
-                  product and system documentation to help you build better
-                  software faster.
-                </p>
-                <button
-                  class="mt-8 px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            {{ partial "render-video.html" (dict "id" "reference-video" "image"
+            "static/images/mcp.svg" "video"
+            "https://www.youtube.com/embed/wkAmHMq8IEc?autoplay=1") }}
+            <div class="p-8">
+              <div class="flex items-center mb-4">
+                <div
+                  class="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center mr-4"
                 >
-                  Learn more
-                </button>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-6 w-6 text-white"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path
+                      d="M19 19.1414C17.1962 20.9097 14.7255 22 12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C14.7974 2 17.3265 3.14864 19.1414 5"
+                      stroke-width="1.5"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    />
+                    <path
+                      d="M8 15C8.91212 16.2144 10.3643 17 12 17C12.7111 17 13.3875 16.8515 14 16.5839"
+                      stroke-width="1.5"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    />
+                    <path
+                      d="M8.00897 9L8 9"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    />
+                    <path
+                      d="M22 15L22 15M22 18L22 18M22 21L22 21"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    />
+                    <circle
+                      cx="16"
+                      cy="10"
+                      r="3"
+                      stroke-width="1.5"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    />
+                    <path
+                      d="M22 12C21.7927 11.6041 21.689 11.4062 21.552 11.2328C21.2015 10.7894 20.6784 10.4407 20.0558 10.2354C19.8124 10.1551 19.5416 10.1034 19 10"
+                      stroke-width="1.5"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    />
+                  </svg>
+                </div>
+                <h3 class="text-2xl font-bold text-blue-600">MCP Powered</h3>
               </div>
-              <div class="bg-gray-100 flex items-center justify-center">
-                <img src="TODO" alt="" class="w-full h-full object-cover" />
-              </div>
+              <p class="text-gray-600 text-lg leading-relaxed">
+                Hyaline provides your documentation directly to AI tools through
+                an MCP server. Your AI assistants can instantly access product
+                and system documentation to help you build better software
+                faster.
+              </p>
+              <a
+                href="/documentation"
+                class="mt-8 px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 inline-block"
+              >
+                Learn more
+              </a>
             </div>
           </div>
 
           <!-- Content 3 -->
           <div
             class="bg-white rounded-2xl shadow-xl overflow-hidden transition-all duration-500 ease-in-out hidden:invisible hidden:opacity-0 hidden:transform hidden:translate-y-5 hidden:absolute hidden:w-full not-hidden:visible not-hidden:opacity-100 not-hidden:transform not-hidden:translate-y-0 not-hidden:relative"
-            id="panel-up-to-date"
+            id="panel-3"
             role="tabpanel"
-            aria-labelledby="tab-up-to-date"
+            aria-labelledby="tab-3"
             tabindex="0"
             hidden
           >
-            <div class="grid grid-cols-1 md:grid-cols-2">
-              <div class="p-8">
-                <h3 class="text-2xl font-bold mb-4 text-blue-600">
-                  Up-to-date
-                </h3>
-                <p class="text-gray-600 text-lg leading-relaxed">
-                  As you make changes to your systems, Hyaline automatically
-                  identifies which documentation needs updates. It keeps both
-                  your team's internal documentation and customer-facing guides
-                  accurate and current with your evolving codebase.
-                </p>
-                <button
-                  class="mt-8 px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            {{ partial "render-video.html" (dict "id" "up-to-date-video" "image"
+            "static/images/update.svg" "video"
+            "https://www.youtube.com/embed/0J25Q2qxF_o?autoplay=1") }}
+            <div class="p-8">
+              <div class="flex items-center mb-4">
+                <div
+                  class="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center mr-4"
                 >
-                  Learn more
-                </button>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-6 w-6 text-white"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path
+                      d="M6.53792 2.32172C6.69664 1.89276 7.30336 1.89276 7.46208 2.32172L8.1735 4.2443C8.27331 4.51403 8.48597 4.72669 8.7557 4.8265L10.6783 5.53792C11.1072 5.69664 11.1072 6.30336 10.6783 6.46208L8.7557 7.1735C8.48597 7.27331 8.27331 7.48597 8.1735 7.7557L7.46208 9.67828C7.30336 10.1072 6.69665 10.1072 6.53792 9.67828L5.8265 7.7557C5.72669 7.48597 5.51403 7.27331 5.2443 7.1735L3.32172 6.46208C2.89276 6.30336 2.89276 5.69665 3.32172 5.53792L5.2443 4.8265C5.51403 4.72669 5.72669 4.51403 5.8265 4.2443L6.53792 2.32172Z"
+                      stroke="currentColor"
+                      stroke-width="1.5"
+                    ></path>
+                    <path
+                      d="M14.4039 9.64136L15.8869 11.1244M6 22H7.49759C8.70997 22 9.31617 22 9.86124 21.7742C10.4063 21.5484 10.835 21.1198 11.6923 20.2625L19.8417 12.1131C20.3808 11.574 20.6503 11.3045 20.7944 11.0137C21.0685 10.4605 21.0685 9.81094 20.7944 9.25772C20.6503 8.96695 20.3808 8.69741 19.8417 8.15832C19.3026 7.61924 19.0331 7.3497 18.7423 7.20561C18.1891 6.93146 17.5395 6.93146 16.9863 7.20561C16.6955 7.3497 16.426 7.61924 15.8869 8.15832L7.73749 16.3077C6.8802 17.165 6.45156 17.5937 6.22578 18.1388C6 18.6838 6 19.29 6 20.5024V22Z"
+                      stroke="currentColor"
+                      stroke-width="1.5"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    ></path>
+                  </svg>
+                </div>
+                <h3 class="text-2xl font-bold text-blue-600">
+                  Always Up-to-Date
+                </h3>
               </div>
-              <div class="bg-gray-100 flex items-center justify-center">
-                <img src="TODO" alt="" class="w-full h-full object-cover" />
-              </div>
+              <p class="text-gray-600 text-lg leading-relaxed">
+                As you make changes to your systems, Hyaline automatically
+                identifies which documentation needs updates. It keeps both your
+                team's internal documentation and customer-facing guides
+                accurate and current with your evolving codebase.
+              </p>
+              <a
+                href="/documentation/explanation/check-change"
+                class="mt-8 px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 cursor-pointer inline-block"
+              >
+                Learn more
+              </a>
             </div>
           </div>
         </div>

@@ -2,6 +2,9 @@ baseURL = 'https://hyaline.dev/'
 languageCode = 'en-us'
 title = 'Hyaline'
 disableKinds = ['taxonomy', 'term']
+
+[params]
+  favicon = '/favicon.ico'
 # Enabling GitInfo allows the use of git information in the site (e.g. last modified date)
 enableGitInfo = true
 

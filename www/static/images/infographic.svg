@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <svg
+   role="img"
    version="1.1"
    viewBox="-270 288 928.03149 355.92099"
    id="svg1"
@@ -8,8 +9,7 @@
    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
    xmlns:cc="http://creativecommons.org/ns#"
    xmlns:dc="http://purl.org/dc/elements/1.1/">
-  <title
-     id="title1">056DD975-D1C9-4FEB-99E8-407603742E1B</title>
+   <title>Hyaline documentation workflow infographic, showing human and AI personas on the left make use of Hyaline to retrieve documentation and keep it up to date.</title>
   <defs
      id="defs1" />
   <g

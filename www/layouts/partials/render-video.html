@@ -1,0 +1,58 @@
+{{/* 
+Usage: {{ partial "render-video.html" (dict "id" "unique-id" "image" "path/to/image.jpg" "video" "youtube-embed-url") }}
+*/}}
+
+<div class="relative cursor-pointer group" onclick="openVideoModal('{{ .id }}')">
+  <div class="w-full h-auto rounded-lg overflow-hidden">{{ readFile .image | safeHTML }}</div>
+  <div class="absolute inset-0 bg-black/40 rounded-lg flex items-center justify-center group-hover:bg-black/50 transition-all duration-200">
+    <div class="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center shadow-lg drop-shadow-lg group-hover:bg-blue-700 transition-colors">
+      <svg class="w-10 h-10 text-white ml-1" fill="currentColor" viewBox="0 0 24 24">
+        <path d="M8 5v14l11-7z"/>
+      </svg>
+    </div>
+  </div>
+</div>
+
+<!-- Modal -->
+<dialog id="modal-{{ .id }}" class="backdrop:bg-black/75 bg-transparent p-4 max-w-4xl w-full m-auto">
+  <div class="relative">
+    <div class="flex justify-end mb-2">
+      <button 
+        onclick="closeVideoModal('{{ .id }}')" 
+        class="bg-black/50 rounded-full p-2 text-white hover:text-gray-300 hover:bg-black/70 transition-colors cursor-pointer"
+        aria-label="Close video modal"
+      >
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+      </button>
+    </div>
+    <div class="w-full aspect-video bg-black rounded-lg">
+      <iframe 
+        id="iframe-{{ .id }}"
+        class="w-full h-full rounded-lg"
+        src=""
+        frameborder="0"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        allowfullscreen
+        title="Video player"
+        tabindex="0"
+      ></iframe>
+    </div>
+  </div>
+</dialog>
+
+<script>
+function openVideoModal(id) {
+  const modal = document.getElementById('modal-' + id);
+  // Doing this allows the video to auto-play
+  modal.querySelector('iframe').src = '{{ .video }}';
+  modal.showModal();
+}
+
+function closeVideoModal(id) {
+  const modal = document.getElementById('modal-' + id);
+  modal.querySelector('iframe').src = '';
+  modal.close();
+}
+</script>
