@@ -2,7 +2,7 @@
 "path/to/image.jpg" "video" "youtube-embed-url") }} */}}
 
 <div
-  onclick="(function showVideo () {
+  onclick="(function showVideo() {
     const modal = document.getElementById('render-video-modal-{{ .id }}');
     modal.querySelector(':scope iframe').src = '{{ .video }}';
     modal.showModal();
