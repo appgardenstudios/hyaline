@@ -26,4 +26,4 @@ This will vary by client, but the gist of it is you want to have the client run 
 Please see your client documentation for specific steps.
 
 ## Next Steps
-Visit [CLI Reference](../04-reference/02-cli.md) or TODO MCP reference.
+Visit the [CLI Reference](../04-reference/02-cli.md) or [MCP reference](../04-reference/06-mcp.md).
