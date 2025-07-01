@@ -69,7 +69,7 @@ func Change(systemID string, documentationSource string, document string, sectio
 	existingContent := ""
 	if isSection {
 		// Get current section content
-		sectionID := fmt.Sprintf("%s#%s", document, strings.Join(section, "#"))
+		sectionID := strings.Join(section, "#")
 		var originalSection *sqlite.SystemSection
 		originalSection, err = sqlite.GetSystemSection(sectionID, document, documentationSource, systemID, currentDB)
 		if err != nil {

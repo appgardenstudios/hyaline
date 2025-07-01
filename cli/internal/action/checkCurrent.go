@@ -301,12 +301,6 @@ func CheckCurrent(args *CheckCurrentArgs) error {
 			return err
 		}
 		for _, sec := range allSections {
-			arr := strings.Split(sec.ID, "#")
-			// Skip root sections
-			if len(arr) < 2 {
-				continue
-			}
-
 			result := "PASS"
 			message := ""
 			_, found := processedSectionMap[sec.ID]
@@ -317,8 +311,8 @@ func CheckCurrent(args *CheckCurrentArgs) error {
 			output.Results = append(output.Results, CheckCurrentOutputEntry{
 				System:              system.ID,
 				DocumentationSource: docSource.ID,
-				Document:            sec.ID,
-				Section:             arr[1:], // Split document off of the ID and take what is left, e.g. doc#sec1#sec1.1
+				Document:            sec.DocumentID,
+				Section:             strings.Split(sec.ID, "#"),
 				Check:               "DESIRED_DOCUMENT_EXISTS",
 				Result:              result,
 				Message:             message,
@@ -355,7 +349,7 @@ func checkCurrentSections(system string, documentationSource string, document st
 		currentSection := []string{}
 		currentSection = append(currentSection, sectionArr...)
 		currentSection = append(currentSection, desiredDocSection.Name)
-		sectionID := fmt.Sprintf("%s#%s", document, strings.Join(currentSection, "#"))
+		sectionID := strings.Join(currentSection, "#")
 
 		section, found := (*sectionMap)[sectionID]
 

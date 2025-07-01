@@ -19,6 +19,8 @@ Systems within Hyaline.
 |--------|------|-------------|
 | ID | TEXT | The ID of the system, as defined in the config |
 
+**Primary Key**: `ID`
+
 ## SYSTEM_CODE
 System code sources within Hyaline.
 
@@ -27,6 +29,8 @@ System code sources within Hyaline.
 | ID | TEXT | The ID of the system code source, as defined in the config |
 | SYSTEM_ID | TEXT | The ID of the system this code source belongs to |
 | PATH | TEXT | The path of the code (see below for details) |
+
+**Primary Key**: `(ID, SYSTEM_ID)`
 
 ### PATH
 The path, or location, of the code being extracted as defined in the config. The value of the path depends on the type of extractor. Possible values are detailed below:
@@ -49,6 +53,8 @@ Files belonging to system code sources within Hyaline.
 | ORIGINAL_ID | TEXT | Only set when extracting changes. The original file ID of this file if it was renamed |
 | RAW_DATA | TEXT | The raw contents of this file |
 
+**Primary Key**: `(ID, CODE_ID, SYSTEM_ID)`
+
 ## SYSTEM_DOCUMENTATION
 System documentation sources within Hyaline.
 
@@ -58,6 +64,8 @@ System documentation sources within Hyaline.
 | SYSTEM_ID | TEXT | The ID of the system this documentation source belongs to |
 | TYPE | TEXT | The type of documentation. For possible values please see **Enums > Documentation Type** below |
 | PATH | TEXT | The path of the documentation (see below for details) |
+
+**Primary Key**: `(ID, SYSTEM_ID)`
 
 ### PATH
 The path, or location, of the documentation being extracted as defined in the config. The value of the path depends on the type of extractor. Possible values are detailed below:
@@ -82,6 +90,8 @@ Documents belonging to system documentation sources within Hyaline.
 | RAW_DATA | TEXT | The raw contents of this document |
 | EXTRACTED_DATA | TEXT | The data extracted from this document in markdown format. See [Extract Current](../03-explanation/02-extract-current.md) for how markdown is extracted from documents |
 
+**Primary Key**: `(ID, DOCUMENTATION_ID, SYSTEM_ID)`
+
 ## SYSTEM_SECTION
 Document sections extracted from documents belonging to system documentation sources within Hyaline.
 
@@ -96,8 +106,10 @@ Document sections extracted from documents belonging to system documentation sou
 | PEER_ORDER | TEXT(Parsed as int) | The order of this section amongst its peers (0 based) |
 | EXTRACTED_DATA | TEXT | The data extracted from SYSTEM_DOCUMENT.EXTRACTED_DATA for this section. Note that this will contain the section contents including any child sections |
 
+**Primary Key**: `(ID, DOCUMENT_ID, DOCUMENTATION_ID, SYSTEM_ID)`
+
 ### ID
-The ID is constructed by appending the section's title (including parent titles to the root of the document) to the Document ID separated by `#`. For example, the sub-section Foo (parent Bar) in README.md would have an ID of `README.md#Bar#Foo`. Note that any `#` symbols in the section titles are stripped, any pre or post whitespace is removed from the section title, and any internal whitespace in the title remains (for example `README.md#My Section#My Subsection` is valid).
+The ID is constructed using the section's title (including parent titles to the root of the document) separated by `#`. For example, the sub-section Foo (parent Bar) would have an ID of `Bar#Foo`. Note that any `#` symbols in the section titles are stripped, any pre or post whitespace is removed from the section title, and any internal whitespace in the title remains (for example `My Section#My Subsection` is valid).
 
 ## SYSTEM_CHANGE
 System changes, such as pull requests, for systems within Hyaline.
@@ -109,6 +121,8 @@ System changes, such as pull requests, for systems within Hyaline.
 | TYPE | TEXT | The type of change. See **Enums > Change Type** below for possible values |
 | TITLE | TEXT | The title of the change |
 | BODY | TEXT | The contents of the change (in markdown) |
+
+**Primary Key**: `(ID, SYSTEM_ID)`
 
 ### ID
 The Change ID is constructed based on the Type of change. The format for each type is detailed below:
@@ -126,6 +140,8 @@ The Change ID is constructed based on the Type of change. The format for each ty
 | TYPE | TEXT | The type of task. See **Enums > Task Type** below for possible values |
 | TITLE | TEXT | The title of the task |
 | BODY | TEXT | The contents of the task (in markdown) |
+
+**Primary Key**: `(ID, SYSTEM_ID)`
 
 
 ## Enums

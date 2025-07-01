@@ -405,29 +405,27 @@ func ExtractCurrentHttp(systemID string, d *config.DocumentationSource, db *sql.
 }
 
 func insertMarkdownSectionAndChildren(s *section, order int, documentId string, documentationId string, systemId string, db *sql.DB) error {
-	// Insert this section
-	parentId := ""
+	// If Parent is nil, it's the root document and we don't insert it
 	if s.Parent != nil {
-		parentId = documentId + s.Parent.FullName
-	}
-	err := sqlite.InsertSystemSection(sqlite.SystemSection{
-		ID:              documentId + s.FullName,
-		DocumentID:      documentId,
-		DocumentationID: documentationId,
-		SystemID:        systemId,
-		Name:            s.Name,
-		ParentID:        parentId,
-		PeerOrder:       order,
-		ExtractedData:   strings.TrimSpace(s.Content),
-	}, db)
-	if err != nil {
-		slog.Debug("docs.insertSectionAndChildren could not insert section", "error", err)
-		return err
+		err := sqlite.InsertSystemSection(sqlite.SystemSection{
+			ID:              s.FullName,
+			DocumentID:      documentId,
+			DocumentationID: documentationId,
+			SystemID:        systemId,
+			Name:            s.Name,
+			ParentID:        s.Parent.FullName,
+			PeerOrder:       order,
+			ExtractedData:   strings.TrimSpace(s.Content),
+		}, db)
+		if err != nil {
+			slog.Debug("docs.insertSectionAndChildren could not insert section", "error", err)
+			return err
+		}
 	}
 
 	// Insert children
 	for i, child := range s.Children {
-		err = insertMarkdownSectionAndChildren(child, i, documentId, documentationId, systemId, db)
+		err := insertMarkdownSectionAndChildren(child, i, documentId, documentationId, systemId, db)
 		if err != nil {
 			return err
 		}

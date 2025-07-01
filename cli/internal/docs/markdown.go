@@ -38,11 +38,15 @@ func getMarkdownSections(lines []string) *section {
 				current = current.Parent
 			}
 			name := strings.TrimSpace(strings.ReplaceAll(line[level:], "#", ""))
+			fullName := name
+			if current.FullName != "" {
+				fullName = fmt.Sprintf("%s#%s", current.FullName, name)
+			}
 			newSection := &section{
 				Parent:   current,
 				Depth:    level,
 				Name:     name,
-				FullName: fmt.Sprintf("%s#%s", current.FullName, name),
+				FullName: fullName,
 				Content:  "",
 				Children: []*section{},
 			}
