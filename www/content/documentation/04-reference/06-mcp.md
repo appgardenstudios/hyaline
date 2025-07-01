@@ -5,7 +5,7 @@ purpose: Detail the functionality of Hyaline's MCP server
 url: documentation/reference/mcp
 ---
 ## Overview
-Hyaline provides a built-in MCP server that can make the [current data set](./03-data-set.md) extracted by Hyaline's [extract current](../03-explanation/02-extract-current.md) command available to LLMs. For information on how to setup and run the MCP server please see the [how to](../02-how-to/04-run-mcp.md) or the [cli reference](./02-cli.md).
+Hyaline provides a built-in MCP server that can make the [current data set](./03-data-set.md) extracted by Hyaline's [extract current](../03-explanation/02-extract-current.md) command available to LLMs. For information on how to set up and run the MCP server please see the [how to](../02-how-to/04-run-mcp.md) or the [cli reference](./02-cli.md).
 
 ## Tools
 Hyaline's MCP server provides the following tools:
