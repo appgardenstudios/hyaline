@@ -66,7 +66,7 @@
 <div class="flex min-h-screen">
   <!-- Desktop ToC Sidebar (Always visible on desktop) -->
   <aside 
-    class="hidden md:flex md:flex-col min-w-72 bg-gray-50 border-r border-gray-200 overflow-y-auto"
+    class="hidden lg:flex lg:flex-col min-w-72 bg-gray-50 border-r border-gray-200 overflow-y-auto"
     aria-label="Table of Contents"
   >
     <div class="p-6">
@@ -79,7 +79,7 @@
   <!-- Mobile ToC Sidebar -->
   <aside 
     id="mobile-toc-sidebar" 
-    class="md:hidden fixed left-0 top-0 w-full h-full bg-white shadow-xl z-50 transform -translate-x-full transition-transform duration-300 ease-in-out overflow-y-auto"
+    class="lg:hidden fixed left-0 top-0 w-full h-full bg-white shadow-xl z-50 transform -translate-x-full transition-transform duration-300 ease-in-out overflow-y-auto"
     aria-label="Table of Contents"
   >
     <div class="p-6">
@@ -104,7 +104,7 @@
 
   <div class="flex-1 min-w-0">
     <!-- Mobile Top Bar with Breadcrumbs -->
-    <div class="md:hidden bg-white px-4 sm:px-6 py-2 sticky top-14 shadow-sm">
+    <div class="lg:hidden bg-white px-4 sm:px-6 py-2 sticky top-14 shadow-sm">
       <div class="flex items-center space-x-3">
         <button
           id="mobile-toc-button"
@@ -268,7 +268,7 @@ document.addEventListener("DOMContentLoaded", function () {
   // Handle window resize
   window.addEventListener("resize", function () {
     // Close mobile ToC on desktop
-    if (window.innerWidth >= 768) {
+    if (window.innerWidth >= 1024) {
       closeMobileTocFn();
     }
   });
