@@ -25,4 +25,4 @@ Based on the contents of the configuration file above there may be one or more e
 Now you can execute the hyaline command, passing in all of the required and (optionally) optional parameters. Please see [CLI Reference](../04-reference/02-cli.md) for a full list of commands and their associated options.
 
 ## Next Steps
-Visit [CLI Reference](../04-reference/02-cli.md) or [How to build the CLI](./04-build-cli.md).
+Visit [CLI Reference](../04-reference/02-cli.md) or [How to build the CLI](./05-build-cli.md).
