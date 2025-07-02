@@ -1,6 +1,6 @@
 ---
 title: "How To: Run the Hyaline CLI"
-linkTitle: Run the Hyaline CLI
+linkTitle: Run the CLI
 purpose: Document how to run the Hyaline CLI
 url: documentation/how-to/run-cli
 ---

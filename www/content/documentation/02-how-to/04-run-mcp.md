@@ -1,6 +1,6 @@
 ---
 title: "How To: Run the Hyaline MCP Server"
-linkTitle: Run the Hyaline MCP Server
+linkTitle: Run the MCP Server
 purpose: Document how to run the Hyaline MCP Server
 url: documentation/how-to/run-mcp
 ---

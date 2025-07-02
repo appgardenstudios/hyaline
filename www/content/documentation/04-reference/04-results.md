@@ -1,6 +1,6 @@
 ---
 title: "Reference: Hyaline Check Results"
-linkTitle: Hyaline Check Results
+linkTitle: Check Results
 purpose: Detail the output results for the check current and check change commands
 url: documentation/reference/results
 ---
