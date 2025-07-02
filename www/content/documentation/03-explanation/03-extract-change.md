@@ -20,7 +20,7 @@ When extracting a change for a system you may have situations where a system is 
 For more details on the schema of the change data set, including the information captured when extracting changed code, documentation, and change metadata please see the [data set reference](../04-reference/03-data-set.md).
 
 ## Extracting Changed Code
-System source code that changed is extracted for each targeted code source in the system. Note that the code source must be configured to use the `git` extractor for change extraction to work, as Hyaline compares two branches to extract the diffs used when extracting the change. If specified branches cannot be resolved locally and don't contain a `/`, Hyaline will attempt to resolve `origin/<branch>` as a fallback before failing.
+System source code that changed is extracted for each targeted code source in the system. Note that the code source must be configured to use the `git` extractor for change extraction to work, as Hyaline compares two branches to extract the diffs used when extracting the change. For more information on how these branches are specified and resolved, please see [hyaline extract change](../04-reference/02-cli.md#extract-change).
 
 The extraction process uses the same configuration as the extract current process does, so if you haven't read up on how [extract current](./02-extract-current.md) works it would be helpful to do so now.
 
@@ -45,7 +45,7 @@ For more details on git extractor options please see the [configuration referenc
 For more details on the schema of the change data set please see the [data set reference](../04-reference/03-data-set.md).
 
 ## Extracting Changed Documentation
-System documentation that changed is extracted for each targeted documentation source in the system. Note that the documentation source must be configured to use the `git` extractor for change extraction to work, as Hyaline compares two branches to extract the diffs used when extracting the change. If specified branches cannot be resolved locally and don't contain a `/`, Hyaline will attempt to resolve `origin/<branch>` as a fallback before failing.
+System documentation that changed is extracted for each targeted documentation source in the system. Note that the documentation source must be configured to use the `git` extractor for change extraction to work, as Hyaline compares two branches to extract the diffs used when extracting the change. For more information on how these branches are specified and resolved, please see [hyaline extract change](../04-reference/02-cli.md#extract-change).
 
 The extraction process uses the same configuration as the extract current process does, so if you haven't read up on how [extract current](./02-extract-current.md) works it would be helpful to do so now.
 

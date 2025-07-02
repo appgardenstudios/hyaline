@@ -49,7 +49,7 @@ For more detail on fs extractor options please see the [configuration reference]
 ### Extracting Code - git
 The `git` extractor extracts source code from a local or remote git repository. It supports several different setups that are detailed below.
 
-Note that Hyaline extracts code from a specific branch as specified in the configuration. It does this extraction via the git metadata itself, rather than requiring the repository to be in a specific state. In other words, you don't need to check out the main branch to extract code from it. Hyaline will use the internal git structure to scan and extract the code. If a specified branch cannot be resolved locally and doesn't contain a `/`, Hyaline will attempt to resolve `origin/<branch>` as a fallback before failing. 
+Note that Hyaline extracts code from a specific branch as specified in the configuration. It does this extraction via the git metadata itself, rather than requiring the repository to be in a specific state. In other words, you don't need to check out the main branch to extract code from it. Hyaline will use the internal git structure to scan and extract the code. Hyaline will attempt to resolve the branch locally, then remotely, and finally as a tag if none of the other attempts to resolve were successful.
 
 For more detail on git extractor options please see the [configuration reference](../04-reference/01-config.md).
 
