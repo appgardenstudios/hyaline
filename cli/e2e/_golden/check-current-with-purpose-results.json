@@ -31,6 +31,17 @@
       "section": [
         "Example"
       ],
+      "check": "DESIRED_DOCUMENT_EXISTS",
+      "result": "PASS",
+      "message": ""
+    },
+    {
+      "system": "check-current",
+      "documentationSource": "app",
+      "document": "README.md",
+      "section": [
+        "Example"
+      ],
       "check": "MATCHES_PURPOSE",
       "result": "ERROR",
       "message": "This section does not match it's purpose. "
@@ -43,8 +54,32 @@
         "Example",
         "Subsection 1"
       ],
+      "check": "DESIRED_DOCUMENT_EXISTS",
+      "result": "PASS",
+      "message": ""
+    },
+    {
+      "system": "check-current",
+      "documentationSource": "app",
+      "document": "README.md",
+      "section": [
+        "Example",
+        "Subsection 1"
+      ],
       "check": "MATCHES_PURPOSE",
       "result": "SKIPPED",
+      "message": ""
+    },
+    {
+      "system": "check-current",
+      "documentationSource": "app",
+      "document": "README.md",
+      "section": [
+        "Example",
+        "Subsection 2"
+      ],
+      "check": "DESIRED_DOCUMENT_EXISTS",
+      "result": "PASS",
       "message": ""
     },
     {
@@ -96,41 +131,6 @@
     {
       "system": "check-current",
       "documentationSource": "app",
-      "document": "README.md#Example",
-      "section": [
-        "Example"
-      ],
-      "check": "DESIRED_DOCUMENT_EXISTS",
-      "result": "PASS",
-      "message": ""
-    },
-    {
-      "system": "check-current",
-      "documentationSource": "app",
-      "document": "README.md#Example#Subsection 1",
-      "section": [
-        "Example",
-        "Subsection 1"
-      ],
-      "check": "DESIRED_DOCUMENT_EXISTS",
-      "result": "PASS",
-      "message": ""
-    },
-    {
-      "system": "check-current",
-      "documentationSource": "app",
-      "document": "README.md#Example#Subsection 2",
-      "section": [
-        "Example",
-        "Subsection 2"
-      ],
-      "check": "DESIRED_DOCUMENT_EXISTS",
-      "result": "PASS",
-      "message": ""
-    },
-    {
-      "system": "check-current",
-      "documentationSource": "app",
       "document": "docs/docsDoc.md",
       "check": "DESIRED_DOCUMENT_EXISTS",
       "result": "ERROR",
@@ -139,13 +139,13 @@
     {
       "system": "check-current",
       "documentationSource": "app",
-      "document": "docs/docsDoc.md#This is a test",
+      "document": "docs/docsDoc.md",
       "section": [
         "This is a test"
       ],
       "check": "DESIRED_DOCUMENT_EXISTS",
       "result": "ERROR",
-      "message": "Section docs/docsDoc.md#This is a test does not have a corresponding desired document section"
+      "message": "Section This is a test does not have a corresponding desired document section"
     },
     {
       "system": "check-current",
@@ -174,13 +174,13 @@
     {
       "system": "check-current",
       "documentationSource": "app",
-      "document": "docs/preDoc.md#A Random Heading",
+      "document": "docs/preDoc.md",
       "section": [
         "A Random Heading"
       ],
       "check": "DESIRED_DOCUMENT_EXISTS",
       "result": "ERROR",
-      "message": "Section docs/preDoc.md#A Random Heading does not have a corresponding desired document section"
+      "message": "Section A Random Heading does not have a corresponding desired document section"
     },
     {
       "system": "check-current",

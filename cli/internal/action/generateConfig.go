@@ -124,7 +124,7 @@ func GenerateConfig(args *GenerateConfigArgs) error {
 				slog.Debug("action.GenerateConfig could not get sections for a document from current db", "document", doc.ID, "doc", d.ID, "system", system.ID, "error", err)
 				return err
 			}
-			newSections, err := createRuleSections(sections, doc.ID, desiredDoc.Sections, args.IncludePurpose, doc.ID, desiredDoc.Purpose, &cfg.LLM)
+			newSections, err := createRuleSections(sections, "", desiredDoc.Sections, args.IncludePurpose, doc.ID, desiredDoc.Purpose, &cfg.LLM)
 			if err != nil {
 				slog.Debug("action.GenerateConfig could not generate sections for a document from current db", "document", doc.ID, "doc", d.ID, "system", system.ID, "error", err)
 				return err
