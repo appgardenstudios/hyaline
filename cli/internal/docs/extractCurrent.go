@@ -13,6 +13,7 @@ import (
 	"path"
 	"path/filepath"
 	"strings"
+	"sync"
 
 	"fmt"
 
@@ -305,6 +306,9 @@ func ExtractCurrentHttp(systemID string, d *config.DocumentationSource, db *sql.
 		Parallelism: 1,
 	})
 
+	// Create our mutex to prevent simultaneous writes to SQLite
+	var mutex sync.Mutex
+
 	// Add headers (if any)
 	for key, val := range d.Extractor.Options.Headers {
 		c.Headers.Add(key, val)
@@ -357,6 +361,10 @@ func ExtractCurrentHttp(systemID string, d *config.DocumentationSource, db *sql.
 			extractedData = strings.TrimSpace(string(r.Body))
 		}
 		extractedData = strings.ReplaceAll(extractedData, "\r", "")
+
+		// Acquire lock & defer unlock
+		mutex.Lock()
+		defer mutex.Unlock()
 
 		// Insert our document
 		err = sqlite.InsertSystemDocument(sqlite.SystemDocument{
