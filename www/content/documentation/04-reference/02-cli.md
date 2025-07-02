@@ -60,8 +60,10 @@ Extract code and documentation from the system `app` using the config file found
 **Options**:
 * `--config` - (required) Path to the config file
 * `--system` - (required) ID of the system to extract
-* `--base` - (required) Base branch (where changes will be applied). If the branch cannot be resolved locally and doesn't contain a `/`, the system will attempt to resolve `origin/<branch>` as a fallback.
-* `--head` - (required) Head branch (which changes will be applied). If the branch cannot be resolved locally and doesn't contain a `/`, the system will attempt to resolve `origin/<branch>` as a fallback.
+* `--base` - (required if `--base-ref` is not set, mutually exclusive with `--base-ref`) Base branch (where changes will be applied). Tries to resolve to a local branch first, then a remote branch (if there is a single remote), and finally a tag.
+* `--head` - (required if `head-ref` is not set, mutually exclusive with `--head-ref`) Head branch (which changes will be applied). Tries to resolve to a local branch first, then a remote branch (if there is a single remote), and finally a tag.
+* `--base-ref` - (required if `--base` is not set, mutually exclusive with `--base`) Base reference (explicit commit hash or fully qualified reference). Passed directly to git resolution.
+* `--head-ref` - (required if `--head` is not set, mutually exclusive with `--head`) Head reference (explicit commit hash or fully qualified reference). Passed directly to git resolution.
 * `--code-id` - (optional, multiple allowed) ID of the code source(s) that will be extracted
 * `--documentation-id` - (optional, multiple allowed) ID of the documentation source(s) that will be extracted
 * `--pull-request` - (optional) GitHub Pull Request to include in the change (OWNER/REPO/PR_NUMBER)
@@ -79,6 +81,12 @@ Extract code and documentation from the system `app` using the config file found
 $ hyaline extract change --config ./hyaline.yml --system app --base main --head origin/feat-1 --code-id backend --documentation-id backend  --output ./change.db
 ```
 Extract code and documentation from the system `app` using the config file found at `./hyaline.yml` and create a change dataset at `./change.db`. It will only extract changes for the code source `backend` and documentation source `backend`.
+
+**Example** (using explicit references):
+```
+$ hyaline extract change --config ./hyaline.yml --system app --base-ref abc123def --head-ref refs/heads/feature-branch --output ./change.db
+```
+Extract code and documentation from the system `app` using explicit references. The base is specified as commit hash `abc123def` and head as the fully qualified reference `refs/heads/feature-branch`.
 
 ## check current
 `hyaline check current` checks current code and documentation for a system. Please visit the explanation documentation for [check current](../03-explanation/04-check-current.md) for more details.

@@ -156,7 +156,14 @@ func ExtractCurrentGit(systemID string, c *config.CodeSource, db *sql.DB) (err e
 	if c.Extractor.Options.Branch != "" {
 		branch = c.Extractor.Options.Branch
 	}
-	err = repo.GetFiles(branch, r, func(f *object.File) error {
+
+	ref, err := repo.ResolveAlias(r, branch)
+	if err != nil {
+		slog.Debug("code.ExtractCurrentGit could not resolve branch", "error", err, "branch", branch)
+		return
+	}
+
+	err = repo.GetFiles(*ref, r, func(f *object.File) error {
 		if config.PathIsIncluded(f.Name, c.Extractor.Include, c.Extractor.Exclude) {
 			// Get contents of file and insert into db
 			var bytes []byte
