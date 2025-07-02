@@ -1,5 +1,5 @@
 ---
-title: "Reference: Hyaline config"
+title: "Reference: Hyaline Config"
 linkTitle: Config
 purpose: Document the configuration options for Hyaline
 url: documentation/reference/config
