@@ -28,13 +28,23 @@ func Extract(logLevel *slog.LevelVar) *cli.Command {
 					},
 					&cli.StringFlag{
 						Name:     "base",
-						Required: true,
-						Usage:    "Base branch (where changes will be applied)",
+						Required: false,
+						Usage:    "Base branch (where changes will be applied). Either --base or --base-ref must be provided, but not both.",
 					},
 					&cli.StringFlag{
 						Name:     "head",
-						Required: true,
-						Usage:    "Head branch (which changes will be applied)",
+						Required: false,
+						Usage:    "Head branch (which changes will be applied). Either --head or --head-ref must be provided, but not both.",
+					},
+					&cli.StringFlag{
+						Name:     "base-ref",
+						Required: false,
+						Usage:    "Base reference (explicit commit hash or fully qualified reference). Either --base-ref or --base must be provided, but not both.",
+					},
+					&cli.StringFlag{
+						Name:     "head-ref",
+						Required: false,
+						Usage:    "Head reference (explicit commit hash or fully qualified reference). Either --head-ref or --head must be provided, but not both.",
 					},
 					&cli.StringSliceFlag{
 						Name:     "code-id",
@@ -63,17 +73,47 @@ func Extract(logLevel *slog.LevelVar) *cli.Command {
 					},
 				},
 				Action: func(cCtx *cli.Context) error {
+					// Helper function to show help and exit with error
+					showHelpAndExit := func(message string) error {
+						cli.ShowSubcommandHelp(cCtx)
+						return cli.Exit("\nError: "+message, 1)
+					}
+
 					// Set log level
 					if cCtx.Bool("debug") {
 						logLevel.Set(slog.LevelDebug)
+					}
+
+					// Validate mutual exclusivity and required arguments
+					base := cCtx.String("base")
+					baseRef := cCtx.String("base-ref")
+					head := cCtx.String("head")
+					headRef := cCtx.String("head-ref")
+
+					// Validate base arguments
+					if base != "" && baseRef != "" {
+						return showHelpAndExit("--base and --base-ref are mutually exclusive")
+					}
+					if base == "" && baseRef == "" {
+						return showHelpAndExit("either --base or --base-ref is required")
+					}
+
+					// Validate head arguments
+					if head != "" && headRef != "" {
+						return showHelpAndExit("--head and --head-ref are mutually exclusive")
+					}
+					if head == "" && headRef == "" {
+						return showHelpAndExit("either --head or --head-ref is required")
 					}
 
 					// Execute action
 					err := action.ExtractChange(&action.ExtractChangeArgs{
 						Config:           cCtx.String("config"),
 						System:           cCtx.String("system"),
-						Base:             cCtx.String("base"),
-						Head:             cCtx.String("head"),
+						Base:             base,
+						Head:             head,
+						BaseRef:          baseRef,
+						HeadRef:          headRef,
 						CodeIDs:          cCtx.StringSlice("code-id"),
 						DocumentationIDs: cCtx.StringSlice("documentation-id"),
 						PullRequest:      cCtx.String("pull-request"),

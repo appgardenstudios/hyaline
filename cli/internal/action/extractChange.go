@@ -20,6 +20,8 @@ type ExtractChangeArgs struct {
 	System           string
 	Base             string
 	Head             string
+	BaseRef          string
+	HeadRef          string
 	CodeIDs          []string
 	DocumentationIDs []string
 	PullRequest      string
@@ -34,6 +36,8 @@ func ExtractChange(args *ExtractChangeArgs) error {
 		"system", args.System,
 		"base", args.Base,
 		"head", args.Head,
+		"baseRef", args.BaseRef,
+		"headRef", args.HeadRef,
 		"codeIDs", args.CodeIDs,
 		"documentationIDs", args.DocumentationIDs,
 		"pullRequest", args.PullRequest,
@@ -132,7 +136,7 @@ func ExtractChange(args *ExtractChangeArgs) error {
 	}
 
 	// Extract/Insert Code
-	err = code.ExtractChange(system, args.Head, args.Base, codeIDs, db)
+	err = code.ExtractChange(system, args.Head, args.HeadRef, args.Base, args.BaseRef, codeIDs, db)
 	if err != nil {
 		slog.Debug("action.ExtractChange could not extract code", "error", err)
 		return err
@@ -140,7 +144,7 @@ func ExtractChange(args *ExtractChangeArgs) error {
 	slog.Debug("action.ExtractChange code inserted")
 
 	// Extract/Insert Docs
-	err = docs.ExtractChange(system, args.Head, args.Base, documentationIDs, db)
+	err = docs.ExtractChange(system, args.Head, args.HeadRef, args.Base, args.BaseRef, documentationIDs, db)
 	if err != nil {
 		slog.Debug("action.ExtractChange could not extract docs", "error", err)
 		return err

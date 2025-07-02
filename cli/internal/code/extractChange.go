@@ -12,7 +12,7 @@ import (
 	"github.com/go-git/go-git/v5/utils/merkletrie"
 )
 
-func ExtractChange(system *config.System, head string, base string, codeIDs []string, db *sql.DB) (err error) {
+func ExtractChange(system *config.System, head string, headRef string, base string, baseRef string, codeIDs []string, db *sql.DB) (err error) {
 	// Process each code source
 	for _, c := range system.CodeSources {
 		// Only extract if this code ID is passed in
@@ -26,7 +26,7 @@ func ExtractChange(system *config.System, head string, base string, codeIDs []st
 			slog.Debug("code.ExtractChange skipping non-git code source", "system", system.ID, "code", c.ID)
 			continue
 		}
-		slog.Debug("code.ExtractChange extracting code", "system", system.ID, "code", c.ID, "head", head, "base", base)
+		slog.Debug("code.ExtractChange extracting code", "system", system.ID, "code", c.ID, "head", head, "headRef", headRef, "base", base, "baseRef", baseRef)
 
 		// Get document path
 		path := c.Extractor.Options.Path
@@ -53,8 +53,21 @@ func ExtractChange(system *config.System, head string, base string, codeIDs []st
 			return
 		}
 
+		// Resolve head and base references
+		resolvedHead, err := repo.ResolveRef(r, head, headRef)
+		if err != nil {
+			slog.Debug("code.ExtractChange could not resolve head reference", "error", err)
+			return err
+		}
+
+		resolvedBase, err := repo.ResolveRef(r, base, baseRef)
+		if err != nil {
+			slog.Debug("code.ExtractChange could not resolve base reference", "error", err)
+			return err
+		}
+
 		// Get our diff
-		diff, err := repo.GetDiff(r, head, base)
+		diff, err := repo.GetDiff(r, *resolvedHead, *resolvedBase)
 		if err != nil {
 			slog.Debug("code.ExtractChange could not get diff", "error", err)
 			return err
