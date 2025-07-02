@@ -1,6 +1,6 @@
 ---
 title: "Explanation: Hyaline"
-linkTitle: Hyaline
+linkTitle: Hyaline Overview
 purpose: Explain the overall data flow and architecture of Hyaline
 url: documentation/explanation/hyaline
 ---

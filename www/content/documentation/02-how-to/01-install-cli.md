@@ -1,6 +1,6 @@
 ---
 title: "How To: Install the Hyaline CLI"
-linkTitle: Install the Hyaline CLI
+linkTitle: Install the CLI
 purpose: Document how to install the Hyaline CLI
 url: documentation/how-to/install-cli
 ---
