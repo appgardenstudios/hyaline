@@ -10,11 +10,11 @@ Files use numbered prefixes to control their order in navigation. Example:
 
 ```
 01-overview.md
-02-how-to/
+03-how-to/
   01-install-cli.md
   02-run-cli.md
   03-check-pr.md
-03-explanation/
+04-explanation/
   01-hyaline.md
   02-extract-current.md
 ```
@@ -81,6 +81,6 @@ Example:
 
 Example:
 ```markdown
-[How To Install the CLI](./02-how-to/01-install-cli.md)
-[CLI Reference](../04-reference/02-cli.md)
+[How To Install the CLI](./03-how-to/01-install-cli.md)
+[CLI Reference](../05-reference/02-cli.md)
 ```

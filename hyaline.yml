@@ -71,7 +71,7 @@ systems:
           include:
             - "www/content/documentation/**/*.md"
         documents:
-          - name: www/content/documentation/04-reference/02-cli.md
+          - name: www/content/documentation/05-reference/02-cli.md
             purpose: Document the usage and options for every Hyaline command
             required: true
             updateIf:
@@ -111,7 +111,7 @@ systems:
                   - name: update pr
                     purpose: Document the usage and options for the update pr command
                     required: true
-          - name: www/content/documentation/04-reference/01-config.md
+          - name: www/content/documentation/05-reference/01-config.md
             purpose: Document every option in the Hyaline configuration file
             required: true
             sections:
@@ -125,7 +125,7 @@ systems:
                 ignore: true
               - name: Common Documents
                 ignore: true
-          - name: www/content/documentation/04-reference/03-data-set.md
+          - name: www/content/documentation/05-reference/03-data-set.md
             purpose: Document the sqlite schema used by Hyaline to store current and change data sets
             required: true
             sections:
@@ -135,7 +135,7 @@ systems:
                 ignore: true
               - name: Enums
                 ignore: true
-          - name: www/content/documentation/04-reference/04-results.md
+          - name: www/content/documentation/05-reference/04-results.md
             required: true
             sections:
               - name: Overview

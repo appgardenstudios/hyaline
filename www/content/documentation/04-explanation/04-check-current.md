@@ -11,7 +11,7 @@ Hyaline has the ability to check the current set of documentation against the co
 
 In this diagram you can see on the left we have our set of desired documents and sections defined in the config, and on the right we have our actual documents and sections that were extracted into our current data set. Hyaline pulls both sets of documents and sections in and runs a series of checks, calling out to an LLM when necessary. Hyaline then compiles the results and outputs them so they can be acted along.
 
-Please see [Extract Current](./02-extract-current.md), the [Configuration Reference](../04-reference/01-config.md), and the [Results Reference](../04-reference/04-results.md) documentation for more details.
+Please see [Extract Current](./02-extract-current.md), the [Configuration Reference](../05-reference/01-config.md), and the [Results Reference](../05-reference/04-results.md) documentation for more details.
 
 Note that there are 4 primary checks that Hyaline can perform on current documentation:
 * Check that the desired documents and sections exists in the configuration
