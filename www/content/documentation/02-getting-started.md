@@ -12,7 +12,6 @@ In this guide, you'll learn how to:
 - Install the Hyaline CLI
 - Create a basic configuration file
 - Extract your current documentation
-- Check your documentation for issues
 - Set up the MCP server for AI integration
 
 ## Prerequisites
@@ -132,41 +131,7 @@ This command will:
 
 For more details on how extraction works, see [Explanation: Extract Current](./04-explanation/02-extract-current.md).
 
-## Step 5: Check Your Documentation
-
-Run a basic check to see what documentation issues exist:
-
-```bash
-hyaline check current \
-  --config ./hyaline.yml \
-  --current ./current.db \
-  --system my-app \
-  --output ./results.json
-```
-
-For a more comprehensive check that validates purpose and completeness:
-
-```bash
-hyaline check current \
-  --config ./hyaline.yml \
-  --current ./current.db \
-  --system my-app \
-  --output ./results.json \
-  --check-purpose \
-  --check-completeness
-```
-
-### Understanding the Results
-
-The results file will contain:
-- **PASS**: Documentation meets requirements
-- **ERROR**: Issues that need attention
-- **WARN**: Missing purposes or minor issues
-- **SKIPPED**: Ignored documentation
-
-For more details on checking documentation, see [Explanation: Check Current](./04-explanation/04-check-current.md) and [Check Results Reference](./05-reference/04-results.md).
-
-## Step 6: Set Up MCP Server (Optional)
+## Step 5: Set Up MCP Server
 
 To make your documentation available to AI assistants like Claude:
 
