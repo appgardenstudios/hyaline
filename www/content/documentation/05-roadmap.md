@@ -6,10 +6,11 @@ url: documentation/roadmap
 lastmod: 2025-06-11
 ---
 ## Main Focus
-* Ship and get feedback on the Hyaline Open Beta.
+* Shipping a general release and gathering feedback
 
 ## Up Next
-* React to open beta feedback
-* Enhancements to updating documentation (GitHub Actions)
-* Enhancements to using documentation (MCP server)
-* Working towards a general release
+* React to feedback
+* Recommendation refinements
+* Improve the onboarding experience
+* Support for products/process documentation
+* Implement a centralized server
