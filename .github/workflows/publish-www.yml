@@ -17,7 +17,7 @@ jobs:
       - name: Setup Tailwind
         id: tailwind
         run: |
-          npm i -g @tailwindcss/cli@4.1.11
+          npm i @tailwindcss/cli@4.1.11
       - name: Setup Hugo
         id: hugo
         uses: peaceiris/actions-hugo@v3
