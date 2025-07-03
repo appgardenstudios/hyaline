@@ -4,7 +4,7 @@ linkTitle: Getting Started
 purpose: Document how to get started with Hyaline
 url: documentation/getting-started
 ---
-Welcome to Hyaline (pronounced "HIGH-uh-leen"), a documentation maintenance tool that helps software development teams keep their documentation current, accurate, and accessible. This guide will walk you through setting up Hyaline and performing your first documentation extraction and check.
+Welcome to Hyaline (pronounced "HIGH-uh-leen"), a documentation tool that helps software development teams keep their documentation current, accurate, and accessible. This guide will walk you through setting up Hyaline and performing your first documentation extraction and check.
 
 ## What You'll Learn
 
