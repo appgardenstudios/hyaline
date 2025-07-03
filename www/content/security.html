@@ -1,0 +1,112 @@
+---
+title: "Security"
+---
+
+<div class="container mx-auto px-4 sm:px-6 lg:px-8">
+  <div class="max-w-3xl mx-auto">
+    <h1 class="text-4xl md:text-5xl font-bold text-gray-900 mb-12">
+      Security
+    </h1>
+
+    <div class="space-y-8 text-lg text-gray-700 leading-relaxed">
+      <p class="mb-8">
+        Hyaline is designed with security and privacy as core principles. This page outlines our security practices and what you can expect when using Hyaline.
+      </p>
+
+      <section>
+        <h2 class="text-3xl font-bold text-gray-900 mb-4">Data Privacy</h2>
+        <p class="mb-4">
+          <strong>We don't see your code or documentation.</strong> Hyaline runs entirely on your infrastructure - whether that's your local machine, CI environment, or your own servers. Your source code and documentation never leave your control.
+        </p>
+        <p class="mb-4">
+          <strong>No data collection.</strong> Hyaline does not send usage analytics, telemetry, or any other data to our servers. We have no visibility into how you use the tool or what content you're processing.
+        </p>
+      </section>
+
+      <section>
+        <h2 class="text-3xl font-bold text-gray-900 mb-4">Local Operation</h2>
+        <p class="mb-4">Hyaline operates as a standalone CLI tool that:</p>
+        <ul class="list-disc pl-8 space-y-2 mb-4">
+          <li>Reads your source code and documentation from locations you specify</li>
+          <li>Writes data to a SQLite database at a path you control</li>
+          <li>Runs an MCP server locally for integration with AI tools</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2 class="text-3xl font-bold text-gray-900 mb-4">Network Communications</h2>
+        <p class="mb-4">Hyaline only makes network requests when you explicitly configure it to:</p>
+        <ul class="list-disc pl-8 space-y-2 mb-4">
+          <li>
+            <strong>Source code repositories</strong>: If you configure git extractors to clone remote repositories
+          </li>
+          <li>
+            <strong>Documentation sources</strong>: If you configure HTTP extractors to crawl documentation websites
+          </li>
+          <li>
+            <strong>LLM API calls</strong>: If you provide an API key for LLM services (like Anthropic's Claude)
+          </li>
+        </ul>
+        <p class="mb-4">
+          These connections are made directly from your environment to the configured services - Hyaline does not proxy or intercept this traffic.
+        </p>
+      </section>
+
+      <section>
+        <h2 class="text-3xl font-bold text-gray-900 mb-4">File System Access</h2>
+        <p class="mb-4">Hyaline requires:</p>
+        <ul class="list-disc pl-8 space-y-2 mb-4">
+          <li>
+            <strong>Read access</strong> to your source code and documentation files as specified in your configuration
+          </li>
+          <li>
+            <strong>Write access</strong> to create and update the SQLite database you specify
+          </li>
+        </ul>
+        <p class="mb-4">
+          The tool respects standard file system permissions and only accesses files within the paths you configure.
+        </p>
+      </section>
+
+      <section>
+        <h2 class="text-3xl font-bold text-gray-900 mb-4">Authentication & Secrets</h2>
+        <p class="mb-4">When working with remote repositories or LLM APIs, Hyaline supports:</p>
+        <ul class="list-disc pl-8 space-y-2 mb-4">
+          <li>Environment variable substitution for API keys and tokens</li>
+          <li>SSH key authentication for git repositories</li>
+          <li>HTTP authentication for private repositories</li>
+        </ul>
+        <p class="mb-4">
+          <strong>Best practice</strong>: Store all sensitive credentials as environment variables rather than hard-coding them in configuration files.
+        </p>
+      </section>
+
+      <section>
+        <h2 class="text-3xl font-bold text-gray-900 mb-4">MCP Server</h2>
+        <p class="mb-4">The MCP server runs locally and provides your documentation to AI tools. Currently:</p>
+        <ul class="list-disc pl-8 space-y-2 mb-4">
+          <li>No authentication or access controls are implemented</li>
+          <li>The server only runs on your local machine</li>
+          <li>Access is limited to applications you explicitly connect to the server</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2 class="text-3xl font-bold text-gray-900 mb-4">Reporting Security Issues</h2>
+        <p class="mb-4">
+          If you discover a security vulnerability in Hyaline, please report it to us at:
+        </p>
+        <p class="mb-4">
+          <strong>Email</strong>: 
+          <a
+            href="mailto:support@hyaline.dev"
+            class="text-blue-600 underline hover:text-blue-700"
+            >support@hyaline.dev</a>
+        </p>
+        <p>
+          We take security issues seriously and will respond promptly to any reports.
+        </p>
+      </section>
+    </div>
+  </div>
+</div>

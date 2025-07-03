@@ -88,7 +88,7 @@ Documents belonging to system documentation sources within Hyaline.
 | ACTION | TEXT | Only set when extracting changes. The git action associated with this document in the case that a change is extracted. See **Enums > Action** below for possible values |
 | ORIGINAL_ID | TEXT | Only set when extracting changes. The original document ID of this document if it was renamed |
 | RAW_DATA | TEXT | The raw contents of this document |
-| EXTRACTED_DATA | TEXT | The data extracted from this document in markdown format. See [Extract Current](../03-explanation/02-extract-current.md) for how markdown is extracted from documents |
+| EXTRACTED_DATA | TEXT | The data extracted from this document in markdown format. See [Extract Current](../04-explanation/02-extract-current.md) for how markdown is extracted from documents |
 
 **Primary Key**: `(ID, DOCUMENTATION_ID, SYSTEM_ID)`
 

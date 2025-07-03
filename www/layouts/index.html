@@ -15,7 +15,7 @@
       </p>
       <div class="flex justify-center gap-4">
         <a
-          href="/download"
+          href="/documentation/getting-started"
           class="px-8 py-3 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
           >Get Started</a
         >
@@ -458,49 +458,536 @@
   </div>
 </section>
 
-<!-- Now in Beta Section -->
-<section class="py-16 md:py-24 bg-blue-900 text-white">
-  <div class="container mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="max-w-6xl mx-auto text-center">
-      <div
-        class="inline-flex items-center px-4 py-2 bg-emerald-700 text-white text-sm font-medium rounded-full mb-8"
-      >
-        <svg
-          class="w-4 h-4 mr-2"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
+<!-- Pricing Section -->
+<section id="pricing" class="py-16 md:py-24 bg-blue-900 text-white">
+  <div class="mx-auto px-4 sm:px-6 lg:px-8">
+    <h2 class="text-3xl md:text-4xl font-bold text-center mb-8">Pricing per Company</h2>
+
+    <!-- Pricing Toggle -->
+    <div class="flex justify-center mb-12">
+      <div class="bg-blue-800 p-1 rounded-lg flex items-center">
+        <button
+          id="monthly-btn"
+          class="px-6 py-2 rounded-md text-sm font-medium transition-colors bg-blue-600 text-white cursor-pointer"
         >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M13 10V3L4 14h7v7l9-11h-7"
-          ></path>
-        </svg>
-        Now in Beta
-      </div>
-      <h2 class="text-4xl md:text-5xl font-bold mb-6">
-        Ready to make your documentation useful?
-      </h2>
-      <p class="text-xl text-gray-300 mb-8 max-w-2xl mx-auto">
-        Join our beta program and help us shape Hyaline while getting early
-        access to all features.
-      </p>
-      <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
-        <a
-          href="/download"
-          class="px-8 py-4 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors text-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+          Monthly
+        </button>
+        <button
+          id="annual-btn"
+          class="px-6 py-2 rounded-md text-sm font-medium transition-colors text-blue-200 hover:text-white cursor-pointer"
         >
-          Try it now
-        </a>
+          Annual
+        </button>
       </div>
-      <p class="text-sm text-gray-300 mt-6">
-        Free during beta • No credit card required • Full feature access
-      </p>
     </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl lg:max-w-5xl xl:max-w-6xl mx-auto">
+      <div
+        class="bg-white p-8 rounded-2xl shadow-lg flex flex-col text-gray-900"
+      >
+        <h3 class="text-2xl font-bold mb-2">Free</h3>
+        <p class="text-gray-600 mb-6 h-12 flex items-start text-sm">
+          For Open Source, Non-Profit, and Education
+        </p>
+        <div class="text-4xl font-bold mb-6 text-blue-600">$0</div>
+        <ul class="space-y-3 mb-8 flex-grow">
+          <li class="flex items-start">
+            <svg
+              class="h-5 w-5 text-emerald-600 mt-0.5 mr-2"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M5 13l4 4L19 7"
+              ></path>
+            </svg>
+            <span>Documentation Extraction</span>
+          </li>
+          <li class="flex items-start">
+            <svg
+              class="h-5 w-5 text-emerald-600 mt-0.5 mr-2"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M5 13l4 4L19 7"
+              ></path>
+            </svg>
+            <span>MCP Server</span>
+          </li>
+          <li class="flex items-start">
+            <svg
+              class="h-5 w-5 text-emerald-600 mt-0.5 mr-2"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M5 13l4 4L19 7"
+              ></path>
+            </svg>
+            <span>Update Recommendations</span>
+          </li>
+          <li class="flex items-start">
+            <svg
+              class="h-5 w-5 text-emerald-600 mt-0.5 mr-2"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M5 13l4 4L19 7"
+              ></path>
+            </svg>
+            <span>Community support</span>
+          </li>
+        </ul>
+        <a
+          aria-label="Request Free License"
+          href="mailto:support@hyaline.dev"
+          class="text-center py-3 px-4 border border-blue-600 text-blue-600 font-medium rounded-md hover:bg-blue-600/5 transition-colors mt-auto"
+          >Request</a
+        >
+      </div>
+      <div
+        class="bg-white p-8 rounded-2xl shadow-lg flex flex-col text-gray-900"
+      >
+        <h3 class="text-2xl font-bold mb-2">Startup</h3>
+        <p class="text-gray-600 mb-6 h-12 flex items-start text-sm">
+          For startups in operation &lt;1 year
+        </p>
+        <div class="text-4xl font-bold mb-6 text-blue-600">
+          <span id="startup-price">$99</span><span id="startup-period" class="text-base font-normal text-gray-500">/month</span>
+        </div>
+        <ul class="space-y-3 mb-8 flex-grow">
+          <li class="flex items-start">
+            <svg
+              class="h-5 w-5 text-emerald-600 mt-0.5 mr-2"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M5 13l4 4L19 7"
+              ></path>
+            </svg>
+            <span>Documentation Extraction</span>
+          </li>
+          <li class="flex items-start">
+            <svg
+              class="h-5 w-5 text-emerald-600 mt-0.5 mr-2"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M5 13l4 4L19 7"
+              ></path>
+            </svg>
+            <span>MCP Server</span>
+          </li>
+          <li class="flex items-start">
+            <svg
+              class="h-5 w-5 text-emerald-600 mt-0.5 mr-2"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M5 13l4 4L19 7"
+              ></path>
+            </svg>
+            <span>Update Recommendations</span>
+          </li>
+          <li class="flex items-start">
+            <svg
+              class="h-5 w-5 text-emerald-600 mt-0.5 mr-2"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M5 13l4 4L19 7"
+              ></path>
+            </svg>
+            <span>Email Support</span>
+          </li>
+        </ul>
+        <a
+          aria-label="Purchase Startup License"
+          href="https://buy.stripe.com/aFa8wQ4W0crI1OxeWy1VK01"
+          id="startup-link"
+          class="text-center py-3 px-4 bg-emerald-700 text-white font-medium rounded-md hover:bg-emerald-800 transition-colors mt-auto"
+          >Purchase</a
+        >
+      </div>
+      <div
+        class="bg-white p-8 rounded-2xl shadow-lg flex flex-col text-gray-900"
+      >
+        <h3 class="text-2xl font-bold mb-2">Standard</h3>
+        <p class="text-gray-600 mb-6 h-12 flex items-start text-sm">For everyone</p>
+        <div class="text-4xl font-bold mb-6 text-blue-600">
+          <span id="standard-price">$249</span><span id="standard-period" class="text-base font-normal text-gray-500">/month</span>
+        </div>
+        <ul class="space-y-3 mb-8 flex-grow">
+          <li class="flex items-start">
+            <svg
+              class="h-5 w-5 text-emerald-600 mt-0.5 mr-2"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M5 13l4 4L19 7"
+              ></path>
+            </svg>
+            <span>Documentation Extraction</span>
+          </li>
+          <li class="flex items-start">
+            <svg
+              class="h-5 w-5 text-emerald-600 mt-0.5 mr-2"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M5 13l4 4L19 7"
+              ></path>
+            </svg>
+            <span>MCP Server</span>
+          </li>
+          <li class="flex items-start">
+            <svg
+              class="h-5 w-5 text-emerald-600 mt-0.5 mr-2"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M5 13l4 4L19 7"
+              ></path>
+            </svg>
+            <span>Update Recommendations</span>
+          </li>
+          <li class="flex items-start">
+            <svg
+              class="h-5 w-5 text-emerald-600 mt-0.5 mr-2"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M5 13l4 4L19 7"
+              ></path>
+            </svg>
+            <span>Email Support</span>
+          </li>
+        </ul>
+        <a
+          aria-label="Purchase Standard License"
+          href="https://buy.stripe.com/9B6fZiagk1N478RcOq1VK03"
+          id="standard-link"
+          class="text-center py-3 px-4 bg-emerald-700 text-white font-medium rounded-md hover:bg-emerald-800 transition-colors mt-auto"
+          >Purchase</a
+        >
+      </div>
+    </div>
+
+    <div class="mt-16 max-w-4xl mx-auto">
+      <h3 class="text-3xl font-bold text-center mb-12 text-white">
+        Frequently Asked Questions
+      </h3>
+
+      <div class="space-y-4">
+        <!-- FAQ Item 1 -->
+        <div
+          class="bg-white/10 backdrop-blur-sm rounded-lg border border-white/20"
+        >
+          <button
+            class="w-full px-6 py-4 text-left flex justify-between items-center text-white hover:bg-white/5 transition-colors rounded-lg focus:outline-none focus:ring-2 focus:ring-white/50"
+            onclick="toggleFAQ('faq1')"
+            aria-expanded="false"
+            aria-controls="faq1-content"
+            id="faq1-button"
+          >
+            <span class="font-semibold text-lg"
+              >Why per company instead of per seat/person/usage/etc?</span
+            >
+            <svg
+              id="faq1-icon"
+              class="w-5 h-5 transform transition-transform duration-200"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M19 9l-7 7-7-7"
+              ></path>
+            </svg>
+          </button>
+          <div
+            id="faq1-content"
+            class="hidden px-6 pb-4"
+            aria-labelledby="faq1-button"
+          >
+            <p class="text-white/80 leading-relaxed">
+              We believe documentation works best when it's accessible to everyone who needs it. By pricing per company rather than per seat, we remove barriers to collaboration and ensure that anyone in your company can contribute to and benefit from your documentation. You shouldn't have to choose between comprehensive documentation and your budget—with Hyaline, you get both.
+            </p>
+          </div>
+        </div>
+
+        <!-- FAQ Item 2 -->
+        <div
+          class="bg-white/10 backdrop-blur-sm rounded-lg border border-white/20"
+        >
+          <button
+            class="w-full px-6 py-4 text-left flex justify-between items-center text-white hover:bg-white/5 transition-colors rounded-lg focus:outline-none focus:ring-2 focus:ring-white/50"
+            onclick="toggleFAQ('faq2')"
+            aria-expanded="false"
+            aria-controls="faq2-content"
+            id="faq2-button"
+          >
+            <span class="font-semibold text-lg"
+              >Do I have to have a license in order to use Hyaline?</span
+            >
+            <svg
+              id="faq2-icon"
+              class="w-5 h-5 transform transition-transform duration-200"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M19 9l-7 7-7-7"
+              ></path>
+            </svg>
+          </button>
+          <div
+            id="faq2-content"
+            class="hidden px-6 pb-4"
+            aria-labelledby="faq2-button"
+          >
+            <p class="text-white/80 leading-relaxed">
+              You can use Hyaline without a license for evaluation and demonstration purposes only. For all other uses, a license is required. We offer free licenses for open source projects, non-profit organizations, and educational institutions—just reach out to request one. All other companies need to purchase a license for continued use beyond evaluation.
+            </p>
+          </div>
+        </div>
+
+        <!-- FAQ Item 3 -->
+        <div
+          class="bg-white/10 backdrop-blur-sm rounded-lg border border-white/20"
+        >
+          <button
+            class="w-full px-6 py-4 text-left flex justify-between items-center text-white hover:bg-white/5 transition-colors rounded-lg focus:outline-none focus:ring-2 focus:ring-white/50"
+            onclick="toggleFAQ('faq3')"
+            aria-expanded="false"
+            aria-controls="faq3-content"
+            id="faq3-button"
+          >
+            <span class="font-semibold text-lg"
+              >Why don't I have to enter a license key into Hyaline?</span
+            >
+            <svg
+              id="faq3-icon"
+              class="w-5 h-5 transform transition-transform duration-200"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M19 9l-7 7-7-7"
+              ></path>
+            </svg>
+          </button>
+          <div
+            id="faq3-content"
+            class="hidden px-6 pb-4"
+            aria-labelledby="faq3-button"
+          >
+            <p class="text-white/80 leading-relaxed">
+              To make your experience with Hyaline as seamless as possible. We don't want you to have to spend time hunting for license files, dealing with activation issues, or managing renewals across your team. We trust you to purchase appropriate licenses, and in return, you get to focus on what matters—making your documentation useful.
+            </p>
+          </div>
+        </div>
+
+        <!-- FAQ Item 4 -->
+        <div
+          class="bg-white/10 backdrop-blur-sm rounded-lg border border-white/20"
+        >
+          <button
+            class="w-full px-6 py-4 text-left flex justify-between items-center text-white hover:bg-white/5 transition-colors rounded-lg focus:outline-none focus:ring-2 focus:ring-white/50"
+            onclick="toggleFAQ('faq4')"
+            aria-expanded="false"
+            aria-controls="faq4-content"
+            id="faq4-button"
+          >
+            <span class="font-semibold text-lg"
+              >Why is this not open source?</span
+            >
+            <svg
+              id="faq4-icon"
+              class="w-5 h-5 transform transition-transform duration-200"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M19 9l-7 7-7-7"
+              ></path>
+            </svg>
+          </button>
+          <div
+            id="faq4-content"
+            class="hidden px-6 pb-4"
+            aria-labelledby="faq4-button"
+          >
+            <p class="text-white/80 leading-relaxed">
+              While Hyaline is source-available (you can view the code), we've chosen a proprietary license model to ensure we can sustainably develop and support the product long-term. This approach allows us to dedicate resources to making Hyaline the best documentation tool possible while maintaining fair pricing and offering free licenses to qualifying organizations.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      function toggleFAQ(faqId) {
+        const content = document.getElementById(faqId + "-content");
+        const icon = document.getElementById(faqId + "-icon");
+        const button = document.getElementById(faqId + "-button");
+
+        if (content.classList.contains("hidden")) {
+          content.classList.remove("hidden");
+          icon.style.transform = "rotate(180deg)";
+          button.setAttribute("aria-expanded", "true");
+        } else {
+          content.classList.add("hidden");
+          icon.style.transform = "rotate(0deg)";
+          button.setAttribute("aria-expanded", "false");
+        }
+      }
+
+      // Add keyboard support for FAQ items
+      document.addEventListener("DOMContentLoaded", function () {
+        const faqButtons = document.querySelectorAll('[id$="-button"]');
+        faqButtons.forEach((button) => {
+          button.addEventListener("keydown", function (e) {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              const faqId = button.id.replace("-button", "");
+              toggleFAQ(faqId);
+            }
+          });
+        });
+      });
+    </script>
   </div>
 </section>
+
+<script>
+  // Pricing toggle functionality
+  document.addEventListener("DOMContentLoaded", function () {
+    const monthlyBtn = document.getElementById("monthly-btn");
+    const annualBtn = document.getElementById("annual-btn");
+    const startupPrice = document.getElementById("startup-price");
+    const startupPeriod = document.getElementById("startup-period");
+    const startupLink = document.getElementById("startup-link");
+    const standardPrice = document.getElementById("standard-price");
+    const standardPeriod = document.getElementById("standard-period");
+    const standardLink = document.getElementById("standard-link");
+
+    // Monthly pricing (default)
+    const monthlyPricing = {
+      startup: { price: "$99", period: "/month", link: "https://buy.stripe.com/aFa8wQ4W0crI1OxeWy1VK01" },
+      standard: { price: "$249", period: "/month", link: "https://buy.stripe.com/9B6fZiagk1N478RcOq1VK03" }
+    };
+
+    // Annual pricing
+    const annualPricing = {
+      startup: { price: "$999", period: "/year", link: "https://buy.stripe.com/bJeaEYbko4Zg64NbKm1VK02" },
+      standard: { price: "$2499", period: "/year", link: "https://buy.stripe.com/3cI3cwewAajA3WF8ya1VK04" }
+    };
+
+    function updatePricing(pricing) {
+      startupPrice.textContent = pricing.startup.price;
+      startupPeriod.textContent = pricing.startup.period;
+      startupLink.href = pricing.startup.link;
+      standardPrice.textContent = pricing.standard.price;
+      standardPeriod.textContent = pricing.standard.period;
+      standardLink.href = pricing.standard.link;
+    }
+
+    function setActiveButton(activeBtn, inactiveBtn) {
+      activeBtn.classList.remove("text-blue-200", "hover:text-white");
+      activeBtn.classList.add("bg-blue-600", "text-white");
+      inactiveBtn.classList.remove("bg-blue-600", "text-white");
+      inactiveBtn.classList.add("text-blue-200", "hover:text-white");
+    }
+
+    monthlyBtn.addEventListener("click", function() {
+      updatePricing(monthlyPricing);
+      setActiveButton(monthlyBtn, annualBtn);
+    });
+
+    annualBtn.addEventListener("click", function() {
+      updatePricing(annualPricing);
+      setActiveButton(annualBtn, monthlyBtn);
+    });
+
+    // Initialize with monthly pricing
+    updatePricing(monthlyPricing);
+    setActiveButton(monthlyBtn, annualBtn);
+  });
+</script>
 
 <script>
   // Tab functionality for "How does it work" section

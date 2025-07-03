@@ -127,7 +127,7 @@ Extract source code from a file system path. Note that code sources using this e
 
 Note that Include and Exclude globs are relative to the path specified.
 
-Please see the explanation of [Extract Current](../03-explanation/02-extract-current.md) for more information.
+Please see the explanation of [Extract Current](../04-explanation/02-extract-current.md) for more information.
 
 ```yaml
 systems:
@@ -143,7 +143,7 @@ systems:
 **path**: The path that code will be extracted from. If the path is not absolute it is joined with the current working directory to turn it into an absolute path. Note that the fs extractor uses [Root](https://pkg.go.dev/os@go1.24.1#Root) when scanning a directory, meaning that while symlinks are followed they must be within the Root.
 
 ##### Code Source Extractor Options (git)
-Extract source code from a git repository (local or remote). For more information on how extraction works please see the documentation for [Extract Current](../03-explanation/02-extract-current.md) and [Extract Change](../03-explanation/03-extract-change.md).
+Extract source code from a git repository (local or remote). For more information on how extraction works please see the documentation for [Extract Current](../04-explanation/02-extract-current.md) and [Extract Change](../04-explanation/03-extract-change.md).
 
 Note that Include and Exclude globs are relative to the root of the repository.
 
@@ -249,7 +249,7 @@ systems:
           selector: "#main"
 ```
 
-**selector**: A css-style selector used to extract system documentation when the type of documentation is html. Uses [Cascadia](https://pkg.go.dev/github.com/andybalholm/cascadia). See [Extract Current](../03-explanation/02-extract-current.md) and [Extract Change](../03-explanation/03-extract-change.md) for more information.
+**selector**: A css-style selector used to extract system documentation when the type of documentation is html. Uses [Cascadia](https://pkg.go.dev/github.com/andybalholm/cascadia). See [Extract Current](../04-explanation/02-extract-current.md) and [Extract Change](../04-explanation/03-extract-change.md) for more information.
 
 #### Documentation Source Extractor
 An extractor that specifies how documentation is extracted for this Documentation Source and placed into a data set.
@@ -279,7 +279,7 @@ Extract documentation from a file system path. Note that documentation sources u
 
 Note that Include and Exclude globs are relative to the path specified.
 
-Please see the explanation of [Extract Current](../03-explanation/02-extract-current.md) for more information.
+Please see the explanation of [Extract Current](../04-explanation/02-extract-current.md) for more information.
 
 ```yaml
 systems:
@@ -295,7 +295,7 @@ systems:
 **path**: The path that documentation will be extracted from. If the path is not absolute it is joined with the current working directory to turn it into an absolute path. Note that the fs extractor uses [Root](https://pkg.go.dev/os@go1.24.1#Root) when scanning a directory, meaning that while symlinks are followed they must be within the Root.
 
 ##### Documentation Source Extractor Options (git)
-Extract documentation from a git repository (local or remote). For more information on how extraction works please see the documentation for [Extract Current](../03-explanation/02-extract-current.md) and [Extract Change](../03-explanation/03-extract-change.md).
+Extract documentation from a git repository (local or remote). For more information on how extraction works please see the documentation for [Extract Current](../04-explanation/02-extract-current.md) and [Extract Change](../04-explanation/03-extract-change.md).
 
 Note that Include and Exclude globs are relative to the root of the repository.
 
@@ -364,7 +364,7 @@ Extract documentation from an http(s) source via crawling. Note that documentati
 
 Note that Include and Exclude globs are relative to the baseURL.
 
-Please see the explanation of [Extract Current](../03-explanation/02-extract-current.md) for more information.
+Please see the explanation of [Extract Current](../04-explanation/02-extract-current.md) for more information.
 
 ```yaml
 systems:

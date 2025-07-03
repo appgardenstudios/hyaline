@@ -41,7 +41,7 @@ $ hyaline version
 ```
 
 ## extract current
-`hyaline extract current` extracts current code and documentation for a system. Please visit the explanation documentation for [extract current](../03-explanation/02-extract-current.md) for more details.
+`hyaline extract current` extracts current code and documentation for a system. Please visit the explanation documentation for [extract current](../04-explanation/02-extract-current.md) for more details.
 
 **Options**:
 * `--config` - (required) Path to the config file
@@ -55,7 +55,7 @@ $ hyaline extract current --config ./hyaline.yml --system app --output ./current
 Extract code and documentation from the system `app` using the config file found at `./hyaline.yml` and create a current dataset at `./current.db`.
 
 ## extract change
-`hyaline extract change` extracts changed code, documentation, and metadata for a system based on a change. Please visit the explanation documentation for [extract change](../03-explanation/03-extract-change.md) for more details.
+`hyaline extract change` extracts changed code, documentation, and metadata for a system based on a change. Please visit the explanation documentation for [extract change](../04-explanation/03-extract-change.md) for more details.
 
 **Options**:
 * `--config` - (required) Path to the config file
@@ -89,7 +89,7 @@ $ hyaline extract change --config ./hyaline.yml --system app --base-ref abc123de
 Extract code and documentation from the system `app` using explicit references. The base is specified as commit hash `abc123def` and head as the fully qualified reference `refs/heads/feature-branch`.
 
 ## check current
-`hyaline check current` checks current code and documentation for a system. Please visit the explanation documentation for [check current](../03-explanation/04-check-current.md) for more details.
+`hyaline check current` checks current code and documentation for a system. Please visit the explanation documentation for [check current](../04-explanation/04-check-current.md) for more details.
 
 **Options**:
 * `--config` - (required) Path to the config file
@@ -112,7 +112,7 @@ $ hyaline check current --config ./hyaline.yml --current ./current.db --system a
 Check the documentation for the system `app` from `./current.db` using the config file found at `./hyaline.yml` and writing the results to `./results.json`. Also ensure documentation is complete and that it matches its stated purpose while checking.
 
 ## check change
-`hyaline check change` checks changed code and documentation for a system. Please visit the explanation documentation for [check change](../03-explanation/05-check-change.md) for more details.
+`hyaline check change` checks changed code and documentation for a system. Please visit the explanation documentation for [check change](../04-explanation/05-check-change.md) for more details.
 
 **Options**:
 * `--config` - (required) Path to the config file
@@ -135,7 +135,7 @@ $ hyaline check change --config ./hyaline.yml --current ./current.db --change ./
 Check which documentation should be updated for the system `app` using the data sets `./current.db` and `./change.db`, using the config file found at `./hyaline.yml`, and writing the results to `./results.json`. Also generate suggested edits for the documentation that should be updated.
 
 ## generate config
-`hyaline generate config` generates hyaline configuration for a current data set system. Please visit the explanation documentation for [generate config](../03-explanation/07-generate-config.md) for more details.
+`hyaline generate config` generates hyaline configuration for a current data set system. Please visit the explanation documentation for [generate config](../04-explanation/07-generate-config.md) for more details.
 
 **Options**:
 * `--config` - (required) Path to the config file
@@ -157,7 +157,7 @@ $ hyaline generate config --config ./hyaline.yml --current ./current.db --system
 Generate a configuration for the system `app` from `./current.db` using the config file found at `./hyaline.yml` and writing the suggested updates to `./config-additions.yml`. Also include the purpose of each document/section.
 
 ## merge
-`hyaline merge` merge 2 or more data sets into a single data set. Please visit the explanation documentation for [merge](../03-explanation/08-merge.md) for more details.
+`hyaline merge` merge 2 or more data sets into a single data set. Please visit the explanation documentation for [merge](../04-explanation/08-merge.md) for more details.
 
 **Options**:
 * `--input` - (required, multiple allowed) Path to a data set
@@ -176,7 +176,7 @@ $ hyaline merge --input ./current.db --input ./new1.db --input ./new2.db --outpu
 Merge `./new1.db` into `./current.db` followed by `./new2.db` and output the result to `./combined.db`
 
 ## update pr
-`hyaline update pr` updates a GitHub pull request by adding or updating a comment with the recommendations output by `hyaline check change`. Please visit the explanation documentation for [update pr](../03-explanation/06-update-pr.md) for more details.
+`hyaline update pr` updates a GitHub pull request by adding or updating a comment with the recommendations output by `hyaline check change`. Please visit the explanation documentation for [update pr](../04-explanation/06-update-pr.md) for more details.
 
 **Options**:
 * `--config` - (required) Path to the config file
@@ -199,7 +199,7 @@ $ hyaline update pr --config ./hyaline.yml --pull-request appgardenstudios/hyali
 Update the PR `appgardenstudios/hyaline-example/1` by updating the comment identified by `appgardenstudios/hyaline-example/2916854796` with the recommendations in `./results.json` (including the sha `b4c5c73`) and output the resulting comment metadata to `./comment-metadata.json`
 
 ## mcp stdio
-`hyaline mcp stdio` starts an MCP server running locally over stdio and serves up the documentation produced by running `hyaline extract current`. Please visit the explanation documentation for [mcp](../03-explanation/09-mcp.md) for more details.
+`hyaline mcp stdio` starts an MCP server running locally over stdio and serves up the documentation produced by running `hyaline extract current`. Please visit the explanation documentation for [mcp](../04-explanation/09-mcp.md) for more details.
 
 **Options**:
 * `--current` - (required) Path to the current data set to serve (output of `hyaline extract current`)

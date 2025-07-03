@@ -46,4 +46,4 @@ $ ./hyaline version
 ```
 
 ## Next Steps
-Visit [CLI Reference](../04-reference/02-cli.md).
+Visit [CLI Reference](../05-reference/02-cli.md).

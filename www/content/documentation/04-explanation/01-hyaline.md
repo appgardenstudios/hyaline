@@ -83,25 +83,25 @@ Your organization's metadata, such as issues and pull requests. They can be extr
 A conceptual boundary or unit that can contain any number of code and documentation sources. A system is the primary unit of operation within Hyaline, and there are no limits to the number of systems you can have. It is up to you and your team to split up your code and documentation in a way that makes the most sense to you.
 
 ## Extract
-The process of extracting code, documentation, and other metadata from their respective sources. This extraction process results in a Data Set stored in an SQLite database that can be used by Hyaline or other processes that need access to the code, documentation, and other metadata. For more information on the extraction process please see [hyaline extract current](../04-reference/02-cli.md#extract-current) and/or [hyaline extract change](../04-reference/02-cli.md#extract-change)
+The process of extracting code, documentation, and other metadata from their respective sources. This extraction process results in a Data Set stored in an SQLite database that can be used by Hyaline or other processes that need access to the code, documentation, and other metadata. For more information on the extraction process please see [hyaline extract current](../05-reference/02-cli.md#extract-current) and/or [hyaline extract change](../05-reference/02-cli.md#extract-change)
 
 ## Data Set (Current & Change)
-The result of an extraction, the Data Set holds all of the extracted code, documentation, and other metadata. It consists of a single SQLite database. Please see the [Data Set reference](../04-reference/03-data-set.md) for more information.
+The result of an extraction, the Data Set holds all of the extracted code, documentation, and other metadata. It consists of a single SQLite database. Please see the [Data Set reference](../05-reference/03-data-set.md) for more information.
 
 ## Config
-The configuration that Hyaline uses. It is currently supplied via a yaml file. Please see the [Config reference](../04-reference/01-config.md) for more information.
+The configuration that Hyaline uses. It is currently supplied via a yaml file. Please see the [Config reference](../05-reference/01-config.md) for more information.
 
 ## Check
 The process of checking either a specific change or an entire set of documentation for issues, recommendations, or suggestions. This produces one or more results with information specific to the actual check that was performed. Please see the documentation for each process linked below:
 
-* [hyaline check current](../04-reference/02-cli.md#check-current)
-* [hyaline check change](../04-reference/02-cli.md#check-change)
+* [hyaline check current](../05-reference/02-cli.md#check-current)
+* [hyaline check change](../05-reference/02-cli.md#check-change)
 
 ## Result(s)
 The outcome of a check, the result holds actionable information on what was found and how to address it. Please see the links to the reference documentation for more information:
 
-* [hyaline check current results](../04-reference/04-results.md#check-current)
-* [hyaline check change results](../04-reference/04-results.md#check-change)
+* [hyaline check current results](../05-reference/04-results.md#check-current)
+* [hyaline check change results](../05-reference/04-results.md#check-change)
 
 ## Next Steps
-Continue reading about various Hyaline concepts such as [extract current](./02-extract-current.md), or get started by visiting [how to install the cli](../02-how-to/01-install-cli.md).
+Continue reading about various Hyaline concepts such as [extract current](./02-extract-current.md), or get started by visiting [how to install the cli](../03-how-to/01-install-cli.md).

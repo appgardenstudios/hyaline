@@ -14,7 +14,7 @@ In the example above you can see a variety of code and documentation spread over
 The main unit of organization within Hyaline is the system. A system can contain any number of code and/or documentation sources. When using Hyaline, it is helpful to create multiple focused, single purpose systems rather than a single system with everything in it. Also note that there is no restriction on where the code and/or documentation of a system comes from, meaning that you can break up a mono-repo into multiple, smaller systems or piece together a system from code and documentation spread across a large number of repositories and sites.
 
 ## Extracting Code
-System source code is extracted for each defined code source in the [configuration](../04-reference/01-config.md). Code can be extracted using one of two available extractors: `fs` and `git`.
+System source code is extracted for each defined code source in the [configuration](../05-reference/01-config.md). Code can be extracted using one of two available extractors: `fs` and `git`.
 
 Note that you usually only want to extract the source code and configuration, and not tests and/or other miscellaneous files. This is because Hyaline is focused on using and updating documentation, which does not _usually_ rely on and is not _usually_ impacted by tests.
 
@@ -22,7 +22,7 @@ Note that you usually only want to extract the source code and configuration, an
 
 The code that is extracted is organized into systems and stored as files associated with a code source. You can have any number of files associated with a code source, and any number of code sources associated with a system. For example, you could have frontend source code separated from backend source code separated from infrastructure code.
 
-The code that is extracted is placed into a data set that is stored in sqlite. Please see the [data set reference](../04-reference/03-data-set.md) for more information.
+The code that is extracted is placed into a data set that is stored in sqlite. Please see the [data set reference](../05-reference/03-data-set.md) for more information.
 
 ### Extracting Code - fs
 The `fs` extractor extracts source code from the local file system.
@@ -44,14 +44,14 @@ The following files are _not_ extracted:
 
 **Note**: Hyaline uses [doublestar](https://pkg.go.dev/github.com/bmatcuk/doublestar/v4) to match paths relative to the `path`.
 
-For more detail on fs extractor options please see the [configuration reference](../04-reference/01-config.md).
+For more detail on fs extractor options please see the [configuration reference](../05-reference/01-config.md).
 
 ### Extracting Code - git
 The `git` extractor extracts source code from a local or remote git repository. It supports several different setups that are detailed below.
 
 Note that Hyaline extracts code from a specific branch as specified in the configuration. It does this extraction via the git metadata itself, rather than requiring the repository to be in a specific state. In other words, you don't need to check out the main branch to extract code from it. Hyaline will use the internal git structure to scan and extract the code. Hyaline will attempt to resolve the branch locally, then remotely, and finally as a tag if none of the other attempts to resolve were successful.
 
-For more detail on git extractor options please see the [configuration reference](../04-reference/01-config.md).
+For more detail on git extractor options please see the [configuration reference](../05-reference/01-config.md).
 
 ### Local Repo
 ![Local Repo](_img/extract-current-local-repo.svg)
@@ -69,7 +69,7 @@ The following files are _not_ extracted:
 
 **Note**: Hyaline uses [doublestar](https://pkg.go.dev/github.com/bmatcuk/doublestar/v4) to match paths relative to the root of the repository.
 
-For more detail on git extractor options please see the [configuration reference](../04-reference/01-config.md).
+For more detail on git extractor options please see the [configuration reference](../05-reference/01-config.md).
 
 ### Remote Repo, Cloned Locally
 ![Remote Repo Cloned Locally](_img/extract-current-remote-repo-cloned-locally.svg)
@@ -87,7 +87,7 @@ The following files are _not_ extracted:
 
 **Note**: Hyaline uses [doublestar](https://pkg.go.dev/github.com/bmatcuk/doublestar/v4) to match paths relative to the root of the repository.
 
-For more detail on git extractor options please see the [configuration reference](../04-reference/01-config.md).
+For more detail on git extractor options please see the [configuration reference](../05-reference/01-config.md).
 
 ### Remote Repo, Cloned In Memory
 ![Remote Repo Cloned In Memory](_img/extract-current-remote-repo-cloned-in-memory.svg)
@@ -107,16 +107,16 @@ The following files are _not_ extracted:
 
 **Note**: Hyaline uses [doublestar](https://pkg.go.dev/github.com/bmatcuk/doublestar/v4) to match paths relative to the root of the repository.
 
-For more detail on git extractor options please see the [configuration reference](../04-reference/01-config.md).
+For more detail on git extractor options please see the [configuration reference](../05-reference/01-config.md).
 
 ## Extracting Documentation
-System documentation is extracted for each defined documentation source in the [configuration](../04-reference/01-config.md). Documentation can be extracted using one of three available extractors: `fs`, `git`, and `http`. These 3 extractors are explained below.
+System documentation is extracted for each defined documentation source in the [configuration](../05-reference/01-config.md). Documentation can be extracted using one of three available extractors: `fs`, `git`, and `http`. These 3 extractors are explained below.
 
 ![Extracting Documentation](_img/extract-current-extracting-documentation.svg)
 
 The documentation that is extracted is organized into systems and stored as document associated with a documentation source. Each document also has one or more sections associated with it as well. You can have any number of sections associated with a document, any number of documents associated with a documentation source, and any number of documentation sources associated with a system. For example, you could have system documentation that comes from a repository as well as system documentation that comes from a documentation site (a wiki, for example).
 
-The documentation that is extracted is placed into a data set that is stored in sqlite. Please see the [data set reference](../04-reference/03-data-set.md) for more information.
+The documentation that is extracted is placed into a data set that is stored in sqlite. Please see the [data set reference](../05-reference/03-data-set.md) for more information.
 
 ## Documentation Sections
 
@@ -164,7 +164,7 @@ The following files are _not_ extracted:
 
 **Note**: Hyaline uses [doublestar](https://pkg.go.dev/github.com/bmatcuk/doublestar/v4) to match paths relative to the `baseUrl`.
 
-For more detail on http extractor options please see the [configuration reference](../04-reference/01-config.md).
+For more detail on http extractor options please see the [configuration reference](../05-reference/01-config.md).
 
 ## Extracting Metadata
 Hyaline will be extended to extract additional organizational metadata in the future. As of now, Hyaline only supports extracting pull request and issue information when extracting changes. See [Extract Change](./03-extract-change.md) for more information.

@@ -9,7 +9,7 @@ Hyaline has the ability to check the current set of documentation against a chan
 
 ![Overview](_img/check-change-overview.svg)
 
-In the diagram above you can see that we have 2 data sets, a change data set and a current data set. The change data set has changed files, documents, and other change metadata like the pull request and related issues. It was extracted using [Extract Change](./03-extract-change.md) The current data set has the current set of files and documents for the system, and was extracted using [Extract Current](./02-extract-current.md). Check Change uses both data sets, the [Hyaline Config](../04-reference/01-config.md), and multiple calls to an LLM to determine the resulting set of system documentation (documents and/or sections) that may need to be updated as a result of the change.
+In the diagram above you can see that we have 2 data sets, a change data set and a current data set. The change data set has changed files, documents, and other change metadata like the pull request and related issues. It was extracted using [Extract Change](./03-extract-change.md) The current data set has the current set of files and documents for the system, and was extracted using [Extract Current](./02-extract-current.md). Check Change uses both data sets, the [Hyaline Config](../05-reference/01-config.md), and multiple calls to an LLM to determine the resulting set of system documentation (documents and/or sections) that may need to be updated as a result of the change.
 
 Note that if the system spans repositories or includes documentation from documentation sites, you can use [Merge](./08-merge.md) to merge a fresh current extract for the repository files and documents with a previously extracted data set that contains the rest of the system documentation.
 
@@ -17,7 +17,7 @@ For more information please reference the following documents:
 
 * [Extract Change](./03-extract-change.md)
 * [Extract Current](./02-extract-current.md)
-* [Results](../04-reference/04-results.md)
+* [Results](../05-reference/04-results.md)
 
 ## Recommendations
 Hyaline loops through each code change and conceptually examines the links between the code and documentation and asks an LLM "based on this change and the associated metadata, what documentation should be updated and why?". Hyaline then compiles the set of documentation (documents and sections) that needs to be updated into a unified list of recommendations and presents those results to the human(s) that made the change.
@@ -39,7 +39,7 @@ Note that updateIf supports the following changes:
 
 Also note that the configuration supports targeting a specific code source vs looking for any change across all available code sources.
 
-For more information please visit the [configuration reference](../04-reference/01-config.md).
+For more information please visit the [configuration reference](../05-reference/01-config.md).
 
 ## Indirectly via LLM
 Hyaline will call out to an LLM to determine which documentation (if any) should be updated for each specific change. To do that Hyaline formats the following information and includes it as context in the LLM call:

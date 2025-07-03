@@ -17,10 +17,10 @@ Along with the files and documents, hyaline can also extract the pull request an
 
 When extracting a change for a system you may have situations where a system is made up of code and/or documentation sources that come from more than one repository. In that case you can tell Hyaline to only extract a subset of the available code and/or documentation sources for the change, targeting a single repository at a time.
 
-For more details on the schema of the change data set, including the information captured when extracting changed code, documentation, and change metadata please see the [data set reference](../04-reference/03-data-set.md).
+For more details on the schema of the change data set, including the information captured when extracting changed code, documentation, and change metadata please see the [data set reference](../05-reference/03-data-set.md).
 
 ## Extracting Changed Code
-System source code that changed is extracted for each targeted code source in the system. Note that the code source must be configured to use the `git` extractor for change extraction to work, as Hyaline compares two branches to extract the diffs used when extracting the change. For more information on how these branches are specified and resolved, please see [hyaline extract change](../04-reference/02-cli.md#extract-change).
+System source code that changed is extracted for each targeted code source in the system. Note that the code source must be configured to use the `git` extractor for change extraction to work, as Hyaline compares two branches to extract the diffs used when extracting the change. For more information on how these branches are specified and resolved, please see [hyaline extract change](../05-reference/02-cli.md#extract-change).
 
 The extraction process uses the same configuration as the extract current process does, so if you haven't read up on how [extract current](./02-extract-current.md) works it would be helpful to do so now.
 
@@ -40,12 +40,12 @@ The following files are _not_ extracted:
 
 **Note**: Hyaline uses [doublestar](https://pkg.go.dev/github.com/bmatcuk/doublestar/v4) to match paths relative to the root of the repository.
 
-For more details on git extractor options please see the [configuration reference](../04-reference/01-config.md).
+For more details on git extractor options please see the [configuration reference](../05-reference/01-config.md).
 
-For more details on the schema of the change data set please see the [data set reference](../04-reference/03-data-set.md).
+For more details on the schema of the change data set please see the [data set reference](../05-reference/03-data-set.md).
 
 ## Extracting Changed Documentation
-System documentation that changed is extracted for each targeted documentation source in the system. Note that the documentation source must be configured to use the `git` extractor for change extraction to work, as Hyaline compares two branches to extract the diffs used when extracting the change. For more information on how these branches are specified and resolved, please see [hyaline extract change](../04-reference/02-cli.md#extract-change).
+System documentation that changed is extracted for each targeted documentation source in the system. Note that the documentation source must be configured to use the `git` extractor for change extraction to work, as Hyaline compares two branches to extract the diffs used when extracting the change. For more information on how these branches are specified and resolved, please see [hyaline extract change](../05-reference/02-cli.md#extract-change).
 
 The extraction process uses the same configuration as the extract current process does, so if you haven't read up on how [extract current](./02-extract-current.md) works it would be helpful to do so now.
 
@@ -53,7 +53,7 @@ The extraction process uses the same configuration as the extract current proces
 
 Documentation extraction operates the same way as code extraction (See **Extracting Changed Code** above).
 
-For more details on the schema of the change data set please see the [data set reference](../04-reference/03-data-set.md).
+For more details on the schema of the change data set please see the [data set reference](../05-reference/03-data-set.md).
 
 ## Extracting Metadata
 Hyaline also supports extracting additional metadata and context about the change, such as any pull request or issue information available.
@@ -65,7 +65,7 @@ Hyaline supports extracting the title and contents of a GitHub pull request and 
 
 In this scenario there are multiple pull requests available in GitHub, and based on our CLI options we extract `Pull Request 2` and place it in our change data set.
 
-For more details on the schema of the change data set please see the [data set reference](../04-reference/03-data-set.md).
+For more details on the schema of the change data set please see the [data set reference](../05-reference/03-data-set.md).
 
 ## Issues
 Hyaline supports extracting the title and contents of one or more issues and that inclusion of that information in the change data set.
@@ -74,7 +74,7 @@ Hyaline supports extracting the title and contents of one or more issues and tha
 
 In this scenario there are multiple issues available in GitHub, and based on our CLI options we extract `Issue 1` and `Issue 3` and place them in our change data set.
 
-For more details on the schema of the change data set please see the [data set reference](../04-reference/03-data-set.md).
+For more details on the schema of the change data set please see the [data set reference](../05-reference/03-data-set.md).
 
 ## Next Steps
 You can continue on to see how Hyaline checks [current](./04-check-current.md) or [change](./05-check-change.md) data sets.
