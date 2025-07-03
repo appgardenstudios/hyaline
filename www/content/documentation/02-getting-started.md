@@ -18,7 +18,6 @@ In this guide, you'll learn how to:
 
 - **Operating System**: Linux (64-bit), macOS, or Windows (64-bit)
 - **Architecture**: AMD64 or ARM64 (ARM64 not available for Windows)
-- **LLM Access**: API key for a supported LLM provider (currently Anthropic Claude)
 - **Documentation Source**: A documentation source (e.g. git repo, filesystem directory, website)
 
 ## Step 1: Install the Hyaline CLI
@@ -37,26 +36,26 @@ In this guide, you'll learn how to:
 
 1. **Unzip the downloaded file**:
    ```bash
-   unzip hyaline-*-*.zip
+   $ unzip hyaline-*-*.zip
    ```
 
 2. **Make the binary executable** (Linux/macOS only):
    ```bash
-   chmod +x hyaline
+   $ chmod +x hyaline
    ```
 
 3. **Move to your PATH** (optional but recommended):
    ```bash
    # Linux/macOS
-   sudo mv hyaline /usr/local/bin/
+   $ sudo mv hyaline /usr/local/bin/
 
    # Or add to your local bin directory
-   mv hyaline ~/bin/
+   $ mv hyaline ~/bin/
    ```
 
 4. **Verify the installation**:
    ```bash
-   hyaline version
+   $ hyaline version
    ```
 
 For detailed installation instructions, see [How To: Install the CLI](./03-how-to/01-install-cli.md).
@@ -66,14 +65,6 @@ For detailed installation instructions, see [How To: Install the CLI](./03-how-t
 Create a `hyaline.yml` file in your project root. Here's a basic configuration for a typical project that has a locally checked-out git repo and `main` branch:
 
 ```yaml
-llm:
-  provider: anthropic
-  model: claude-3-5-sonnet-20241022
-  key: ${ANTHROPIC_KEY}
-
-github:
-  token: ${GITHUB_TOKEN}
-
 systems:
   - id: my-app
     documentation:
@@ -102,23 +93,18 @@ systems:
 
 ### Configuration Breakdown
 
-- **llm**: Configuration for the AI provider
 - **systems**: Define your projects/systems
 - **documentation**: Specify where your docs are located
 - **documents**: Define expected documentation structure and purposes
 
-For complete configuration options and details, see the [Configuration Reference](./05-reference/01-config.md).
+Note that the above configuration is for a simple example, but Hyaline can be configured to extract documentation from multiple systems and sources (e.g. websites, remote git repositories). For complete configuration options and details, see the [Configuration Reference](./05-reference/01-config.md).
 
-## Step 3: Set Up Environment Variables
+## Step 3: Extract Current Documentation
 
-Based on the configuration above, you'll need to set the environment variables referenced in your config file. For detailed instructions on setting up environment variables, see [How To: Run the CLI](./03-how-to/02-run-cli.md) and [Configuration Reference](./05-reference/01-config.md).
-
-## Step 4: Extract Current Documentation
-
-Now let's extract your current documentation into a data set:
+Now let's extract your current documentation into a data set (note that you will need to run this from the root of the documentation source):
 
 ```bash
-hyaline extract current \
+$ hyaline extract current \
   --config ./hyaline.yml \
   --system my-app \
   --output ./current.db
@@ -131,7 +117,7 @@ This command will:
 
 For more details on how extraction works, see [Explanation: Extract Current](./04-explanation/02-extract-current.md).
 
-## Step 5: Set Up MCP Server
+## Step 4: Set Up MCP Server
 
 To make your documentation available to AI assistants like Claude:
 
