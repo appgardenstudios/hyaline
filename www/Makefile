@@ -7,4 +7,4 @@ serve:
 .PHONY: build
 build:
 	rm -rf ./public
-	hugo
+	hugo --minify
