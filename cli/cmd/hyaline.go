@@ -14,18 +14,23 @@ var Version = "unknown"
 
 var usage = "Maintain Your Documentation - Find, Fix, and Prevent Documentation Issues."
 
-var betaNote = "Note: Hyaline is currently in an open beta. As such, this software is only licensed for evaluation and use until the open beta period ends."
+var licenseNote = "Note: This software requires a license for any purpose other than evaluation or demonstration. By using this software you attest that you are either 1) using Hyaline for evaluation or demonstration purposes or 2) you have a current and valid license to use Hyaline."
 
 func main() {
+	// Configure logger
 	var logLevel = new(slog.LevelVar)
 	h := slog.NewTextHandler(os.Stderr, &slog.HandlerOptions{Level: logLevel})
 	slog.SetDefault(slog.New(h))
 
+	// Output license information
+	fmt.Fprintf(os.Stderr, "%s\n\n", licenseNote)
+
+	// Configure app
 	app := &cli.App{
 		Name:  "hyaline",
-		Usage: fmt.Sprintf("%s\n%s", usage, betaNote),
+		Usage: usage,
 		Action: func(*cli.Context) error {
-			fmt.Printf("%s\n%s\n", usage, betaNote)
+			fmt.Printf("%s\n", usage)
 			return nil
 		},
 		Flags: []cli.Flag{
@@ -35,7 +40,8 @@ func main() {
 			},
 		},
 		Commands: []*cli.Command{
-			hyaline.Version(Version, betaNote),
+			hyaline.Version(Version),
+			hyaline.License(),
 			hyaline.Check(logLevel),
 			hyaline.Extract(logLevel),
 			hyaline.Generate(logLevel),
@@ -45,6 +51,7 @@ func main() {
 		},
 	}
 
+	// Run the app
 	if err := app.Run(os.Args); err != nil {
 		log.Fatal(err)
 	}
