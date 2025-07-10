@@ -1,6 +1,7 @@
 ---
 title: Document with Purpose
 subtitle: How to purposefully write documentation.
+description: "A guide to creating documentation that helps people achieve their goals through considering personas, objectives, and purposeful writing."
 author: John Clark
 date: 2025-06-23
 url: articles/purpose

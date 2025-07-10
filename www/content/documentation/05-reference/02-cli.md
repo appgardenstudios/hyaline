@@ -1,6 +1,7 @@
 ---
 title: "Reference: Hyaline CLI"
 linkTitle: CLI
+description: Command-line interface reference covering all commands, options, and usage examples
 purpose: Detail each command/sub-command of the Hyaline CLI
 url: documentation/reference/cli
 ---

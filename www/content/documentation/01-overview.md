@@ -1,6 +1,7 @@
 ---
 title: Overview
 linkTitle: Overview
+description: "Learn how Hyaline helps teams maintain documentation to build software products effectively."
 purpose: Give an overview of Hyaline and the documentation
 url: documentation/overview
 ---
@@ -15,7 +16,7 @@ This documentation follows the concepts of [Diátaxis](https://diataxis.fr/) and
 * Roadmap - A high-level overview of the current and future focus of Hyaline's development
 
 ## Next Steps
-To learn how to get started and install Hyaline please visit [Getting Started](/documentation/getting-started)
+To learn how to get started and install Hyaline please visit [Getting Started](/documentation/02-getting-started.md)
 
 For an in depth explanation of Hyaline itself please visit the [Explanation of Hyaline](./04-explanation/01-hyaline.md)
 

@@ -1,6 +1,7 @@
 ---
 title: "Reference: GitHub Actions"
 linkTitle: GitHub Actions
+description: An overview of the available GitHub actions to integrate Hyaline into a workflow
 purpose: Detail the functionality and usage of Hyaline within GitHub Actions
 url: documentation/reference/github-actions
 ---

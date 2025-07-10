@@ -1,6 +1,7 @@
 ---
 title: "Explanation: MCP"
 linkTitle: MCP
+description: Learn how Hyaline's MCP server provides documentation access to LLMs
 purpose: Explain how Hyaline's MCP server works
 url: documentation/explanation/mcp
 ---

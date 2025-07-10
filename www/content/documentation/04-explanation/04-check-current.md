@@ -1,6 +1,7 @@
 ---
 title: "Explanation: Check Current"
 linkTitle: Check Current
+description: Learn how Hyaline validates documentation completeness, purpose alignment, and required documentation existence
 purpose: Explain how Hyaline checks current documentation for issues
 url: documentation/explanation/check-current
 ---

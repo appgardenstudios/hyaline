@@ -1,6 +1,7 @@
 ---
 title: "Getting Started with Hyaline"
 linkTitle: Getting Started
+description: "Quick guide to install Hyaline, create configuration, extract documentation, and set up an MCP integration."
 purpose: Document how to get started with Hyaline
 url: documentation/getting-started
 ---

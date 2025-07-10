@@ -1,6 +1,7 @@
 ---
 title: "Explanation: Generate Config"
 linkTitle: Generate Config
+description: Learn how Hyaline auto-generates configuration from existing documentation
 purpose: Explain how Hyaline can generate a config
 url: documentation/explanation/generate-config
 ---

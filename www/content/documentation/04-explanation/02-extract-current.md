@@ -1,6 +1,7 @@
 ---
 title: "Explanation: Extract Current"
 linkTitle: Extract Current
+description: Learn how Hyaline extracts code and documentation from various sources into a unified current data set
 purpose: Explain how Hyaline extracts current documentation, code, and other metadata
 url: documentation/explanation/extract-current
 ---
