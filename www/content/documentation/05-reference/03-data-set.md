@@ -1,7 +1,7 @@
 ---
 title: "Reference: Hyaline Data Set"
 linkTitle: Data Set
-description: SQLite database schema for current and change data sets with table definitions and enums
+description: SQLite database schema for current and change data sets
 purpose: Detail the schema and usage of the Hyaline data set
 url: documentation/reference/data-set
 ---
