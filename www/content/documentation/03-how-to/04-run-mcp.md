@@ -1,6 +1,7 @@
 ---
 title: "How To: Run the Hyaline MCP Server"
 linkTitle: Run the MCP Server
+description: "Configure and run the Hyaline MCP server to make documentation available to AI assistants."
 purpose: Document how to run the Hyaline MCP Server
 url: documentation/how-to/run-mcp
 ---

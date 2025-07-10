@@ -1,6 +1,7 @@
 ---
 title: "Explanation: Merge"
 linkTitle: Merge
+description: Learn how Hyaline merges multiple data sets
 purpose: Explain how Hyaline merge works
 url: documentation/explanation/merge
 ---

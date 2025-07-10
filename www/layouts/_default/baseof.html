@@ -1,12 +1,13 @@
 <!DOCTYPE html>
 <html lang="en" charset="utf-8" class="h-full">
   <head>
-    <title>{{ .Title }}</title>
+    <title>{{ if eq .Title "Hyaline" }}{{ .Title }}{{ else }}{{ .Title }} - Hyaline{{ end }}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta
       name="description"
-      content="{{ if .Description }}{{ .Description }}{{ else }}Hyaline - Documentation maintenance tool that helps teams keep documentation in sync with code{{ end }}"
+      content="{{ if .Description }}{{ .Description }}{{ else }}Use Hyaline to make your documentation useful. Hyaline keeps your documentation updated and accessible to both humans and AI tools.{{ end }}"
     />
+    <link rel="canonical" href="{{ .Permalink }}">
     <link rel="icon" type="image/x-icon" href="/favicon.ico">
     {{ partialCached "css.html" . }}
   </head>

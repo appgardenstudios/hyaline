@@ -1,6 +1,7 @@
 ---
 title: "Explanation: Check Change"
 linkTitle: Check Change
+description: Learn how Hyaline analyzes code changes to identify documentation that needs updating
 purpose: Explain how Hyaline checks a change for what documentation needs to be updated
 url: documentation/explanation/check-change
 ---
