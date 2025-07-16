@@ -1,6 +1,7 @@
 ---
 title: "Reference: MCP"
 linkTitle: MCP
+description: MCP server tools and prompts for making extracted documentation available to LLMs
 purpose: Detail the functionality of Hyaline's MCP server
 url: documentation/reference/mcp
 ---

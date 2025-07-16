@@ -1,6 +1,7 @@
 ---
 title: Roadmap
 linkTitle: Roadmap
+description: "Current development focus and upcoming features planned for Hyaline."
 purpose: Explain at a high level what is coming for Hyaline
 url: documentation/roadmap
 lastmod: 2025-06-11

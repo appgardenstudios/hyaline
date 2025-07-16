@@ -1,6 +1,7 @@
 ---
 title: "How To: Check a PR using the Hyaline CLI"
 linkTitle: Check a PR
+description: "Set up GitHub Actions to automatically check documentation in pull requests using Hyaline."
 purpose: How to check a PR using the Hyaline CLI
 url: documentation/how-to/check-pr
 ---

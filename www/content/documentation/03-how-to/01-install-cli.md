@@ -1,6 +1,7 @@
 ---
 title: "How To: Install the Hyaline CLI"
 linkTitle: Install the CLI
+description: "How to download, install, and set up the Hyaline CLI on Linux, macOS, or Windows."
 purpose: Document how to install the Hyaline CLI
 url: documentation/how-to/install-cli
 ---

@@ -1,6 +1,7 @@
 ---
 title: "Reference: Hyaline Config"
 linkTitle: Config
+description: Configuration file schema including systems, code sources, documentation sources, and extractor options
 purpose: Document the configuration options for Hyaline
 url: documentation/reference/config
 ---

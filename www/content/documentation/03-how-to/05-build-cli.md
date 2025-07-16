@@ -1,6 +1,7 @@
 ---
 title: "How To: Build the Hyaline CLI"
 linkTitle: Build the CLI
+description: "Build the Hyaline CLI from source using Go toolchain for custom versions or architectures."
 purpose: Document how to build the Hyaline CLI
 url: documentation/how-to/build-cli
 ---

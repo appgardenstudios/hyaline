@@ -1,6 +1,7 @@
 ---
 title: "Explanation: Update PR"
 linkTitle: Update PR
+description: Learn how Hyaline creates and maintains PR comments with documentation update recommendations
 purpose: Explain how Hyaline updates a PR
 url: documentation/explanation/update-pr
 ---
