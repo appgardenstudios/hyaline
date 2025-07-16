@@ -342,13 +342,14 @@ func ExtractCurrentHttp(systemID string, d *config.DocumentationSource, db *sql.
 
 		// Only visit if this path matches an include (and does not match an exclude)
 		if config.PathIsIncluded(u.Path, includes, excludes) {
-			slog.Debug("docs.ExtractCurrentHttp visiting URL", "href", href, "url", u.String(), "currentPage", e.Request.URL.String())
 			// Visit only the main part of the URL (protocol, host, path) without fragments or query params
 			urlToVisit := &url.URL{
 				Scheme: u.Scheme,
 				Host:   u.Host,
 				Path:   u.Path,
 			}
+
+			slog.Debug("docs.ExtractCurrentHttp visiting URL", "href", href, "urlToVisit", urlToVisit.String(), "currentPage", e.Request.URL.String())
 			err = e.Request.Visit(urlToVisit.String())
 
 			if err != nil {
