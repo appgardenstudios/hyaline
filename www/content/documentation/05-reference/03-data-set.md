@@ -112,6 +112,8 @@ Document sections extracted from documents belonging to system documentation sou
 ### ID
 The ID is constructed using the section's title (including parent titles to the root of the document) separated by `#`. For example, the sub-section Foo (parent Bar) would have an ID of `Bar#Foo`. Note that any `#` symbols in the section titles are stripped, any pre or post whitespace is removed from the section title, and any internal whitespace in the title remains (for example `My Section#My Subsection` is valid).
 
+When duplicate section names exist at the same hierarchical level, Hyaline automatically deduplicates them by appending suffixes like " (1)", " (2)", etc. to ensure unique IDs. For example, if multiple sections named "Introduction" exist at the same level, they would have IDs like `Introduction`, `Introduction (1)`, `Introduction (2)`, and so on. This deduplication preserves the hierarchical structure, so a child section under the second "Introduction" would have an ID like `Introduction (1)#Overview`.
+
 ## SYSTEM_CHANGE
 System changes, such as pull requests, for systems within Hyaline.
 
