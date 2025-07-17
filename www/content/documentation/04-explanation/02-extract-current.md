@@ -163,6 +163,8 @@ The following files are _not_ extracted:
 
 **Note**: Hyaline will not visit links on any other domain other than the domain specified in the baseUrl. To crawl multiple domains setup multiple documentation sources with separate extractors.
 
+**Note**: The HTTP extractor only visits unique URLs by considering only the path. URL fragments (anchors) and query strings are ignored to prevent duplicate visits to the same content.
+
 **Note**: Hyaline uses [doublestar](https://pkg.go.dev/github.com/bmatcuk/doublestar/v4) to match paths relative to the `baseUrl`.
 
 For more detail on http extractor options please see the [configuration reference](../05-reference/01-config.md).
