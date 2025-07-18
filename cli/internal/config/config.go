@@ -1,11 +1,13 @@
 package config
 
+import "fmt"
+
 type Config struct {
 	LLM             LLM           `yaml:"llm,omitempty"`
 	GitHub          GitHub        `yaml:"github,omitempty"`
 	Systems         []System      `yaml:"systems,omitempty"`
 	CommonDocuments []DocumentSet `yaml:"commonDocuments,omitempty"`
-	Extract         Extract       `yaml:"extract,omitempty"`
+	Extract         *Extract      `yaml:"extract,omitempty"`
 }
 
 func (c *Config) GetSystem(id string) (system System, found bool) {
@@ -112,6 +114,10 @@ func (e ExtractorType) IsValid() bool {
 	default:
 		return false
 	}
+}
+
+func (e ExtractorType) PossibleValues() string {
+	return fmt.Sprintf("%s, %s, %s", ExtractorTypeFs, ExtractorTypeGit, ExtractorTypeHttp)
 }
 
 const (
@@ -227,6 +233,10 @@ func (dt DocType) IsValid() bool {
 	default:
 		return false
 	}
+}
+
+func (dt DocType) PossibleValues() string {
+	return fmt.Sprintf("%s, %s", DocTypeMarkdown, DocTypeHTML)
 }
 
 const (
