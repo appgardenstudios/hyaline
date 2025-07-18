@@ -43,6 +43,16 @@
       "presentation":{
         "reveal": "silent"
       }
+    },{
+      "label": "extract-documentation",
+      "type": "shell",
+      "command": "rm -f ../.vscode/hyaline/extract-documentation/documentation.db",
+      "options":{
+        "cwd": "${workspaceFolder}/cli/"
+      },
+      "presentation":{
+        "reveal": "silent"
+      }
     }
   ]
 }

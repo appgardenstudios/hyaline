@@ -212,5 +212,12 @@ func validate(cfg *Config) (err error) {
 		commonDocumentIDs[commonDoc.ID] = struct{}{}
 	}
 
+	// Verify extract
+	err = validateExtract(cfg)
+	if err != nil {
+		slog.Debug("config.Validate found invalid extract", "error", err)
+		return
+	}
+
 	return
 }
