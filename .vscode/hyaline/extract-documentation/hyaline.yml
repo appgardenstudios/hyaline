@@ -1,0 +1,20 @@
+extract:
+  source:
+    id: my-app
+    description: documentation for my application
+  crawler:
+    type: fs
+    options:
+      path: ../.vscode/hyaline/extract-documentation/
+    include:
+      - "**/*.md"
+  extractors:
+    - type: md
+      includes:
+        - "**/*"
+  metadata:
+    - document: "**/*"
+      section: "**/*"
+      tags:
+        - key: system
+          value: my-app

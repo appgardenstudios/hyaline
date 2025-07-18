@@ -208,7 +208,7 @@
       "args":[
         "--debug",
         "extract", "documentation",
-        "--config", "../.vscode/hyaline/extract-documentation/config.yml",
+        "--config", "../.vscode/hyaline/extract-documentation/hyaline.yml",
         "--output", "../.vscode/hyaline/extract-documentation/documentation.db"
       ]
     },
