@@ -44,9 +44,9 @@
         "reveal": "silent"
       }
     },{
-      "label": "extract-documentation",
+      "label": "extract-documentation-fs",
       "type": "shell",
-      "command": "rm -f ../.vscode/hyaline/extract-documentation/documentation.db",
+      "command": "rm -f ../.vscode/hyaline/extract-documentation-fs/documentation.db",
       "options":{
         "cwd": "${workspaceFolder}/cli/"
       },

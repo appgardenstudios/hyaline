@@ -5,7 +5,7 @@ extract:
   crawler:
     type: fs
     options:
-      path: ../.vscode/hyaline/extract-documentation/
+      path: ../.vscode/hyaline/extract-documentation-fs/
     include:
       - "**/*.md"
       - "**/*.html"

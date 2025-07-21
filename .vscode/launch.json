@@ -197,19 +197,19 @@
         "--output", "./comment.json"
       ]
     },{
-      "name": "Extract Documentation",
+      "name": "Extract Documentation (fs)",
       "type": "go",
       "request": "launch",
       "mode": "debug",
-      "preLaunchTask": "extract-documentation",
+      "preLaunchTask": "extract-documentation-fs",
       "cwd": "${workspaceFolder}/cli/",
       "program": "${workspaceFolder}/cli/cmd/hyaline.go",
       "envFile": "${workspaceFolder}/cli/.env",
       "args":[
         "--debug",
         "extract", "documentation",
-        "--config", "../.vscode/hyaline/extract-documentation/hyaline.yml",
-        "--output", "../.vscode/hyaline/extract-documentation/documentation.db"
+        "--config", "../.vscode/hyaline/extract-documentation-fs/hyaline.yml",
+        "--output", "../.vscode/hyaline/extract-documentation-fs/documentation.db"
       ]
     },
   ]
