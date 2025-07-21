@@ -8,9 +8,15 @@ extract:
       path: ../.vscode/hyaline/extract-documentation/
     include:
       - "**/*.md"
+      - "**/*.html"
   extractors:
     - type: md
-      includes:
+      include:
+        - "**/*.md"
+    - type: html
+      options:
+        selector: main
+      include:
         - "**/*"
   metadata:
     - document: "**/*"

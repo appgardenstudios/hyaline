@@ -3,6 +3,7 @@ package action
 import (
 	"errors"
 	"hyaline/internal/config"
+	"hyaline/internal/extract"
 	"hyaline/internal/sqlite"
 	"log/slog"
 
@@ -32,9 +33,16 @@ func ExtractDocumentation(args *ExtractDocumentationArgs) error {
 	}
 
 	// Initialize our output database
-	_, err = sqlite.InitOutput(args.Output)
+	db, err := sqlite.InitOutput(args.Output)
 	if err != nil {
 		slog.Debug("action.ExtractDocumentation could not initialize output", "error", err)
+		return err
+	}
+
+	// Extract documentation
+	err = extract.Documentation(cfg.Extract, db)
+	if err != nil {
+		slog.Debug("action.ExtractDocumentation could not extract documentation", "error", err)
 		return err
 	}
 
