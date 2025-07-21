@@ -3,6 +3,7 @@ package action
 import (
 	"errors"
 	"hyaline/internal/config"
+	"hyaline/internal/sqlite"
 	"log/slog"
 
 	_ "modernc.org/sqlite"
@@ -27,6 +28,13 @@ func ExtractDocumentation(args *ExtractDocumentationArgs) error {
 	if cfg.Extract == nil {
 		slog.Debug("action.ExtractDocumentation did not find extract options")
 		err = errors.New("the extract documentation command requires extract options be set in the config")
+		return err
+	}
+
+	// Initialize our output database
+	_, err = sqlite.InitOutput(args.Output)
+	if err != nil {
+		slog.Debug("action.ExtractDocumentation could not initialize output", "error", err)
 		return err
 	}
 

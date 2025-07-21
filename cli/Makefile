@@ -4,6 +4,10 @@
 build:
 	go build -o ./hyaline -ldflags="-X 'main.Version=development'" ./cmd/hyaline.go
 
+.PHONY: db
+db:
+	sqlc generate
+
 .PHONY: install
 install:
 	go install -ldflags="-X 'main.Version=development'" ./cmd/hyaline.go
