@@ -107,31 +107,6 @@ func (q *Queries) InsertDocument(ctx context.Context, arg InsertDocumentParams) 
 	return err
 }
 
-const insertDocumentTag = `-- name: InsertDocumentTag :exec
-INSERT INTO DOCUMENT_TAG (
-  SOURCE_ID, DOCUMENT_ID, TAG_KEY, TAG_VALUE
-) VALUES (
-  ?, ?, ?, ?
-)
-`
-
-type InsertDocumentTagParams struct {
-	SourceID   string
-	DocumentID string
-	TagKey     string
-	TagValue   string
-}
-
-func (q *Queries) InsertDocumentTag(ctx context.Context, arg InsertDocumentTagParams) error {
-	_, err := q.db.ExecContext(ctx, insertDocumentTag,
-		arg.SourceID,
-		arg.DocumentID,
-		arg.TagKey,
-		arg.TagValue,
-	)
-	return err
-}
-
 const insertSection = `-- name: InsertSection :exec
 INSERT INTO SECTION (
   ID, DOCUMENT_ID, SOURCE_ID, PARENT_ID, PEER_ORDER, NAME, PURPOSE, EXTRACTED_DATA
@@ -161,33 +136,6 @@ func (q *Queries) InsertSection(ctx context.Context, arg InsertSectionParams) er
 		arg.Name,
 		arg.Purpose,
 		arg.ExtractedData,
-	)
-	return err
-}
-
-const insertSectionTag = `-- name: InsertSectionTag :exec
-INSERT INTO SECTION_TAG (
-  SOURCE_ID, DOCUMENT_ID, SECTION_ID, TAG_KEY, TAG_VALUE
-) VALUES (
-  ?, ?, ?, ?, ?
-)
-`
-
-type InsertSectionTagParams struct {
-	SourceID   string
-	DocumentID string
-	SectionID  string
-	TagKey     string
-	TagValue   string
-}
-
-func (q *Queries) InsertSectionTag(ctx context.Context, arg InsertSectionTagParams) error {
-	_, err := q.db.ExecContext(ctx, insertSectionTag,
-		arg.SourceID,
-		arg.DocumentID,
-		arg.SectionID,
-		arg.TagKey,
-		arg.TagValue,
 	)
 	return err
 }
@@ -253,6 +201,58 @@ func (q *Queries) UpdateSectionPurpose(ctx context.Context, arg UpdateSectionPur
 		arg.ID,
 		arg.DocumentID,
 		arg.SourceID,
+	)
+	return err
+}
+
+const upsertDocumentTag = `-- name: UpsertDocumentTag :exec
+INSERT INTO DOCUMENT_TAG (
+  SOURCE_ID, DOCUMENT_ID, TAG_KEY, TAG_VALUE
+) VALUES (
+  ?, ?, ?, ?
+) ON CONFLICT DO NOTHING
+`
+
+type UpsertDocumentTagParams struct {
+	SourceID   string
+	DocumentID string
+	TagKey     string
+	TagValue   string
+}
+
+func (q *Queries) UpsertDocumentTag(ctx context.Context, arg UpsertDocumentTagParams) error {
+	_, err := q.db.ExecContext(ctx, upsertDocumentTag,
+		arg.SourceID,
+		arg.DocumentID,
+		arg.TagKey,
+		arg.TagValue,
+	)
+	return err
+}
+
+const upsertSectionTag = `-- name: UpsertSectionTag :exec
+INSERT INTO SECTION_TAG (
+  SOURCE_ID, DOCUMENT_ID, SECTION_ID, TAG_KEY, TAG_VALUE
+) VALUES (
+  ?, ?, ?, ?, ?
+) ON CONFLICT DO NOTHING
+`
+
+type UpsertSectionTagParams struct {
+	SourceID   string
+	DocumentID string
+	SectionID  string
+	TagKey     string
+	TagValue   string
+}
+
+func (q *Queries) UpsertSectionTag(ctx context.Context, arg UpsertSectionTagParams) error {
+	_, err := q.db.ExecContext(ctx, upsertSectionTag,
+		arg.SourceID,
+		arg.DocumentID,
+		arg.SectionID,
+		arg.TagKey,
+		arg.TagValue,
 	)
 	return err
 }

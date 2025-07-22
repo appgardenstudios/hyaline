@@ -45,7 +45,7 @@ func addMetadata(sourceID string, cfg []config.ExtractMetadata, db *sqlite.Queri
 
 					// Add tags to document
 					for j, tag := range metadata.Tags {
-						err = db.InsertDocumentTag(ctx, sqlite.InsertDocumentTagParams{
+						err = db.UpsertDocumentTag(ctx, sqlite.UpsertDocumentTagParams{
 							SourceID:   sourceID,
 							DocumentID: document,
 							TagKey:     tag.Key,
@@ -77,7 +77,7 @@ func addMetadata(sourceID string, cfg []config.ExtractMetadata, db *sqlite.Queri
 
 					// Add tags to document
 					for j, tag := range metadata.Tags {
-						err = db.InsertSectionTag(ctx, sqlite.InsertSectionTagParams{
+						err = db.UpsertSectionTag(ctx, sqlite.UpsertSectionTagParams{
 							SourceID:   sourceID,
 							DocumentID: section.DocumentID,
 							SectionID:  section.ID,

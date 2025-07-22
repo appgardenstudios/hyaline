@@ -25,12 +25,12 @@ UPDATE DOCUMENT
 SET PURPOSE = ?
 WHERE ID = ? AND SOURCE_ID = ?;
 
--- name: InsertDocumentTag :exec
+-- name: UpsertDocumentTag :exec
 INSERT INTO DOCUMENT_TAG (
   SOURCE_ID, DOCUMENT_ID, TAG_KEY, TAG_VALUE
 ) VALUES (
   ?, ?, ?, ?
-);
+) ON CONFLICT DO NOTHING;
 
 -- name: InsertSection :exec
 INSERT INTO SECTION (
@@ -52,9 +52,9 @@ UPDATE SECTION
 SET PURPOSE = ?
 WHERE ID = ? AND DOCUMENT_ID = ? AND SOURCE_ID = ?;
 
--- name: InsertSectionTag :exec
+-- name: UpsertSectionTag :exec
 INSERT INTO SECTION_TAG (
   SOURCE_ID, DOCUMENT_ID, SECTION_ID, TAG_KEY, TAG_VALUE
 ) VALUES (
   ?, ?, ?, ?, ?
-);
+) ON CONFLICT DO NOTHING;
