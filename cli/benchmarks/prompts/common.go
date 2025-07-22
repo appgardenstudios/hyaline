@@ -393,9 +393,9 @@ func RunBenchmark(iterations int, scenarioName string, runFunc func(int) (*Check
 	// Calculate averages
 	avgBenchmarkResults := AverageBenchmarkResults{
 		AverageScore:         calculateAverage(benchmarkScores),
-		ExpectedMatchesAvg:   calculateAverage(convertIntToFloat64(expectedMatchesCounts)),
-		MissingMatchesAvg:    calculateAverage(convertIntToFloat64(missingMatchesCounts)),
-		UnexpectedMatchesAvg: calculateAverage(convertIntToFloat64(unexpectedMatchesCounts)),
+		ExpectedMatchesAvg:   calculateAverage(expectedMatchesCounts),
+		MissingMatchesAvg:    calculateAverage(missingMatchesCounts),
+		UnexpectedMatchesAvg: calculateAverage(unexpectedMatchesCounts),
 	}
 
 	multiRunReport := &MultiRunResult{
@@ -424,26 +424,16 @@ func RunBenchmark(iterations int, scenarioName string, runFunc func(int) (*Check
 	}
 }
 
-// calculateAverage calculates the average of a slice of float64 values
-func calculateAverage(values []float64) float64 {
+func calculateAverage[T int | float64](values []T) float64 {
 	if len(values) == 0 {
 		return 0.0
 	}
 
-	sum := 0.0
+	var sum float64 = 0.0
 	for _, v := range values {
-		sum += v
+		sum += float64(v)
 	}
 	return sum / float64(len(values))
-}
-
-// convertIntToFloat64 converts a slice of int to float64
-func convertIntToFloat64(values []int) []float64 {
-	result := make([]float64, len(values))
-	for i, v := range values {
-		result[i] = float64(v)
-	}
-	return result
 }
 
 // generateSummary creates a human-readable summary of the benchmark results
