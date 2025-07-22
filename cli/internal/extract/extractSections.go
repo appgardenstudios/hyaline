@@ -54,7 +54,7 @@ func getMarkdownSections(lines []string) *section {
 				current = current.Parent
 			}
 			// Trim spaces and strip out all # and /
-			name := strings.TrimSpace(strings.ReplaceAll(strings.ReplaceAll(line[level:], "#", ""), "/", ""))
+			name := strings.TrimSpace(strings.ReplaceAll(line[level:], "/", "_"))
 
 			fullName := name
 			if current.FullName != "" {

@@ -61,7 +61,7 @@ func addMetadata(sourceID string, cfg []config.ExtractMetadata, db *sqlite.Queri
 		} else {
 			for _, section := range sections {
 				if doublestar.MatchUnvalidated(metadata.Document, section.DocumentID) && doublestar.MatchUnvalidated(metadata.Section, section.ID) {
-					// Add purpose to document (if set)
+					// Add purpose to section (if set)
 					if metadata.Purpose != "" {
 						err = db.UpdateSectionPurpose(ctx, sqlite.UpdateSectionPurposeParams{
 							Purpose:    metadata.Purpose,
@@ -70,12 +70,12 @@ func addMetadata(sourceID string, cfg []config.ExtractMetadata, db *sqlite.Queri
 							SourceID:   sourceID,
 						})
 						if err != nil {
-							slog.Debug("extract.addMetadata could not update document purpose", "metadata", i, "error", err)
+							slog.Debug("extract.addMetadata could not update section purpose", "metadata", i, "error", err)
 							return err
 						}
 					}
 
-					// Add tags to document
+					// Add tags to section
 					for j, tag := range metadata.Tags {
 						err = db.UpsertSectionTag(ctx, sqlite.UpsertSectionTagParams{
 							SourceID:   sourceID,
