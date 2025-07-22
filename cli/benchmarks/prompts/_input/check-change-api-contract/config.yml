@@ -1,0 +1,137 @@
+llm:
+  provider: anthropic
+  model: claude-sonnet-4-20250514
+  key: ${HYALINE_ANTHROPIC_KEY}
+
+github:
+  token: ${HYALINE_GITHUB_PATS}
+
+systems:
+  - id: url-shortener
+    code:
+      - id: app
+        extractor:
+          type: git
+          options:
+            repo: git@github.com:appgardenstudios/hyaline-example.git
+            branch: url-shortener
+            clone: true
+            auth:
+              type: ssh
+              options:
+                user: git
+                pem: ${HYALINE_SSH_PEM}
+          include:
+            - "url-shortener/**/*.js"
+          exclude:
+            - "**/node_modules/**"
+            - "**/*.test.js"
+    documentation:
+      - id: internal
+        type: md
+        extractor:
+          type: git
+          options:
+            repo: git@github.com:appgardenstudios/hyaline-example.git
+            branch: url-shortener
+            clone: true
+            auth:
+              type: ssh
+              options:
+                user: git
+                pem: ${HYALINE_SSH_PEM}
+          include:
+            - "url-shortener/**/*.md"
+          exclude:
+            - "**/node_modules/**"
+        documents:
+          - name: url-shortener/docs/API.md
+            purpose: Documents the REST API endpoints for the URL shortener service
+            required: true
+            sections:
+              - name: API Documentation
+                purpose: Documents the REST API endpoints for the URL shortener service
+                required: true
+                sections:
+                  - name: Endpoints
+                    purpose: Lists all available API endpoints
+                    required: true
+                    sections:
+                      - name: POST /api/shorten
+                        purpose: Describes the API contract for the `/api/shorten` endpoint
+                        required: true
+                      - name: GET /api/urls
+                        purpose: Describes the API contract for retrieving all shortened URLs with statistics
+                        required: true
+                      - name: GET /s/:code
+                        purpose: Describes the redirect endpoint for accessing shortened URLs
+                        required: true
+                  - name: Error Handling
+                    purpose: Documents error responses and status codes
+                    required: true
+          - name: url-shortener/docs/ARCHITECTURE.md
+            purpose: Describes the system architecture and design decisions
+            required: true
+            sections:
+              - name: Architecture Documentation
+                purpose: Describes the system architecture and design decisions
+                required: true
+                sections:
+                  - name: System Overview
+                    purpose: High-level architecture description
+                    required: true
+                  - name: Data Flow
+                    purpose: Describes how data flows through the system
+                    required: true
+                  - name: API Design
+                    purpose: Documents the API design principles and patterns
+                    required: true
+                  - name: Error Handling
+                    purpose: Describes error handling architecture
+                    required: true
+          - name: url-shortener/docs/README.md
+            purpose: Main documentation entry point with features and usage
+            required: true
+            sections:
+              - name: URL Shortener
+                purpose: Main documentation entry point with features and usage
+                required: true
+                sections:
+                  - name: Features
+                    purpose: Lists the available features in the URL shortener
+                    required: true
+                  - name: API Endpoints
+                    purpose: Summary of available API endpoints
+                    required: true
+      - id: external
+        type: html
+        extractor:
+          type: git
+          options:
+            repo: git@github.com:appgardenstudios/hyaline-example.git
+            branch: url-shortener
+            clone: true
+            auth:
+              type: ssh
+              options:
+                user: git
+                pem: ${HYALINE_SSH_PEM}
+          include:
+            - "url-shortener/**/*.html"
+          exclude:
+            - "**/node_modules/**"
+        documents:
+          - name: url-shortener/public/documentation.html
+            purpose: Customer-facing documentation about URL shortener features
+            required: true
+            sections:
+              - name: URL Shortener Documentation
+                purpose: Customer-facing documentation about URL shortener features
+                required: true
+                sections:
+                  - name: What is URL Shortener?
+                    purpose: Describes what a URL shortener does and how it works
+                    required: true
+                  - name: Features
+                    purpose: Lists the features available to users
+                    required: true

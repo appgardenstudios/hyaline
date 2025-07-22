@@ -1,0 +1,64 @@
+{
+  "description": "PR #4 add feature scenario: Adds URL expiration functionality to the URL shortener. Should generate recommendations to update documentation to reflect the new expiration feature in API, README, and customer documentation.",
+  "expectedRecommendations": [
+    {
+      "document": "url-shortener/public/documentation.html",
+      "section": [
+        "URL Shortener Documentation",
+        "Features"
+      ]
+    },
+    {
+      "document": "url-shortener/public/documentation.html",
+      "section": [
+        "URL Shortener Documentation",
+        "How to Use URL Shortener"
+      ]
+    },
+    {
+      "document": "url-shortener/docs/API.md",
+      "section": [
+        "API Documentation",
+        "Endpoints",
+        "GET /api/urls"
+      ]
+    },
+    {
+      "document": "url-shortener/docs/API.md",
+      "section": [
+        "API Documentation",
+        "Endpoints",
+        "GET /s/:code"
+      ]
+    },
+    {
+      "document": "url-shortener/docs/API.md",
+      "section": [
+        "API Documentation",
+        "Endpoints",
+        "POST /api/shorten"
+      ]
+    },
+    {
+      "document": "url-shortener/docs/README.md",
+      "section": [
+        "URL Shortener",
+        "API Endpoints"
+      ]
+    },
+    {
+      "document": "url-shortener/docs/README.md",
+      "section": [
+        "URL Shortener",
+        "Features"
+      ]
+    },
+    {
+      "document": "url-shortener/docs/README.md",
+      "section": [
+        "URL Shortener",
+        "Usage"
+      ]
+    }
+  ]
+}
