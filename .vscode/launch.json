@@ -256,6 +256,21 @@
         "--config", "../.vscode/hyaline/extract-documentation-git-http/hyaline.yml",
         "--output", "../.vscode/hyaline/extract-documentation-git-http/documentation.db"
       ]
+    },{
+      "name": "Extract Documentation (http)",
+      "type": "go",
+      "request": "launch",
+      "mode": "debug",
+      "preLaunchTask": "extract-documentation-http",
+      "cwd": "${workspaceFolder}/cli/",
+      "program": "${workspaceFolder}/cli/cmd/hyaline.go",
+      "envFile": "${workspaceFolder}/cli/.env",
+      "args":[
+        "--debug",
+        "extract", "documentation",
+        "--config", "../.vscode/hyaline/extract-documentation-http/hyaline.yml",
+        "--output", "../.vscode/hyaline/extract-documentation-http/documentation.db"
+      ]
     },
   ]
 }

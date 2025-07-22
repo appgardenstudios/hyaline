@@ -83,6 +83,16 @@
       "presentation":{
         "reveal": "silent"
       }
+    },{
+      "label": "extract-documentation-http",
+      "type": "shell",
+      "command": "rm -f ../.vscode/hyaline/extract-documentation-http/documentation.db",
+      "options":{
+        "cwd": "${workspaceFolder}/cli/"
+      },
+      "presentation":{
+        "reveal": "silent"
+      }
     },
   ]
 }
