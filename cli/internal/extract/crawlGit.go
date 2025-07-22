@@ -10,18 +10,19 @@ import (
 )
 
 func crawlGit(cfg *config.ExtractCrawler, cb extractorCallback) error {
+	// Determine branch to extract from
+	branch := "main"
+	if cfg.Options.Branch != "" {
+		branch = cfg.Options.Branch
+	}
+	slog.Info("Crawling documentation using git", "branch", branch)
+
 	// Initialize go-git repo (on disk or in mem)
 	var r *git.Repository
 	r, err := repo.GetRepo(cfg.Options)
 	if err != nil {
 		slog.Debug("extract.crawlGit could not get repo", "error", err)
 		return err
-	}
-
-	// Determine branch to extract from
-	branch := "main"
-	if cfg.Options.Branch != "" {
-		branch = cfg.Options.Branch
 	}
 
 	// Resolve branch ref

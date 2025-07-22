@@ -12,7 +12,6 @@ import (
 type extractorCallback func(id string, data []byte) error
 
 func Documentation(cfg *config.Extract, db *sqlite.Queries) (err error) {
-	slog.Info("Extracting documentation from source", "source", cfg.Source.ID)
 	ctx := context.Background()
 	count := 0
 
@@ -22,6 +21,7 @@ func Documentation(cfg *config.Extract, db *sqlite.Queries) (err error) {
 		slog.Debug("extract.Documentation could not determine source root", "error", err)
 		return
 	}
+	slog.Info("Extracting documentation", "source", cfg.Source.ID, "root", root, "crawler", cfg.Crawler.Type.String())
 
 	// Insert source
 	err = db.InsertSource(ctx, sqlite.InsertSourceParams{
@@ -71,6 +71,7 @@ func Documentation(cfg *config.Extract, db *sqlite.Queries) (err error) {
 	}
 
 	// Add metadata
+	slog.Info("Adding metadata")
 	err = addMetadata(cfg.Source.ID, cfg.Metadata, db)
 	if err != nil {
 		slog.Debug("extract.Documentation could not add metadata", "error", err)

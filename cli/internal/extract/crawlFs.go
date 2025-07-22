@@ -17,6 +17,7 @@ func crawlFs(cfg *config.ExtractCrawler, cb extractorCallback) error {
 		slog.Debug("extract.crawlFs could not determine absolute docs path", "error", err, "path", cfg.Options.Path)
 		return err
 	}
+	slog.Info("Crawling documentation using fs", "absPath", absPath)
 	slog.Debug("extract.crawlFs crawling docs from path", "absPath", absPath)
 
 	// Get our root FS

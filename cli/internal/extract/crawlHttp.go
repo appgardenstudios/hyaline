@@ -44,6 +44,7 @@ func crawlHttp(cfg *config.ExtractCrawler, cb extractorCallback) error {
 	} else {
 		startUrl = baseUrl
 	}
+	slog.Info("Crawling documentation using http", "startUrl", startUrl.String())
 	slog.Debug("extract.crawlHttp startUrl", "startUrl", startUrl, "start", cfg.Options.Start, "baseUrl", baseUrl.String())
 
 	// Initialize our collector

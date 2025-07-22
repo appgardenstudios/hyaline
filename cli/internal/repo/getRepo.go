@@ -59,6 +59,7 @@ func GetRepo(options config.ExtractorOptions) (r *git.Repository, err error) {
 				slog.Debug("repo.GetRepo could not determine absolute path", "error", err, "path", options.Path)
 				return
 			}
+			slog.Info("Cloning to disk", "absPath", absPath)
 			r, err = git.PlainClone(absPath, false, cloneOptions)
 			if err != nil {
 				slog.Debug("repo.GetRepo could not clone repo to disk", "error", err, "path", options.Path, "repo", options.Repo)
@@ -66,6 +67,7 @@ func GetRepo(options config.ExtractorOptions) (r *git.Repository, err error) {
 			}
 		} else {
 			// Clone into a memory fs
+			slog.Info("Cloning to memory fs")
 			r, err = git.Clone(memory.NewStorage(), nil, cloneOptions)
 			if err != nil {
 				slog.Debug("repo.GetRepo could not clone repo to memory", "error", err, "path", options.Path, "repo", options.Repo)
@@ -84,6 +86,7 @@ func GetRepo(options config.ExtractorOptions) (r *git.Repository, err error) {
 				slog.Debug("repo.GetRepo could not determine absolute path", "error", err, "path", options.Path)
 				return
 			}
+			slog.Info("Opening repo on disk", "absPath", absPath)
 			r, err = git.PlainOpen(absPath)
 			if err != nil {
 				slog.Debug("repo.GetRepo could not open git repo", "error", err, "path", options.Path)
