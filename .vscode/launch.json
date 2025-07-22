@@ -211,6 +211,51 @@
         "--config", "../.vscode/hyaline/extract-documentation-fs/hyaline.yml",
         "--output", "../.vscode/hyaline/extract-documentation-fs/documentation.db"
       ]
+    },{
+      "name": "Extract Documentation (git-local)",
+      "type": "go",
+      "request": "launch",
+      "mode": "debug",
+      "preLaunchTask": "extract-documentation-git-local",
+      "cwd": "${workspaceFolder}/cli/",
+      "program": "${workspaceFolder}/cli/cmd/hyaline.go",
+      "envFile": "${workspaceFolder}/cli/.env",
+      "args":[
+        "--debug",
+        "extract", "documentation",
+        "--config", "../.vscode/hyaline/extract-documentation-git-local/hyaline.yml",
+        "--output", "../.vscode/hyaline/extract-documentation-git-local/documentation.db"
+      ]
+    },{
+      "name": "Extract Documentation (git-ssh)",
+      "type": "go",
+      "request": "launch",
+      "mode": "debug",
+      "preLaunchTask": "extract-documentation-git-ssh",
+      "cwd": "${workspaceFolder}/cli/",
+      "program": "${workspaceFolder}/cli/cmd/hyaline.go",
+      "envFile": "${workspaceFolder}/cli/.env",
+      "args":[
+        "--debug",
+        "extract", "documentation",
+        "--config", "../.vscode/hyaline/extract-documentation-git-ssh/hyaline.yml",
+        "--output", "../.vscode/hyaline/extract-documentation-git-ssh/documentation.db"
+      ]
+    },{
+      "name": "Extract Documentation (git-http)",
+      "type": "go",
+      "request": "launch",
+      "mode": "debug",
+      "preLaunchTask": "extract-documentation-git-http",
+      "cwd": "${workspaceFolder}/cli/",
+      "program": "${workspaceFolder}/cli/cmd/hyaline.go",
+      "envFile": "${workspaceFolder}/cli/.env",
+      "args":[
+        "--debug",
+        "extract", "documentation",
+        "--config", "../.vscode/hyaline/extract-documentation-git-http/hyaline.yml",
+        "--output", "../.vscode/hyaline/extract-documentation-git-http/documentation.db"
+      ]
     },
   ]
 }

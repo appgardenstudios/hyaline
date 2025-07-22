@@ -60,7 +60,14 @@ func Documentation(cfg *config.Extract, db *sqlite.Queries) (err error) {
 	switch cfg.Crawler.Type {
 	case config.ExtractorTypeFs:
 		err = crawlFs(&cfg.Crawler, extractor)
-		// TODO add other crawlers
+	case config.ExtractorTypeGit:
+		err = crawlGit(&cfg.Crawler, extractor)
+	case config.ExtractorTypeHttp:
+		err = crawlHttp(&cfg.Crawler, extractor)
+	}
+	if err != nil {
+		slog.Debug("extract.Documentation could not crawl", "error", err)
+		return
 	}
 
 	// Tag
