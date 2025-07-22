@@ -38,6 +38,64 @@ Note that the following env vars must be set for the `e2e` tests to work and pas
 
 Note that the e2e test [updatePR_test.go](./e2e/updatePR_test.go) creates a comment on a PR and cleans it up using the GitHub CLI (`gh`).
 
+## Prompt Benchmarks
+
+Prompt benchmarks test hyaline's ability to use an LLM to correctly identify which documentation needs updates when code changes occur.
+
+### Running Benchmarks
+
+```sh
+# Run all benchmark scenarios
+make benchmark-prompts
+
+# Run specific scenarios
+make benchmark-prompts-add-feature
+make benchmark-prompts-api-contract
+make benchmark-prompts-refactor
+# (see Makefile for all available benchmark-prompts-* targets)
+```
+
+### Environment Setup
+
+The prompt benchmarks require the same environment variables as the e2e tests:
+* **HYALINE_ANTHROPIC_KEY** - Anthropic API key for LLM calls
+* **HYALINE_SSH_PEM** - SSH key with access to test repositories
+* **HYALINE_GITHUB_PATS** - GitHub token for repository access
+
+### Benchmark Architecture
+
+Each benchmark scenario:
+- **Runs 3 iterations** to account for LLM variability and provides statistical analysis
+- Uses **programmatic evaluation** against golden expectations for objective scoring
+- Generates **detailed markdown reports** with collapsible sections showing results
+- **Scores using the formula**: `(expected - missing - 0.25*unexpected) / expected`
+
+### Generated Reports
+
+Benchmarks generate several output files in `benchmarks/prompts/_output/`:
+- **Raw JSON results** from Hyaline binary execution
+- **Evaluation reports** with programmatic scoring and analysis
+- **Multi-run markdown reports** with statistical summaries and individual run details
+
+### Golden Expectations Format
+
+Golden expectation files in `benchmarks/prompts/_golden/` define the expected behavior for each scenario:
+
+```json
+{
+  "description": "Human-readable description of the scenario",
+  "expectedRecommendations": [
+    {
+      "document": "path/to/document.md",
+      "section": "specific section name or empty string for wildcard"
+    }
+  ]
+}
+```
+
+- **document**: Full document path that should receive a recommendation
+- **section**: Specific section name, or empty string `""` to match any section in the document
+
 ## Releasing
 Release by checking out the appropriate commit on the main branch and then running `make release`.
 
