@@ -12,6 +12,19 @@ INSERT INTO DOCUMENT (
   ?, ?, ?, ?, ?, ?
 );
 
+-- name: GetDocumentIDsForSource :many
+SELECT
+  ID
+FROM
+  DOCUMENT
+WHERE
+  SOURCE_ID = ?;
+
+-- name: UpdateDocumentPurpose :exec
+UPDATE DOCUMENT 
+SET PURPOSE = ?
+WHERE ID = ? AND SOURCE_ID = ?;
+
 -- name: InsertDocumentTag :exec
 INSERT INTO DOCUMENT_TAG (
   SOURCE_ID, DOCUMENT_ID, TAG_KEY, TAG_VALUE
@@ -21,10 +34,23 @@ INSERT INTO DOCUMENT_TAG (
 
 -- name: InsertSection :exec
 INSERT INTO SECTION (
-  ID, DOCUMENT_ID, SOURCE_ID, PARENT_ID, PEER_ORDER, NAME, EXTRACTED_DATA
+  ID, DOCUMENT_ID, SOURCE_ID, PARENT_ID, PEER_ORDER, NAME, PURPOSE, EXTRACTED_DATA
 ) VALUES (
-  ?, ?, ?, ?, ?, ?, ?
+  ?, ?, ?, ?, ?, ?, ?, ?
 );
+
+-- name: GetSectionIDsForSource :many
+SELECT
+  ID, DOCUMENT_ID
+FROM
+  SECTION
+WHERE
+  SOURCE_ID = ?;
+
+-- name: UpdateSectionPurpose :exec
+UPDATE SECTION 
+SET PURPOSE = ?
+WHERE ID = ? AND DOCUMENT_ID = ? AND SOURCE_ID = ?;
 
 -- name: InsertSectionTag :exec
 INSERT INTO SECTION_TAG (

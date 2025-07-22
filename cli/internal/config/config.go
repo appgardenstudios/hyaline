@@ -298,15 +298,15 @@ type ExtractSource struct {
 }
 
 type ExtractCrawler struct {
-	Type    ExtractorType    `yaml:"type,omitempty"`    // TODO rename this type to CrawlerType during cleanup in #206
-	Options ExtractorOptions `yaml:"options,omitempty"` // TODO rename this struct to CrawlerOptions during cleanup in #206
+	Type    ExtractorType    `yaml:"type,omitempty"`    // TODO rename ExtractorType to CrawlerType during cleanup in #206
+	Options ExtractorOptions `yaml:"options,omitempty"` // TODO rename ExtractorOptions to CrawlerOptions during cleanup in #206
 	Include []string         `yaml:"include,omitempty"`
 	Exclude []string         `yaml:"exclude,omitempty"`
 }
 
 type ExtractExtractor struct {
-	Type    DocType                    `yaml:"type,omitempty"`    // TODO rename this type to ExtractorType during cleanup in #206
-	Options DocumentationSourceOptions `yaml:"options,omitempty"` // TODO rename this struct to ExtractorOptions during cleanup in #206
+	Type    DocType                    `yaml:"type,omitempty"`    // TODO rename DocType to ExtractorType during cleanup in #206
+	Options DocumentationSourceOptions `yaml:"options,omitempty"` // TODO rename DocumentationSourceOptions to ExtractorOptions during cleanup in #206
 	Include []string                   `yaml:"include,omitempty"`
 	Exclude []string                   `yaml:"exclude,omitempty"`
 }

@@ -70,8 +70,12 @@ func Documentation(cfg *config.Extract, db *sqlite.Queries) (err error) {
 		return
 	}
 
-	// Tag
-	// TODO
+	// Add metadata
+	err = addMetadata(cfg.Source.ID, cfg.Metadata, db)
+	if err != nil {
+		slog.Debug("extract.Documentation could not add metadata", "error", err)
+		return
+	}
 
 	slog.Info("Extracted documentation", "count", count)
 	return

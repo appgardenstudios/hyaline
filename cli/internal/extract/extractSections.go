@@ -153,6 +153,7 @@ func insertSections(s *section, order int, documentID string, sourceID string, d
 			ParentID:      s.Parent.FullName,
 			PeerOrder:     order,
 			Name:          s.Name,
+			Purpose:       "",
 			ExtractedData: strings.TrimSpace(s.Content),
 		})
 		if err != nil {

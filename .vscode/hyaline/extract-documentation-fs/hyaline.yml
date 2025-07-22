@@ -20,7 +20,16 @@ extract:
         - "**/*"
   metadata:
     - document: "**/*"
+      tags:
+        - key: system
+          value: my-app
+    - document: "**/*"
       section: "**/*"
       tags:
         - key: system
           value: my-app
+    - document: "README.md"
+      purpose: "The purpose of this document is to explain the project"
+    - document: "README.md"
+      section: "Main Section"
+      purpose: "The purpose of this section is to describe the project"
