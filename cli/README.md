@@ -8,6 +8,12 @@
 * `go` (v1.24+)
 * `diff` (gnu version) for testing (`brew install diffutils`)
 * `gh` (github cli) for testing and releasing (`brew install gh`)
+* `sqlc` for compiling sql queries (`go install github.com/sqlc-dev/sqlc/cmd/sqlc@v1.27.0`)
+
+## Generate DB Queries
+```sh
+$ make db
+```
 
 ## Running Locally
 ```sh

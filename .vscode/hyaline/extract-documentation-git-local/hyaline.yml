@@ -1,0 +1,20 @@
+extract:
+  source:
+    id: my-app
+    description: documentation for my application
+  crawler:
+    type: git
+    options:
+      path: ../../hyaline-example/
+    include:
+      - "**/*.md"
+  extractors:
+    - type: md
+      include:
+        - "**/*"
+  metadata:
+    - document: "**/*"
+      section: "**/*"
+      tags:
+        - key: system
+          value: my-app

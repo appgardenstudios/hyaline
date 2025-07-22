@@ -1,0 +1,45 @@
+extract:
+  source:
+    id: my-app
+    description: documentation for my application
+  crawler:
+    type: fs
+    options:
+      path: ./_input/extract-documentation-fs/
+    include:
+      - "**/*.md"
+      - "**/*.html"
+  extractors:
+    - type: md
+      include:
+        - "**/*.md"
+    - type: html
+      options:
+        selector: main
+      include:
+        - "**/*"
+  metadata:
+    - document: "**/*"
+      tags:
+        - key: system
+          value: my-app
+    - document: "**/*"
+      section: "**/*"
+      tags:
+        - key: system
+          value: my-app
+    - document: "README.md"
+      purpose: "The purpose of this document is to explain the project"
+      tags:
+        - key: system # duped to test upsert
+          value: my-app
+        - key: foo
+          value: bar
+    - document: "README.md"
+      section: "Main Section"
+      purpose: "The purpose of this section is to describe the project"
+      tags:
+        - key: system # duped to test upsert
+          value: my-app
+        - key: foo
+          value: baz

@@ -1,10 +1,13 @@
 package config
 
+import "fmt"
+
 type Config struct {
 	LLM             LLM           `yaml:"llm,omitempty"`
 	GitHub          GitHub        `yaml:"github,omitempty"`
 	Systems         []System      `yaml:"systems,omitempty"`
 	CommonDocuments []DocumentSet `yaml:"commonDocuments,omitempty"`
+	Extract         *Extract      `yaml:"extract,omitempty"`
 }
 
 func (c *Config) GetSystem(id string) (system System, found bool) {
@@ -102,6 +105,19 @@ func (e ExtractorType) IsValidDocExtractor() bool {
 	default:
 		return false
 	}
+}
+
+func (e ExtractorType) IsValid() bool {
+	switch e {
+	case ExtractorTypeFs, ExtractorTypeGit, ExtractorTypeHttp:
+		return true
+	default:
+		return false
+	}
+}
+
+func (e ExtractorType) PossibleValues() string {
+	return fmt.Sprintf("%s, %s, %s", ExtractorTypeFs, ExtractorTypeGit, ExtractorTypeHttp)
 }
 
 const (
@@ -219,6 +235,10 @@ func (dt DocType) IsValid() bool {
 	}
 }
 
+func (dt DocType) PossibleValues() string {
+	return fmt.Sprintf("%s, %s", DocTypeMarkdown, DocTypeHTML)
+}
+
 const (
 	DocTypeMarkdown DocType = "md"
 	DocTypeHTML     DocType = "html"
@@ -262,4 +282,43 @@ type UpdateIf struct {
 type UpdateIfEntry struct {
 	CodeSource string `yaml:"codeID,omitempty"`
 	Glob       string `yaml:"glob,omitempty"`
+}
+
+type Extract struct {
+	Source     ExtractSource      `yaml:"source,omitempty"`
+	Crawler    ExtractCrawler     `yaml:"crawler,omitempty"`
+	Extractors []ExtractExtractor `yaml:"extractors,omitempty"`
+	Metadata   []ExtractMetadata  `yaml:"metadata,omitempty"`
+}
+
+type ExtractSource struct {
+	ID          string `yaml:"id,omitempty"`
+	Description string `yaml:"description,omitempty"`
+	Root        string `yaml:"root,omitempty"`
+}
+
+type ExtractCrawler struct {
+	Type    ExtractorType    `yaml:"type,omitempty"`    // TODO rename ExtractorType to CrawlerType during cleanup in #206
+	Options ExtractorOptions `yaml:"options,omitempty"` // TODO rename ExtractorOptions to CrawlerOptions during cleanup in #206
+	Include []string         `yaml:"include,omitempty"`
+	Exclude []string         `yaml:"exclude,omitempty"`
+}
+
+type ExtractExtractor struct {
+	Type    DocType                    `yaml:"type,omitempty"`    // TODO rename DocType to ExtractorType during cleanup in #206
+	Options DocumentationSourceOptions `yaml:"options,omitempty"` // TODO rename DocumentationSourceOptions to ExtractorOptions during cleanup in #206
+	Include []string                   `yaml:"include,omitempty"`
+	Exclude []string                   `yaml:"exclude,omitempty"`
+}
+
+type ExtractMetadata struct {
+	Document string               `yaml:"document,omitempty"`
+	Section  string               `yaml:"section,omitempty"`
+	Purpose  string               `yaml:"purpose,omitempty"`
+	Tags     []ExtractMetadataTag `yaml:"tags,omitempty"`
+}
+
+type ExtractMetadataTag struct {
+	Key   string `yaml:"key,omitempty"`
+	Value string `yaml:"value,omitempty"`
 }
