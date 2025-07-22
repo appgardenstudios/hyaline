@@ -40,7 +40,7 @@ Note that the e2e test [updatePR_test.go](./e2e/updatePR_test.go) creates a comm
 
 ## Prompt Benchmarks
 
-Prompt benchmarks test hyaline's ability to use an LLM to correctly identify which documentation needs updates when code changes occur.
+Prompt benchmarks test hyaline's ability to use an LLM to correctly identify which documentation needs updates based on the desired documents and when code changes occur.
 
 ### Running Benchmarks
 
@@ -65,17 +65,18 @@ The prompt benchmarks require the same environment variables as the e2e tests:
 ### Benchmark Architecture
 
 Each benchmark scenario:
-- **Runs 3 iterations** to account for LLM variability and provides statistical analysis
-- Uses **programmatic evaluation** against golden expectations for objective scoring
-- Generates **detailed markdown reports** with collapsible sections showing results
-- **Scores using the formula**: `(expected - missing - 0.25*unexpected) / expected`
+- Runs multiple iterations to account for LLM variability and provides statistical analysis
+- Evaluate the results against golden expectations for objective scoring
+- Generates markdown reports with collapsible sections showing results
+- Scores using the formula: `(expected - missingWeight*missing - unexpectedWeight*unexpected) / expected`
+  - `missingWeight` and `unexpectedWeight` can be adjusted in order to calibrate how heavily we weigh false negatives (missing) against false positives (unexpected).
 
 ### Generated Reports
 
 Benchmarks generate several output files in `benchmarks/prompts/_output/`:
-- **Raw JSON results** from Hyaline binary execution
-- **Evaluation reports** with programmatic scoring and analysis
-- **Multi-run markdown reports** with statistical summaries and individual run details
+- Raw JSON results from Hyaline binary execution
+- Raw JSON results for all runs
+- Multi-run markdown reports with statistical summaries and individual run details
 
 ### Golden Expectations Format
 
@@ -87,14 +88,14 @@ Golden expectation files in `benchmarks/prompts/_golden/` define the expected be
   "expectedRecommendations": [
     {
       "document": "path/to/document.md",
-      "section": "specific section name or empty string for wildcard"
+      "section": ["section titles", "that are expected"]
     }
   ]
 }
 ```
 
 - **document**: Full document path that should receive a recommendation
-- **section**: Specific section name, or empty string `""` to match any section in the document
+- **section**: A list of sections in hierarchically descending order. Or, an empty array to match the document itself 
 
 ## Releasing
 Release by checking out the appropriate commit on the main branch and then running `make release`.

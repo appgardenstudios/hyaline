@@ -27,12 +27,12 @@ type ExpectedRecommendation struct {
 	CheckType string   `json:"checkType,omitempty"` // For check current tests: "MATCHES_PURPOSE" or "COMPLETE"
 }
 
-// CheckResult is a unified result structure for both CheckChangeOutput and CheckCurrentOutput
+// CheckResult is a unified result structure for all check commands
 type CheckResult struct {
 	Recommendations []Recommendation `json:"recommendations"`
 }
 
-// Recommendation represents a single recommendation from either check command
+// Recommendation represents a single recommendation from a check command
 type Recommendation struct {
 	Document    string   `json:"document"`
 	Section     []string `json:"section"`
@@ -81,12 +81,10 @@ func runHyalineBinary(args []string, t *testing.T) ([]byte, error) {
 	}
 
 	binaryPath := filepath.Join(dir, "../../hyaline")
-	// Run from CLI directory where .env is located
 	workingDir := dir
 	t.Log("binaryPath", binaryPath)
 	t.Log("workingDir", workingDir)
 
-	// Run hyaline binary directly, trusting environment variables are already loaded
 	cmd := exec.Command(binaryPath, args...)
 	cmd.Dir = workingDir
 
