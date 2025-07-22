@@ -1,0 +1,65 @@
+llm:
+  provider: anthropic
+  model: claude-sonnet-4-20250514
+  key: ${HYALINE_ANTHROPIC_KEY}
+
+github:
+  token: ${HYALINE_GITHUB_PATS}
+
+systems:
+  - id: url-shortener
+    code:
+      - id: app
+        extractor:
+          type: git
+          options:
+            repo: git@github.com:appgardenstudios/hyaline-example.git
+            branch: url-shortener
+            clone: true
+            auth:
+              type: ssh
+              options:
+                user: git
+                pem: ${HYALINE_SSH_PEM}
+          include:
+            - "url-shortener/**/*.js"
+          exclude:
+            - "**/node_modules/**"
+            - "**/*.test.js"
+    documentation:
+      - id: internal
+        type: md
+        extractor:
+          type: git
+          options:
+            repo: git@github.com:appgardenstudios/hyaline-example.git
+            branch: url-shortener
+            clone: true
+            auth:
+              type: ssh
+              options:
+                user: git
+                pem: ${HYALINE_SSH_PEM}
+          include:
+            - "url-shortener/**/*.md"
+          exclude:
+            - "**/node_modules/**"
+        documents:
+          - name: url-shortener/docs/API.md
+            purpose: Documents the REST API endpoints for the URL shortener service.
+            required: true
+            sections:
+              - name: API Documentation
+                purpose: Documents the REST API endpoints for the URL shortener service
+                required: true
+                sections:
+                  - name: Endpoints
+                    purpose: Lists all available API endpoints
+                    required: true
+                    sections:
+                      - name: POST /api/shorten
+                        purpose: Describes the API contract for the `/api/shorten` endpoint, including a warning about the potential adverse effects from shortening a URL
+                        required: true
+                  - name: Security Considerations
+                    purpose: Documents security measures and potential risks
+                    required: true
