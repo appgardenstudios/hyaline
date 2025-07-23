@@ -1,0 +1,53 @@
+extract:
+  source:
+    id: mcp-test
+    description: Test documentation for MCP server
+  crawler:
+    type: fs
+    options:
+      path: ./
+    include:
+      - "docs/**/*.html"
+  extractors:
+    - type: html
+      options:
+        selector: main
+      include:
+        - "docs/**/*.html"
+  metadata:
+    - document: "**/*"
+      tags:
+        - key: system
+          value: mcp-test
+        - key: type
+          value: guide
+    - document: "docs/index.html" 
+      purpose: "Main documentation index page"
+      tags:
+        - key: importance  
+          value: high
+        - key: audience
+          value: developer
+        - key: category
+          value: overview
+        - key: category
+          value: reference
+    - document: "docs/doc.html"
+      purpose: "Detailed documentation page"
+      tags:
+        - key: importance
+          value: medium
+        - key: audience
+          value: developer
+        - key: audience
+          value: admin
+        - key: category
+          value: tutorial
+    - document: "docs/doc.html"
+      section: "First Section"
+      purpose: "Introduction section explaining the core concepts"
+      tags:
+        - key: section_type
+          value: intro
+        - key: importance
+          value: high
