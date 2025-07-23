@@ -17,7 +17,6 @@ func (t Tags) Add(key, value string) {
 	t[key] = append(t[key], value)
 }
 
-
 // Keys returns all tag keys in sorted order for deterministic iteration
 func (t Tags) Keys() []string {
 	keys := make([]string, 0, len(t))

@@ -113,17 +113,16 @@ func (documentURI *DocumentURI) MatchesTags(tags Tags) bool {
 
 	// Check each required tag
 	for requiredKey, requiredValues := range documentURI.Tags {
-		objectValues, hasKey := tags[requiredKey]
-		if !hasKey || len(objectValues) == 0 {
-			// Object doesn't have this required tag
+		values, hasKey := tags[requiredKey]
+		if !hasKey || len(values) == 0 {
 			return false
 		}
 
-		// Check if object has at least one of the required values for this tag
+		// Check if document/section has at least one of the required values for this tag
 		found := false
-		for _, reqVal := range requiredValues {
-			for _, objVal := range objectValues {
-				if reqVal == objVal {
+		for _, requiredValue := range requiredValues {
+			for _, value := range values {
+				if requiredValue == value {
 					found = true
 					break
 				}
@@ -134,7 +133,6 @@ func (documentURI *DocumentURI) MatchesTags(tags Tags) bool {
 		}
 
 		if !found {
-			// Object doesn't have any of the required values for this tag
 			return false
 		}
 	}

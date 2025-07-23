@@ -16,24 +16,6 @@ type Results struct {
 	Result strings.Builder
 }
 
-// writeTags writes tags in a deterministic order (sorted by key)
-func writeTags(builder *strings.Builder, tags Tags, indent string) {
-	if len(tags) == 0 {
-		return
-	}
-
-	// Write tags in sorted order using Tags.Keys() method
-	for _, key := range tags.Keys() {
-		values := tags[key]
-		builder.WriteString(indent + "  <tag>\n")
-		fmt.Fprintf(builder, indent+"    <key>%s</key>\n", key)
-		for _, value := range values {
-			fmt.Fprintf(builder, indent+"    <value>%s</value>\n", value)
-		}
-		builder.WriteString(indent + "  </tag>\n")
-	}
-}
-
 // ProcessDocuments processes documents based on URI and returns results
 func ProcessDocuments(data *DocumentationData, documentURI *DocumentURI, includeContent bool) *Results {
 	results := &Results{}
@@ -226,3 +208,20 @@ func generateSourceURL(crawlerType string, root string, documentID string) strin
 	return path.Join(root, documentID)
 }
 
+// writeTags writes tags in a deterministic order (sorted by key)
+func writeTags(builder *strings.Builder, tags Tags, indent string) {
+	if len(tags) == 0 {
+		return
+	}
+
+	// Write tags in sorted order using Tags.Keys() method
+	for _, key := range tags.Keys() {
+		values := tags[key]
+		builder.WriteString(indent + "  <tag>\n")
+		fmt.Fprintf(builder, indent+"    <key>%s</key>\n", key)
+		for _, value := range values {
+			fmt.Fprintf(builder, indent+"    <value>%s</value>\n", value)
+		}
+		builder.WriteString(indent + "  </tag>\n")
+	}
+}
