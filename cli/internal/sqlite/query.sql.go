@@ -9,6 +9,51 @@ import (
 	"context"
 )
 
+const deleteDocumentTagsForSource = `-- name: DeleteDocumentTagsForSource :exec
+DELETE FROM DOCUMENT_TAG WHERE SOURCE_ID = ?
+`
+
+func (q *Queries) DeleteDocumentTagsForSource(ctx context.Context, sourceID string) error {
+	_, err := q.db.ExecContext(ctx, deleteDocumentTagsForSource, sourceID)
+	return err
+}
+
+const deleteDocumentsForSource = `-- name: DeleteDocumentsForSource :exec
+DELETE FROM DOCUMENT WHERE SOURCE_ID = ?
+`
+
+func (q *Queries) DeleteDocumentsForSource(ctx context.Context, sourceID string) error {
+	_, err := q.db.ExecContext(ctx, deleteDocumentsForSource, sourceID)
+	return err
+}
+
+const deleteSectionTagsForSource = `-- name: DeleteSectionTagsForSource :exec
+DELETE FROM SECTION_TAG WHERE SOURCE_ID = ?
+`
+
+func (q *Queries) DeleteSectionTagsForSource(ctx context.Context, sourceID string) error {
+	_, err := q.db.ExecContext(ctx, deleteSectionTagsForSource, sourceID)
+	return err
+}
+
+const deleteSectionsForSource = `-- name: DeleteSectionsForSource :exec
+DELETE FROM SECTION WHERE SOURCE_ID = ?
+`
+
+func (q *Queries) DeleteSectionsForSource(ctx context.Context, sourceID string) error {
+	_, err := q.db.ExecContext(ctx, deleteSectionsForSource, sourceID)
+	return err
+}
+
+const deleteSource = `-- name: DeleteSource :exec
+DELETE FROM SOURCE WHERE ID = ?
+`
+
+func (q *Queries) DeleteSource(ctx context.Context, id string) error {
+	_, err := q.db.ExecContext(ctx, deleteSource, id)
+	return err
+}
+
 const getAllSources = `-- name: GetAllSources :many
 SELECT
   ID, DESCRIPTION, CRAWLER, ROOT

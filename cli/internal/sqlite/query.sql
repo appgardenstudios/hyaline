@@ -106,3 +106,18 @@ WHERE
   SOURCE_ID = ? AND DOCUMENT_ID = ? AND SECTION_ID = ?
 ORDER BY
   TAG_KEY, TAG_VALUE;
+
+-- name: DeleteSource :exec
+DELETE FROM SOURCE WHERE ID = ?;
+
+-- name: DeleteDocumentsForSource :exec
+DELETE FROM DOCUMENT WHERE SOURCE_ID = ?;
+
+-- name: DeleteDocumentTagsForSource :exec
+DELETE FROM DOCUMENT_TAG WHERE SOURCE_ID = ?;
+
+-- name: DeleteSectionsForSource :exec
+DELETE FROM SECTION WHERE SOURCE_ID = ?;
+
+-- name: DeleteSectionTagsForSource :exec
+DELETE FROM SECTION_TAG WHERE SOURCE_ID = ?;
