@@ -219,5 +219,12 @@ func validate(cfg *Config) (err error) {
 		return
 	}
 
+	// Verify check
+	err = validateCheck(cfg)
+	if err != nil {
+		slog.Debug("config.Validate found invalid check", "error", err)
+		return
+	}
+
 	return
 }

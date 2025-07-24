@@ -1,0 +1,10 @@
+check:
+  code:
+    include:
+      - "**/*.js"
+      - "package.json"
+    exclude:
+      - "**/*.test.js"
+  documentation:
+    include:
+      - source: "**/*"   

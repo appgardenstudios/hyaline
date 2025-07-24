@@ -14,16 +14,26 @@ install:
 
 .PHONY: test
 test:
-	go test ./cmd/... ./internal/...
+	rm -rf .coverdata/unit
+	mkdir -p .coverdata/unit
+	go test -cover ./cmd/... ./internal/... -args -test.gocoverdir="`pwd`/.coverdata/unit"
 
 .PHONY: e2e
 e2e:
 	rm -rf ./e2e/_output/*
-	rm -rf .coverdata
-	mkdir -p .coverdata
+	rm -rf .coverdata/e2e
+	mkdir -p .coverdata/e2e
 	go build -o ./hyaline-e2e -ldflags="-X 'main.Version=development'" -cover ./cmd/hyaline.go
 	go test ./e2e/...
-	go tool covdata percent -i=.coverdata
+	go tool covdata percent -i=.coverdata/e2e
+
+.PHONY: coverage
+coverage:
+	make test
+	make e2e
+	go tool covdata textfmt -i=./.coverdata/unit,./.coverdata/e2e -o ./.coverdata/profile
+	go tool cover -func=./.coverdata/profile
+	go tool cover -html=./.coverdata/profile
 
 .PHONY: e2e-update
 e2e-update:

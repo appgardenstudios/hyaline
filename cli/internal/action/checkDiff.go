@@ -1,6 +1,10 @@
 package action
 
-import "log/slog"
+import (
+	"errors"
+	"hyaline/internal/config"
+	"log/slog"
+)
 
 type CheckDiffArgs struct {
 	Config        string
@@ -27,6 +31,20 @@ func CheckDiff(args *CheckDiffArgs) error {
 		"pull-request", args.PullRequest,
 		"issues", args.Issues,
 		"output", args.Output)
+
+	// Load Config
+	cfg, err := config.Load(args.Config)
+	if err != nil {
+		slog.Debug("action.CheckDiff could not load the config", "error", err)
+		return err
+	}
+
+	// Ensure check options are set as they are required for this action to run
+	if cfg.Check == nil {
+		slog.Debug("action.CheckDiff did not find check options")
+		err = errors.New("the check diff command requires check options be set in the config")
+		return err
+	}
 
 	return nil
 }

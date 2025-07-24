@@ -8,6 +8,7 @@ type Config struct {
 	Systems         []System      `yaml:"systems,omitempty"`
 	CommonDocuments []DocumentSet `yaml:"commonDocuments,omitempty"`
 	Extract         *Extract      `yaml:"extract,omitempty"`
+	Check           *Check        `yaml:"check,omitempty"`
 }
 
 func (c *Config) GetSystem(id string) (system System, found bool) {
@@ -319,6 +320,61 @@ type ExtractMetadata struct {
 }
 
 type ExtractMetadataTag struct {
+	Key   string `yaml:"key,omitempty"`
+	Value string `yaml:"value,omitempty"`
+}
+
+type Check struct {
+	Code          CheckCode          `yaml:"code,omitempty"`
+	Documentation CheckDocumentation `yaml:"documentation,omitempty"`
+	Options       CheckOptions       `yaml:"options,omitempty"`
+}
+
+type CheckCode struct {
+	Include []string `yaml:"include,omitempty"`
+	Exclude []string `yaml:"exclude,omitempty"`
+}
+
+type CheckDocumentation struct {
+	Include []CheckDocumentationFilter `yaml:"include,omitempty"`
+	Exclude []CheckDocumentationFilter `yaml:"exclude,omitempty"`
+}
+
+type CheckOptions struct {
+	DetectDocumentationUpdates CheckOptionsDetectDocumentationUpdates `yaml:"detectDocumentationUpdates,omitempty"`
+	UpdateIf                   CheckOptionsUpdateIf                   `yaml:"updateIf,omitempty"`
+}
+
+type CheckOptionsDetectDocumentationUpdates struct {
+	Source string `yaml:"source,omitempty"`
+}
+
+type CheckOptionsUpdateIf struct {
+	Touched  []CheckOptionsUpdateIfEntry `yaml:"touched,omitempty"`
+	Added    []CheckOptionsUpdateIfEntry `yaml:"added,omitempty"`
+	Modified []CheckOptionsUpdateIfEntry `yaml:"modified,omitempty"`
+	Deleted  []CheckOptionsUpdateIfEntry `yaml:"deleted,omitempty"`
+	Renamed  []CheckOptionsUpdateIfEntry `yaml:"renamed,omitempty"`
+}
+
+type CheckOptionsUpdateIfEntry struct {
+	Code          CheckCodeFilter          `yaml:"code,omitempty"`
+	Documentation CheckDocumentationFilter `yaml:"documentation,omitempty"`
+}
+
+type CheckCodeFilter struct {
+	Path string `yaml:"path,omitempty"`
+}
+
+type CheckDocumentationFilter struct {
+	Source   string                        `yaml:"source,omitempty"`
+	Document string                        `yaml:"document,omitempty"`
+	Section  string                        `yaml:"section,omitempty"`
+	URI      string                        `yaml:"uri,omitempty"`
+	Tags     []CheckDocumentationFilterTag `yaml:"tags,omitempty"`
+}
+
+type CheckDocumentationFilterTag struct {
 	Key   string `yaml:"key,omitempty"`
 	Value string `yaml:"value,omitempty"`
 }
