@@ -54,6 +54,135 @@ func (q *Queries) DeleteSource(ctx context.Context, id string) error {
 	return err
 }
 
+const getAllDocumentTagsForSource = `-- name: GetAllDocumentTagsForSource :many
+SELECT
+  DOCUMENT_ID, TAG_KEY, TAG_VALUE
+FROM
+  DOCUMENT_TAG
+WHERE
+  SOURCE_ID = ?
+ORDER BY
+  DOCUMENT_ID, TAG_KEY, TAG_VALUE
+`
+
+type GetAllDocumentTagsForSourceRow struct {
+	DocumentID string
+	TagKey     string
+	TagValue   string
+}
+
+func (q *Queries) GetAllDocumentTagsForSource(ctx context.Context, sourceID string) ([]GetAllDocumentTagsForSourceRow, error) {
+	rows, err := q.db.QueryContext(ctx, getAllDocumentTagsForSource, sourceID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetAllDocumentTagsForSourceRow
+	for rows.Next() {
+		var i GetAllDocumentTagsForSourceRow
+		if err := rows.Scan(&i.DocumentID, &i.TagKey, &i.TagValue); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getAllSectionTagsForSource = `-- name: GetAllSectionTagsForSource :many
+SELECT
+  DOCUMENT_ID, SECTION_ID, TAG_KEY, TAG_VALUE
+FROM
+  SECTION_TAG
+WHERE
+  SOURCE_ID = ?
+ORDER BY
+  DOCUMENT_ID, SECTION_ID, TAG_KEY, TAG_VALUE
+`
+
+type GetAllSectionTagsForSourceRow struct {
+	DocumentID string
+	SectionID  string
+	TagKey     string
+	TagValue   string
+}
+
+func (q *Queries) GetAllSectionTagsForSource(ctx context.Context, sourceID string) ([]GetAllSectionTagsForSourceRow, error) {
+	rows, err := q.db.QueryContext(ctx, getAllSectionTagsForSource, sourceID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetAllSectionTagsForSourceRow
+	for rows.Next() {
+		var i GetAllSectionTagsForSourceRow
+		if err := rows.Scan(
+			&i.DocumentID,
+			&i.SectionID,
+			&i.TagKey,
+			&i.TagValue,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getAllSectionsForSource = `-- name: GetAllSectionsForSource :many
+SELECT
+  ID, DOCUMENT_ID, SOURCE_ID, PARENT_ID, PEER_ORDER, NAME, PURPOSE, EXTRACTED_DATA
+FROM
+  SECTION
+WHERE
+  SOURCE_ID = ?
+ORDER BY
+  DOCUMENT_ID, PEER_ORDER, ID
+`
+
+func (q *Queries) GetAllSectionsForSource(ctx context.Context, sourceID string) ([]SECTION, error) {
+	rows, err := q.db.QueryContext(ctx, getAllSectionsForSource, sourceID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []SECTION
+	for rows.Next() {
+		var i SECTION
+		if err := rows.Scan(
+			&i.ID,
+			&i.DocumentID,
+			&i.SourceID,
+			&i.ParentID,
+			&i.PeerOrder,
+			&i.Name,
+			&i.Purpose,
+			&i.ExtractedData,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getAllSources = `-- name: GetAllSources :many
 SELECT
   ID, DESCRIPTION, CRAWLER, ROOT

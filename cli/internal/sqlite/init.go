@@ -51,3 +51,31 @@ func InitOutput(outputPath string) (q *Queries, err error) {
 
 	return
 }
+
+func InitInput(inputPath string) (q *Queries, err error) {
+	// Get absolute path
+	absPath, err := filepath.Abs(inputPath)
+	if err != nil {
+		slog.Debug("sqlite.InitInput could not get an absolute path for input", "input", inputPath, "error", err)
+		return
+	}
+
+	// Check if input file exists
+	if _, err = os.Stat(absPath); err != nil {
+		slog.Debug("sqlite.InitInput input file does not exist", "input", inputPath, "error", err)
+		err = errors.New("input file does not exist")
+		return
+	}
+
+	// Open db
+	db, err := sql.Open("sqlite", absPath)
+	if err != nil {
+		slog.Debug("sqlite.InitInput could not open input SQLite DB", "dataSourceName", absPath, "error", err)
+		return
+	}
+
+	// Create sqlc queries struct
+	q = New(db)
+
+	return
+}

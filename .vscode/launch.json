@@ -296,9 +296,9 @@
       "args":[
         "--debug",
         "merge", "documentation",
-        "--input", "../.vscode/hyaline/merge-documentation/input-1.db",
-        "--input", "../.vscode/hyaline/merge-documentation/input-2.db",
-        "--input", "../.vscode/hyaline/merge-documentation/input-3.db",
+        "--input", "../.vscode/hyaline/merge-documentation/input-1.sqlite",
+        "--input", "../.vscode/hyaline/merge-documentation/input-2.sqlite",
+        "--input", "../.vscode/hyaline/merge-documentation/input-3.sqlite",
         "--output", "../.vscode/hyaline/merge-documentation/merged.db"
       ]
     },
