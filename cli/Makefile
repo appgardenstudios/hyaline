@@ -31,8 +31,8 @@ e2e:
 coverage:
 	make test
 	make e2e
+	go tool covdata percent -i=./.coverdata/unit,./.coverdata/e2e
 	go tool covdata textfmt -i=./.coverdata/unit,./.coverdata/e2e -o ./.coverdata/profile
-	go tool cover -func=./.coverdata/profile
 	go tool cover -html=./.coverdata/profile
 
 .PHONY: e2e-update
