@@ -7,6 +7,8 @@ import (
 	"path"
 	"strings"
 
+	"hyaline/internal/config"
+
 	giturls "github.com/whilp/git-urls"
 )
 
@@ -175,7 +177,7 @@ func processSectionWithContent(results *Results, section *Section) {
 // generateSourceURL generates a source URL based on crawler type, root, and document ID
 func generateSourceURL(crawlerType string, root string, documentID string) string {
 	switch crawlerType {
-	case "git":
+	case string(config.ExtractorTypeGit):
 		// For git crawler, root should be a git URL
 		if gitURL, err := giturls.Parse(root); err == nil {
 			// Convert git URL to web URL using proper URL construction
@@ -189,7 +191,7 @@ func generateSourceURL(crawlerType string, root string, documentID string) strin
 		}
 		// If parsing fails, fall through to default
 
-	case "http":
+	case string(config.ExtractorTypeHttp):
 		// For http crawler, root is already a web URL
 		if sourceURL, err := url.Parse(root); err == nil && sourceURL.Scheme != "" {
 			// Valid URL with scheme - use proper URL path joining
@@ -198,7 +200,7 @@ func generateSourceURL(crawlerType string, root string, documentID string) strin
 		}
 		// If parsing fails, fall through to default
 
-	case "fs":
+	case string(config.ExtractorTypeFs):
 		// For fs crawler, root is a file system path
 		// Just join the paths
 		return path.Join(root, documentID)
