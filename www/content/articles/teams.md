@@ -19,8 +19,40 @@ The content will go here
 
 ## People
 
+<div class="portrait">
+
+![People](./_img/teams-people.svg)
+
+The content will go here
+
+</div>
+
 ## Product
+
+<div class="portrait">
+
+![Product](./_img/teams-product.svg)
+
+The content will go here
+
+</div>
 
 ## System
 
+<div class="portrait">
+
+![System](./_img/teams-system.svg)
+
+The content will go here
+
+</div>
+
 ## Process
+
+<div class="portrait">
+
+![Process](./_img/teams-process.svg)
+
+The content will go here
+
+</div>
