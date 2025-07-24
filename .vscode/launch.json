@@ -227,6 +227,50 @@
         "--output", "../.vscode/hyaline/extract-documentation-git-local/documentation.db"
       ]
     },{
+      "name": "Check Diff (branch)",
+      "type": "go",
+      "request": "launch",
+      "mode": "debug",
+      "preLaunchTask": "check-diff",
+      "cwd": "${workspaceFolder}/cli/",
+      "program": "${workspaceFolder}/cli/cmd/hyaline.go",
+      "envFile": "${workspaceFolder}/cli/.env",
+      "args":[
+        "--debug",
+        "check", "diff",
+        "--config", "../.vscode/hyaline/check-diff/hyaline.yml",
+        "--documentation", "../.vscode/hyaline/check-diff/documentation.db",
+        "--path", "../../hyaline-example",
+        "--base", "main",
+        "--head", "feat-1",
+        "--pull-request", "appgardenstudios/hyaline-example/1",
+        "--issue", "appgardenstudios/hyaline-example/2",
+        "--issue", "appgardenstudios/hyaline-example/3",
+        "--output", "../.vscode/hyaline/check-diff/recommendations.json"
+      ]
+    },{
+      "name": "Check Diff (ref)",
+      "type": "go",
+      "request": "launch",
+      "mode": "debug",
+      "preLaunchTask": "check-diff",
+      "cwd": "${workspaceFolder}/cli/",
+      "program": "${workspaceFolder}/cli/cmd/hyaline.go",
+      "envFile": "${workspaceFolder}/cli/.env",
+      "args":[
+        "--debug",
+        "check", "diff",
+        "--config", "../.vscode/hyaline/check-diff/hyaline.yml",
+        "--documentation", "../.vscode/hyaline/check-diff/documentation.db",
+        "--path", "../../hyaline-example",
+        "--base-ref", "refs/heads/main",
+        "--head-ref", "refs/remotes/origin/feat-1",
+        "--pull-request", "appgardenstudios/hyaline-example/1",
+        "--issue", "appgardenstudios/hyaline-example/2",
+        "--issue", "appgardenstudios/hyaline-example/3",
+        "--output", "../.vscode/hyaline/check-diff/recommendations.json"
+      ]
+    },{
       "name": "Extract Documentation (git-ssh)",
       "type": "go",
       "request": "launch",
