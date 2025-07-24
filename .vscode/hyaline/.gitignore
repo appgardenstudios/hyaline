@@ -1,0 +1,2 @@
+# Ignore all intermediate database files
+*.db
