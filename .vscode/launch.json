@@ -271,6 +271,19 @@
         "--config", "../.vscode/hyaline/extract-documentation-http/hyaline.yml",
         "--output", "../.vscode/hyaline/extract-documentation-http/documentation.db"
       ]
+    },{
+      "name": "Serve MCP",
+      "type": "go",
+      "request": "launch",
+      "mode": "debug",
+      "cwd": "${workspaceFolder}/cli/",
+      "program": "${workspaceFolder}/cli/cmd/hyaline.go",
+      "envFile": "${workspaceFolder}/cli/.env",
+      "args":[
+        "--debug",
+        "serve", "mcp",
+        "--documentation", "../.vscode/hyaline/serve-mcp/documentation.sqlite"
+      ]
     },
   ]
 }

@@ -1,0 +1,84 @@
+The <documents> XML structure contains all available documents and sections with their corresponding document URIs, along with <purpose> and <tags> metadata when available.
+
+<documents>
+          <document>
+            <uri>document://mcp-test/docs/doc.html</uri>
+            <source>docs/doc.html</source>
+            <purpose>Detailed documentation page</purpose>
+            <tags>
+              <tag>
+                <key>audience</key>
+                <value>admin</value>
+                <value>developer</value>
+              </tag>
+              <tag>
+                <key>category</key>
+                <value>tutorial</value>
+              </tag>
+              <tag>
+                <key>importance</key>
+                <value>medium</value>
+              </tag>
+              <tag>
+                <key>system</key>
+                <value>mcp-test</value>
+              </tag>
+              <tag>
+                <key>type</key>
+                <value>guide</value>
+              </tag>
+            </tags>
+            <sections>
+              <section>
+                <name>First Section</name>
+                <purpose>Introduction section explaining the core concepts</purpose>
+                <tags>
+                  <tag>
+                    <key>importance</key>
+                    <value>high</value>
+                  </tag>
+                  <tag>
+                    <key>section_type</key>
+                    <value>intro</value>
+                  </tag>
+                </tags>
+              </section>
+              <section>
+                <name>Sub Section 1</name>
+              </section>
+              <section>
+                <name>Sub Section 2</name>
+              </section>
+            </sections>
+          </document>
+          <document>
+            <uri>document://mcp-test/docs/index.html</uri>
+            <source>docs/index.html</source>
+            <purpose>Main documentation index page</purpose>
+            <tags>
+              <tag>
+                <key>audience</key>
+                <value>developer</value>
+              </tag>
+              <tag>
+                <key>category</key>
+                <value>overview</value>
+                <value>reference</value>
+              </tag>
+              <tag>
+                <key>importance</key>
+                <value>high</value>
+              </tag>
+              <tag>
+                <key>system</key>
+                <value>mcp-test</value>
+              </tag>
+              <tag>
+                <key>type</key>
+                <value>guide</value>
+              </tag>
+            </tags>
+            <sections>
+            </sections>
+          </document>
+</documents>
