@@ -215,7 +215,7 @@ func Check(logLevel *slog.LevelVar) *cli.Command {
 					// Execute action
 					err := action.CheckDiff(&action.CheckDiffArgs{
 						Config:        cCtx.String("config"),
-						Documentation: cCtx.String("current"),
+						Documentation: cCtx.String("documentation"),
 						Path:          cCtx.String("path"),
 						Base:          base,
 						BaseRef:       baseRef,

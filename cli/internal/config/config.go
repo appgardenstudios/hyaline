@@ -1,6 +1,9 @@
 package config
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+)
 
 type Config struct {
 	LLM             LLM           `yaml:"llm,omitempty"`
@@ -372,6 +375,20 @@ type CheckDocumentationFilter struct {
 	Section  string                        `yaml:"section,omitempty"`
 	URI      string                        `yaml:"uri,omitempty"`
 	Tags     []CheckDocumentationFilterTag `yaml:"tags,omitempty"`
+}
+
+func (filter *CheckDocumentationFilter) GetParts() (source string, document string, section string) {
+	if filter.URI != "" {
+		var remainder string
+		source, remainder, _ = strings.Cut(strings.TrimPrefix(filter.URI, "document://"), "/")
+		document, section, _ = strings.Cut(remainder, "#")
+	} else {
+		source = filter.Source
+		document = filter.Document
+		section = filter.Section
+	}
+
+	return
 }
 
 type CheckDocumentationFilterTag struct {

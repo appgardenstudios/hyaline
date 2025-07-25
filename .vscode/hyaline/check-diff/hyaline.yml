@@ -1,3 +1,33 @@
+github:
+  token: ${HYALINE_GITHUB_PAT}
+
+extract:
+  source:
+    id: my-app
+    description: documentation for my application
+  crawler:
+    type: git
+    options:
+      repo: https://github.com/appgardenstudios/hyaline-example.git
+      branch: main
+      clone: true
+      auth:
+        type: http
+        options:
+          username: git
+          password: ${HYALINE_GITHUB_PAT}
+    include:
+      - "**/*.md"
+  extractors:
+    - type: md
+      include:
+        - "**/*"
+  metadata:
+    - document: "**/*"
+      tags:
+        - key: system
+          value: my-app
+
 check:
   code:
     include:
@@ -7,4 +37,7 @@ check:
       - "**/*.test.js"
   documentation:
     include:
-      - source: "**/*"   
+      - source: "**/*"
+    exclude:
+      - source: my-app
+        document: docs/preDoc.md

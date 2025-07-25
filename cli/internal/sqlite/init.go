@@ -14,7 +14,7 @@ import (
 //go:embed schema.sql
 var schema string
 
-func InitOutput(outputPath string) (q *Queries, err error) {
+func InitOutput(outputPath string) (q *Queries, db *sql.DB, err error) {
 	// Get absolute path
 	absPath, err := filepath.Abs(outputPath)
 	if err != nil {
@@ -33,7 +33,7 @@ func InitOutput(outputPath string) (q *Queries, err error) {
 	}
 
 	// Open db
-	db, err := sql.Open("sqlite", absPath)
+	db, err = sql.Open("sqlite", absPath)
 	if err != nil {
 		slog.Debug("sqlite.InitOutput could not open a new SQLite DB", "dataSourceName", absPath, "error", err)
 		return
