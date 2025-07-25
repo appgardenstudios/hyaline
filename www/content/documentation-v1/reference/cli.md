@@ -35,3 +35,15 @@ $ hyaline help
 ```
 $ hyaline version
 ```
+
+## serve mcp
+`hyaline serve mcp` starts an MCP server running locally over stdio and serves up the documentation produced by running `hyaline extract documentation`.
+
+**Options**:
+* `--documentation` - (required) Path to the SQLite database containing documentation
+
+**Example**:
+```
+$ hyaline serve mcp --documentation ./documentation.db
+```
+Start a local MCP server using the standard I/O transport and have it use the extracted documentation found in `./documentation.db`.
