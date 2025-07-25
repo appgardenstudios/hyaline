@@ -12,6 +12,9 @@ items:
       - title: Run the MCP Server
         url: /documentation-v1/how-to/run-mcp
   - title: Explanation
+    items:
+      - title: MCP
+        url: /documentation-v1/explanation/mcp
   - title: Reference
     items:
       - title: CLI
