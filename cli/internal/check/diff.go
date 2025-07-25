@@ -15,17 +15,10 @@ import (
 )
 
 type Result struct {
-	DocumentationSource string
-	Document            string
-	Section             []string
-	Reasons             []string
-	References          []ResultReference
-}
-
-type ResultReference struct {
-	CodeID string
-	FileID string
-	Diff   string
+	Source   string
+	Document string
+	Section  []string
+	Reasons  []string
 }
 
 const checkNeedsUpdateName = "needs_update"
@@ -44,10 +37,17 @@ type checkNoUpdateNeededSchema struct {
 }
 
 func Diff(files []code.FilteredFile, documents []*docs.FilteredDoc, pr *github.PullRequest, issues []*github.Issue) (results []Result, err error) {
+	resultMap := make(map[string][]string)
 
 	systemPrompt := "You are a senior technical writer who writes clear and accurate documentation."
 	tools := getCheckTools(func(id string, reason string) {
-		// TODO
+		entry, ok := resultMap[id]
+		if ok {
+			entry = append(entry, reason)
+			resultMap[id] = entry
+		} else {
+			resultMap[id] = []string{reason}
+		}
 	})
 
 	for _, file := range files {
@@ -61,6 +61,12 @@ func Diff(files []code.FilteredFile, documents []*docs.FilteredDoc, pr *github.P
 		// TODO call llm
 		slog.Debug("check.Diff calling llm", "file", file.Filename, "systemPrompt", systemPrompt, "prompt", prompt, "tools", len(tools))
 	}
+
+	// Process resultMap into results
+	// TODO
+
+	// Sort
+	// TODO
 
 	return
 }
