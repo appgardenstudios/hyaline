@@ -16,5 +16,7 @@ items:
     items:
       - title: CLI
         url: /documentation-v1/reference/cli
+      - title: MCP
+        url: /documentation-v1/reference/mcp
   - title: Roadmap
     url: /documentation-v1/roadmap
