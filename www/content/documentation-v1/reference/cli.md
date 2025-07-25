@@ -35,3 +35,22 @@ $ hyaline help
 ```
 $ hyaline version
 ```
+
+## merge documentation
+`hyaline merge documentation` merges 2 or more documentation data sets into a single output database.
+
+**Options**:
+* `--input` - (required, multiple allowed) Path of the sqlite databases to merge. At least 2 inputs are required
+* `--output` - (required) Path of the sqlite database to create
+
+**Example**:
+```
+$ hyaline merge documentation --input ./docs1.db --input ./docs2.db --output ./merged.db
+```
+Merge `./docs1.db` and `./docs2.db` into a single output database `./merged.db`.
+
+**Example**:
+```
+$ hyaline merge documentation --input ./docs1.db --input ./docs2.db --input ./docs3.db --output ./merged.db
+```
+Merge multiple documentation databases `./docs1.db`, `./docs2.db`, and `./docs3.db` into a single output database `./merged.db`.
