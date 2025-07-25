@@ -44,6 +44,16 @@
         "reveal": "silent"
       }
     },{
+      "label": "check-diff",
+      "type": "shell",
+      "command": "rm -f ../.vscode/hyaline/check-diff/recommendations.json",
+      "options":{
+        "cwd": "${workspaceFolder}/cli/"
+      },
+      "presentation":{
+        "reveal": "silent"
+      }
+    },{
       "label": "extract-documentation-fs",
       "type": "shell",
       "command": "rm -f ../.vscode/hyaline/extract-documentation-fs/documentation.db",

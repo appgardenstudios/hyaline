@@ -54,6 +54,43 @@ func (q *Queries) DeleteSource(ctx context.Context, id string) error {
 	return err
 }
 
+const getAllDocumentTags = `-- name: GetAllDocumentTags :many
+SELECT
+  SOURCE_ID, DOCUMENT_ID, TAG_KEY, TAG_VALUE
+FROM
+  DOCUMENT_TAG
+ORDER BY
+  SOURCE_ID, DOCUMENT_ID, TAG_KEY, TAG_VALUE
+`
+
+func (q *Queries) GetAllDocumentTags(ctx context.Context) ([]DOCUMENTTAG, error) {
+	rows, err := q.db.QueryContext(ctx, getAllDocumentTags)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []DOCUMENTTAG
+	for rows.Next() {
+		var i DOCUMENTTAG
+		if err := rows.Scan(
+			&i.SourceID,
+			&i.DocumentID,
+			&i.TagKey,
+			&i.TagValue,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getAllDocumentTagsForSource = `-- name: GetAllDocumentTagsForSource :many
 SELECT
   DOCUMENT_ID, TAG_KEY, TAG_VALUE
@@ -81,6 +118,83 @@ func (q *Queries) GetAllDocumentTagsForSource(ctx context.Context, sourceID stri
 	for rows.Next() {
 		var i GetAllDocumentTagsForSourceRow
 		if err := rows.Scan(&i.DocumentID, &i.TagKey, &i.TagValue); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getAllDocuments = `-- name: GetAllDocuments :many
+SELECT
+  ID, SOURCE_ID, TYPE, PURPOSE, RAW_DATA, EXTRACTED_DATA
+FROM
+  DOCUMENT
+ORDER BY
+  SOURCE_ID, ID
+`
+
+func (q *Queries) GetAllDocuments(ctx context.Context) ([]DOCUMENT, error) {
+	rows, err := q.db.QueryContext(ctx, getAllDocuments)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []DOCUMENT
+	for rows.Next() {
+		var i DOCUMENT
+		if err := rows.Scan(
+			&i.ID,
+			&i.SourceID,
+			&i.Type,
+			&i.Purpose,
+			&i.RawData,
+			&i.ExtractedData,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getAllSectionTags = `-- name: GetAllSectionTags :many
+SELECT
+  SOURCE_ID, DOCUMENT_ID, SECTION_ID, TAG_KEY, TAG_VALUE
+FROM
+  SECTION_TAG
+ORDER BY
+  SOURCE_ID, DOCUMENT_ID, SECTION_ID, TAG_KEY, TAG_VALUE
+`
+
+func (q *Queries) GetAllSectionTags(ctx context.Context) ([]SECTIONTAG, error) {
+	rows, err := q.db.QueryContext(ctx, getAllSectionTags)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []SECTIONTAG
+	for rows.Next() {
+		var i SECTIONTAG
+		if err := rows.Scan(
+			&i.SourceID,
+			&i.DocumentID,
+			&i.SectionID,
+			&i.TagKey,
+			&i.TagValue,
+		); err != nil {
 			return nil, err
 		}
 		items = append(items, i)
@@ -126,6 +240,47 @@ func (q *Queries) GetAllSectionTagsForSource(ctx context.Context, sourceID strin
 			&i.SectionID,
 			&i.TagKey,
 			&i.TagValue,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getAllSections = `-- name: GetAllSections :many
+SELECT
+  ID, DOCUMENT_ID, SOURCE_ID, PARENT_ID, PEER_ORDER, NAME, PURPOSE, EXTRACTED_DATA
+FROM
+  SECTION
+ORDER BY
+  SOURCE_ID, DOCUMENT_ID, PEER_ORDER, ID
+`
+
+func (q *Queries) GetAllSections(ctx context.Context) ([]SECTION, error) {
+	rows, err := q.db.QueryContext(ctx, getAllSections)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []SECTION
+	for rows.Next() {
+		var i SECTION
+		if err := rows.Scan(
+			&i.ID,
+			&i.DocumentID,
+			&i.SourceID,
+			&i.ParentID,
+			&i.PeerOrder,
+			&i.Name,
+			&i.Purpose,
+			&i.ExtractedData,
 		); err != nil {
 			return nil, err
 		}
