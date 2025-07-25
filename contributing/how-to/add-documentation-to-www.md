@@ -4,62 +4,52 @@ This guide explains how to add new documentation to the Hyaline website at [`/ww
 
 ## Adding Documentation
 
-### 1. File Naming and Ordering
+### 1. Table of Contents Configuration
 
-Files use numbered prefixes to control their order in navigation. Example:
+The documentation table of contents is controlled by the `www/data/documentation_toc.yml` file. This file defines the structure and order of documentation pages.
 
+Example structure:
+```yaml
+items:
+  - title: Overview
+    url: /documentation-v1/overview # an item can have a link
+  - title: How To # an item does not have to have a link
+    items: # an item can have sub-items
+      - title: Install the CLI
+        url: /documentation-v1/how-to/install-cli
+      - title: Run the CLI
+        url: /documentation-v1/how-to/run-cli
+  - title: Reference
+    items:
+      - title: CLI
+        url: /documentation-v1/reference/cli
+  - title: Roadmap
+    url: /documentation-v1/roadmap
 ```
-01-overview.md
-03-how-to/
-  01-install-cli.md
-  02-run-cli.md
-  03-check-pr.md
-04-explanation/
-  01-hyaline.md
-  02-extract-current.md
-```
 
-**To insert between existing files:**
-1. Add your file with the appropriate number
-2. Renumber all following files to maintain sequence
-
-Example: To add a new how-to guide between "Install CLI" and "Run CLI":
-- Add `02-my-new-guide.md`
-- Rename `02-run-cli.md` to `03-run-cli.md`
-- Rename `03-check-pr.md` to `04-check-pr.md`
+To add a new documentation page:
+1. Create the markdown file in the appropriate directory
+2. Add an entry in `documentation_toc.yml` with the title and URL
 
 ### 2. Directory Structure
 
-- **Top-level files** (like `01-overview.md`) appear at the root documentation level
-- **Subdirectories** automatically create categories in navigation
+- **Top-level files** (like `overview.md`) appear at the root documentation level
+- **Subdirectories** organize related documentation (e.g., `how-to/`, `reference/`)
 - **`_img/` directories** within categories store images for that category
 
 ### 3. Frontmatter
 
 **Frontmatter properties:**
-- `title`: Include category prefix for categorized docs (e.g., "How To: ", "Explanation: ")
-- `linkTitle`: For categorized docs, omit the category prefix (used in navigation)
+- `title`: The full title of the document
+- `description`: A brief description of the document
 - `purpose`: Brief description of the document's purpose
-- `url`: Custom URL path (removes numbered prefixes from URLs)
 
-
-Example For Top-Level Documents:
+Example:
 ```yaml
 ---
 title: Overview
-linkTitle: Overview
+description: "Learn how Hyaline helps teams maintain documentation"
 purpose: Give an overview of Hyaline and the documentation
-url: documentation/overview
----
-```
-
-Example For Categorized Documents:
-```yaml
----
-title: "How To: Install the Hyaline CLI"
-linkTitle: Install the Hyaline CLI
-purpose: Document how to install the Hyaline CLI
-url: documentation/how-to/install-cli
 ---
 ```
 
@@ -81,6 +71,6 @@ Example:
 
 Example:
 ```markdown
-[How To Install the CLI](./03-how-to/01-install-cli.md)
-[CLI Reference](../05-reference/02-cli.md)
+[How To Install the CLI](./how-to/install-cli.md)
+[CLI Reference](../reference/cli.md)
 ```

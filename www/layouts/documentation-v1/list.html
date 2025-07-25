@@ -1,0 +1,5 @@
+{{ define "main" }}
+{{ $overviewPage := .Site.GetPage "/documentation-v1/overview.md" }}
+{{ $tocData := .Site.Data.documentation_toc }}
+{{ partial "table-of-contents.html" (dict "currentPage" $overviewPage "tocData" $tocData) }}
+{{ end }}

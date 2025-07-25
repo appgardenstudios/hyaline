@@ -1,0 +1,34 @@
+The <documents> XML structure contains all available documents and sections with their corresponding document URIs, along with <purpose> and <tags> metadata when available.
+
+<documents>
+          <document>
+            <uri>document://mcp-test/docs/index.html</uri>
+            <source>docs/index.html</source>
+            <purpose>Main documentation index page</purpose>
+            <tags>
+              <tag>
+                <key>audience</key>
+                <value>developer</value>
+              </tag>
+              <tag>
+                <key>category</key>
+                <value>overview</value>
+                <value>reference</value>
+              </tag>
+              <tag>
+                <key>importance</key>
+                <value>high</value>
+              </tag>
+              <tag>
+                <key>system</key>
+                <value>mcp-test</value>
+              </tag>
+              <tag>
+                <key>type</key>
+                <value>guide</value>
+              </tag>
+            </tags>
+            <sections>
+            </sections>
+          </document>
+</documents>

@@ -1,0 +1,38 @@
+extract:
+  source:
+    id: unique-source-id
+    description: Test documentation set 3 with unique source ID
+  crawler:
+    type: fs
+    options:
+      path: ./e2e/_input/merge-documentation/docs/
+    include:
+      - "**/*.md"
+      - "**/*.html"
+  extractors:
+    - type: md
+      include:
+        - "**/*.md"
+    - type: html
+      options:
+        selector: main
+      include:
+        - "**/*.html"
+  metadata:
+    - document: "**/*"
+      tags:
+        - key: version
+          value: v3
+        - key: dataset
+          value: input-3
+    - document: "index.html"
+      purpose: "HTML documentation for input-3"
+      tags:
+        - key: doc-type
+          value: html
+    - document: "guide.md"
+      section: "User Guide/Getting Started"
+      purpose: "Getting started section for input-3"
+      tags:
+        - key: difficulty
+          value: beginner
