@@ -9,6 +9,8 @@ items:
         url: /documentation-v1/how-to/run-cli
       - title: Build the CLI
         url: /documentation-v1/how-to/build-cli
+      - title: Run the MCP Server
+        url: /documentation-v1/how-to/run-mcp
   - title: Explanation
   - title: Reference
     items:
