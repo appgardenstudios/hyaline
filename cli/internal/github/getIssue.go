@@ -6,7 +6,12 @@ import (
 	"github.com/google/go-github/v71/github"
 )
 
-func GetIssue(ref string, token string) (body *string, err error) {
+type Issue struct {
+	Title string
+	Body  string
+}
+
+func GetIssue(ref string, token string) (issue *Issue, err error) {
 	// Parse reference
 	owner, repo, id, err := parseReference(ref)
 	if err != nil {
@@ -15,13 +20,16 @@ func GetIssue(ref string, token string) (body *string, err error) {
 
 	// Get Issue
 	client := github.NewClient(nil).WithAuthToken(token)
-	issue, _, err := client.Issues.Get(context.Background(), owner, repo, int(id))
+	rawIssue, _, err := client.Issues.Get(context.Background(), owner, repo, int(id))
 	if err != nil {
 		return
 	}
 
 	// Get body
-	body = issue.Body
+	issue = &Issue{
+		Title: *rawIssue.Title,
+		Body:  *rawIssue.Body,
+	}
 
 	return
 }

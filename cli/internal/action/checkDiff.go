@@ -2,8 +2,12 @@ package action
 
 import (
 	"errors"
+	"hyaline/internal/check"
 	"hyaline/internal/code"
 	"hyaline/internal/config"
+	"hyaline/internal/docs"
+	"hyaline/internal/github"
+	"hyaline/internal/sqlite"
 	"log/slog"
 )
 
@@ -47,49 +51,49 @@ func CheckDiff(args *CheckDiffArgs) error {
 		return err
 	}
 
-	// // Get Pull Request
-	// var pr *string
-	// if args.PullRequest != "" {
-	// 	if cfg.GitHub.Token == "" {
-	// 		return errors.New("github token required to retrieve pull-request information")
-	// 	}
-	// 	pr, err = github.GetPullRequest(args.PullRequest, cfg.GitHub.Token)
-	// 	if err != nil {
-	// 		slog.Debug("action.CheckDiff could not get pull request", "pull-request", args.PullRequest, "error", err)
-	// 		return err
-	// 	}
-	// 	slog.Debug("action.CheckDiff retrieved pull-request", "pull-request", *pr) // TODO clean up
-	// }
+	// Get Pull Request
+	var pr *github.PullRequest
+	if args.PullRequest != "" {
+		if cfg.GitHub.Token == "" {
+			return errors.New("github token required to retrieve pull-request information")
+		}
+		pr, err = github.GetPullRequest(args.PullRequest, cfg.GitHub.Token)
+		if err != nil {
+			slog.Debug("action.CheckDiff could not get pull request", "pull-request", args.PullRequest, "error", err)
+			return err
+		}
+		slog.Debug("action.CheckDiff retrieved pull-request", "pull-request", pr) // TODO clean up
+	}
 
-	// // Get Issue(s)
-	// issues := []*string{}
-	// if len(args.Issues) > 0 {
-	// 	if cfg.GitHub.Token == "" {
-	// 		return errors.New("github token required to retrieve issue information")
-	// 	}
-	// 	for _, issue := range args.Issues {
-	// 		body, err := github.GetIssue(issue, cfg.GitHub.Token)
-	// 		if err != nil {
-	// 			slog.Debug("action.CheckDiff could not get issue", "issue", issue, "error", err)
-	// 			return err
-	// 		}
-	// 		issues = append(issues, body)
-	// 	}
-	// 	slog.Debug("action.CheckDiff retrieved issues", "issues", issues) // TODO clean up
-	// }
+	// Get Issue(s)
+	issues := []*github.Issue{}
+	if len(args.Issues) > 0 {
+		if cfg.GitHub.Token == "" {
+			return errors.New("github token required to retrieve issue information")
+		}
+		for _, issue := range args.Issues {
+			issue, err := github.GetIssue(issue, cfg.GitHub.Token)
+			if err != nil {
+				slog.Debug("action.CheckDiff could not get issue", "issue", issue, "error", err)
+				return err
+			}
+			issues = append(issues, issue)
+		}
+		slog.Debug("action.CheckDiff retrieved issues", "issues", issues) // TODO clean up
+	}
 
-	// // Get Documents
-	// docDB, err := sqlite.InitInput(args.Documentation)
-	// if err != nil {
-	// 	slog.Debug("action.CheckDiff could not initialize documentation db", "documentation", args.Documentation, "error", err)
-	// 	return err
-	// }
-	// documents, err := docs.GetFilteredDocs(&cfg.Check.Documentation, docDB)
-	// if err != nil {
-	// 	slog.Debug("action.CheckDiff could not get filtered documents", "error", err)
-	// 	return err
-	// }
-	// slog.Debug("action.CheckDiff retrieved documents", "documents", documents) // TODO clean up
+	// Get Documents
+	docDB, err := sqlite.InitInput(args.Documentation)
+	if err != nil {
+		slog.Debug("action.CheckDiff could not initialize documentation db", "documentation", args.Documentation, "error", err)
+		return err
+	}
+	documents, err := docs.GetFilteredDocs(&cfg.Check.Documentation, docDB)
+	if err != nil {
+		slog.Debug("action.CheckDiff could not get filtered documents", "error", err)
+		return err
+	}
+	slog.Debug("action.CheckDiff retrieved documents", "documents", documents) // TODO clean up
 
 	// Get Diff
 	files, err := code.GetFilteredDiff(args.Path, args.Head, args.HeadRef, args.Base, args.BaseRef, &cfg.Check.Code)
@@ -98,6 +102,14 @@ func CheckDiff(args *CheckDiffArgs) error {
 		return err
 	}
 	slog.Debug("action.CheckDiff retrieved files from diff", "files", files) // TODO clean up
+
+	// Check Diff
+	results, err := check.Diff(files, documents, pr, issues)
+	if err != nil {
+		slog.Debug("action.CheckDiff could not check diff", "error", err)
+		return err
+	}
+	slog.Debug("action.CheckDiff returned results", "results", results) // TODO clean up
 
 	return nil
 }

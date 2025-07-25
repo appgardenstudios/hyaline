@@ -6,7 +6,12 @@ import (
 	"github.com/google/go-github/v71/github"
 )
 
-func GetPullRequest(ref string, token string) (body *string, err error) {
+type PullRequest struct {
+	Title string
+	Body  string
+}
+
+func GetPullRequest(ref string, token string) (pr *PullRequest, err error) {
 	// Parse reference
 	owner, repo, id, err := parseReference(ref)
 	if err != nil {
@@ -15,13 +20,16 @@ func GetPullRequest(ref string, token string) (body *string, err error) {
 
 	// Get PR
 	client := github.NewClient(nil).WithAuthToken(token)
-	pr, _, err := client.PullRequests.Get(context.Background(), owner, repo, int(id))
+	rawPr, _, err := client.PullRequests.Get(context.Background(), owner, repo, int(id))
 	if err != nil {
 		return
 	}
 
 	// Get body
-	body = pr.Body
+	pr = &PullRequest{
+		Title: *rawPr.Title,
+		Body:  *rawPr.Body,
+	}
 
 	return
 }
