@@ -1,0 +1,38 @@
+extract:
+  source:
+    id: duplicated-source-id
+    description: Test documentation set 1 with duplicate source ID
+  crawler:
+    type: fs
+    options:
+      path: ../.vscode/hyaline/merge-documentation/docs/
+    include:
+      - "**/*.md"
+      - "**/*.html"
+  extractors:
+    - type: md
+      include:
+        - "**/*.md"
+    - type: html
+      options:
+        selector: main
+      include:
+        - "**/*.html"
+  metadata:
+    - document: "**/*"
+      tags:
+        - key: version
+          value: v1
+        - key: dataset
+          value: input-1
+    - document: "README.md"
+      purpose: "Main documentation file for input-1"
+      tags:
+        - key: importance
+          value: high
+    - document: "README.md"
+      section: "Test Documentation/Main Section"
+      purpose: "Primary section for input-1"
+      tags:
+        - key: section-type
+          value: main
