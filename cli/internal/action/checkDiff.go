@@ -1,6 +1,7 @@
 package action
 
 import (
+	"encoding/json"
 	"errors"
 	"hyaline/internal/check"
 	"hyaline/internal/code"
@@ -9,6 +10,10 @@ import (
 	"hyaline/internal/github"
 	"hyaline/internal/sqlite"
 	"log/slog"
+	"os"
+	"path/filepath"
+	"sort"
+	"strings"
 )
 
 type CheckDiffArgs struct {
@@ -22,6 +27,43 @@ type CheckDiffArgs struct {
 	PullRequest   string
 	Issues        []string
 	Output        string
+}
+
+type CheckDiffOutput struct {
+	Recommendations []CheckDiffRecommendation `json:"recommendations"`
+}
+
+type CheckDiffRecommendation struct {
+	Source         string   `json:"documentationSource"`
+	Document       string   `json:"document"`
+	Section        []string `json:"section,omitempty"`
+	Recommendation string   `json:"recommendation"`
+	Reasons        []string `json:"reasons"`
+	Changed        bool     `json:"changed"`
+}
+
+type CheckDiffRecommendationSort []CheckDiffRecommendation
+
+func (c CheckDiffRecommendationSort) Len() int {
+	return len(c)
+}
+func (c CheckDiffRecommendationSort) Swap(i, j int) {
+	c[i], c[j] = c[j], c[i]
+}
+func (c CheckDiffRecommendationSort) Less(i, j int) bool {
+	if c[i].Source < c[j].Source {
+		return true
+	}
+	if c[i].Source > c[j].Source {
+		return false
+	}
+	if c[i].Document < c[j].Document {
+		return true
+	}
+	if c[i].Document > c[j].Document {
+		return false
+	}
+	return strings.Join(c[i].Section, "/") < strings.Join(c[j].Section, "/")
 }
 
 func CheckDiff(args *CheckDiffArgs) error {
@@ -49,6 +91,18 @@ func CheckDiff(args *CheckDiffArgs) error {
 		slog.Debug("action.CheckDiff did not find check options")
 		err = errors.New("the check diff command requires check options be set in the config")
 		return err
+	}
+
+	// Ensure output file does not exist
+	outputAbsPath, err := filepath.Abs(args.Output)
+	if err != nil {
+		slog.Debug("action.CheckDiff could not get an absolute path for output", "output", args.Output, "error", err)
+		return err
+	}
+	_, err = os.Stat(outputAbsPath)
+	if err == nil {
+		slog.Debug("action.CheckDiff detected that output already exists", "absPath", outputAbsPath)
+		return errors.New("output file already exists")
 	}
 
 	// Get Pull Request
@@ -104,12 +158,47 @@ func CheckDiff(args *CheckDiffArgs) error {
 	slog.Debug("action.CheckDiff retrieved files from diff", "files", files) // TODO clean up
 
 	// Check Diff
-	results, err := check.Diff(files, documents, pr, issues)
+	results, err := check.Diff(files, documents, pr, issues, &cfg.LLM)
 	if err != nil {
 		slog.Debug("action.CheckDiff could not check diff", "error", err)
 		return err
 	}
 	slog.Debug("action.CheckDiff returned results", "results", results) // TODO clean up
+
+	// Format results
+	recommendations := []CheckDiffRecommendation{}
+	for _, result := range results {
+		recommendations = append(recommendations, CheckDiffRecommendation{
+			Source:         result.Source,
+			Document:       result.Document,
+			Section:        result.Section,
+			Recommendation: "Consider reviewing and updating this documentation",
+			Reasons:        result.Reasons,
+			Changed:        false, // TODO
+		})
+	}
+	sort.Sort(CheckDiffRecommendationSort(recommendations))
+	output := CheckDiffOutput{
+		Recommendations: recommendations,
+	}
+
+	// Output the results
+	jsonData, err := json.MarshalIndent(output, "", "  ")
+	if err != nil {
+		slog.Debug("action.CheckDiff could not marshal json", "error", err)
+		return err
+	}
+	outputFile, err := os.Create(outputAbsPath)
+	if err != nil {
+		slog.Debug("action.CheckDiff could not open output file", "error", err)
+		return err
+	}
+	defer outputFile.Close()
+	_, err = outputFile.Write(jsonData)
+	if err != nil {
+		slog.Debug("action.CheckDiff could not write output file", "error", err)
+		return err
+	}
 
 	return nil
 }

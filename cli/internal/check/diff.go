@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"hyaline/internal/code"
+	"hyaline/internal/config"
 	"hyaline/internal/diff"
 	"hyaline/internal/docs"
 	"hyaline/internal/github"
@@ -36,9 +37,10 @@ type checkNeedsUpdateSchemaEntry struct {
 type checkNoUpdateNeededSchema struct {
 }
 
-func Diff(files []code.FilteredFile, documents []*docs.FilteredDoc, pr *github.PullRequest, issues []*github.Issue) (results []Result, err error) {
+func Diff(files []code.FilteredFile, documents []*docs.FilteredDoc, pr *github.PullRequest, issues []*github.Issue, cfg *config.LLM) (results []Result, err error) {
 	resultMap := make(map[string][]string)
 
+	// LLM system prompt and tools
 	systemPrompt := "You are a senior technical writer who writes clear and accurate documentation."
 	tools := getCheckTools(func(id string, reason string) {
 		entry, ok := resultMap[id]
@@ -50,23 +52,41 @@ func Diff(files []code.FilteredFile, documents []*docs.FilteredDoc, pr *github.P
 		}
 	})
 
+	// Check each file in the diff
 	for _, file := range files {
+		// Ask LLM for documentation that should be updated for this diff
 		var prompt string
 		prompt, err = formatCheckPrompt(file, documents, pr, issues)
 		if err != nil {
 			slog.Debug("check.Diff could not format prompt", "error", err)
 			return
 		}
-
-		// TODO call llm
 		slog.Debug("check.Diff calling llm", "file", file.Filename, "systemPrompt", systemPrompt, "prompt", prompt, "tools", len(tools))
+		_, err = llm.CallLLM(systemPrompt, prompt, tools, cfg)
+		if err != nil {
+			slog.Debug("check.Change encountered an error when calling the llm", "error", err)
+			return
+		}
+
+		// See if there are any updateIfs that apply
+		// TODO
 	}
 
 	// Process resultMap into results
-	// TODO
-
-	// Sort
-	// TODO
+	for id, reasons := range resultMap {
+		source, remainder, _ := strings.Cut(id, "/")
+		document, sections, _ := strings.Cut(remainder, "#")
+		section := []string{}
+		if sections != "" {
+			section = strings.Split(sections, "/")
+		}
+		results = append(results, Result{
+			Source:   source,
+			Document: document,
+			Section:  section,
+			Reasons:  reasons,
+		})
+	}
 
 	return
 }
@@ -200,7 +220,7 @@ func formatCheckPromptDocuments(documents []*docs.FilteredDoc) string {
 
 	for _, document := range documents {
 		// <document>
-		str.WriteString(fmt.Sprintf("%s<document id=\"%s\">\n", strings.Repeat(" ", indent), document.Document.ID))
+		str.WriteString(fmt.Sprintf("%s<document id=\"%s/%s\">\n", strings.Repeat(" ", indent), document.Document.SourceID, document.Document.ID))
 
 		indent += 2
 
@@ -240,7 +260,7 @@ func formatCheckPromptSections(sections []docs.FilteredSection, indent int) stri
 
 	for _, section := range sections {
 		// <section id="">
-		str.WriteString(fmt.Sprintf("%s<section id=\"%s\">\n", strings.Repeat(" ", indent), section.Section.ID))
+		str.WriteString(fmt.Sprintf("%s<section id=\"%s/%s#%s\">\n", strings.Repeat(" ", indent), section.Section.SourceID, section.Section.DocumentID, section.Section.ID))
 
 		indent += 2
 
