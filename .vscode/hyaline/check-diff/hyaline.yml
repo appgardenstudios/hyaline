@@ -48,3 +48,10 @@ check:
     exclude:
       - source: my-app
         document: docs/preDoc.md
+  options:
+    updateIf:
+      touched:
+        - code:
+            path: "**/*"
+          documentation:
+            source: "**/*"

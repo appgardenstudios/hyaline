@@ -12,6 +12,7 @@ import (
 	"log/slog"
 	"strings"
 
+	"github.com/bmatcuk/doublestar/v4"
 	"github.com/invopop/jsonschema"
 )
 
@@ -37,12 +38,12 @@ type checkNeedsUpdateSchemaEntry struct {
 type checkNoUpdateNeededSchema struct {
 }
 
-func Diff(files []code.FilteredFile, documents []*docs.FilteredDoc, pr *github.PullRequest, issues []*github.Issue, cfg *config.LLM) (results []Result, err error) {
+type updateResultMapCallback func(id string, reason string)
+
+func Diff(files []code.FilteredFile, documents []*docs.FilteredDoc, pr *github.PullRequest, issues []*github.Issue, checkCfg *config.Check, llmCfg *config.LLM) (results []Result, err error) {
 	resultMap := make(map[string][]string)
 
-	// LLM system prompt and tools
-	systemPrompt := "You are a senior technical writer who writes clear and accurate documentation."
-	tools := getCheckTools(func(id string, reason string) {
+	updateResultMap := func(id string, reason string) {
 		entry, ok := resultMap[id]
 		if ok {
 			entry = append(entry, reason)
@@ -50,10 +51,17 @@ func Diff(files []code.FilteredFile, documents []*docs.FilteredDoc, pr *github.P
 		} else {
 			resultMap[id] = []string{reason}
 		}
-	})
+	}
+
+	// LLM system prompt and tools
+	systemPrompt := "You are a senior technical writer who writes clear and accurate documentation."
+	tools := getCheckTools(updateResultMap)
 
 	// Check each file in the diff
 	for _, file := range files {
+		// See if there are any updateIfs that apply
+		checkNewUpdateIfs(&file, documents, checkCfg, updateResultMap)
+
 		// Ask LLM for documentation that should be updated for this diff
 		var prompt string
 		prompt, err = formatCheckPrompt(file, documents, pr, issues)
@@ -62,14 +70,11 @@ func Diff(files []code.FilteredFile, documents []*docs.FilteredDoc, pr *github.P
 			return
 		}
 		slog.Debug("check.Diff calling llm", "file", file.Filename, "systemPrompt", systemPrompt, "prompt", prompt, "tools", len(tools))
-		_, err = llm.CallLLM(systemPrompt, prompt, tools, cfg)
+		_, err = llm.CallLLM(systemPrompt, prompt, tools, llmCfg)
 		if err != nil {
 			slog.Debug("check.Change encountered an error when calling the llm", "error", err)
 			return
 		}
-
-		// See if there are any updateIfs that apply
-		// TODO
 	}
 
 	// Process resultMap into results
@@ -286,7 +291,7 @@ func formatCheckPromptSections(sections []docs.FilteredSection, indent int) stri
 	return str.String()
 }
 
-func getCheckTools(cb func(id string, reason string)) (tools []*llm.Tool) {
+func getCheckTools(cb updateResultMapCallback) (tools []*llm.Tool) {
 	reflector := jsonschema.Reflector{
 		AllowAdditionalProperties: false,
 		DoNotReference:            true,
@@ -328,4 +333,70 @@ func getCheckTools(cb func(id string, reason string)) (tools []*llm.Tool) {
 	}
 
 	return
+}
+
+func checkNewUpdateIfs(file *code.FilteredFile, documents []*docs.FilteredDoc, cfg *config.Check, cb updateResultMapCallback) {
+	// Check touched
+	for _, entry := range cfg.Options.UpdateIf.Touched {
+		if (file.Filename != "" && doublestar.MatchUnvalidated(entry.Code.Path, file.Filename)) ||
+			(file.OriginalFilename != "" && doublestar.MatchUnvalidated(entry.Code.Path, file.OriginalFilename)) {
+			if file.Action == code.ActionRename {
+				checkNewUpdateIfDocuments(entry.Code.Path, documents, entry.Documentation, cb, fmt.Sprintf("touched (%s was renamed to %s)", file.OriginalFilename, file.Filename))
+			} else {
+				checkNewUpdateIfDocuments(entry.Code.Path, documents, entry.Documentation, cb, "touched")
+			}
+		}
+	}
+
+	// Check other updateIfs based on the action
+	switch file.Action {
+	case code.ActionInsert:
+		for _, entry := range cfg.Options.UpdateIf.Added {
+			if doublestar.MatchUnvalidated(entry.Code.Path, file.Filename) {
+				checkNewUpdateIfDocuments(entry.Code.Path, documents, entry.Documentation, cb, "added")
+			}
+		}
+	case code.ActionModify:
+		for _, entry := range cfg.Options.UpdateIf.Modified {
+			if doublestar.MatchUnvalidated(entry.Code.Path, file.Filename) {
+				checkNewUpdateIfDocuments(entry.Code.Path, documents, entry.Documentation, cb, "modified")
+			}
+		}
+	case code.ActionRename:
+		for _, entry := range cfg.Options.UpdateIf.Renamed {
+			if doublestar.MatchUnvalidated(entry.Code.Path, file.Filename) ||
+				doublestar.MatchUnvalidated(entry.Code.Path, file.OriginalFilename) {
+				checkNewUpdateIfDocuments(entry.Code.Path, documents, entry.Documentation, cb, "renamed")
+			}
+		}
+	case code.ActionDelete:
+		for _, entry := range cfg.Options.UpdateIf.Deleted {
+			if doublestar.MatchUnvalidated(entry.Code.Path, file.OriginalFilename) {
+				checkNewUpdateIfDocuments(entry.Code.Path, documents, entry.Documentation, cb, "deleted")
+			}
+		}
+	}
+}
+
+func checkNewUpdateIfDocuments(glob string, documents []*docs.FilteredDoc, filter config.CheckDocumentationFilter, cb updateResultMapCallback, action string) {
+	for _, document := range documents {
+		if docs.DocumentMatches(document.Document.ID, document.Document.SourceID, document.Tags, &filter) {
+			cb(document.Document.SourceID+"/"+document.Document.ID,
+				fmt.Sprintf("Update this document if any files matching %s were %s.", glob, action))
+		} else {
+			// Only check sections if document does not match to avoid pulling in a document
+			// and all of its sections (we just need the document in that case)
+			checkNewUpdateIfSections(glob, document.Sections, filter, cb, action)
+		}
+	}
+}
+
+func checkNewUpdateIfSections(glob string, sections []docs.FilteredSection, filter config.CheckDocumentationFilter, cb updateResultMapCallback, action string) {
+	for _, section := range sections {
+		if docs.SectionMatches(section.Section.ID, section.Section.DocumentID, section.Section.SourceID, section.Tags, &filter) {
+			cb(section.Section.SourceID+"/"+section.Section.DocumentID+"#"+section.Section.ID,
+				fmt.Sprintf("Update this document if any files matching %s were %s.", glob, action))
+		}
+		checkNewUpdateIfSections(glob, section.Sections, filter, cb, action)
+	}
 }

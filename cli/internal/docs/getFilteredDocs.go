@@ -10,12 +10,14 @@ import (
 )
 
 type FilteredDoc struct {
-	Document *sqlite.DOCUMENT // Document can be nil if a section matches but a document does not
+	Document *sqlite.DOCUMENT
+	Tags     []FilteredTag
 	Sections []FilteredSection
 }
 
 type FilteredSection struct {
 	Section  *sqlite.SECTION
+	Tags     []FilteredTag
 	Sections []FilteredSection
 }
 
@@ -91,20 +93,22 @@ func GetFilteredDocs(cfg *config.CheckDocumentation, db *sqlite.Queries) (docs [
 
 	// Get and filter all docs from database
 	for _, document := range documents {
-		key := document.SourceID + "/" + document.ID
-		if documentIsIncluded(document.ID, document.SourceID, documentTagMap[key], cfg) {
+		documentKey := document.SourceID + "/" + document.ID
+		if documentIsIncluded(document.ID, document.SourceID, documentTagMap[documentKey], cfg) {
 			// Add document and ALL sections if document included
 			docs = append(docs, &FilteredDoc{
 				Document: &document,
-				Sections: getDocumentSections(documentSectionMap[key], ""),
+				Tags:     documentTagMap[documentKey],
+				Sections: getDocumentSections(documentSectionMap[documentKey], ""),
 			})
 		} else {
 			// Else get filtered sections and add document if there is at least 1 section included
 			// Note: filteredSections will contain only sections that match along with their parents up to the root
-			filteredSections := getFilteredDocumentSections(documentSectionMap[key], "", sectionTagMap, cfg)
+			filteredSections := getFilteredDocumentSections(documentSectionMap[documentKey], "", sectionTagMap, cfg)
 			if len(filteredSections) > 0 {
 				docs = append(docs, &FilteredDoc{
 					Document: &document,
+					Tags:     documentTagMap[documentKey],
 					Sections: filteredSections,
 				})
 			}
@@ -119,7 +123,7 @@ func documentIsIncluded(documentID string, sourceID string, tags []FilteredTag, 
 
 	// Document is included if it matches at least one include
 	for _, include := range cfg.Include {
-		if documentMatches(documentID, sourceID, tags, &include) {
+		if DocumentMatches(documentID, sourceID, tags, &include) {
 			isIncluded = true
 			break
 		}
@@ -128,7 +132,7 @@ func documentIsIncluded(documentID string, sourceID string, tags []FilteredTag, 
 	// If document matched an include AND at least one exclude, it is excluded
 	if isIncluded {
 		for _, exclude := range cfg.Exclude {
-			if documentMatches(documentID, sourceID, tags, &exclude) {
+			if DocumentMatches(documentID, sourceID, tags, &exclude) {
 				return false
 			}
 		}
@@ -137,7 +141,7 @@ func documentIsIncluded(documentID string, sourceID string, tags []FilteredTag, 
 	return isIncluded
 }
 
-func documentMatches(documentID string, sourceID string, tags []FilteredTag, filter *config.CheckDocumentationFilter) bool {
+func DocumentMatches(documentID string, sourceID string, tags []FilteredTag, filter *config.CheckDocumentationFilter) bool {
 	source, document, section := filter.GetParts()
 
 	// Document does not match filters that specify sections
@@ -170,7 +174,7 @@ func sectionIsIncluded(sectionID string, documentID string, sourceID string, tag
 
 	// Section is included if it matches at least one include
 	for _, include := range cfg.Include {
-		if sectionMatches(sectionID, documentID, sourceID, tags, &include) {
+		if SectionMatches(sectionID, documentID, sourceID, tags, &include) {
 			isIncluded = true
 			break
 		}
@@ -179,7 +183,7 @@ func sectionIsIncluded(sectionID string, documentID string, sourceID string, tag
 	// If section matched an include AND at least one exclude, it is excluded
 	if isIncluded {
 		for _, exclude := range cfg.Exclude {
-			if sectionMatches(sectionID, documentID, sourceID, tags, &exclude) {
+			if SectionMatches(sectionID, documentID, sourceID, tags, &exclude) {
 				return false
 			}
 		}
@@ -188,7 +192,7 @@ func sectionIsIncluded(sectionID string, documentID string, sourceID string, tag
 	return isIncluded
 }
 
-func sectionMatches(sectionID string, documentID string, sourceID string, tags []FilteredTag, filter *config.CheckDocumentationFilter) bool {
+func SectionMatches(sectionID string, documentID string, sourceID string, tags []FilteredTag, filter *config.CheckDocumentationFilter) bool {
 	source, document, section := filter.GetParts()
 
 	// If section is blank just match on document.
@@ -254,18 +258,20 @@ func getFilteredDocumentSections(documentSections []*sqlite.SECTION, parent stri
 	for _, section := range documentSections {
 		if section.ParentID == parent {
 			childSections := getFilteredDocumentSections(documentSections, section.ID, sectionTagMap, cfg)
+			tags := sectionTagMap[section.SourceID+"/"+section.DocumentID+"#"+section.ID]
 			// If a child matches always include this section
 			if len(childSections) > 0 {
 				sections = append(sections, FilteredSection{
 					Section:  section,
+					Tags:     tags,
 					Sections: childSections,
 				})
 			} else {
 				// Else include this section if it should be included
-				tags := sectionTagMap[section.SourceID+"/"+section.DocumentID+"#"+section.ID]
 				if sectionIsIncluded(section.ID, section.DocumentID, section.SourceID, tags, cfg) {
 					sections = append(sections, FilteredSection{
 						Section: section,
+						Tags:    tags,
 					})
 				}
 			}

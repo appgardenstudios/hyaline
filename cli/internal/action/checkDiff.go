@@ -158,7 +158,7 @@ func CheckDiff(args *CheckDiffArgs) error {
 	slog.Debug("action.CheckDiff retrieved files from diff", "files", files) // TODO clean up
 
 	// Check Diff
-	results, err := check.Diff(files, documents, pr, issues, &cfg.LLM)
+	results, err := check.Diff(files, documents, pr, issues, cfg.Check, &cfg.LLM)
 	if err != nil {
 		slog.Debug("action.CheckDiff could not check diff", "error", err)
 		return err
