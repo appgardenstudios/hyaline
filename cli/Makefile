@@ -4,6 +4,10 @@
 build:
 	go build -o ./hyaline -ldflags="-X 'main.Version=development'" ./cmd/hyaline.go
 
+.PHONY: db
+db:
+	sqlc generate
+
 .PHONY: install
 install:
 	go install -ldflags="-X 'main.Version=development'" ./cmd/hyaline.go
@@ -156,6 +160,41 @@ update-pr-comment:
 	make build
 	echo "---"
 	./hyaline --debug update pr --config ./_example/config.yml --pull-request appgardenstudios/hyaline-example/1 --comment appgardenstudios/hyaline-example/2917391402 --sha b4c5c73 --recommendations ./results.json --output ./comment.json
+
+.PHONY: benchmark-prompts-refactor
+benchmark-prompts-refactor:
+	make build
+	cd benchmarks/prompts && go test -v -run TestCheckChangeRefactor
+
+.PHONY: benchmark-prompts-remove-feature
+benchmark-prompts-remove-feature:
+	make build
+	cd benchmarks/prompts && go test -v -run TestCheckChangeRemoveFeature
+
+.PHONY: benchmark-prompts-api-contract
+benchmark-prompts-api-contract:
+	make build
+	cd benchmarks/prompts && go test -v -run TestCheckChangeAPIContract
+
+.PHONY: benchmark-prompts-add-feature
+benchmark-prompts-add-feature:
+	make build
+	cd benchmarks/prompts && go test -v -run TestCheckChangeAddFeature
+
+.PHONY: benchmark-prompts-check-current-api
+benchmark-prompts-check-current-api:
+	make build
+	cd benchmarks/prompts && go test -v -run TestCheckCurrentAPIDocs
+
+.PHONY: benchmark-prompts-check-current-customer
+benchmark-prompts-check-current-customer:
+	make build
+	cd benchmarks/prompts && go test -v -run TestCheckCurrentCustomerDocs
+
+.PHONY: benchmark-prompts
+benchmark-prompts:
+	make build
+	cd benchmarks/prompts && go test -v
 
 .PHONY: release
 release:

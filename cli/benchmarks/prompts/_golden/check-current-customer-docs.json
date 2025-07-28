@@ -1,0 +1,15 @@
+{
+  "description": "Check Current customer documentation scenario: Verify that the 'What is URL Shortener?' section includes a warning about potential adverse effects from shortening a URL. Should generate recommendations for both purpose matching and completeness if issues are found.",
+  "expectedRecommendations": [
+    {
+      "document": "url-shortener/public/documentation.html",
+      "section": ["URL Shortener Documentation", "What is URL Shortener?"],
+      "checkType": "MATCHES_PURPOSE"
+    },
+    {
+      "document": "url-shortener/public/documentation.html",
+      "section": ["URL Shortener Documentation", "What is URL Shortener?"],
+      "checkType": "COMPLETE"
+    }
+  ]
+}

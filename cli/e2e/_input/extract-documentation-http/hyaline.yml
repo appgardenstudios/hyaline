@@ -1,0 +1,25 @@
+extract:
+  source:
+    id: my-app
+    description: documentation for my application
+  crawler:
+    type: http
+    options:
+      baseUrl: http://127.0.0.1:8081/
+      start: "./docs"
+    include:
+      - "docs/**/*"
+    exclude:
+      - "docs/irrelevant.html"
+  extractors:
+    - type: html
+      options:
+        selector: main
+      include:
+        - "**/*"
+  metadata:
+    - document: "**/*"
+      section: "**/*"
+      tags:
+        - key: system
+          value: my-app

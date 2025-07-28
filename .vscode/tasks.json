@@ -43,6 +43,66 @@
       "presentation":{
         "reveal": "silent"
       }
-    }
+    },{
+      "label": "extract-documentation-fs",
+      "type": "shell",
+      "command": "rm -f ../.vscode/hyaline/extract-documentation-fs/documentation.db",
+      "options":{
+        "cwd": "${workspaceFolder}/cli/"
+      },
+      "presentation":{
+        "reveal": "silent"
+      }
+    },{
+      "label": "extract-documentation-git-local",
+      "type": "shell",
+      "command": "rm -f ../.vscode/hyaline/extract-documentation-git-local/documentation.db",
+      "options":{
+        "cwd": "${workspaceFolder}/cli/"
+      },
+      "presentation":{
+        "reveal": "silent"
+      }
+    },{
+      "label": "extract-documentation-git-ssh",
+      "type": "shell",
+      "command": "rm -f ../.vscode/hyaline/extract-documentation-git-ssh/documentation.db",
+      "options":{
+        "cwd": "${workspaceFolder}/cli/"
+      },
+      "presentation":{
+        "reveal": "silent"
+      }
+    },{
+      "label": "extract-documentation-git-http",
+      "type": "shell",
+      "command": "rm -f ../.vscode/hyaline/extract-documentation-git-http/documentation.db",
+      "options":{
+        "cwd": "${workspaceFolder}/cli/"
+      },
+      "presentation":{
+        "reveal": "silent"
+      }
+    },{
+      "label": "extract-documentation-http",
+      "type": "shell",
+      "command": "rm -f ../.vscode/hyaline/extract-documentation-http/documentation.db",
+      "options":{
+        "cwd": "${workspaceFolder}/cli/"
+      },
+      "presentation":{
+        "reveal": "silent"
+      }
+    },{
+      "label": "merge-documentation",
+      "type": "shell",
+      "command": "rm -f ../.vscode/hyaline/merge-documentation/merged.db",
+      "options":{
+        "cwd": "${workspaceFolder}/cli/"
+      },
+      "presentation":{
+        "reveal": "silent"
+      }
+    },
   ]
 }

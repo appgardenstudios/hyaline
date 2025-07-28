@@ -1,0 +1,22 @@
+{{ define "main" }}
+<style>
+  .portrait img {
+    max-width: 360px;
+    margin: 0 auto 1rem auto;
+    display: block;
+  }
+  
+  /* Small viewports and up: float image right */
+  @media (min-width: 640px) {
+    .portrait {
+      display: flow-root;
+    }
+    .portrait img {
+      float: right;
+      margin-left: 1rem;
+    }
+  }
+</style>
+{{ $tocData := .Site.Data.documentation_toc }}
+{{ partial "table-of-contents.html" (dict "currentPage" . "tocData" $tocData) }}
+{{ end }}

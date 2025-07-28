@@ -1,0 +1,26 @@
+extract:
+  source:
+    id: my-app
+    description: documentation for my application
+  crawler:
+    type: git
+    options:
+      repo: https://github.com/appgardenstudios/hyaline-example.git
+      branch: main
+      clone: true
+      auth:
+        type: http
+        options:
+          username: git
+          password: ${HYALINE_GITHUB_PAT}
+    include:
+      - "**/*.md"
+  extractors:
+    - type: md
+      include:
+        - "**/*"
+  metadata:
+    - document: "**/*"
+      tags:
+        - key: system
+          value: my-app

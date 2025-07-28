@@ -1,0 +1,264 @@
+{{/* 
+  Reusable Table of Contents with Layout
+  Params:
+  - currentPage: The current page context
+  - tocData: The TOC configuration data
+*/}}
+
+{{ $currentPage := .currentPage }}
+{{ $tocData := .tocData }}
+
+<!-- Generate ToC structure -->
+{{ $tocContent := "" }}
+{{ $currentPageTitle := "" }}
+{{ $parentTitle := "" }}
+
+<!-- Use provided TOC data from yml -->
+{{ range $index, $item := $tocData.items }}
+  {{ $tocContent = printf "%s<div class=\"%s\">" $tocContent (cond $item.items "mb-4" "mb-2") }}
+  
+  <!-- Render the item itself -->
+  {{ if $item.url }}
+    <!-- Item has a URL - render as link -->
+    {{ $itemFullURL := printf "%s%s/" $currentPage.Site.BaseURL (strings.TrimPrefix "/" $item.url) }}
+    {{ $isCurrentPage := eq $currentPage.Permalink $itemFullURL }}
+    {{ if $isCurrentPage }}
+      {{ $currentPageTitle = $item.title }}
+    {{ end }}
+    {{ $tocContent = printf "%s<a href=\"%s\" class=\"toc-link block px-3 py-2 font-medium %s rounded-md -ml-3%s\"%s>%s</a>" $tocContent $item.url (cond $isCurrentPage "text-blue-600 bg-blue-50" "text-gray-900 hover:text-blue-600 hover:bg-gray-100") (cond $item.items " mb-2" "") (cond $isCurrentPage " aria-current=\"page\"" "") $item.title }}
+  {{ else }}
+    <!-- Item has no URL - render as header (only if it has children or is standalone) -->
+    {{ $tocContent = printf "%s<h3 class=\"font-medium text-gray-900 mb-2\">%s</h3>" $tocContent $item.title }}
+  {{ end }}
+  
+  <!-- Render children if any -->
+  {{ if $item.items }}
+    {{ $tocContent = printf "%s<ul class=\"space-y-1\">" $tocContent }}
+    {{ range $item.items }}
+      {{ $subItemFullURL := printf "%s%s/" $currentPage.Site.BaseURL (strings.TrimPrefix "/" .url) }}
+      {{ $isCurrentPage := eq $currentPage.Permalink $subItemFullURL }}
+      {{ if $isCurrentPage }}
+        {{ $currentPageTitle = .title }}
+        {{ $parentTitle = $item.title }}
+      {{ end }}
+      {{ $tocContent = printf "%s<li><a href=\"%s\" class=\"toc-link block px-3 py-2 %s rounded-md\"%s>%s</a></li>" $tocContent .url (cond $isCurrentPage "text-blue-600 bg-blue-50 font-medium" "text-gray-700 hover:text-blue-600 hover:bg-gray-100") (cond $isCurrentPage " aria-current=\"page\"" "") .title }}
+    {{ end }}
+    {{ $tocContent = printf "%s</ul>" $tocContent }}
+  {{ end }}
+  
+  {{ $tocContent = printf "%s</div>" $tocContent }}
+{{ end }}
+
+<!-- Complete Layout with ToC -->
+<div class="flex min-h-screen">
+  <!-- Desktop ToC Sidebar (Always visible on desktop) -->
+  <aside 
+    class="hidden lg:flex lg:flex-col min-w-72 bg-gray-50 border-r border-gray-200 overflow-y-auto"
+    aria-label="Table of Contents"
+  >
+    <div class="p-6">
+      <nav>
+        {{ $tocContent | safeHTML }}
+      </nav>
+    </div>
+  </aside>
+
+  <!-- Mobile ToC Sidebar -->
+  <aside 
+    id="mobile-toc-sidebar" 
+    class="lg:hidden fixed left-0 top-0 w-full h-full bg-white shadow-xl z-50 transform -translate-x-full transition-transform duration-300 ease-in-out overflow-y-auto"
+    aria-label="Table of Contents"
+  >
+    <div class="p-6">
+      <div class="flex justify-end items-center">
+        <button
+          id="close-mobile-toc"
+          type="button"
+          class="text-gray-400 hover:text-gray-600 focus:outline-none focus:ring-4 focus:ring-blue-300 focus:ring-offset-2 rounded-md"
+          aria-label="Close table of contents"
+        >
+          <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+      
+      <nav>
+        {{ $tocContent | safeHTML }}
+      </nav>
+    </div>
+  </aside>
+
+  <div class="flex-1 min-w-0">
+    <!-- Mobile Top Bar with Breadcrumbs -->
+    <div class="lg:hidden bg-white px-4 sm:px-6 py-2 sticky top-14 shadow-sm">
+      <div class="flex items-center space-x-3">
+        <button
+          id="mobile-toc-button"
+          type="button"
+          class="text-gray-600 hover:text-blue-600 focus:outline-none focus:ring-4 focus:ring-blue-300 focus:ring-offset-2 rounded-md p-1 border border-gray-300 cursor-pointer"
+          aria-label="Open table of contents"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25" />
+          </svg>
+        </button>
+        
+        <!-- Breadcrumbs -->
+        <nav class="flex items-center text-sm text-gray-600 min-w-0" aria-label="Breadcrumb">
+          {{ if $currentPageTitle }}
+            {{ if $parentTitle }}
+              <!-- Page with parent category -->
+              <span class="truncate">{{ $parentTitle }}</span>
+              <svg class="h-4 w-4 mx-2 text-gray-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+              </svg>
+              <span class="text-gray-900 font-medium truncate">{{ $currentPageTitle }}</span>
+            {{ else }}
+              <!-- Root level page -->
+              <span class="text-gray-900 font-medium truncate">{{ $currentPageTitle }}</span>
+            {{ end }}
+          {{ else }}
+            <!-- Fallback to page title if not found in tocData -->
+            <span class="text-gray-900 font-medium truncate">{{ .currentPage.Title }}</span>
+          {{ end }}
+        </nav>
+      </div>
+    </div>
+    
+    <div class="px-4 sm:px-6 lg:px-8 py-8">
+      <div class="max-w-5xl mx-auto text-center">
+        <div class="text-left">
+        <!-- Document Header -->
+        <header class="mb-8">
+          <h1 class="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+            {{ .currentPage.Title }}
+          </h1>
+          {{ if .currentPage.Params.author }}
+            <div class="text-gray-600 mb-6">
+              <span class="font-medium">{{ .currentPage.Params.author }}</span>
+              {{ if .currentPage.Lastmod }}
+                - <time datetime="{{ .currentPage.Lastmod.Format "2006-01-02" }}">Last modified {{ .currentPage.Lastmod.Format "January 2, 2006" }}</time>
+              {{ end }}
+            </div>
+          {{ else if .currentPage.Lastmod }}
+            <div class="text-gray-600 mb-6">
+              <time datetime="{{ .currentPage.Lastmod.Format "2006-01-02" }}">Last modified {{ .currentPage.Lastmod.Format "January 2, 2006" }}</time>
+            </div>
+          {{ end }}
+        </header>
+
+        <!-- Document Content -->
+        <div class="space-y-8 prose max-w-none prose-a:text-blue-600 prose-code:before:hidden prose-code:after:hidden break-words">
+          {{ .currentPage.Content }}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  // Mobile ToC Toggle
+  const mobileTocButton = document.getElementById("mobile-toc-button");
+  const mobileTocSidebar = document.getElementById("mobile-toc-sidebar");
+  const closeMobileToc = document.getElementById("close-mobile-toc");
+  
+  function setLinksTabIndex(value) {
+    if (mobileTocSidebar) {
+      const links = mobileTocSidebar.querySelectorAll('a');
+      if (value === null) {
+        links.forEach(el => el.removeAttribute('tabindex'));
+      } else {
+        links.forEach(el => el.setAttribute('tabindex', value));
+      }
+    }
+  }
+
+  // Initialize mobile TOC as unfocusable since it starts collapsed
+  setLinksTabIndex('-1');
+  function openMobileToc() {
+    if (mobileTocSidebar) {
+      mobileTocSidebar.classList.remove("-translate-x-full");
+      mobileTocSidebar.setAttribute("aria-hidden", "false");
+      
+      // Make all links in the sidebar focusable
+      setLinksTabIndex(null);
+      
+      // Focus management for accessibility
+      if (closeMobileToc) {
+        closeMobileToc.focus();
+      }
+      
+      // Trap focus within the sidebar
+      document.addEventListener("keydown", trapFocus);
+      
+      // Disable body scroll
+      document.body.style.overflow = "hidden";
+    }
+  }
+
+  function closeMobileTocFn() {
+    if (mobileTocSidebar && mobileTocButton) {
+      mobileTocSidebar.classList.add("-translate-x-full");
+      mobileTocSidebar.setAttribute("aria-hidden", "true");
+      
+      // Make all links in the sidebar unfocusable
+      setLinksTabIndex('-1');
+      
+      // Return focus to the button that opened the sidebar
+      mobileTocButton.focus();
+      
+      // Remove focus trap
+      document.removeEventListener("keydown", trapFocus);
+      
+      // Re-enable body scroll
+      document.body.style.overflow = "";
+    }
+  }
+
+  function trapFocus(e) {
+    if (e.key === "Escape") {
+      closeMobileTocFn();
+      return;
+    }
+
+    if (e.key === "Tab" && mobileTocSidebar) {
+      const focusableElements = mobileTocSidebar.querySelectorAll(
+        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+      );
+      const firstElement = focusableElements[0];
+      const lastElement = focusableElements[focusableElements.length - 1];
+
+      if (e.shiftKey) {
+        if (document.activeElement === firstElement) {
+          lastElement.focus();
+          e.preventDefault();
+        }
+      } else {
+        if (document.activeElement === lastElement) {
+          firstElement.focus();
+          e.preventDefault();
+        }
+      }
+    }
+  }
+
+  // Event listeners for mobile ToC
+  if (mobileTocButton) {
+    mobileTocButton.addEventListener("click", openMobileToc);
+  }
+
+  if (closeMobileToc) {
+    closeMobileToc.addEventListener("click", closeMobileTocFn);
+  }
+
+  // Handle window resize
+  window.addEventListener("resize", function () {
+    // Close mobile ToC on desktop
+    if (window.innerWidth >= 1024) {
+      closeMobileTocFn();
+    }
+  });
+});
+</script>

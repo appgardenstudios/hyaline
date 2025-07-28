@@ -1,0 +1,21 @@
+items:
+  - title: Overview
+    url: /documentation-v1/overview
+  - title: How To
+    items:
+      - title: Install the CLI
+        url: /documentation-v1/how-to/install-cli
+      - title: Run the CLI
+        url: /documentation-v1/how-to/run-cli
+      - title: Build the CLI
+        url: /documentation-v1/how-to/build-cli
+  - title: Explanation
+    items:
+      - title: Merge
+        url: /documentation-v1/explanation/merge
+  - title: Reference
+    items:
+      - title: CLI
+        url: /documentation-v1/reference/cli
+  - title: Roadmap
+    url: /documentation-v1/roadmap
