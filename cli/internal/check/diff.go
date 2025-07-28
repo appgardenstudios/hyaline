@@ -191,9 +191,79 @@ func formatCheckPrompt(file code.FilteredFile, documents []*docs.FilteredDoc, pr
 }
 
 func formatCheckPromptDocuments(documents []*docs.FilteredDoc) string {
-	// TODO
+	var str strings.Builder
+	indent := 0
 
-	return ""
+	str.WriteString("<documents>\n")
+
+	indent += 2
+
+	for _, document := range documents {
+		// <document>
+		str.WriteString(fmt.Sprintf("%s<document id=\"%s\">\n", strings.Repeat(" ", indent), document.Document.ID))
+
+		indent += 2
+
+		// <document_name>{{NAME}}<document_name>
+		str.WriteString(fmt.Sprintf("%s<document_name>%s</document_name>\n", strings.Repeat(" ", indent), document.Document.ID))
+
+		// <document_purpose>{{PURPOSE}}</document_purpose>
+		if document.Document.Purpose != "" {
+			str.WriteString(fmt.Sprintf("%s<document_purpose>%s</document_purpose>\n", strings.Repeat(" ", indent), document.Document.Purpose))
+		}
+
+		// <sections>
+		if len(document.Sections) > 0 {
+			str.WriteString(formatCheckPromptSections(document.Sections, indent))
+		}
+
+		indent -= 2
+
+		// </document>
+		str.WriteString(fmt.Sprintf("%s</document>\n", strings.Repeat(" ", indent)))
+	}
+
+	indent -= 2
+
+	str.WriteString("<documents>\n")
+
+	return str.String()
+}
+
+func formatCheckPromptSections(sections []docs.FilteredSection, indent int) string {
+	var str strings.Builder
+
+	// <sections>
+	str.WriteString(fmt.Sprintf("%s<sections>\n", strings.Repeat(" ", indent)))
+
+	indent += 2
+
+	for _, section := range sections {
+		// <section id="">
+		str.WriteString(fmt.Sprintf("%s<section id=\"%s\">\n", strings.Repeat(" ", indent), section.Section.ID))
+
+		indent += 2
+
+		// <section_name>{{NAME}}<section_name>
+		str.WriteString(fmt.Sprintf("%s<section_name>%s</section_name>\n", strings.Repeat(" ", indent), section.Section.Name))
+
+		// <section_purpose>{{PURPOSE}}</section_purpose>
+		if section.Section.Purpose != "" {
+			str.WriteString(fmt.Sprintf("%s<section_purpose>%s</section_purpose>\n", strings.Repeat(" ", indent), section.Section.Purpose))
+		}
+
+		indent -= 2
+
+		// </section>
+		str.WriteString(fmt.Sprintf("%s<section>\n", strings.Repeat(" ", indent)))
+	}
+
+	indent -= 2
+
+	// </sections>
+	str.WriteString(fmt.Sprintf("%s</sections>\n", strings.Repeat(" ", indent)))
+
+	return str.String()
 }
 
 func getCheckTools(cb func(id string, reason string)) (tools []*llm.Tool) {
