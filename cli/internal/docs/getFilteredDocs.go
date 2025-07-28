@@ -11,7 +11,12 @@ import (
 
 type FilteredDoc struct {
 	Document *sqlite.DOCUMENT // Document can be nil if a section matches but a document does not
-	Sections []*sqlite.SECTION
+	Sections []FilteredSection
+}
+
+type FilteredSection struct {
+	Section  *sqlite.SECTION
+	Sections []FilteredSection
 }
 
 type FilteredTag struct {
@@ -20,9 +25,7 @@ type FilteredTag struct {
 }
 
 func GetFilteredDocs(cfg *config.CheckDocumentation, db *sqlite.Queries) (docs []*FilteredDoc, err error) {
-	docMap := make(map[string]*FilteredDoc)
-
-	// Get and filter all docs from database
+	// Get/format data from sqlite
 	documents, err := db.GetAllDocuments(context.Background())
 	if err != nil {
 		slog.Debug("docs.GetFilteredDocs could not get all documents", "error", err)
@@ -48,20 +51,22 @@ func GetFilteredDocs(cfg *config.CheckDocumentation, db *sqlite.Queries) (docs [
 			documentTagMap[key] = []FilteredTag{filteredTag}
 		}
 	}
-	for _, document := range documents {
-		tags := documentTagMap[document.SourceID+"/"+document.ID]
-		if documentIsIncluded(document.ID, document.SourceID, tags, cfg) {
-			docMap[document.SourceID+"/"+document.ID] = &FilteredDoc{
-				Document: &document,
-			}
-		}
-	}
-
-	// Get and filter all sections from the database
 	sections, err := db.GetAllSections(context.Background())
 	if err != nil {
 		slog.Debug("docs.GetFilteredDocs could not get all sections", "error", err)
 		return
+	}
+	documentSectionMap := make(map[string][]*sqlite.SECTION)
+	// Note: mapped sections MUST be in peer order for subsequent logic to work
+	for _, section := range sections {
+		key := section.SourceID + "/" + section.DocumentID
+		entry, ok := documentSectionMap[key]
+		if ok {
+			entry = append(entry, &section)
+			documentSectionMap[key] = entry
+		} else {
+			documentSectionMap[key] = []*sqlite.SECTION{&section}
+		}
 	}
 	sectionTags, err := db.GetAllSectionTags(context.Background())
 	if err != nil {
@@ -83,23 +88,27 @@ func GetFilteredDocs(cfg *config.CheckDocumentation, db *sqlite.Queries) (docs [
 			sectionTagMap[key] = []FilteredTag{filteredTag}
 		}
 	}
-	for _, section := range sections {
-		tags := documentTagMap[section.SourceID+"/"+section.DocumentID+"#"+section.ID]
-		if sectionIsIncluded(section.ID, section.DocumentID, section.SourceID, tags, cfg) {
-			filteredDoc, ok := docMap[section.SourceID+"/"+section.DocumentID]
-			if ok {
-				filteredDoc.Sections = append(filteredDoc.Sections, &section)
-			} else {
-				docMap[section.SourceID+"/"+section.DocumentID] = &FilteredDoc{
-					Sections: []*sqlite.SECTION{&section},
-				}
+
+	// Get and filter all docs from database
+	for _, document := range documents {
+		key := document.SourceID + "/" + document.ID
+		if documentIsIncluded(document.ID, document.SourceID, documentTagMap[key], cfg) {
+			// Add document and ALL sections if document included
+			docs = append(docs, &FilteredDoc{
+				Document: &document,
+				Sections: getDocumentSections(documentSectionMap[key], ""),
+			})
+		} else {
+			// Else get filtered sections and add document if there is at least 1 section included
+			// Note: filteredSections will contain only sections that match along with their parents up to the root
+			filteredSections := getFilteredDocumentSections(documentSectionMap[key], "", sectionTagMap, cfg)
+			if len(filteredSections) > 0 {
+				docs = append(docs, &FilteredDoc{
+					Document: &document,
+					Sections: filteredSections,
+				})
 			}
 		}
-	}
-
-	// Loop through map and populate docs array
-	for _, doc := range docMap {
-		docs = append(docs, doc)
 	}
 
 	return
@@ -224,4 +233,43 @@ func tagMatches(tags []FilteredTag, filterTags []config.CheckDocumentationFilter
 	}
 
 	return false
+}
+
+// Note: This requires documentSections to be in peer order
+func getDocumentSections(documentSections []*sqlite.SECTION, parent string) (sections []FilteredSection) {
+	// TODO make sure nil array works
+	for _, section := range documentSections {
+		if section.ParentID == parent {
+			sections = append(sections, FilteredSection{
+				Section:  section,
+				Sections: getDocumentSections(documentSections, section.ID),
+			})
+		}
+	}
+	return
+}
+
+// Note: This requires documentSections to be in peer order
+func getFilteredDocumentSections(documentSections []*sqlite.SECTION, parent string, sectionTagMap map[string][]FilteredTag, cfg *config.CheckDocumentation) (sections []FilteredSection) {
+	for _, section := range documentSections {
+		if section.ParentID == parent {
+			childSections := getFilteredDocumentSections(documentSections, section.ID, sectionTagMap, cfg)
+			// If a child matches always include this section
+			if len(childSections) > 0 {
+				sections = append(sections, FilteredSection{
+					Section:  section,
+					Sections: childSections,
+				})
+			} else {
+				// Else include this section if it should be included
+				tags := sectionTagMap[section.SourceID+"/"+section.DocumentID+"#"+section.ID]
+				if sectionIsIncluded(section.ID, section.DocumentID, section.SourceID, tags, cfg) {
+					sections = append(sections, FilteredSection{
+						Section: section,
+					})
+				}
+			}
+		}
+	}
+	return
 }
