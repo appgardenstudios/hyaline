@@ -241,7 +241,6 @@ func tagMatches(tags []FilteredTag, filterTags []config.CheckDocumentationFilter
 
 // Note: This requires documentSections to be in peer order
 func getDocumentSections(documentSections []*sqlite.SECTION, parent string) (sections []FilteredSection) {
-	// TODO make sure nil array works
 	for _, section := range documentSections {
 		if section.ParentID == parent {
 			sections = append(sections, FilteredSection{
