@@ -31,7 +31,7 @@ type checkNeedsUpdateSchema struct {
 }
 
 type checkNeedsUpdateSchemaEntry struct {
-	ID     string `json:"id" jsonschema:"title=The document/section ID,description=The ID of the document and/or section that needs to be updated,example=app.1"` // TODO update examples
+	ID     string `json:"id" jsonschema:"title=The document/section ID,description=The ID of the document and/or section that needs to be updated,example=app/README.md"`
 	Reason string `json:"reason" jsonschema:"title=The reason,description=The reason the document and/or section needs to be updated,example=This section needs to be updated because the change modifies a file that is mentioned in the reference to this section"`
 }
 
