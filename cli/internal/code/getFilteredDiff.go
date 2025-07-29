@@ -28,7 +28,9 @@ const (
 	ActionDelete Action = "Delete"
 )
 
-func GetFilteredDiff(path string, head string, headRef string, base string, baseRef string, cfg *config.CheckCode) (files []FilteredFile, err error) {
+func GetFilteredDiff(path string, head string, headRef string, base string, baseRef string, cfg *config.CheckCode) (filteredFiles []FilteredFile, changedFiles map[string]struct{}, err error) {
+	changedFiles = make(map[string]struct{})
+
 	// Open repo already on disk
 	var absPath string
 	absPath, err = filepath.Abs(path)
@@ -81,6 +83,7 @@ func GetFilteredDiff(path string, head string, headRef string, base string, base
 
 		switch action {
 		case merkletrie.Insert:
+			changedFiles[change.To.Name] = struct{}{}
 			if config.PathIsIncluded(change.To.Name, cfg.Include, cfg.Exclude) {
 				var toBytes []byte
 				toBytes, err = repo.GetBlobBytes(to.Blob)
@@ -88,13 +91,15 @@ func GetFilteredDiff(path string, head string, headRef string, base string, base
 					slog.Debug("code.GetFilteredDiff could not retrieve to blob from insert diff", "error", err)
 					return
 				}
-				files = append(files, FilteredFile{
+				filteredFiles = append(filteredFiles, FilteredFile{
 					Filename: change.To.Name,
 					Action:   ActionInsert,
 					Contents: toBytes,
 				})
 			}
 		case merkletrie.Modify:
+			changedFiles[change.From.Name] = struct{}{}
+			changedFiles[change.To.Name] = struct{}{}
 			if config.PathIsIncluded(change.To.Name, cfg.Include, cfg.Exclude) {
 				var fromBytes []byte
 				fromBytes, err = repo.GetBlobBytes(from.Blob)
@@ -114,7 +119,7 @@ func GetFilteredDiff(path string, head string, headRef string, base string, base
 				} else {
 					action = ActionModify
 				}
-				files = append(files, FilteredFile{
+				filteredFiles = append(filteredFiles, FilteredFile{
 					Filename:         change.To.Name,
 					OriginalFilename: change.From.Name,
 					Action:           action,
@@ -123,6 +128,7 @@ func GetFilteredDiff(path string, head string, headRef string, base string, base
 				})
 			}
 		case merkletrie.Delete:
+			changedFiles[change.From.Name] = struct{}{}
 			if config.PathIsIncluded(change.From.Name, cfg.Include, cfg.Exclude) {
 				var fromBytes []byte
 				fromBytes, err = repo.GetBlobBytes(from.Blob)
@@ -130,7 +136,7 @@ func GetFilteredDiff(path string, head string, headRef string, base string, base
 					slog.Debug("code.GetFilteredDiff could not retrieve from blob from delete diff", "error", err)
 					return
 				}
-				files = append(files, FilteredFile{
+				filteredFiles = append(filteredFiles, FilteredFile{
 					OriginalFilename: change.From.Name,
 					Action:           ActionDelete,
 					OriginalContents: fromBytes,

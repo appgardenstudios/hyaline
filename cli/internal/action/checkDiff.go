@@ -150,15 +150,15 @@ func CheckDiff(args *CheckDiffArgs) error {
 	slog.Debug("action.CheckDiff retrieved documents", "documents", documents) // TODO clean up
 
 	// Get Diff
-	files, err := code.GetFilteredDiff(args.Path, args.Head, args.HeadRef, args.Base, args.BaseRef, &cfg.Check.Code)
+	filteredFiles, changedFiles, err := code.GetFilteredDiff(args.Path, args.Head, args.HeadRef, args.Base, args.BaseRef, &cfg.Check.Code)
 	if err != nil {
 		slog.Debug("action.CheckDiff could not get filtered diff", "error", err)
 		return err
 	}
-	slog.Debug("action.CheckDiff retrieved files from diff", "files", files) // TODO clean up
+	slog.Debug("action.CheckDiff retrieved files from diff", "files", filteredFiles) // TODO clean up
 
 	// Check Diff
-	results, err := check.Diff(files, documents, pr, issues, cfg.Check, &cfg.LLM)
+	results, err := check.Diff(filteredFiles, documents, pr, issues, cfg.Check, &cfg.LLM)
 	if err != nil {
 		slog.Debug("action.CheckDiff could not check diff", "error", err)
 		return err
@@ -166,15 +166,20 @@ func CheckDiff(args *CheckDiffArgs) error {
 	slog.Debug("action.CheckDiff returned results", "results", results) // TODO clean up
 
 	// Format results
+	updateSource := cfg.Check.Options.DetectDocumentationUpdates.Source
 	recommendations := []CheckDiffRecommendation{}
 	for _, result := range results {
+		changed := false
+		if updateSource == result.Source {
+			_, changed = changedFiles[result.Document]
+		}
 		recommendations = append(recommendations, CheckDiffRecommendation{
 			Source:         result.Source,
 			Document:       result.Document,
 			Section:        result.Section,
 			Recommendation: "Consider reviewing and updating this documentation",
 			Reasons:        result.Reasons,
-			Changed:        false, // TODO
+			Changed:        changed,
 		})
 	}
 	sort.Sort(CheckDiffRecommendationSort(recommendations))

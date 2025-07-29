@@ -49,6 +49,8 @@ check:
       - source: my-app
         document: docs/preDoc.md
   options:
+    detectDocumentationUpdates:
+      source: my-app
     updateIf:
       touched:
         - code:
