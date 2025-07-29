@@ -116,7 +116,7 @@ func CheckDiff(args *CheckDiffArgs) error {
 			slog.Debug("action.CheckDiff could not get pull request", "pull-request", args.PullRequest, "error", err)
 			return err
 		}
-		slog.Debug("action.CheckDiff retrieved pull-request", "pull-request", pr) // TODO clean up
+		slog.Info("Retrieved pull-request", "pull-request", args.PullRequest)
 	}
 
 	// Get Issue(s)
@@ -133,7 +133,7 @@ func CheckDiff(args *CheckDiffArgs) error {
 			}
 			issues = append(issues, issue)
 		}
-		slog.Debug("action.CheckDiff retrieved issues", "issues", issues) // TODO clean up
+		slog.Info("Retrieved issues", "issues", strings.Join(args.Issues, ", "))
 	}
 
 	// Get Documents
@@ -147,7 +147,7 @@ func CheckDiff(args *CheckDiffArgs) error {
 		slog.Debug("action.CheckDiff could not get filtered documents", "error", err)
 		return err
 	}
-	slog.Debug("action.CheckDiff retrieved documents", "documents", documents) // TODO clean up
+	slog.Info("Retrieved filtered documents", "documents", len(documents))
 
 	// Get Diff
 	filteredFiles, changedFiles, err := code.GetFilteredDiff(args.Path, args.Head, args.HeadRef, args.Base, args.BaseRef, &cfg.Check.Code)
@@ -155,7 +155,7 @@ func CheckDiff(args *CheckDiffArgs) error {
 		slog.Debug("action.CheckDiff could not get filtered diff", "error", err)
 		return err
 	}
-	slog.Debug("action.CheckDiff retrieved files from diff", "files", filteredFiles) // TODO clean up
+	slog.Info("Retrieved filtered files from diff", "files", len(filteredFiles))
 
 	// Check Diff
 	results, err := check.Diff(filteredFiles, documents, pr, issues, cfg.Check, &cfg.LLM)
@@ -163,7 +163,7 @@ func CheckDiff(args *CheckDiffArgs) error {
 		slog.Debug("action.CheckDiff could not check diff", "error", err)
 		return err
 	}
-	slog.Debug("action.CheckDiff returned results", "results", results) // TODO clean up
+	slog.Info("Got results", "results", len(results))
 
 	// Format results
 	updateSource := cfg.Check.Options.DetectDocumentationUpdates.Source
@@ -204,6 +204,7 @@ func CheckDiff(args *CheckDiffArgs) error {
 		slog.Debug("action.CheckDiff could not write output file", "error", err)
 		return err
 	}
+	slog.Info("Output recommendations", "recommendations", len(recommendations), "output", outputAbsPath)
 
 	return nil
 }

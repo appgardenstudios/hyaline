@@ -59,6 +59,7 @@ func Diff(files []code.FilteredFile, documents []*docs.FilteredDoc, pr *github.P
 
 	// Check each file in the diff
 	for _, file := range files {
+		slog.Info("Checking file", "filename", file.Filename, "originalFilename", file.OriginalFilename)
 		// See if there are any updateIfs that apply
 		checkNewUpdateIfs(&file, documents, checkCfg, updateResultMap)
 
