@@ -32,8 +32,8 @@ Inside each documentation source is a set of documents. A document is either a s
 Hyaline constructs a URI to identify each extracted document and section. The format of the URI is `document://<source-id>/<document-id>[#<section>]` and is constructed as follows:
 
 - `<source-id>` is the globally unique ID of the documentation source as defined when extraction takes place
-- `<document-id>` is the relative path of the document from the root of the extraction (similar to what we use now for the document ID)
-- `<section>` is optional and contains the name of the section. For sub-sections, the name of each parent section is prepended and separated by `#` (e.g. `#section1#subsection2`)
+- `<document-id>` is the relative path of the document from the root of the extraction and may contain one or more path delimiters
+- `<section>` is optional and contains the name of the section. For sub-sections, the name of each parent section is prepended and separated by `/` (e.g. `#section1/subsection2`)
 
 </div>
 
@@ -53,13 +53,13 @@ When you provide a partial URI path, the server will return all documents that m
 #### Tag Filtering
 Documents and sections can have tags associated with them. You can filter results by including query parameters in the URI:
 
-- **Multiple values for same tag**: When you specify multiple comma-separated values for the same tag key (e.g., `?audience=user,admin`), documents that have ANY of those tag values will be included
-- **Multiple tags**: When you specify multiple different tags (e.g., `?audience=user&level=beginner`), documents must match at least one value for EACH tag to be included
+- **Multiple values for the same tag**: When you specify multiple comma-separated values for the same tag key (e.g., `?audience=user,admin`), documents that have ANY of those tag values will be included
+- **Multiple tags**: When you specify multiple different tags (e.g., `?audience=user,admin&level=beginner`), documents must match at least one value for EACH tag to be included
 
 Example filtering URIs:
-- `document://product-docs?audience=user` - returns documents tagged with "user"
-- `document://product-docs?audience=user,admin` - returns documents tagged with either "user" OR "admin"
-- `document://product-docs?audience=user&level=beginner` - returns documents tagged with "user" AND "beginner"
+- `document://product-docs?audience=user` - returns documents tagged with an "audience" of "user"
+- `document://product-docs?audience=user,admin` - returns documents tagged with an "audience" of either "user" OR "admin"
+- `document://product-docs?audience=user,admin&level=beginner` - returns documents tagged with an audience of either "user" OR "admin" AND a level of "beginner"
 
 </div>
 
