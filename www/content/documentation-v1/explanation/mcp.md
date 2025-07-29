@@ -9,7 +9,7 @@ purpose: Explain how Hyaline's MCP server works
 
 ![Overview](_img/mcp-overview.svg)
 
-Hyaline has a built-in MCP server that can make your documentation available to LLM models via the [Model Context Protocol](https://modelcontextprotocol.io/introduction) (MCP). First, you use Hyaline to [extract](./extract-documentation.md) all of your documentation into a documentation data set. This data set is stored in an SQLite database and can be sent, shared, or used independently of Hyaline if you wish. Once the documentation data set is complete, you install Hyaline's MCP server in your host of choice (i.e. Claude Desktop) and point Hyaline to that data set. Once configured, your AI assistant will have the ability to list and retrieve all of your documentation that is stored in your documentation data set. Then, when you as a developer ask your LLM to complete a task that requires documentation, your LLM can use the tools exposed by the MCP server via the host to list and retrieve relevant documentation.
+Hyaline has a built-in MCP server that can make your documentation available to LLM models via the [Model Context Protocol](https://modelcontextprotocol.io/introduction) (MCP). First, you use Hyaline to [extract](./extract-documentation.md) all of your documentation into a documentation data set. This data set is stored in an SQLite database and can be sent, shared, or used independently of Hyaline if you wish. The data set can also be [merged](./merge.md) with other data sets to combine documentation from multiple sources. Once the documentation data set is complete, you install Hyaline's MCP server in your host of choice (i.e. Claude Desktop) and point Hyaline to that data set. Once configured, your AI assistant will have the ability to list and retrieve all of your documentation that is stored in your documentation data set. Then, when you as a developer ask your LLM to complete a task that requires documentation, your LLM can use the tools exposed by the MCP server via the host to list and retrieve relevant documentation.
 
 Please visit the [MCP reference](../reference/mcp.md) for more detailed information on the tools made available by the MCP server.
 
@@ -31,7 +31,7 @@ Inside each documentation source is a set of documents. A document is either a s
 
 Hyaline constructs a URI to identify each extracted document and section. The format of the URI is `document://<source-id>/<document-id>[#<section>]` and is constructed as follows:
 
-- `<source-id>` is the globally unique ID of the documentation source as defined when extraction takes place
+- `<source-id>` is the globally unique ID of the documentation source as defined when extraction took place
 - `<document-id>` is the relative path of the document from the root of the extraction and may contain one or more path delimiters
 - `<section>` is optional and contains the name of the section. For sub-sections, the name of each parent section is prepended and separated by `/` (e.g. `#section1/subsection2`)
 
