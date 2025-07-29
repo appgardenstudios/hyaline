@@ -37,6 +37,10 @@ Hyaline constructs a URI to identify each extracted document and section. The fo
 
 </div>
 
+<div class="portrait">
+
+![URIs](_img/mcp-filtering.svg)
+
 ### Filtering
 
 The MCP server supports two types of filtering:
@@ -56,6 +60,8 @@ Example filtering URIs:
 - `document://product-docs?audience=user` - returns documents tagged with "user"
 - `document://product-docs?audience=user,admin` - returns documents tagged with either "user" OR "admin"
 - `document://product-docs?audience=user&level=beginner` - returns documents tagged with "user" AND "beginner"
+
+</div>
 
 ## Next Steps
 You can go read the [MCP reference](../reference/mcp.md) to see details on the tools exposed by the MCP server, or go and view the [CLI reference](../reference/cli.md) to see how to run the MCP server.
