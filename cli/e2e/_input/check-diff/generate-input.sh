@@ -4,7 +4,7 @@ set -e  # Exit on any error
 
 # Get the directory where this script is located
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-CLI_DIR="$(cd "$SCRIPT_DIR/../../../cli" && pwd)"
+CLI_DIR="$(cd "$SCRIPT_DIR/../../../" && pwd)"
 
 echo "Generating input databases for check diff e2e tests..."
 
