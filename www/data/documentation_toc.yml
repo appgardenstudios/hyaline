@@ -10,6 +10,9 @@ items:
       - title: Build the CLI
         url: /documentation-v1/how-to/build-cli
   - title: Explanation
+    items:
+      - title: Merge
+        url: /documentation-v1/explanation/merge
   - title: Reference
     items:
       - title: CLI
