@@ -65,6 +65,7 @@ func GetFilteredDiff(path string, head string, headRef string, base string, base
 		return
 	}
 
+	// Examine each change in the diff
 	for _, change := range diff {
 		slog.Debug("code.GetFilteredDiff processing diff", "diff", change.String())
 		var action merkletrie.Action
@@ -81,6 +82,7 @@ func GetFilteredDiff(path string, head string, headRef string, base string, base
 			return
 		}
 
+		// Handle filtering based on action since from/to presence is dependent on the action
 		switch action {
 		case merkletrie.Insert:
 			changedFiles[change.To.Name] = struct{}{}
