@@ -28,7 +28,7 @@ func TestTestCheckDiff(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	if true || *update {
+	if *update {
 		updateGolden(goldenPath, outputPath, t)
 	}
 
