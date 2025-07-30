@@ -9,13 +9,7 @@ import (
 	"log/slog"
 	"os"
 	"path/filepath"
-	"sort"
 )
-
-// AuditOutput represents the top-level audit results
-type AuditOutput struct {
-	Results []audit.AuditRuleResult `json:"results"`
-}
 
 type AuditDocumentationArgs struct {
 	Config        string
@@ -64,35 +58,10 @@ func AuditDocumentation(args *AuditDocumentationArgs) error {
 
 	slog.Debug("action.AuditDocumentation initialized documentation database", "documentation", args.Documentation)
 
-	auditRuleResults, err := audit.Documentation(cfg, db, args.Sources)
+	auditResults, err := audit.Documentation(cfg, db, args.Sources)
 	if err != nil {
 		slog.Debug("action.AuditDocumentation could not run audit", "error", err)
 		return err
-	}
-
-	// Sort checks within each rule
-	for i := range auditRuleResults {
-		sort.Slice(auditRuleResults[i].Checks, func(j, k int) bool {
-			a, b := auditRuleResults[i].Checks[j], auditRuleResults[i].Checks[k]
-
-			// Sort by URI first
-			if a.URI != b.URI {
-				return a.URI < b.URI
-			}
-
-			// Sort by check type
-			return a.Check < b.Check
-		})
-	}
-
-	// Sort rules by rule ID
-	sort.Slice(auditRuleResults, func(i, j int) bool {
-		return auditRuleResults[i].Rule < auditRuleResults[j].Rule
-	})
-
-	// Create final output structure
-	auditResults := &AuditOutput{
-		Results: auditRuleResults,
 	}
 
 	// Write results to JSON file

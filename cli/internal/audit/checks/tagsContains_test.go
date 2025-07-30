@@ -12,7 +12,6 @@ func TestTagsContains(t *testing.T) {
 		actualTags   []docs.FilteredTag
 		requiredTags []config.DocumentationFilterTag
 		expectedPass bool
-		expectError  bool
 	}{
 		{
 			name: "exact match",
@@ -24,7 +23,6 @@ func TestTagsContains(t *testing.T) {
 				{Key: "type", Value: "guide"},
 			},
 			expectedPass: true,
-			expectError:  false,
 		},
 		{
 			name: "no match",
@@ -35,7 +33,6 @@ func TestTagsContains(t *testing.T) {
 				{Key: "type", Value: "guide"},
 			},
 			expectedPass: false,
-			expectError:  false,
 		},
 		{
 			name: "regex pattern match",
@@ -48,7 +45,6 @@ func TestTagsContains(t *testing.T) {
 				{Key: "version", Value: "v\\d+\\.\\d+\\.\\d+"},
 			},
 			expectedPass: true,
-			expectError:  false,
 		},
 		{
 			name: "partial regex match fails",
@@ -59,7 +55,6 @@ func TestTagsContains(t *testing.T) {
 				{Key: "type", Value: ".*guide"},
 			},
 			expectedPass: false,
-			expectError:  false,
 		},
 		{
 			name: "multiple required tags - all match",
@@ -73,7 +68,6 @@ func TestTagsContains(t *testing.T) {
 				{Key: "level", Value: "beginner"},
 			},
 			expectedPass: true,
-			expectError:  false,
 		},
 		{
 			name: "multiple required tags - one missing",
@@ -85,7 +79,6 @@ func TestTagsContains(t *testing.T) {
 				{Key: "level", Value: "beginner"},
 			},
 			expectedPass: false,
-			expectError:  false,
 		},
 		{
 			name:         "no actual tags",
@@ -94,7 +87,6 @@ func TestTagsContains(t *testing.T) {
 				{Key: "type", Value: "guide"},
 			},
 			expectedPass: false,
-			expectError:  false,
 		},
 		{
 			name: "empty required tags",
@@ -103,46 +95,12 @@ func TestTagsContains(t *testing.T) {
 			},
 			requiredTags: []config.DocumentationFilterTag{},
 			expectedPass: true,
-			expectError:  false,
-		},
-		{
-			name: "invalid regex in key pattern",
-			actualTags: []docs.FilteredTag{
-				{Key: "type", Value: "guide"},
-			},
-			requiredTags: []config.DocumentationFilterTag{
-				{Key: "[invalid", Value: "guide"},
-			},
-			expectedPass: false,
-			expectError:  true,
-		},
-		{
-			name: "invalid regex in value pattern",
-			actualTags: []docs.FilteredTag{
-				{Key: "type", Value: "guide"},
-			},
-			requiredTags: []config.DocumentationFilterTag{
-				{Key: "type", Value: "[invalid"},
-			},
-			expectedPass: false,
-			expectError:  true,
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			pass, message, err := TagsContains(tt.actualTags, tt.requiredTags)
-			
-			if tt.expectError {
-				if err == nil {
-					t.Errorf("TagsContains() expected error but got none")
-				}
-				return
-			}
-			
-			if err != nil {
-				t.Errorf("TagsContains() unexpected error: %v", err)
-			}
+			pass, message := TagsContains(tt.actualTags, tt.requiredTags)
 			
 			if pass != tt.expectedPass {
 				t.Errorf("TagsContains() pass = %v, expected %v", pass, tt.expectedPass)

@@ -15,8 +15,8 @@ func (t Tags) Add(key, value string) {
 	t[key] = append(t[key], value)
 }
 
-// SortedKeys returns all tag keys in sorted order
-func (t Tags) SortedKeys() []string {
+// Keys returns all tag keys in sorted order
+func (t Tags) Keys() []string {
 	keys := make([]string, 0, len(t))
 	for key := range t {
 		keys = append(keys, key)

@@ -6,16 +6,16 @@ import (
 )
 
 // ContentMatchesRegex validates content against a regex pattern
-func ContentMatchesRegex(content string, pattern string) (bool, string, error) {
+func ContentMatchesRegex(content string, pattern string) (bool, string) {
 	regex, err := regexp.Compile(pattern)
 	if err != nil {
-		return false, "", err
+		return false, fmt.Sprintf("Invalid regex pattern: %v", err)
 	}
 
 	matches := regex.MatchString(content)
 	if matches {
-		return true, "", nil
+		return true, ""
 	} else {
-		return false, fmt.Sprintf("Content does not match the regex pattern: %s", pattern), nil
+		return false, fmt.Sprintf("Content does not match the regex pattern: %s", pattern)
 	}
 }

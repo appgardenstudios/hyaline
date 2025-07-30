@@ -4,65 +4,54 @@ import "testing"
 
 func TestContentMatchesRegex(t *testing.T) {
 	tests := []struct {
-		name         string
-		content      string
-		pattern      string
+		name        string
+		content     string
+		pattern     string
 		expectedPass bool
 		expectError  bool
 	}{
 		{
-			name:         "simple match",
-			content:      "This is a README file",
-			pattern:      "README",
+			name:        "simple match",
+			content:     "This is a README file",
+			pattern:     "README",
 			expectedPass: true,
 			expectError:  false,
 		},
 		{
-			name:         "no match",
-			content:      "This is a CHANGELOG file",
-			pattern:      "README",
+			name:        "no match",
+			content:     "This is a CHANGELOG file",
+			pattern:     "README",
 			expectedPass: false,
 			expectError:  false,
 		},
 		{
-			name:         "case-insensitive match",
-			content:      "This is a readme file",
-			pattern:      "(?i)README",
+			name:        "case-insensitive match",
+			content:     "This is a readme file",
+			pattern:     "(?i)README",
 			expectedPass: true,
 			expectError:  false,
 		},
 		{
-			name:         "invalid regex",
-			content:      "content",
-			pattern:      "[invalid",
+			name:        "invalid regex",
+			content:     "content",
+			pattern:     "[invalid",
 			expectedPass: false,
-			expectError:  true,
+			expectError:  false, // We handle this as a failed check, not an error
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			pass, message, err := ContentMatchesRegex(tt.content, tt.pattern)
-
-			if tt.expectError {
-				if err == nil {
-					t.Errorf("ContentMatchesRegex() expected error but got none")
-				}
-				return
-			}
-
-			if err != nil {
-				t.Errorf("ContentMatchesRegex() unexpected error: %v", err)
-			}
-
+			pass, message := ContentMatchesRegex(tt.content, tt.pattern)
+			
 			if pass != tt.expectedPass {
 				t.Errorf("ContentMatchesRegex() pass = %v, expected %v", pass, tt.expectedPass)
 			}
-
+			
 			if tt.expectedPass && message != "" {
 				t.Errorf("Expected empty message for passing check, got: %s", message)
 			}
-
+			
 			if !tt.expectedPass && message == "" {
 				t.Errorf("Expected non-empty message for failing check")
 			}

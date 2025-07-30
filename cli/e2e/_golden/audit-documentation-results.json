@@ -1,22 +1,6 @@
 {
   "results": [
     {
-      "rule": "_10",
-      "description": "Check that auto-generated IDs work correctly",
-      "pass": true,
-      "checks": [
-        {
-          "source": "backend",
-          "document": "README.md",
-          "uri": "document://backend/README.md",
-          "rule": "_10",
-          "check": "CONTENT_EXISTS",
-          "pass": true,
-          "message": ""
-        }
-      ]
-    },
-    {
       "rule": "content-exists-check",
       "description": "Check that backend documentation exists",
       "pass": true,
@@ -54,13 +38,13 @@
       "pass": false,
       "checks": [
         {
-          "source": "",
-          "document": "",
-          "uri": "",
+          "source": "backend",
+          "document": "NONEXISTENT.md",
+          "uri": "document://backend/NONEXISTENT.md",
           "rule": "content-missing-check",
           "check": "CONTENT_EXISTS",
           "pass": false,
-          "message": "This content does not exist."
+          "message": "This section does not exist."
         }
       ]
     },

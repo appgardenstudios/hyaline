@@ -2,24 +2,30 @@ package audit
 
 import (
 	"context"
+	"fmt"
 	"hyaline/internal/audit/checks"
 	"hyaline/internal/config"
 	"hyaline/internal/docs"
 	"hyaline/internal/sqlite"
 	"log/slog"
-	"strconv"
+	"sort"
 	"strings"
 )
 
 const (
-	CheckContentExists         = "CONTENT_EXISTS"
-	CheckContentMinLength      = "CONTENT_MIN_LENGTH"
-	CheckContentMatchesRegex   = "CONTENT_MATCHES_REGEX"
-	CheckContentMatchesPrompt  = "CONTENT_MATCHES_PROMPT"
+	CheckContentExists        = "CONTENT_EXISTS"
+	CheckContentMinLength     = "CONTENT_MIN_LENGTH"
+	CheckContentMatchesRegex  = "CONTENT_MATCHES_REGEX"
+	CheckContentMatchesPrompt = "CONTENT_MATCHES_PROMPT"
 	CheckContentMatchesPurpose = "CONTENT_MATCHES_PURPOSE"
-	CheckPurposeExists         = "PURPOSE_EXISTS"
-	CheckTagsContains          = "TAGS_CONTAINS"
+	CheckPurposeExists        = "PURPOSE_EXISTS"
+	CheckTagsContains         = "TAGS_CONTAINS"
 )
+
+// AuditOutput represents the top-level audit results
+type AuditOutput struct {
+	Results []AuditRuleResult `json:"results"`
+}
 
 // AuditRuleResult represents the result of a single audit rule
 type AuditRuleResult struct {
@@ -42,7 +48,7 @@ type AuditCheckResult struct {
 }
 
 // Documentation executes the audit process against the provided database
-func Documentation(cfg *config.Config, db *sqlite.Queries, sources []string) ([]AuditRuleResult, error) {
+func Documentation(cfg *config.Config, db *sqlite.Queries, sources []string) (*AuditOutput, error) {
 	slog.Debug("audit.Documentation starting")
 
 	// Load all data from database
@@ -82,19 +88,13 @@ func Documentation(cfg *config.Config, db *sqlite.Queries, sources []string) ([]
 	documentTagMap := docs.GetDocumentTagMap(documentTags)
 	sectionTagMap := docs.GetSectionTagMap(sectionTags)
 
-	results := []AuditRuleResult{}
+	output := &AuditOutput{
+		Results: []AuditRuleResult{},
+	}
 
 	// Process each rule
-	for i, configRule := range cfg.Audit.Rules {
-		// Create a copy of the rule to avoid modifying the original config
-		rule := configRule
-		
-		// Set default ID if not provided
-		if rule.ID == "" {
-			rule.ID = "_" + strconv.Itoa(i)
-		}
-
-		slog.Info("audit.Documentation processing rule", "ruleID", rule.ID)
+	for _, rule := range cfg.Audit.Rules {
+		slog.Debug("audit.Documentation processing rule", "ruleID", rule.ID)
 
 		ruleResult := AuditRuleResult{
 			Rule:        rule.ID,
@@ -118,11 +118,29 @@ func Documentation(cfg *config.Config, db *sqlite.Queries, sources []string) ([]
 			}
 		}
 
-		results = append(results, ruleResult)
+		// Sort checks within each rule
+		sort.Slice(ruleResult.Checks, func(i, j int) bool {
+			a, b := ruleResult.Checks[i], ruleResult.Checks[j]
+
+			// Sort by URI first
+			if a.URI != b.URI {
+				return a.URI < b.URI
+			}
+
+			// Sort by check type
+			return a.Check < b.Check
+		})
+
+		output.Results = append(output.Results, ruleResult)
 	}
 
-	slog.Info("audit.Documentation completed")
-	return results, nil
+	// Sort rules by rule ID
+	sort.Slice(output.Results, func(i, j int) bool {
+		return output.Results[i].Rule < output.Results[j].Rule
+	})
+
+	slog.Debug("audit.Documentation completed")
+	return output, nil
 }
 
 func processRule(rule *config.AuditRule, documents []sqlite.DOCUMENT, documentTagMap map[string][]docs.FilteredTag, sections []sqlite.SECTION, sectionTagMap map[string][]docs.FilteredTag, ruleResult *AuditRuleResult, cfg *config.Config) error {
@@ -163,15 +181,9 @@ func processRule(rule *config.AuditRule, documents []sqlite.DOCUMENT, documentTa
 				}).String(),
 				Rule: rule.ID,
 			}
-			err := performContentChecks(rule, baseResult, document.SourceID, document.ID, "", document.ExtractedData, document.Purpose, ruleResult, cfg)
-			if err != nil {
-				return err
-			}
+			performContentChecks(rule, baseResult, document.SourceID, document.ID, "", document.ExtractedData, document.Purpose, ruleResult, cfg)
 			performPurposeChecks(rule, baseResult, document.Purpose, ruleResult)
-			err = performTagsChecks(rule, baseResult, documentTags, ruleResult)
-			if err != nil {
-				return err
-			}
+			performTagsChecks(rule, baseResult, documentTags, ruleResult)
 		}
 	}
 
@@ -209,15 +221,9 @@ func processRule(rule *config.AuditRule, documents []sqlite.DOCUMENT, documentTa
 				}).String(),
 				Rule: rule.ID,
 			}
-			err := performContentChecks(rule, baseResult, section.SourceID, section.DocumentID, section.ID, section.ExtractedData, section.Purpose, ruleResult, cfg)
-			if err != nil {
-				return err
-			}
+			performContentChecks(rule, baseResult, section.SourceID, section.DocumentID, section.ID, section.ExtractedData, section.Purpose, ruleResult, cfg)
 			performPurposeChecks(rule, baseResult, section.Purpose, ruleResult)
-			err = performTagsChecks(rule, baseResult, sectionTags, ruleResult)
-			if err != nil {
-				return err
-			}
+			performTagsChecks(rule, baseResult, sectionTags, ruleResult)
 		}
 	}
 
@@ -244,7 +250,7 @@ func processRule(rule *config.AuditRule, documents []sqlite.DOCUMENT, documentTa
 	return nil
 }
 
-func performContentChecks(rule *config.AuditRule, baseResult AuditCheckResult, sourceID, documentID, sectionID, content, purpose string, ruleResult *AuditRuleResult, cfg *config.Config) error {
+func performContentChecks(rule *config.AuditRule, baseResult AuditCheckResult, sourceID, documentID, sectionID, content, purpose string, ruleResult *AuditRuleResult, cfg *config.Config) {
 	// CONTENT_MIN_LENGTH check
 	if rule.Checks.Content.MinLength > 0 {
 		pass, message := checks.ContentMinLength(content, rule.Checks.Content.MinLength)
@@ -259,11 +265,7 @@ func performContentChecks(rule *config.AuditRule, baseResult AuditCheckResult, s
 
 	// CONTENT_MATCHES_REGEX check
 	if rule.Checks.Content.MatchesRegex != "" {
-		pass, message, err := checks.ContentMatchesRegex(content, rule.Checks.Content.MatchesRegex)
-		if err != nil {
-			slog.Debug("audit.performContentChecks error in CONTENT_MATCHES_REGEX", "error", err)
-			return err
-		}
+		pass, message := checks.ContentMatchesRegex(content, rule.Checks.Content.MatchesRegex)
 
 		checkResult := baseResult
 		checkResult.Check = CheckContentMatchesRegex
@@ -278,7 +280,8 @@ func performContentChecks(rule *config.AuditRule, baseResult AuditCheckResult, s
 		pass, message, err := checks.ContentMatchesPrompt(sourceID, documentID, sectionID, rule.Checks.Content.MatchesPrompt, content, &cfg.LLM)
 		if err != nil {
 			slog.Debug("audit.performContentChecks error in CONTENT_MATCHES_PROMPT", "error", err)
-			return err
+			pass = false
+			message = fmt.Sprintf("Error checking prompt: %v", err)
 		}
 
 		checkResult := baseResult
@@ -295,7 +298,8 @@ func performContentChecks(rule *config.AuditRule, baseResult AuditCheckResult, s
 			pass, message, err := checks.ContentMatchesPurpose(sourceID, documentID, sectionID, purpose, content, &cfg.LLM)
 			if err != nil {
 				slog.Debug("audit.performContentChecks error in CONTENT_MATCHES_PURPOSE", "error", err)
-				return err
+				pass = false
+				message = fmt.Sprintf("Error checking purpose: %v", err)
 			}
 
 			checkResult := baseResult
@@ -306,8 +310,6 @@ func performContentChecks(rule *config.AuditRule, baseResult AuditCheckResult, s
 			ruleResult.Checks = append(ruleResult.Checks, checkResult)
 		}
 	}
-
-	return nil
 }
 
 func performPurposeChecks(rule *config.AuditRule, baseResult AuditCheckResult, purpose string, ruleResult *AuditRuleResult) {
@@ -327,14 +329,10 @@ func performPurposeChecks(rule *config.AuditRule, baseResult AuditCheckResult, p
 
 }
 
-func performTagsChecks(rule *config.AuditRule, baseResult AuditCheckResult, tags []docs.FilteredTag, ruleResult *AuditRuleResult) error {
+func performTagsChecks(rule *config.AuditRule, baseResult AuditCheckResult, tags []docs.FilteredTag, ruleResult *AuditRuleResult) {
 	// TAGS_CONTAINS check
 	if len(rule.Checks.Tags.Contains) > 0 {
-		pass, message, err := checks.TagsContains(tags, rule.Checks.Tags.Contains)
-		if err != nil {
-			slog.Debug("audit.performTagsChecks error in TAGS_CONTAINS", "error", err)
-			return err
-		}
+		pass, message := checks.TagsContains(tags, rule.Checks.Tags.Contains)
 
 		checkResult := baseResult
 		checkResult.Check = CheckTagsContains
@@ -343,8 +341,6 @@ func performTagsChecks(rule *config.AuditRule, baseResult AuditCheckResult, tags
 
 		ruleResult.Checks = append(ruleResult.Checks, checkResult)
 	}
-
-	return nil
 }
 
 func matchesAnyFilter(documentID, sourceID, sectionID string, tags []docs.FilteredTag, filters []config.DocumentationFilter) bool {
