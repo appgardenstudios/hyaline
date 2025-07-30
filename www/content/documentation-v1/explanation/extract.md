@@ -127,7 +127,7 @@ TODO square image with markdown doc on left w/ 3 level section(s), extracted sec
 
 TODO Hyaline scans the markdown document and extracts any sections it encounters. It identifies each section by name, and preserves any section level hierarchy it find.
 
-Note that when storing the ID of the section it replaces any "/" characters with "_", as Hyaline uses "/" to separate sections in the ID if a sub-section (i.e. `Section1/Section1.1`).
+Note that when storing the ID of the section it replaces any "/" characters with "_", as Hyaline uses "/" to separate sections in the ID if a sub-section (i.e. `Section 1/Section 1.1`).
 
 </div>
 
