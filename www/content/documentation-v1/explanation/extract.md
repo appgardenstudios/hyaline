@@ -8,12 +8,20 @@ purpose: Explain how Hyaline extracts documentation
 <div class="portrait">
 
 ![Overview](./_img/extract-documentation-overview.svg)
+TODO portrait image of multiple repos/sites, extract into current data set, can audit (right), used for check on changes (left), used by AI (mcp lower left), used by org (lower right)
 
 Hyaline has the ability to extract documentation into a current data set that can be used to build systems and products as well as verify that the documentation is accurate and complete.
 
 In this example you can see documentation spread over multiple repositories and documentation sites. Hyaline can extract documentation from each of these, (optionally) [merge](./merge.md) them together into a unified documentation set, and then use Hyaline to [check](./check.md) and [audit](./audit.md) the extracted documentation or use it via an [MCP server](./mcp.md) or referencing the [current data set](../reference/data-set.md). 
 
 In Hyaline repository or documentation site is a documentation source, or source for short. 
+
+</div>
+
+<div class="portrait">
+
+![Extract Phases](./_img/extract-documentation-phases.svg)
+TODO square image of crawl -> extract -> add metadata w/ nothing highlighted.
 
 Extracting documentation is broken up into 3 phases: Crawling, Extracting, and Adding Metadata
 
@@ -26,7 +34,7 @@ TODO talk about tags
 <div class="portrait">
 
 ![Crawling Documentation](./_img/extract-documentation-crawling.svg)
-TODO image of crawl -> extract -> add metadata w/ crawl highlighted.
+TODO square image of crawl -> extract -> add metadata w/ crawl highlighted.
 
 Hyaline can be configured to crawl a documentation source and extract documentation. Hyaline supports a number of different crawlers, each with their own capabilities and configuration.
 
@@ -37,6 +45,7 @@ Hyaline can be configured to crawl a documentation source and extract documentat
 <div class="portrait">
 
 ![Crawling Documentation fs](./_img/extract-documentation-fs.svg)
+TODO square show config and directory structure, highlight files that were crawled
 
 The `fs` crawler crawls a local file system starting at a path, and processes each document it encounters.
 
@@ -49,6 +58,7 @@ In this example you can see that Hyaline is configured to start in the TODO dire
 <div class="portrait">
 
 ![Crawling Documentation git](./_img/extract-documentation-git.svg)
+TODO square show config and repo structure, highlight files that were crawled
 
 The `git` crawler crawls a git repository starting at its root, and processes each document it encounters.
 
@@ -61,6 +71,7 @@ In this example you can see that Hyaline is configured to clone the remote repo 
 <div class="portrait">
 
 ![Crawling Documentation http](./_img/extract-documentation-http.svg)
+TODO square show config and site structure, highlight files that were crawled
 
 The `http` crawler crawls a HTTP or HTTPS website starting at a configured starting url, and processes each document it encounters.
 
@@ -75,7 +86,7 @@ Note that Hyaline will not crawl outside of the specified domain, so you don't n
 <div class="portrait">
 
 ![Extracting Documentation](./_img/extract-documentation-extracting.svg)
-TODO image of crawl -> extract -> add metadata w/ extract highlighted.
+TODO square image of crawl -> extract -> add metadata w/ extract highlighted.
 
 Hyaline can be configured to extract documentation differently based on the type of documentation encountered. Hyaline supports a number of different extractors, each with their own capabilities and configuration.
 
@@ -86,6 +97,7 @@ Hyaline can be configured to extract documentation differently based on the type
 <div class="portrait">
 
 ![Markdown](./_img/extract-documentation-markdown.svg)
+TODO square image with markdown on the left, extracted document and child sections on the right (show sub-section example)
 
 The `markdown` extractor extracts markdown documents.
 
@@ -98,6 +110,7 @@ In this example you can see a markdown document being extracted into a document 
 <div class="portrait">
 
 ![HTML to Markdown](./_img/extract-documentation-html-to-markdown.svg)
+TODO square image with html on the left, extracted document and child sections on the right (show sub-section example). Highlight selected area (main) with html tag
 
 The `html` extractor extracts html documents by extracting the content of the documentation and transforming it into markdown.
 
@@ -110,6 +123,7 @@ In this example you can see an html document being extracted into a document and
 <div class="portrait">
 
 ![Document Sections](./_img/extract-documentation-sections.svg)
+TODO square image with markdown doc on left w/ 3 level section(s), extracted sections on the right with names and parents
 
 TODO Hyaline scans the markdown document and extracts any sections it encounters. It identifies each section by name, and preserves any section level hierarchy it find.
 
@@ -122,7 +136,7 @@ Note that when storing the ID of the section it replaces any "/" characters with
 <div class="portrait">
 
 ![Adding Metadata](./_img/extract-documentation-metadata.svg)
-TODO image of crawl -> extract -> add metadata w/ add metadata highlighted.
+TODO square image of crawl -> extract -> add metadata w/ add metadata highlighted.
 
 Hyaline can be configured to add tags and purposes to each document and section that is extracted.
 
