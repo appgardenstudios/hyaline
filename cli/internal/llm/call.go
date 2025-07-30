@@ -1,8 +1,10 @@
 package llm
 
 import (
+	"errors"
 	"fmt"
 	"hyaline/internal/config"
+	"log/slog"
 
 	"github.com/invopop/jsonschema"
 )
@@ -16,6 +18,11 @@ type Tool struct {
 }
 
 func CallLLM(systemPrompt string, userPrompt string, tools []*Tool, cfg *config.LLM) (result string, err error) {
+	if cfg == nil || cfg.Provider == "" {
+		slog.Error("llm configuration must be present to call an llm")
+		err = errors.New("llm configuration missing")
+		return
+	}
 	switch cfg.Provider {
 	case config.LLMProviderAnthropic:
 		return callAnthropic(systemPrompt, userPrompt, tools, cfg)

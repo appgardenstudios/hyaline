@@ -222,21 +222,26 @@ func SectionMatches(sectionID string, documentID string, sourceID string, tags [
 }
 
 func tagMatches(tags []FilteredTag, filterTags []config.CheckDocumentationFilterTag) bool {
-	// If there are no filter tags we always match regardless
+	// If there are no filter tags we always match
 	if len(filterTags) == 0 {
 		return true
 	}
 
-	// Else we need to match at least one tag pair
+	// Else we need to find a match for all filtered tag pairs
 	for _, filterTag := range filterTags {
+		found := false
 		for _, tag := range tags {
 			if filterTag.Key == tag.Key && filterTag.Value == tag.Value {
-				return true
+				found = true
+				break
 			}
+		}
+		if !found {
+			return false
 		}
 	}
 
-	return false
+	return true
 }
 
 // Note: This requires documentSections to be in peer order

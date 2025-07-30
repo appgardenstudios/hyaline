@@ -33,12 +33,12 @@ func ExtractDocumentation(args *ExtractDocumentationArgs) error {
 	}
 
 	// Initialize our output database
-	docDb, db, err := sqlite.InitOutput(args.Output)
+	docDb, close, err := sqlite.InitOutput(args.Output)
 	if err != nil {
 		slog.Debug("action.ExtractDocumentation could not initialize output", "error", err)
 		return err
 	}
-	defer db.Close()
+	defer close()
 
 	// Extract documentation
 	err = extract.Documentation(cfg.Extract, docDb)
