@@ -1,10 +1,35 @@
-package utils
+package docs
 
 import (
 	"fmt"
 	"net/url"
+	"sort"
 	"strings"
 )
+
+// Tags represents a collection of tag keys with their associated values
+type Tags map[string][]string
+
+// Add adds a value to the specified tag key
+func (t Tags) Add(key, value string) {
+	t[key] = append(t[key], value)
+}
+
+// Keys returns all tag keys in sorted order
+func (t Tags) Keys() []string {
+	keys := make([]string, 0, len(t))
+	for key := range t {
+		keys = append(keys, key)
+	}
+	// Sort for deterministic order
+	sort.Strings(keys)
+	return keys
+}
+
+// NewTags creates a new Tags instance
+func NewTags() Tags {
+	return make(Tags)
+}
 
 // DocumentURI represents a parsed document URI with tag filtering support
 type DocumentURI struct {
