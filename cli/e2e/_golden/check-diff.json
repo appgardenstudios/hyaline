@@ -1,0 +1,13 @@
+{
+  "recommendations": [
+    {
+      "documentationSource": "my-app",
+      "document": "README.md",
+      "recommendation": "Consider reviewing and updating this documentation",
+      "reasons": [
+        "Update this document if any files matching **/* were touched."
+      ],
+      "changed": true
+    }
+  ]
+}

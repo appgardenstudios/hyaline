@@ -11,6 +11,9 @@ import (
 )
 
 func callAnthropic(systemPrompt string, userPrompt string, tools []*Tool, cfg *config.LLM) (result string, err error) {
+	if cfg.Key == "" {
+		slog.Warn("Calling anthropic without a key being set")
+	}
 	client := anthropic.NewClient(
 		option.WithAPIKey(cfg.Key),
 	)

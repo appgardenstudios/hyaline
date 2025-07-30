@@ -8,10 +8,6 @@ import (
 	"github.com/bmatcuk/doublestar/v4"
 )
 
-const extractSourceIDRegex = `^[A-z0-9][A-z0-9_-]{0,63}$`
-const extractMetadataTagKeyRegex = `^[A-z0-9][A-z0-9_-]{0,63}$`
-const extractMetadataTagValueRegex = `^[A-z0-9][A-z0-9_-]{0,63}$`
-
 func validateExtract(cfg *Config) (err error) {
 	// If extract was not defined in the config check nothing as extract is not always required
 	// Note that actions requiring the config need to check for nil themselves
@@ -20,8 +16,8 @@ func validateExtract(cfg *Config) (err error) {
 	}
 
 	// Check source
-	if !regexp.MustCompile(extractSourceIDRegex).MatchString(cfg.Extract.Source.ID) {
-		return fmt.Errorf("extract.source.id must match regex /%s/, found: %s", extractSourceIDRegex, cfg.Extract.Source.ID)
+	if !regexp.MustCompile(sourceIDRegex).MatchString(cfg.Extract.Source.ID) {
+		return fmt.Errorf("extract.source.id must match regex /%s/, found: %s", sourceIDRegex, cfg.Extract.Source.ID)
 	}
 
 	// Check crawler
@@ -60,8 +56,8 @@ func validateExtract(cfg *Config) (err error) {
 	}
 
 	// Check metadata
-	keyRegex := regexp.MustCompile(extractMetadataTagKeyRegex)
-	valueRegex := regexp.MustCompile(extractMetadataTagValueRegex)
+	keyRegex := regexp.MustCompile(metadataTagKeyRegex)
+	valueRegex := regexp.MustCompile(metadataTagValueRegex)
 	for i, metadata := range cfg.Extract.Metadata {
 		if metadata.Document == "" || !doublestar.ValidatePattern(metadata.Document) {
 			return fmt.Errorf("extract.metadata[%d].document must be a valid pattern, found: %s", i, metadata.Document)
@@ -71,10 +67,10 @@ func validateExtract(cfg *Config) (err error) {
 		}
 		for j, tag := range metadata.Tags {
 			if !keyRegex.MatchString(tag.Key) {
-				return fmt.Errorf("extract.metadata[%d].tags[%d].key must match regex /%s/, found: %s", i, j, extractMetadataTagKeyRegex, tag.Key)
+				return fmt.Errorf("extract.metadata[%d].tags[%d].key must match regex /%s/, found: %s", i, j, metadataTagKeyRegex, tag.Key)
 			}
 			if !valueRegex.MatchString(tag.Value) {
-				return fmt.Errorf("extract.metadata[%d].tags[%d].value must match regex /%s/, found: %s", i, j, extractMetadataTagValueRegex, tag.Value)
+				return fmt.Errorf("extract.metadata[%d].tags[%d].value must match regex /%s/, found: %s", i, j, metadataTagValueRegex, tag.Value)
 			}
 		}
 	}
