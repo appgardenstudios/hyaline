@@ -12,7 +12,6 @@ TODO portrait image of multiple repos/sites, extract into current data set, can 
 
 Hyaline has the ability to extract documentation into a current data set that can be used to build systems and products as well as verify that the documentation is accurate and complete.
 
-TODO move this to hyaline explanation
 In this example you can see documentation spread over multiple repositories and documentation sites. Hyaline can extract documentation from each of these, (optionally) [merge](./merge.md) them together into a unified documentation set, and then use Hyaline to [check](./check.md) and [audit](./audit.md) the extracted documentation or use it via an [MCP server](./mcp.md) or referencing the [current data set](../reference/data-set.md). 
 
 In Hyaline repository or documentation site is a documentation source, or source for short. 
@@ -39,20 +38,39 @@ TODO talk about tags
 
 Hyaline can be configured to crawl a documentation source and extract documentation. Hyaline supports a number of different crawlers, each with their own capabilities and configuration.
 
+- **fs** - The file system crawler looks for documentation on a local filesystem.
+- **git** - The git crawler looks for documentation on a specific branch or reference of a git repository.
+- **http** - The http crawler looks for documentation on a local or remote http or https server.
+
+Read more about each of these extractors and how they operate below.
+
 </div>
 
 ### Crawling Documentation - fs
 
-<div class="portrait">
+<div class="side-by-side">
+
+```yml
+extract:
+  ...
+  crawler:
+    type: fs
+    options:
+      path: ./my-app
+    include:
+      - "**/*.md"
+    exclude:
+      - "old/**/*"
+      - "README.md"
+  ...
+```
 
 ![Crawling Documentation fs](./_img/extract-documentation-fs.svg)
-TODO square show config and directory structure, highlight files that were crawled
 
-The `fs` crawler crawls a local file system starting at a path, and processes each document it encounters.
+</div>
 
 In this example you can see that Hyaline is configured to start in the TODO directory and process any documents that match TODO. It also does not process any documents in TODO as that directory and its children are excluded from the crawl.
 
-</div>
 
 ### Crawling Documentation - git
 
