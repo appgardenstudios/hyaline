@@ -38,13 +38,13 @@
       "pass": false,
       "checks": [
         {
-          "source": "backend",
-          "document": "NONEXISTENT.md",
-          "uri": "document://backend/NONEXISTENT.md",
+          "source": "",
+          "document": "",
+          "uri": "",
           "rule": "content-missing-check",
           "check": "CONTENT_EXISTS",
           "pass": false,
-          "message": "This section does not exist."
+          "message": "This content does not exist."
         }
       ]
     },
