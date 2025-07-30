@@ -12,6 +12,7 @@ TODO portrait image of multiple repos/sites, extract into current data set, can 
 
 Hyaline has the ability to extract documentation into a current data set that can be used to build systems and products as well as verify that the documentation is accurate and complete.
 
+TODO move this to hyaline explanation
 In this example you can see documentation spread over multiple repositories and documentation sites. Hyaline can extract documentation from each of these, (optionally) [merge](./merge.md) them together into a unified documentation set, and then use Hyaline to [check](./check.md) and [audit](./audit.md) the extracted documentation or use it via an [MCP server](./mcp.md) or referencing the [current data set](../reference/data-set.md). 
 
 In Hyaline repository or documentation site is a documentation source, or source for short. 
@@ -21,9 +22,10 @@ In Hyaline repository or documentation site is a documentation source, or source
 <div class="portrait">
 
 ![Extract Phases](./_img/extract-documentation-phases.svg)
-TODO square image of crawl -> extract -> add metadata w/ nothing highlighted.
 
 Extracting documentation is broken up into 3 phases: Crawling, Extracting, and Adding Metadata
+
+TODO talk high level about each phase
 
 TODO talk about tags
 
@@ -34,7 +36,6 @@ TODO talk about tags
 <div class="portrait">
 
 ![Crawling Documentation](./_img/extract-documentation-crawling.svg)
-TODO square image of crawl -> extract -> add metadata w/ crawl highlighted.
 
 Hyaline can be configured to crawl a documentation source and extract documentation. Hyaline supports a number of different crawlers, each with their own capabilities and configuration.
 
@@ -86,7 +87,6 @@ Note that Hyaline will not crawl outside of the specified domain, so you don't n
 <div class="portrait">
 
 ![Extracting Documentation](./_img/extract-documentation-extracting.svg)
-TODO square image of crawl -> extract -> add metadata w/ extract highlighted.
 
 Hyaline can be configured to extract documentation differently based on the type of documentation encountered. Hyaline supports a number of different extractors, each with their own capabilities and configuration.
 
@@ -136,11 +136,14 @@ Note that when storing the ID of the section it replaces any "/" characters with
 <div class="portrait">
 
 ![Adding Metadata](./_img/extract-documentation-metadata.svg)
-TODO square image of crawl -> extract -> add metadata w/ add metadata highlighted.
 
 Hyaline can be configured to add tags and purposes to each document and section that is extracted.
 
 In this example you can see a set of documents that have been extracted. Based on the configuration TODO document and sections are tagged with TODO, and TODO section is tagged with TODO. The TODO document also has a purpose associated with it to help Hyaline ensure that it is updated when it needs to be.
+
+### Adding Metadata - Purpose
+
+### Adding Metadata - Tags
 
 </div>
 

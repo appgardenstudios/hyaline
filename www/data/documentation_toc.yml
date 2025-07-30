@@ -13,6 +13,8 @@ items:
         url: /documentation-v1/how-to/run-mcp
   - title: Explanation
     items:
+      - title: Extract
+        url: /documentation-v1/explanation/extract
       - title: Merge
         url: /documentation-v1/explanation/merge
       - title: MCP
