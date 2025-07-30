@@ -16,11 +16,12 @@ func MergeDocumentation(args *MergeDocumentationArgs) error {
 	slog.Info("Merging documentation", "inputs", args.Inputs, "output", args.Output)
 
 	// Initialize output database
-	outputDB, err := sqlite.InitOutput(args.Output)
+	outputDB, close, err := sqlite.InitOutput(args.Output)
 	if err != nil {
 		slog.Debug("action.MergeDocumentation could not initialize output", "error", err)
 		return err
 	}
+	defer close()
 
 	slog.Info(fmt.Sprintf("Merging %d data sets", len(args.Inputs)))
 
