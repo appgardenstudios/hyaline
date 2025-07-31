@@ -48,6 +48,8 @@ Read more about each of these extractors and how they operate below.
 
 ### Crawling Documentation - fs
 
+The `fs` crawler crawls a local filesystem starting at a path, and processes each document it encounters.
+
 <div class="side-by-side">
 
 ```yml
@@ -65,7 +67,7 @@ extract:
   ...
 ```
 
-![Crawling Documentation fs](./_img/extract-documentation-fs.svg)
+![Crawling Documentation - fs](./_img/extract-documentation-fs.svg)
 
 </div>
 
@@ -74,31 +76,59 @@ In this example you can see that Hyaline is configured to start in the TODO dire
 
 ### Crawling Documentation - git
 
-<div class="portrait">
-
-![Crawling Documentation git](./_img/extract-documentation-git.svg)
-TODO square show config and repo structure, highlight files that were crawled
-
 The `git` crawler crawls a git repository starting at its root, and processes each document it encounters.
 
-In this example you can see that Hyaline is configured to clone the remote repo TODO into memory and process any documents that match TODO. It also does not process any documents in TODO as that directory and its children are excluded from the crawl.
+<div class="side-by-side">
+
+```yml
+extract:
+  ...
+  crawler:
+    type: fs
+    options:
+      path: ./my-app
+    include:
+      - "**/*.md"
+    exclude:
+      - "old/**/*"
+      - "LICENSE.md"
+  ...
+```
+
+![Crawling Documentation - git](./_img/extract-documentation-git.svg)
 
 </div>
 
+In this example you can see that Hyaline is configured to clone the remote repo TODO into memory and process any documents that match TODO. It also does not process any documents in TODO as that directory and its children are excluded from the crawl.
+
 ### Crawling Documentation - http
 
-<div class="portrait">
-
-![Crawling Documentation http](./_img/extract-documentation-http.svg)
-TODO square show config and site structure, highlight files that were crawled
-
 The `http` crawler crawls a HTTP or HTTPS website starting at a configured starting url, and processes each document it encounters.
+
+<div class="side-by-side">
+
+```yml
+extract:
+  ...
+  crawler:
+    type: fs
+    options:
+      path: ./my-app
+    include:
+      - "**/*.md"
+    exclude:
+      - "old/**/*"
+      - "LICENSE.md"
+  ...
+```
+
+![Crawling Documentation - http](./_img/extract-documentation-http.svg)
+
+</div>
 
 In this example you can see that Hyaline is configured to start crawling at TODO and process any documents that match TODO. It also does not process any documents in TODO as that directory and its children are excluded from the crawl.
 
 Note that Hyaline will not crawl outside of the specified domain, so you don't need to worry about it getting lost in the internet.
-
-</div>
 
 ## Extracting Documentation
 
@@ -112,42 +142,64 @@ Hyaline can be configured to extract documentation differently based on the type
 
 ### Extracting Documentation - md
 
-<div class="portrait">
-
-![Markdown](./_img/extract-documentation-markdown.svg)
-TODO square image with markdown on the left, extracted document and child sections on the right (show sub-section example)
-
 The `markdown` extractor extracts markdown documents.
+
+<div class="side-by-side">
+
+```yml
+extract:
+  ...
+  crawler:
+    type: fs
+    options:
+      path: ./my-app
+    include:
+      - "**/*.md"
+    exclude:
+      - "old/**/*"
+      - "LICENSE.md"
+  ...
+```
+
+![Extracting Documentation - md](./_img/extract-documentation-md.svg)
+
+</div>
 
 In this example you can see a markdown document being extracted into a document and its sections.
 
-</div>
 
 ### Extracting Documentation - html
 
-<div class="portrait">
-
-![HTML to Markdown](./_img/extract-documentation-html-to-markdown.svg)
-TODO square image with html on the left, extracted document and child sections on the right (show sub-section example). Highlight selected area (main) with html tag
-
 The `html` extractor extracts html documents by extracting the content of the documentation and transforming it into markdown.
 
-In this example you can see an html document being extracted into a document and its sections. Hyaline is configured to select just the html in the `main` tag, which is then transformed into markdown and stored as a document and sections.
+<div class="side-by-side">
+
+```yml
+extract:
+  ...
+  crawler:
+    type: fs
+    options:
+      path: ./my-app
+    include:
+      - "**/*.md"
+    exclude:
+      - "old/**/*"
+      - "LICENSE.md"
+  ...
+```
+
+![Extracting Documentation - html](./_img/extract-documentation-html.svg)
 
 </div>
 
+In this example you can see an html document being extracted into a document and its sections. Hyaline is configured to select just the html in the `main` tag, which is then transformed into markdown and stored as a document and sections.
+
 ### A Note on Sections
-
-<div class="portrait">
-
-![Document Sections](./_img/extract-documentation-sections.svg)
-TODO square image with markdown doc on left w/ 3 level section(s), extracted sections on the right with names and parents
 
 TODO Hyaline scans the markdown document and extracts any sections it encounters. It identifies each section by name, and preserves any section level hierarchy it find.
 
 Note that when storing the ID of the section it replaces any "/" characters with "_", as Hyaline uses "/" to separate sections in the ID if a sub-section (i.e. `Section 1/Section 1.1`).
-
-</div>
 
 ## Adding Metadata
 
@@ -159,11 +211,61 @@ Hyaline can be configured to add tags and purposes to each document and section 
 
 In this example you can see a set of documents that have been extracted. Based on the configuration TODO document and sections are tagged with TODO, and TODO section is tagged with TODO. The TODO document also has a purpose associated with it to help Hyaline ensure that it is updated when it needs to be.
 
+</div>
+
 ### Adding Metadata - Purpose
+
+TODO purpose can be added and is used for 
+
+<div class="side-by-side">
+
+```yml
+extract:
+  ...
+  crawler:
+    type: fs
+    options:
+      path: ./my-app
+    include:
+      - "**/*.md"
+    exclude:
+      - "old/**/*"
+      - "LICENSE.md"
+  ...
+```
+
+![Adding Metadata - Purpose](./_img/extract-documentation-purpose.svg)
+
+</div>
+
+TODO in this example you can see...
 
 ### Adding Metadata - Tags
 
+TODO purpose can be added and is used for 
+
+<div class="side-by-side">
+
+```yml
+extract:
+  ...
+  crawler:
+    type: fs
+    options:
+      path: ./my-app
+    include:
+      - "**/*.md"
+    exclude:
+      - "old/**/*"
+      - "LICENSE.md"
+  ...
+```
+
+![Adding Metadata - Tags](./_img/extract-documentation-tags.svg)
+
 </div>
+
+TODO in this example you can see...
 
 ## Next Steps
 TODO
