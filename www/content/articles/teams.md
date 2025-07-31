@@ -1,13 +1,13 @@
 ---
-title: Software Development Teams
+title: Software Product Development Teams
 subtitle: An intersection of people, product, system, and process.
 description: "An examination of the makeup of a software product development team. More specifically, how a software development team is composed of people, product, system, and process. Also includes some considerations for each component."
 author: John Clark
-date: 2025-07-17
+date: 2025-07-31
 url: articles/teams
 thumbnail: ./_img/teams-teams.svg
 ---
-## Software Development Teams
+## Software Product Development Teams
 
 <div class="portrait">
 
@@ -101,10 +101,13 @@ To get something to be a habit it needs to happen nearly automatically. Forming 
 A note about intent. It is a lot easier to follow a process if you understand what the intent, or context about the reason for and desired results of a process are. Many times a process will be rolled out without the corresponding information of _why_ that process exists in the first place. Taking the time to explain and ensure the intent or _why_ of the process can do wonders in helping people follow and even champion said process.
 
 ### Communicated
-If you don't tell someone they need to do something, don't be surprised when they don't. TODO need to communicate, importance of onboarding and training to communicate a process. Bias towards more communication rather than less. If you don't feel you have overcommunicated, you have probably undercommunicated. Document things and keep it readily available near where your people are following their process. Example of putting templates in for PRs, checklists for product requirements, automated workflows where the process is the workflow so that it is always followed, etc. Share it and should it.
+If you don't tell someone they need to do something, don't be surprised when they don't. Process needs to be communicated, loudly and clearly. When you onboard someone to the organization you typically have them trained to do their job and communicate the processes needed to do that job. The thing with process is that the training and communication cannot stop after their first few days or weeks. It is a continual process unto itself, and never end.
 
-A note about ???.
+When you are communicating it can sometimes feel that you are saying the same thing over and over again, and potentially over communicating. A small secret is that if you don't feel that you are over communicating, you are probably (but not always) under communicating. Just make sure to vary the means of your communication and use a mix of words, documents, and pictures whenever possible. Make checklists and templates. Put up signs and reminders. Talk about and reference things often.
+
+A note about information locality. Make sure that the documentation about a process is as close as possible to when and where the process takes place as possible. If it is not visible or easy to reference it probably won't be. And if the process documentation is integrated into the process itself all the better. Documentation that is easy to get at when you need it is documentation that has a mich higher chance of being referenced. So if you have your team processes documented on an internal SharePoint site when the entire team uses Confluence, don't be surprised when the team doesn't know about or reference your documentation.
 
 </div>
 
 ## In Conclusion
+Being intentional about managing the four components of a software product development team can help you be a more effective leader. Remember that people are unique, need focus, and crave clarity. Make sure your products are well defined, that you have ready access to your users, and that you provide a clear direction. Ensure your systems have clear owners, are properly prioritized, and have well defined purposes and scopes. And keep in mind that processes need to be well defined, made as automatic as possible, and communicated loudly and clearly. You can do it.
