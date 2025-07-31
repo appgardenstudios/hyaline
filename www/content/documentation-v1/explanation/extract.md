@@ -1,7 +1,9 @@
 ---
-title: "Explanation: Extract Documentation"
+title: "Explanation: Extract"
 description: Learn how Hyaline extracts documentation from various sources into a unified current data set
 purpose: Explain how Hyaline extracts documentation
+sitemap:
+  disable: true
 ---
 ## Overview
 

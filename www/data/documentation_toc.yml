@@ -21,6 +21,8 @@ items:
         url: /documentation-v1/explanation/mcp
   - title: Reference
     items:
+      - title: Config
+        url: /documentation-v1/reference/config
       - title: CLI
         url: /documentation-v1/reference/cli
       - title: MCP
