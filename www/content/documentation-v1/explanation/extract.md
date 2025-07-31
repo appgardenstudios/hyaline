@@ -73,7 +73,7 @@ extract:
 
 </div>
 
-In this example you can see that Hyaline is configured to start in the TODO directory and process any documents that match TODO. It also does not process any documents in TODO as that directory and its children are excluded from the crawl.
+In this example you can see that Hyaline is configured to start crawling in the `./my-app` directory and process any documents that match `**/*.md`. Hyaline processes all of the markdown documents in the `contributing/` directory and `src/` directory. Hyaline does not process the markdown file in the `old/` directory as everything in that directory is excluded. Hyaline also processes the `README.md` file at the root of the path but does not the `License.md` file as that file is excluded.
 
 
 ### Crawling Documentation - git
@@ -86,14 +86,16 @@ The `git` crawler crawls a git repository starting at its root, and processes ea
 extract:
   ...
   crawler:
-    type: fs
+    type: git
     options:
-      path: ./my-app
+      repo: git@github.com:o/my-app.git
+      clone: true
+      branch: main
     include:
       - "**/*.md"
     exclude:
-      - "old/**/*"
-      - "LICENSE.md"
+      - "internal/old.md"
+      - "releases/2021*"
   ...
 ```
 
@@ -101,7 +103,7 @@ extract:
 
 </div>
 
-In this example you can see that Hyaline is configured to clone the remote repo TODO into memory and process any documents that match TODO. It also does not process any documents in TODO as that directory and its children are excluded from the crawl.
+In this example you can see that Hyaline is configured to clone the remote repo `git@github.com:o/my-app.git` into memory and process any documents on branch `main` that match `**/*.md`. Hyaline processes the documents `cmd/env.md`, `internal/arch.md`, and `README.md` as they match the include. It does not process `internal/old.md` as that document is explicitly excluded. It also only processes documents in the release directory that do not start with `2021` as those document are excluded.
 
 ### Crawling Documentation - http
 
@@ -113,14 +115,13 @@ The `http` crawler crawls a HTTP or HTTPS website starting at a configured start
 extract:
   ...
   crawler:
-    type: fs
+    type: http
     options:
-      path: ./my-app
+      baseUrl: https://my-app.com/docs/
     include:
-      - "**/*.md"
+      - "**/*"
     exclude:
-      - "old/**/*"
-      - "LICENSE.md"
+      - "roadmap"
   ...
 ```
 
@@ -128,9 +129,11 @@ extract:
 
 </div>
 
-In this example you can see that Hyaline is configured to start crawling at TODO and process any documents that match TODO. It also does not process any documents in TODO as that directory and its children are excluded from the crawl.
+In this example you can see that Hyaline is configured to start crawling at `https://my-app.com/docs/` and process any documents that match `**/*`. Note that this pattern matching is scoped to the starting URL. Hyaline processes the linked documents in the `/docs/` directory with the exception of `/docs/roadmap`. Also, even though the document `/docs/getting-started` links to `/contact`, it is not processed as it does not match any include statements which.
 
 Note that Hyaline will not crawl outside of the specified domain, so you don't need to worry about it getting lost in the internet.
+
+Also note that you can configure the `baseURL` independently of the starting URL. Please see the [extract config documentation](../reference/config.md) for more information.
 
 ## Extracting Documentation
 
@@ -139,6 +142,8 @@ Note that Hyaline will not crawl outside of the specified domain, so you don't n
 ![Extracting Documentation](./_img/extract-documentation-extracting.svg)
 
 Hyaline can be configured to extract documentation differently based on the type of documentation encountered. Hyaline supports a number of different extractors, each with their own capabilities and configuration.
+
+TODO talk about extractor cascade, as the first extractor matching the document is used.
 
 </div>
 
@@ -151,15 +156,10 @@ The `markdown` extractor extracts markdown documents.
 ```yml
 extract:
   ...
-  crawler:
-    type: fs
-    options:
-      path: ./my-app
-    include:
-      - "**/*.md"
-    exclude:
-      - "old/**/*"
-      - "LICENSE.md"
+  extractors:
+    - type: md
+      include:
+        - "**/*.md"
   ...
 ```
 
@@ -167,7 +167,7 @@ extract:
 
 </div>
 
-In this example you can see a markdown document being extracted into a document and its sections.
+In this example you can see the markdown document being extracted into a document and its sections based on the configured extractor.
 
 
 ### Extracting Documentation - html
@@ -179,15 +179,12 @@ The `html` extractor extracts html documents by extracting the content of the do
 ```yml
 extract:
   ...
-  crawler:
-    type: fs
-    options:
-      path: ./my-app
-    include:
-      - "**/*.md"
-    exclude:
-      - "old/**/*"
-      - "LICENSE.md"
+  extractors:
+    - type: html
+      options:
+        selector: main
+      include:
+        - "**/*"
   ...
 ```
 
@@ -211,7 +208,7 @@ Note that when storing the ID of the section it replaces any "/" characters with
 
 Hyaline can be configured to add tags and purposes to each document and section that is extracted.
 
-In this example you can see a set of documents that have been extracted. Based on the configuration TODO document and sections are tagged with TODO, and TODO section is tagged with TODO. The TODO document also has a purpose associated with it to help Hyaline ensure that it is updated when it needs to be.
+TODO talk about metadata and purpose and tags and what they are used for.
 
 </div>
 
@@ -224,15 +221,12 @@ TODO purpose can be added and is used for
 ```yml
 extract:
   ...
-  crawler:
-    type: fs
-    options:
-      path: ./my-app
-    include:
-      - "**/*.md"
-    exclude:
-      - "old/**/*"
-      - "LICENSE.md"
+  metadata:
+    - document: "Document 1"
+      purpose: ABC
+    - document: "Document 1"
+      section: "Section 1"
+      purpose: XYZ
   ...
 ```
 
@@ -240,7 +234,7 @@ extract:
 
 </div>
 
-TODO in this example you can see...
+In this example you can see a set of documents that have been extracted. Based on the configuration `Document 1` has its purpose set to `ABC`, and `Document 2 > Section 1` has its purpose set to `XYZ`.
 
 ### Adding Metadata - Tags
 
@@ -251,15 +245,16 @@ TODO purpose can be added and is used for
 ```yml
 extract:
   ...
-  crawler:
-    type: fs
-    options:
-      path: ./my-app
-    include:
-      - "**/*.md"
-    exclude:
-      - "old/**/*"
-      - "LICENSE.md"
+  metadata:
+    - document: "**/*"
+      tags:
+        - key: system
+          value: my-app
+    - document: "Document 1"
+      section: "Section 2"
+      tags:
+        - key: component
+          value: fe
   ...
 ```
 
@@ -267,7 +262,7 @@ extract:
 
 </div>
 
-TODO in this example you can see...
+In this example you can see a document that have been extracted. Based on the configuration `Document 1` has the tag `system` set to `my-app`, and `Document 1 > Section 2` has the tag `component` set to `fe`. Note that you can set as many tags on each document and/or section as you wish.
 
 ## Next Steps
 TODO
