@@ -61,7 +61,7 @@ extract:
       - "**/*.md"
     exclude:
       - "old/**/*"
-      - "README.md"
+      - "LICENSE.md"
   ...
 ```
 
