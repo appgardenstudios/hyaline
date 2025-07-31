@@ -230,6 +230,55 @@ func Check(logLevel *slog.LevelVar) *cli.Command {
 					}
 					return nil
 				},
+			}, {
+				Name:  "pr",
+				Usage: "Check a pull request for issues",
+				Flags: []cli.Flag{
+					&cli.StringFlag{
+						Name:     "config",
+						Required: true,
+						Usage:    "Path to the config file",
+					},
+					&cli.StringFlag{
+						Name:     "documentation",
+						Required: true,
+						Usage:    "Path to the current documentation data set",
+					},
+					&cli.StringFlag{
+						Name:     "pull-request",
+						Required: true,
+						Usage:    "GitHub Pull Request to check (OWNER/REPO/PR_NUMBER)",
+					},
+					&cli.StringSliceFlag{
+						Name:     "issue",
+						Required: false,
+						Usage:    "GitHub Issue to include in the change (OWNER/REPO/ISSUE_NUMBER). Accepts multiple issues by setting multiple times.",
+					},
+					&cli.StringFlag{
+						Name:     "output",
+						Required: true,
+						Usage:    "Path to write the results to",
+					},
+				},
+				Action: func(cCtx *cli.Context) error {
+					// Set log level
+					if cCtx.Bool("debug") {
+						logLevel.Set(slog.LevelDebug)
+					}
+
+					// Execute action
+					err := action.CheckPR(&action.CheckPRArgs{
+						Config:        cCtx.String("config"),
+						Documentation: cCtx.String("documentation"),
+						PullRequest:   cCtx.String("pull-request"),
+						Issues:        cCtx.StringSlice("issue"),
+						Output:        cCtx.String("output"),
+					})
+					if err != nil {
+						return cli.Exit(err.Error(), 1)
+					}
+					return nil
+				},
 			},
 		},
 	}
