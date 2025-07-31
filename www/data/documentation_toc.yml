@@ -9,13 +9,19 @@ items:
         url: /documentation-v1/how-to/run-cli
       - title: Build the CLI
         url: /documentation-v1/how-to/build-cli
+      - title: Run the MCP Server
+        url: /documentation-v1/how-to/run-mcp
   - title: Explanation
     items:
       - title: Merge
         url: /documentation-v1/explanation/merge
+      - title: MCP
+        url: /documentation-v1/explanation/mcp
   - title: Reference
     items:
       - title: CLI
         url: /documentation-v1/reference/cli
+      - title: MCP
+        url: /documentation-v1/reference/mcp
   - title: Roadmap
     url: /documentation-v1/roadmap

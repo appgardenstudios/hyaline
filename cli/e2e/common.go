@@ -30,7 +30,7 @@ func runBinary(args []string, t *testing.T) ([]byte, error) {
 	t.Log("workingDir", workingDir)
 
 	cmd := exec.Command(binaryPath, args...)
-	cmd.Env = append(os.Environ(), "GOCOVERDIR=../.coverdata")
+	cmd.Env = append(os.Environ(), "GOCOVERDIR=../.coverdata/e2e")
 	cmd.Dir = workingDir
 	return cmd.CombinedOutput()
 }

@@ -54,3 +54,15 @@ Merge `./docs1.db` and `./docs2.db` into a single output database `./merged.db`.
 $ hyaline merge documentation --input ./docs1.db --input ./docs2.db --input ./docs3.db --output ./merged.db
 ```
 Merge multiple documentation databases `./docs1.db`, `./docs2.db`, and `./docs3.db` into a single output database `./merged.db`.
+
+## serve mcp
+`hyaline serve mcp` starts an MCP server running locally over stdio and serves up the documentation produced by running `hyaline extract documentation`.
+
+**Options**:
+* `--documentation` - (required) Path to the SQLite database containing documentation
+
+**Example**:
+```
+$ hyaline serve mcp --documentation ./documentation.db
+```
+Start a local MCP server using the standard I/O transport and have it use the extracted documentation found in `./documentation.db`.
