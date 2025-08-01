@@ -217,7 +217,7 @@ func writeTags(builder *strings.Builder, tags docs.Tags, indent string) {
 	}
 
 	// Write tags in sorted order using Tags.Keys() method
-	for _, key := range tags.Keys() {
+	for _, key := range tags.SortedKeys() {
 		values := tags[key]
 		builder.WriteString(indent + "  <tag>\n")
 		fmt.Fprintf(builder, indent+"    <key>%s</key>\n", key)
