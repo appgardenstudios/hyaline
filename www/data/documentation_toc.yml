@@ -21,6 +21,8 @@ items:
     items:
       - title: CLI
         url: /documentation-v1/reference/cli
+      - title: Data Set
+        url: /documentation-v1/reference/data-set
       - title: MCP
         url: /documentation-v1/reference/mcp
   - title: Roadmap
