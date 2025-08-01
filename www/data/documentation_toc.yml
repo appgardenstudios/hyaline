@@ -13,6 +13,8 @@ items:
         url: /documentation-v1/how-to/run-mcp
   - title: Explanation
     items:
+      - title: Hyaline
+        url: /documentation-v1/explanation/hyaline
       - title: Check
         url: /documentation-v1/explanation/check
       - title: Merge

@@ -1,5 +1,5 @@
 ---
-title: "Reference: Hyaline Documentation Data Set"
+title: "Reference: Documentation Data Set"
 description: SQLite database schema for current and change data sets
 purpose: Detail the schema and usage of the Hyaline data set
 sitemap:
