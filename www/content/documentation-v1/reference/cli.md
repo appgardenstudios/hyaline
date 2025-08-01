@@ -36,6 +36,31 @@ $ hyaline help
 $ hyaline version
 ```
 
+## check diff
+`hyaline check diff` checks a diff and outputs a list of recommended documentation updates.
+
+**Options**:
+* `--config` - (required) Path to the config file
+* `--documentation` - (required) Path to the current documentation data set (output of `hyaline extract documentation`)
+* `--path` - (optional) Path to the root of the repository to check. Defaults to `./`
+* `--base` - (required if `--base-ref` is not set, mutually exclusive with `--base-ref`) Base branch (where changes will be applied). Tries to resolve to a local branch first, then a remote branch (if there is a single remote), and finally a tag
+* `--base-ref` - (required if `--base` is not set, mutually exclusive with `--base`) Base reference (explicit commit hash or fully qualified reference). Passed directly to git resolution
+* `--head` - (required if `head-ref` is not set, mutually exclusive with `--head-ref`) Head branch (which changes will be applied). Tries to resolve to a local branch first, then a remote branch (if there is a single remote), and finally a tag
+* `--head-ref` - (required if `--head` is not set, mutually exclusive with `--head`) Head reference (explicit commit hash or fully qualified reference). Passed directly to git resolution
+* `--output` - (required) Path of the output file to create (file must not already exist)
+
+**Example**:
+```
+$ hyaline check diff --config ./hyaline.yml --documentation ./documentation.db --path ./ --base main --head feat-1 --pull-request appgardenstudios/hyaline-example/1 --issue appgardenstudios/hyaline-example/2 --issue appgardenstudios/hyaline-example/3 --output ./recommendations.json
+```
+Check what documentation in `./documentation.db` should be updated based the changes between the `main` and `feat-1` branches as well as the configuration in `./hyaline.yml`. It takes into account the contents of the pull request `appgardenstudios/hyaline-example/1` and the issues `appgardenstudios/hyaline-example/2` and `appgardenstudios/hyaline-example/3`. The set of recommendations are output to `./recommendations.json`.
+
+**Example**:
+```
+$ hyaline check diff --config ./hyaline.yml --documentation ./documentation.db --path ./ --base-ref refs/heads/main --head-ref refs/remotes/origin/feat-1 --pull-request appgardenstudios/hyaline-example/1 --issue appgardenstudios/hyaline-example/2 --issue appgardenstudios/hyaline-example/3 --output ./recommendations.json
+```
+Check what documentation in `./documentation.db` should be updated based the changes between the `main` and `feat-1` refs as well as the configuration in `./hyaline.yml`. It takes into account the contents of the pull request `appgardenstudios/hyaline-example/1` and the issues `appgardenstudios/hyaline-example/2` and `appgardenstudios/hyaline-example/3`. The set of recommendations are output to `./recommendations.json`.
+
 ## merge documentation
 `hyaline merge documentation` merges 2 or more documentation data sets into a single output database.
 
