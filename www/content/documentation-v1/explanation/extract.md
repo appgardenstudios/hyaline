@@ -10,13 +10,14 @@ sitemap:
 <div class="portrait">
 
 ![Overview](./_img/extract-documentation-overview.svg)
-TODO portrait image of multiple repos/sites, extract into current data set, can audit (right), used for check on changes (left), used by AI (mcp lower left), used by org (lower right)
 
 Hyaline has the ability to extract documentation into a current data set that can be used to build systems and products as well as verify that the documentation is accurate and complete.
 
-In this example you can see documentation spread over multiple repositories and documentation sites. Hyaline can extract documentation from each of these, (optionally) [merge](./merge.md) them together into a unified documentation set, and then use Hyaline to [check](./check.md) and [audit](./audit.md) the extracted documentation or use it via an [MCP server](./mcp.md) or referencing the [current data set](../reference/data-set.md). 
+In this example you can see documentation spread over multiple repositories and documentation sites. Hyaline can extract this documentation into a current [documentation data set](../reference/data-set.md) and make it available for use.
 
-In Hyaline repository or documentation site is a documentation source, or source for short. 
+This documentation data set can be used in many different ways. Documentation can be [merged](./merge.md) them together into a unified documentation set or used to [check](./check.md) and [audit](./audit.md) the extracted documentation. It can also be used via an [MCP server](./mcp.md) or by the organization for a variety of other purposes. 
+
+Each repository or documentation site is considered a documentation source, or source for short. All of the documentation in a source is crawled and extracted in a single pass, and then tagged and enhanced with additional metadata. Hyaline supports a number of different crawlers and extractors to make sure you can get all of your documentation extracted and available for use.
 
 </div>
 
@@ -24,11 +25,13 @@ In Hyaline repository or documentation site is a documentation source, or source
 
 ![Extract Phases](./_img/extract-documentation-phases.svg)
 
-Extracting documentation is broken up into 3 phases: Crawling, Extracting, and Adding Metadata
+Extracting documentation is broken up into 3 distinct phases: **Crawl**, **Extract**, and **Add Metadata**.
 
-TODO talk high level about each phase
+**Crawl** is where Hyaline starts in a particular directory, repository, or website and scans it for available documentation. Each document it finds is saved off and passed to an appropriate extractor.
 
-TODO talk about tags
+**Extract** is where Hyaline takes the raw document that was crawled and extracts documentation from it. Because Hyaline deals in markdown documentation, any document that is in another format is converted into markdown and stored. Once converted to markdown (if needed), Hyaline stores the document and sections in a current data set.
+
+**Add Metadata** is where Hyaline applies additional metadata, like tags and purposes, to extracted documents and sections. This allows you to explicitly categorize and enhance the extracted documentation with information that is useful when checking, auditing, reading, or otherwise using the documentation.
 
 </div>
 
@@ -74,7 +77,6 @@ extract:
 </div>
 
 In this example you can see that Hyaline is configured to start crawling in the `./my-app` directory and process any documents that match `**/*.md`. Hyaline processes all of the markdown documents in the `contributing/` directory and `src/` directory. Hyaline does not process the markdown file in the `old/` directory as everything in that directory is excluded. Hyaline also processes the `README.md` file at the root of the path but does not the `License.md` file as that file is excluded.
-
 
 ### Crawling Documentation - git
 
@@ -143,7 +145,10 @@ Also note that you can configure the `baseURL` independently of the starting URL
 
 Hyaline can be configured to extract documentation differently based on the type of documentation encountered. Hyaline supports a number of different extractors, each with their own capabilities and configuration.
 
-TODO talk about extractor cascade, as the first extractor matching the document is used.
+- **md** - The markdown extractor handles raw markdown documents
+- **html** - The html extractor converts html to markdown before extracting the document and section(s)
+
+Note that the first matching extractor is used for each document, allowing you to extract multiple different document formats from the same source in a single pass.
 
 </div>
 
@@ -196,9 +201,9 @@ In this example you can see an html document being extracted into a document and
 
 ### A Note on Sections
 
-TODO Hyaline scans the markdown document and extracts any sections it encounters. It identifies each section by name, and preserves any section level hierarchy it find.
+Hyaline scans the markdown document and extracts any sections it encounters. It identifies each section by name, and preserves any section level hierarchy it finds when saving the sections to the data set.
 
-Note that when storing the ID of the section it replaces any "/" characters with "_", as Hyaline uses "/" to separate sections in the ID if a sub-section (i.e. `Section 1/Section 1.1`).
+Note that when Hyaline stores the ID of the section it replaces any "/" characters with "_". Hyaline uses "/" when generating an ID for a sub-section, as the ID includes the name(s) of the parent sections as well as the name of the sub-section (e.g. `Section 1/Section 1.1`).
 
 ## Adding Metadata
 
@@ -208,13 +213,15 @@ Note that when storing the ID of the section it replaces any "/" characters with
 
 Hyaline can be configured to add tags and purposes to each document and section that is extracted.
 
-TODO talk about metadata and purpose and tags and what they are used for.
+**Tags** are key-value pairs that can be associated with a document or section and then used for filtering and retrieval when checking, referencing, or otherwise using the documentation.
+
+**Purpose** is the declared purpose of the document. It is used when checking which documentation needs to be updated for a particular code change, as it is typically a better indicator of what the document or section is intended to contain as compared to the contents itself (which may be out of date, incomplete, or entirely absent).
 
 </div>
 
 ### Adding Metadata - Purpose
 
-TODO purpose can be added and is used for 
+Purpose can be added to each matching document and/or section for later use.
 
 <div class="side-by-side">
 
@@ -238,7 +245,7 @@ In this example you can see a set of documents that have been extracted. Based o
 
 ### Adding Metadata - Tags
 
-TODO purpose can be added and is used for 
+Tags can be added to each matching document and/or section for later use.
 
 <div class="side-by-side">
 
@@ -265,4 +272,4 @@ extract:
 In this example you can see a document that have been extracted. Based on the configuration `Document 1` has the tag `system` set to `my-app`, and `Document 1 > Section 2` has the tag `component` set to `fe`. Note that you can set as many tags on each document and/or section as you wish.
 
 ## Next Steps
-TODO
+Read on about how [checking documentation](./check.md) works, or visit the [configuration reference documentation](../reference/config.md) to see how to configure Hyaline to extract your documentation.
