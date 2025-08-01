@@ -23,21 +23,21 @@ func TestValidateCheck(t *testing.T) {
 	}
 
 	validDocumentation := CheckDocumentation{
-		Include: []CheckDocumentationFilter{
+		Include: []DocumentationFilter{
 			{Source: "foo"},
 		},
 	}
 	invalidDocumentationNoIncludes := CheckDocumentation{}
 	invalidDocumentationInvalidInclude := CheckDocumentation{
-		Include: []CheckDocumentationFilter{
+		Include: []DocumentationFilter{
 			{Source: ""},
 		},
 	}
 	invalidDocumentationInvalidExclude := CheckDocumentation{
-		Include: []CheckDocumentationFilter{
+		Include: []DocumentationFilter{
 			{Source: "foo"},
 		},
-		Exclude: []CheckDocumentationFilter{
+		Exclude: []DocumentationFilter{
 			{Source: ""},
 		},
 	}
@@ -133,10 +133,10 @@ func TestValidateCheckUpdateIf(t *testing.T) {
 		Path: "",
 	}
 
-	validDocumentationFilter := CheckDocumentationFilter{
+	validDocumentationFilter := DocumentationFilter{
 		Source: "*",
 	}
-	invalidDocumentationFilter := CheckDocumentationFilter{
+	invalidDocumentationFilter := DocumentationFilter{
 		Source: "",
 	}
 
@@ -202,78 +202,78 @@ func TestValidateCheckCodeFilter(t *testing.T) {
 	}
 }
 
-func TestValidateCheckDocumentationFilter(t *testing.T) {
-	validFilter := CheckDocumentationFilter{
+func TestValidateDocumentationFilter(t *testing.T) {
+	validFilter := DocumentationFilter{
 		Source: "foo",
 	}
-	invalidFilterUriInvalidPrefix := CheckDocumentationFilter{
+	invalidFilterUriInvalidPrefix := DocumentationFilter{
 		URI: "invalid",
 	}
-	invalidFilterUriMissingSlash := CheckDocumentationFilter{
+	invalidFilterUriMissingSlash := DocumentationFilter{
 		URI: "document://foo",
 	}
-	invalidFilterUriBlankSource := CheckDocumentationFilter{
+	invalidFilterUriBlankSource := DocumentationFilter{
 		URI: "document:///",
 	}
-	invalidFilterUriInvalidSource := CheckDocumentationFilter{
+	invalidFilterUriInvalidSource := DocumentationFilter{
 		URI: "document://{a/",
 	}
-	invalidFilterUriBlankDocument := CheckDocumentationFilter{
+	invalidFilterUriBlankDocument := DocumentationFilter{
 		URI: "document://foo/",
 	}
-	invalidFilterUriInvalidDocument := CheckDocumentationFilter{
+	invalidFilterUriInvalidDocument := DocumentationFilter{
 		URI: "document://foo/{a",
 	}
-	invalidFilterUriBlankSection := CheckDocumentationFilter{
+	invalidFilterUriBlankSection := DocumentationFilter{
 		URI: "document://foo/**/*#",
 	}
-	invalidFilterUriInvalidSection := CheckDocumentationFilter{
+	invalidFilterUriInvalidSection := DocumentationFilter{
 		URI: "document://foo/bar#{a",
 	}
-	validFilterUri := CheckDocumentationFilter{
+	validFilterUri := DocumentationFilter{
 		URI: "document://foo/**/*#**/*",
 	}
-	invalidFilterSourceBlank := CheckDocumentationFilter{
+	invalidFilterSourceBlank := DocumentationFilter{
 		Source: "",
 	}
-	invalidFilterSourceInvalid := CheckDocumentationFilter{
+	invalidFilterSourceInvalid := DocumentationFilter{
 		Source: "{a",
 	}
-	invalidFilterDocumentInvalid := CheckDocumentationFilter{
+	invalidFilterDocumentInvalid := DocumentationFilter{
 		Source:   "foo",
 		Document: "{a",
 	}
-	invalidFilterSectionWithMissingDocument := CheckDocumentationFilter{
+	invalidFilterSectionWithMissingDocument := DocumentationFilter{
 		Source:  "foo",
 		Section: "**/*",
 	}
-	invalidFilterSectionInvalid := CheckDocumentationFilter{
+	invalidFilterSectionInvalid := DocumentationFilter{
 		Source:   "foo",
 		Document: "**/*",
 		Section:  "{a",
 	}
-	validFilterTags := CheckDocumentationFilter{
+	validFilterTags := DocumentationFilter{
 		Source: "foo",
-		Tags: []CheckDocumentationFilterTag{
+		Tags: []DocumentationFilterTag{
 			{"foo", "bar"},
 		},
 	}
-	invalidFilterTagKey := CheckDocumentationFilter{
+	invalidFilterTagKey := DocumentationFilter{
 		Source: "foo",
-		Tags: []CheckDocumentationFilterTag{
+		Tags: []DocumentationFilterTag{
 			{"**foo**", "bar"},
 		},
 	}
-	invalidFilterTagValue := CheckDocumentationFilter{
+	invalidFilterTagValue := DocumentationFilter{
 		Source: "foo",
-		Tags: []CheckDocumentationFilterTag{
+		Tags: []DocumentationFilterTag{
 			{"foo", ""},
 		},
 	}
 
 	var tests = []struct {
 		location string
-		filter   CheckDocumentationFilter
+		filter   DocumentationFilter
 		err      string
 	}{
 		{"location", validFilter, ``},
@@ -297,7 +297,7 @@ func TestValidateCheckDocumentationFilter(t *testing.T) {
 	}
 
 	for i, test := range tests {
-		err := validateCheckDocumentationFilter(test.location, test.filter)
+		err := validateDocumentationFilter(test.location, &test.filter)
 
 		if test.err == "" && err != nil {
 			t.Errorf("test %d - expected no error, got error: %s", i, err.Error())

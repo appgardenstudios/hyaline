@@ -1,0 +1,113 @@
+audit:
+  rules:
+    - id: "content-exists-check"
+      description: "Check that backend documentation exists"
+      documentation:
+        - source: "backend"
+          document: "README.md"
+        - source: "backend"
+          document: "CHANGELOG.md"
+      checks:
+        content:
+          exists: true
+
+    - id: "content-length-check"
+      description: "Check that README has sufficient content"
+      documentation:
+        - source: "backend"
+          document: "README.md"
+      checks:
+        content:
+          min-length: 100
+
+    - id: "regex-check"
+      description: "Check that README contains installation instructions"
+      documentation:
+        - source: "backend"
+          document: "README.md"
+      checks:
+        content:
+          matches-regex: "(?i)installation"
+
+    - id: "purpose-exists-check"
+      description: "Check that documents have purposes defined"
+      documentation:
+        - source: "backend"
+          document: "README.md"
+        - source: "backend"
+          document: "CHANGELOG.md"
+      checks:
+        purpose:
+          exists: true
+
+    - id: "tags-check"
+      description: "Check that README has correct tags"
+      documentation:
+        - source: "backend"
+          document: "README.md"
+      checks:
+        tags:
+          contains:
+            - key: "type"
+              value: "guide"
+            - key: "level"
+              value: "beginner"
+
+    # Tests that should FAIL
+    - id: "content-missing-check"
+      description: "Check for non-existent content (should fail)"
+      documentation:
+        - source: "backend"
+          document: "NONEXISTENT.md"
+      checks:
+        content:
+          exists: true
+
+    - id: "content-too-short-check"  
+      description: "Check that CHANGELOG has unrealistic minimum length (should fail)"
+      documentation:
+        - source: "backend"
+          document: "CHANGELOG.md"
+      checks:
+        content:
+          min-length: 10000
+
+    - id: "regex-no-match-check"
+      description: "Check for content that doesn't exist (should fail)"
+      documentation:
+        - source: "backend"
+          document: "README.md"
+      checks:
+        content:
+          matches-regex: "(?i)database.*configuration.*wizard"
+
+    - id: "missing-tags-check"  
+      description: "Check for tags that don't exist (should fail)"
+      documentation:
+        - source: "backend"
+          document: "CHANGELOG.md" 
+      checks:
+        tags:
+          contains:
+            - key: "priority"
+              value: "critical"
+            - key: "reviewed"
+              value: "true"
+
+    - id: "purpose-missing-check"
+      description: "Check for purpose on document without one (should fail)"
+      documentation:
+        - source: "backend"
+          document: "NOPURPOSE.md"
+      checks:
+        purpose:
+          exists: true
+
+    # Test rule without ID to verify default ID generation
+    - description: "Check that auto-generated IDs work correctly"
+      documentation:
+        - source: "backend"
+          document: "README.md"
+      checks:
+        content:
+          exists: true

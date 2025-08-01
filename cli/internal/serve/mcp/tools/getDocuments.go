@@ -3,6 +3,7 @@ package tools
 import (
 	"context"
 	"fmt"
+	"hyaline/internal/docs"
 	"hyaline/internal/serve/mcp/utils"
 	"strings"
 
@@ -29,16 +30,16 @@ func HandleGetDocuments(_ context.Context, request mcp.CallToolRequest, document
 	}
 
 	// Parse the URI if provided
-	var documentURI *utils.DocumentURI
+	var documentURI *docs.DocumentURI
 	if documentURIStr != "" {
-		parsedURI, err := utils.NewDocumentURI(documentURIStr)
+		parsedURI, err := docs.NewDocumentURI(documentURIStr)
 		if err != nil {
 			return mcp.NewToolResultError(fmt.Sprintf("invalid URI format: %s", err.Error())), nil
 		}
 		documentURI = parsedURI
 	} else {
 		// No URI provided, match all documents
-		documentURI = &utils.DocumentURI{}
+		documentURI = &docs.DocumentURI{}
 	}
 
 	// Process matching documents with content

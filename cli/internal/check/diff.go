@@ -379,7 +379,7 @@ func checkNewUpdateIfs(file *code.FilteredFile, documents []*docs.FilteredDoc, c
 	}
 }
 
-func checkNewUpdateIfDocuments(glob string, documents []*docs.FilteredDoc, filter config.CheckDocumentationFilter, cb updateResultMapCallback, action string) {
+func checkNewUpdateIfDocuments(glob string, documents []*docs.FilteredDoc, filter config.DocumentationFilter, cb updateResultMapCallback, action string) {
 	for _, document := range documents {
 		if docs.DocumentMatches(document.Document.ID, document.Document.SourceID, document.Tags, &filter) {
 			cb(document.Document.SourceID+"/"+document.Document.ID,
@@ -392,9 +392,9 @@ func checkNewUpdateIfDocuments(glob string, documents []*docs.FilteredDoc, filte
 	}
 }
 
-func checkNewUpdateIfSections(glob string, sections []docs.FilteredSection, filter config.CheckDocumentationFilter, cb updateResultMapCallback, action string) {
+func checkNewUpdateIfSections(glob string, sections []docs.FilteredSection, filter config.DocumentationFilter, cb updateResultMapCallback, action string) {
 	for _, section := range sections {
-		if docs.SectionMatches(section.Section.ID, section.Section.DocumentID, section.Section.SourceID, section.Tags, &filter) {
+		if docs.SectionMatches(section.Section.ID, section.Section.DocumentID, section.Section.SourceID, section.Tags, &filter, false) {
 			cb(section.Section.SourceID+"/"+section.Section.DocumentID+"#"+section.Section.ID,
 				fmt.Sprintf("Update this document if any files matching %s were %s.", glob, action))
 		}

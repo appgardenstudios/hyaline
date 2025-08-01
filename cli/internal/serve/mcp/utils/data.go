@@ -4,33 +4,11 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"hyaline/internal/docs"
 	"hyaline/internal/sqlite"
 	"log/slog"
-	"sort"
 )
 
-// Tags represents a collection of tag keys with their associated values
-type Tags map[string][]string
-
-// Add adds a value to the specified tag key
-func (t Tags) Add(key, value string) {
-	t[key] = append(t[key], value)
-}
-
-// Keys returns all tag keys in sorted order for deterministic iteration
-func (t Tags) Keys() []string {
-	keys := make([]string, 0, len(t))
-	for key := range t {
-		keys = append(keys, key)
-	}
-	sort.Strings(keys)
-	return keys
-}
-
-// NewTags creates a new Tags instance
-func NewTags() Tags {
-	return make(Tags)
-}
 
 type Source struct {
 	sqlite.SOURCE
@@ -39,13 +17,13 @@ type Source struct {
 
 type Document struct {
 	sqlite.DOCUMENT
-	Tags     Tags
+	Tags     docs.Tags
 	Sections []Section
 }
 
 type Section struct {
 	sqlite.SECTION
-	Tags Tags
+	Tags docs.Tags
 }
 
 // DocumentationData holds all documentation data in memory for fast access
@@ -86,7 +64,7 @@ func LoadAllData(db *sql.DB) (*DocumentationData, error) {
 		for _, sqliteDoc := range sqliteDocuments {
 			document := Document{
 				DOCUMENT: sqliteDoc,
-				Tags:     NewTags(),
+				Tags:     docs.NewTags(),
 			}
 
 			// Load document tags
@@ -118,7 +96,7 @@ func LoadAllData(db *sql.DB) (*DocumentationData, error) {
 			for _, sqliteSection := range sqliteSections {
 				section := Section{
 					SECTION: sqliteSection,
-					Tags:    NewTags(),
+					Tags:    docs.NewTags(),
 				}
 
 				// Load section tags

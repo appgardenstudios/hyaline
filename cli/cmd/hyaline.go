@@ -42,6 +42,7 @@ func main() {
 		Commands: []*cli.Command{
 			hyaline.Version(Version),
 			hyaline.License(),
+			hyaline.Audit(logLevel),
 			hyaline.Check(logLevel),
 			hyaline.Extract(logLevel),
 			hyaline.Generate(logLevel),

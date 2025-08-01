@@ -1,0 +1,189 @@
+{
+  "results": [
+    {
+      "rule": "_10",
+      "description": "Check that auto-generated IDs work correctly",
+      "pass": true,
+      "checks": [
+        {
+          "source": "backend",
+          "document": "README.md",
+          "uri": "document://backend/README.md",
+          "rule": "_10",
+          "check": "CONTENT_EXISTS",
+          "pass": true,
+          "message": ""
+        }
+      ]
+    },
+    {
+      "rule": "content-exists-check",
+      "description": "Check that backend documentation exists",
+      "pass": true,
+      "checks": [
+        {
+          "source": "backend",
+          "document": "CHANGELOG.md",
+          "uri": "document://backend/CHANGELOG.md",
+          "rule": "content-exists-check",
+          "check": "CONTENT_EXISTS",
+          "pass": true,
+          "message": ""
+        }
+      ]
+    },
+    {
+      "rule": "content-length-check",
+      "description": "Check that README has sufficient content",
+      "pass": true,
+      "checks": [
+        {
+          "source": "backend",
+          "document": "README.md",
+          "uri": "document://backend/README.md",
+          "rule": "content-length-check",
+          "check": "CONTENT_MIN_LENGTH",
+          "pass": true,
+          "message": ""
+        }
+      ]
+    },
+    {
+      "rule": "content-missing-check",
+      "description": "Check for non-existent content (should fail)",
+      "pass": false,
+      "checks": [
+        {
+          "source": "",
+          "document": "",
+          "uri": "",
+          "rule": "content-missing-check",
+          "check": "CONTENT_EXISTS",
+          "pass": false,
+          "message": "This content does not exist."
+        }
+      ]
+    },
+    {
+      "rule": "content-too-short-check",
+      "description": "Check that CHANGELOG has unrealistic minimum length (should fail)",
+      "pass": false,
+      "checks": [
+        {
+          "source": "backend",
+          "document": "CHANGELOG.md",
+          "uri": "document://backend/CHANGELOG.md",
+          "rule": "content-too-short-check",
+          "check": "CONTENT_MIN_LENGTH",
+          "pass": false,
+          "message": "Content length is 277, minimum required is 10000."
+        }
+      ]
+    },
+    {
+      "rule": "missing-tags-check",
+      "description": "Check for tags that don't exist (should fail)",
+      "pass": false,
+      "checks": [
+        {
+          "source": "backend",
+          "document": "CHANGELOG.md",
+          "uri": "document://backend/CHANGELOG.md",
+          "rule": "missing-tags-check",
+          "check": "TAGS_CONTAINS",
+          "pass": false,
+          "message": "Required tag with key pattern 'priority' and value pattern 'critical' not found."
+        }
+      ]
+    },
+    {
+      "rule": "purpose-exists-check",
+      "description": "Check that documents have purposes defined",
+      "pass": true,
+      "checks": [
+        {
+          "source": "backend",
+          "document": "CHANGELOG.md",
+          "uri": "document://backend/CHANGELOG.md",
+          "rule": "purpose-exists-check",
+          "check": "PURPOSE_EXISTS",
+          "pass": true,
+          "message": ""
+        },
+        {
+          "source": "backend",
+          "document": "README.md",
+          "uri": "document://backend/README.md",
+          "rule": "purpose-exists-check",
+          "check": "PURPOSE_EXISTS",
+          "pass": true,
+          "message": ""
+        }
+      ]
+    },
+    {
+      "rule": "purpose-missing-check",
+      "description": "Check for purpose on document without one (should fail)",
+      "pass": false,
+      "checks": [
+        {
+          "source": "backend",
+          "document": "NOPURPOSE.md",
+          "uri": "document://backend/NOPURPOSE.md",
+          "rule": "purpose-missing-check",
+          "check": "PURPOSE_EXISTS",
+          "pass": false,
+          "message": "Purpose is not defined or is empty."
+        }
+      ]
+    },
+    {
+      "rule": "regex-check",
+      "description": "Check that README contains installation instructions",
+      "pass": true,
+      "checks": [
+        {
+          "source": "backend",
+          "document": "README.md",
+          "uri": "document://backend/README.md",
+          "rule": "regex-check",
+          "check": "CONTENT_MATCHES_REGEX",
+          "pass": true,
+          "message": ""
+        }
+      ]
+    },
+    {
+      "rule": "regex-no-match-check",
+      "description": "Check for content that doesn't exist (should fail)",
+      "pass": false,
+      "checks": [
+        {
+          "source": "backend",
+          "document": "README.md",
+          "uri": "document://backend/README.md",
+          "rule": "regex-no-match-check",
+          "check": "CONTENT_MATCHES_REGEX",
+          "pass": false,
+          "message": "Content does not match the regex pattern: (?i)database.*configuration.*wizard"
+        }
+      ]
+    },
+    {
+      "rule": "tags-check",
+      "description": "Check that README has correct tags",
+      "pass": true,
+      "checks": [
+        {
+          "source": "backend",
+          "document": "README.md",
+          "uri": "document://backend/README.md",
+          "rule": "tags-check",
+          "check": "TAGS_CONTAINS",
+          "pass": true,
+          "message": ""
+        }
+      ]
+    }
+  ]
+}

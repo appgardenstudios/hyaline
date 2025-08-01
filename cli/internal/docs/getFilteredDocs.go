@@ -5,8 +5,6 @@ import (
 	"hyaline/internal/config"
 	"hyaline/internal/sqlite"
 	"log/slog"
-
-	"github.com/bmatcuk/doublestar/v4"
 )
 
 type FilteredDoc struct {
@@ -38,21 +36,7 @@ func GetFilteredDocs(cfg *config.CheckDocumentation, db *sqlite.Queries) (docs [
 		slog.Debug("docs.GetFilteredDocs could not get all document tags", "error", err)
 		return
 	}
-	documentTagMap := make(map[string][]FilteredTag)
-	for _, tag := range documentTags {
-		key := tag.SourceID + "/" + tag.DocumentID
-		filteredTag := FilteredTag{
-			Key:   tag.TagKey,
-			Value: tag.TagValue,
-		}
-		entry, ok := documentTagMap[key]
-		if ok {
-			entry = append(entry, filteredTag)
-			documentTagMap[key] = entry
-		} else {
-			documentTagMap[key] = []FilteredTag{filteredTag}
-		}
-	}
+	documentTagMap := GetDocumentTagMap(documentTags)
 	sections, err := db.GetAllSections(context.Background())
 	if err != nil {
 		slog.Debug("docs.GetFilteredDocs could not get all sections", "error", err)
@@ -75,21 +59,7 @@ func GetFilteredDocs(cfg *config.CheckDocumentation, db *sqlite.Queries) (docs [
 		slog.Debug("docs.GetFilteredDocs could not get all section tags", "error", err)
 		return
 	}
-	sectionTagMap := make(map[string][]FilteredTag)
-	for _, tag := range sectionTags {
-		key := tag.SourceID + "/" + tag.DocumentID + "#" + tag.SectionID
-		filteredTag := FilteredTag{
-			Key:   tag.TagKey,
-			Value: tag.TagValue,
-		}
-		entry, ok := sectionTagMap[key]
-		if ok {
-			entry = append(entry, filteredTag)
-			sectionTagMap[key] = entry
-		} else {
-			sectionTagMap[key] = []FilteredTag{filteredTag}
-		}
-	}
+	sectionTagMap := GetSectionTagMap(sectionTags)
 
 	// Get and filter all docs from database
 	for _, document := range documents {
@@ -141,40 +111,13 @@ func documentIsIncluded(documentID string, sourceID string, tags []FilteredTag, 
 	return isIncluded
 }
 
-func DocumentMatches(documentID string, sourceID string, tags []FilteredTag, filter *config.CheckDocumentationFilter) bool {
-	source, document, section := filter.GetParts()
-
-	// Document does not match filters that specify sections
-	if section != "" {
-		return false
-	}
-	matches := false
-
-	// Document matches if we match source OR source and document (if document is set)
-	if doublestar.MatchUnvalidated(source, sourceID) {
-		if document != "" {
-			if doublestar.MatchUnvalidated(document, documentID) {
-				matches = true
-			}
-		} else {
-			matches = true
-		}
-	}
-
-	// If document matches and there are tags it must match at least one tag
-	if matches {
-		matches = tagMatches(tags, filter.Tags)
-	}
-
-	return matches
-}
 
 func sectionIsIncluded(sectionID string, documentID string, sourceID string, tags []FilteredTag, cfg *config.CheckDocumentation) bool {
 	isIncluded := false
 
 	// Section is included if it matches at least one include
 	for _, include := range cfg.Include {
-		if SectionMatches(sectionID, documentID, sourceID, tags, &include) {
+		if SectionMatches(sectionID, documentID, sourceID, tags, &include, false) {
 			isIncluded = true
 			break
 		}
@@ -183,7 +126,7 @@ func sectionIsIncluded(sectionID string, documentID string, sourceID string, tag
 	// If section matched an include AND at least one exclude, it is excluded
 	if isIncluded {
 		for _, exclude := range cfg.Exclude {
-			if SectionMatches(sectionID, documentID, sourceID, tags, &exclude) {
+			if SectionMatches(sectionID, documentID, sourceID, tags, &exclude, false) {
 				return false
 			}
 		}
@@ -192,36 +135,8 @@ func sectionIsIncluded(sectionID string, documentID string, sourceID string, tag
 	return isIncluded
 }
 
-func SectionMatches(sectionID string, documentID string, sourceID string, tags []FilteredTag, filter *config.CheckDocumentationFilter) bool {
-	source, document, section := filter.GetParts()
 
-	// If section is blank just match on document.
-	// If document is a match include this section.
-	if section == "" {
-		// Document matches if we match source OR source and document (if document is set)
-		if doublestar.MatchUnvalidated(source, sourceID) {
-			if document != "" {
-				if doublestar.MatchUnvalidated(document, documentID) {
-					return tagMatches(tags, filter.Tags)
-				}
-			} else {
-				return tagMatches(tags, filter.Tags)
-			}
-		}
-		return false
-	}
-
-	// Else see if all 3 match
-	if doublestar.MatchUnvalidated(source, sourceID) &&
-		doublestar.MatchUnvalidated(document, documentID) &&
-		doublestar.MatchUnvalidated(section, sectionID) {
-		// If everything matches we also have to match tags
-		return tagMatches(tags, filter.Tags)
-	}
-	return false
-}
-
-func tagMatches(tags []FilteredTag, filterTags []config.CheckDocumentationFilterTag) bool {
+func tagMatches(tags []FilteredTag, filterTags []config.DocumentationFilterTag) bool {
 	// If there are no filter tags we always match
 	if len(filterTags) == 0 {
 		return true
