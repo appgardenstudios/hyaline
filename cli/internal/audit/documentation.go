@@ -8,6 +8,7 @@ import (
 	"hyaline/internal/docs"
 	"hyaline/internal/sqlite"
 	"log/slog"
+	"strconv"
 	"strings"
 )
 
@@ -85,7 +86,15 @@ func Documentation(cfg *config.Config, db *sqlite.Queries, sources []string) ([]
 	results := []AuditRuleResult{}
 
 	// Process each rule
-	for _, rule := range cfg.Audit.Rules {
+	for i, configRule := range cfg.Audit.Rules {
+		// Create a copy of the rule to avoid modifying the original config
+		rule := configRule
+		
+		// Set default ID if not provided
+		if rule.ID == "" {
+			rule.ID = "_" + strconv.Itoa(i)
+		}
+
 		slog.Info("audit.Documentation processing rule", "ruleID", rule.ID)
 
 		ruleResult := AuditRuleResult{

@@ -5,65 +5,11 @@ import (
 	"testing"
 )
 
-// TestCase represents the input parameters for generating a test case
-type TestCase struct {
-	ID               string
-	Description      string
-	Source           string
-	URI              string
-	Section          string
-	ContentExists    bool
-	ContentMinLength int
-	ContentRegex     string
-	ContentPrompt    string
-	ContentPurpose   bool
-	PurposeExists    bool
-	TagKey           string
-	TagValue         string
-}
-
-// buildTestConfig generates a Config struct for testing based on simple parameters
-func buildTestConfig(tc TestCase) *Config {
-	rule := AuditRule{
-		ID:          tc.ID,
-		Description: tc.Description,
-	}
-
-	// Build documentation filters based on what's provided
-	if tc.URI != "" {
-		rule.Documentation = []DocumentationFilter{{URI: tc.URI}}
-	} else if tc.Section != "" {
-		rule.Documentation = []DocumentationFilter{{Source: tc.Source, Section: tc.Section}}
-	} else if tc.Source != "" {
-		rule.Documentation = []DocumentationFilter{{Source: tc.Source}}
-	}
-
-	// Build checks based on what's provided
-	if tc.ContentExists {
-		rule.Checks.Content.Exists = true
-	}
-	if tc.ContentMinLength != 0 {
-		rule.Checks.Content.MinLength = tc.ContentMinLength
-	}
-	if tc.ContentRegex != "" {
-		rule.Checks.Content.MatchesRegex = tc.ContentRegex
-	}
-	if tc.ContentPrompt != "" {
-		rule.Checks.Content.MatchesPrompt = tc.ContentPrompt
-	}
-	if tc.ContentPurpose {
-		rule.Checks.Content.MatchesPurpose = true
-	}
-	if tc.PurposeExists {
-		rule.Checks.Purpose.Exists = true
-	}
-	if tc.TagKey != "" {
-		rule.Checks.Tags.Contains = []DocumentationFilterTag{{Key: tc.TagKey, Value: tc.TagValue}}
-	}
-
+// buildTestConfig generates a Config struct for testing based on AuditRule parameters
+func buildTestConfig(rules ...AuditRule) *Config {
 	return &Config{
 		Audit: &Audit{
-			Rules: []AuditRule{rule},
+			Rules: rules,
 		},
 	}
 }
@@ -81,101 +27,363 @@ func TestValidateAudit(t *testing.T) {
 			expectError: false,
 		},
 		{
-			name: "empty rules",
-			cfg: &Config{
-				Audit: &Audit{
-					Rules: []AuditRule{},
-				},
-			},
+			name:        "empty rules",
+			cfg:         buildTestConfig(),
 			expectError: true,
 			errorMsg:    "audit.rules must contain at least one entry",
 		},
 		{
-			name:        "valid basic rule",
-			cfg:         buildTestConfig(TestCase{ID: "test-rule", Description: "Test rule", Source: "backend", ContentExists: true}),
+			name: "valid basic rule",
+			cfg: buildTestConfig(AuditRule{
+				ID:          "test-rule",
+				Description: "Test rule",
+				Documentation: []DocumentationFilter{
+					{Source: "backend"},
+				},
+				Checks: AuditChecks{
+					Content: AuditContentChecks{
+						Exists: true,
+					},
+				},
+			}),
 			expectError: false,
 		},
 		{
-			name:        "rule with auto-generated ID",
-			cfg:         buildTestConfig(TestCase{Source: "backend", ContentExists: true}),
+			name: "rule with auto-generated ID",
+			cfg: buildTestConfig(AuditRule{
+				Documentation: []DocumentationFilter{
+					{Source: "backend"},
+				},
+				Checks: AuditChecks{
+					Content: AuditContentChecks{
+						Exists: true,
+					},
+				},
+			}),
 			expectError: false,
 		},
 		{
-			name:        "rule without documentation filters",
-			cfg:         buildTestConfig(TestCase{ContentExists: true}),
+			name: "rule without documentation filters",
+			cfg: buildTestConfig(AuditRule{
+				Checks: AuditChecks{
+					Content: AuditContentChecks{
+						Exists: true,
+					},
+				},
+			}),
 			expectError: true,
 			errorMsg:    "documentation must contain at least one entry",
 		},
 		{
-			name:        "rule without checks",
-			cfg:         buildTestConfig(TestCase{Source: "backend"}),
+			name: "rule without checks",
+			cfg: buildTestConfig(AuditRule{
+				Documentation: []DocumentationFilter{
+					{Source: "backend"},
+				},
+			}),
 			expectError: true,
 			errorMsg:    "must specify at least one check type",
 		},
 		{
-			name:        "valid URI filter",
-			cfg:         buildTestConfig(TestCase{URI: "document://backend/README.md#Installation", ContentMinLength: 100}),
+			name: "valid URI filter",
+			cfg: buildTestConfig(AuditRule{
+				Documentation: []DocumentationFilter{
+					{URI: "document://backend/README.md#Installation"},
+				},
+				Checks: AuditChecks{
+					Content: AuditContentChecks{
+						MinLength: 100,
+					},
+				},
+			}),
 			expectError: false,
 		},
 		{
-			name:        "invalid URI without document://",
-			cfg:         buildTestConfig(TestCase{URI: "backend/README.md", ContentExists: true}),
+			name: "invalid URI without document://",
+			cfg: buildTestConfig(AuditRule{
+				Documentation: []DocumentationFilter{
+					{URI: "backend/README.md"},
+				},
+				Checks: AuditChecks{
+					Content: AuditContentChecks{
+						Exists: true,
+					},
+				},
+			}),
 			expectError: true,
 			errorMsg:    "uri must start with document://",
 		},
 		{
-			name:        "invalid regex pattern",
-			cfg:         buildTestConfig(TestCase{Source: "backend", ContentRegex: "[invalid"}),
+			name: "invalid regex pattern",
+			cfg: buildTestConfig(AuditRule{
+				Documentation: []DocumentationFilter{
+					{Source: "backend"},
+				},
+				Checks: AuditChecks{
+					Content: AuditContentChecks{
+						MatchesRegex: "[invalid",
+					},
+				},
+			}),
 			expectError: true,
 			errorMsg:    "must be a valid regex pattern",
 		},
 		{
-			name:        "negative min-length",
-			cfg:         buildTestConfig(TestCase{Source: "backend", ContentMinLength: -1}),
+			name: "negative min-length",
+			cfg: buildTestConfig(AuditRule{
+				Documentation: []DocumentationFilter{
+					{Source: "backend"},
+				},
+				Checks: AuditChecks{
+					Content: AuditContentChecks{
+						MinLength: -1,
+					},
+				},
+			}),
 			expectError: true,
 			errorMsg:    "min-length must be non-negative",
 		},
 		{
-			name:        "valid tags check",
-			cfg:         buildTestConfig(TestCase{Source: "backend", TagKey: "type", TagValue: "guide"}),
+			name: "valid tags check",
+			cfg: buildTestConfig(AuditRule{
+				Documentation: []DocumentationFilter{
+					{Source: "backend"},
+				},
+				Checks: AuditChecks{
+					Tags: AuditTagsChecks{
+						Contains: []DocumentationFilterTag{
+							{Key: "type", Value: "guide"},
+						},
+					},
+				},
+			}),
 			expectError: false,
 		},
 		{
-			name:        "valid regex tag patterns",
-			cfg:         buildTestConfig(TestCase{Source: "backend", TagKey: "type.*", TagValue: "(guide|tutorial)"}),
+			name: "valid regex tag patterns",
+			cfg: buildTestConfig(AuditRule{
+				Documentation: []DocumentationFilter{
+					{Source: "backend"},
+				},
+				Checks: AuditChecks{
+					Tags: AuditTagsChecks{
+						Contains: []DocumentationFilterTag{
+							{Key: "type.*", Value: "(guide|tutorial)"},
+						},
+					},
+				},
+			}),
 			expectError: false,
 		},
 		{
-			name:        "invalid regex tag key",
-			cfg:         buildTestConfig(TestCase{Source: "backend", TagKey: "[invalid", TagValue: "guide"}),
+			name: "invalid regex tag key",
+			cfg: buildTestConfig(AuditRule{
+				Documentation: []DocumentationFilter{
+					{Source: "backend"},
+				},
+				Checks: AuditChecks{
+					Tags: AuditTagsChecks{
+						Contains: []DocumentationFilterTag{
+							{Key: "[invalid", Value: "guide"},
+						},
+					},
+				},
+			}),
 			expectError: true,
 			errorMsg:    "key must be a valid regex pattern",
 		},
 		{
-			name:        "invalid regex tag value",
-			cfg:         buildTestConfig(TestCase{Source: "backend", TagKey: "type", TagValue: "(guide|incomplete"}),
+			name: "invalid regex tag value",
+			cfg: buildTestConfig(AuditRule{
+				Documentation: []DocumentationFilter{
+					{Source: "backend"},
+				},
+				Checks: AuditChecks{
+					Tags: AuditTagsChecks{
+						Contains: []DocumentationFilterTag{
+							{Key: "type", Value: "(guide|incomplete"},
+						},
+					},
+				},
+			}),
 			expectError: true,
 			errorMsg:    "value must be a valid regex pattern",
 		},
 		{
-			name:        "section without document",
-			cfg:         buildTestConfig(TestCase{Source: "backend", Section: "Installation", ContentExists: true}),
+			name: "section without document",
+			cfg: buildTestConfig(AuditRule{
+				Documentation: []DocumentationFilter{
+					{Source: "backend", Section: "Installation"},
+				},
+				Checks: AuditChecks{
+					Content: AuditContentChecks{
+						Exists: true,
+					},
+				},
+			}),
 			expectError: true,
 			errorMsg:    "document must be set if",
 		},
 		{
 			name: "all check types",
-			cfg: buildTestConfig(TestCase{
-				Source:           "backend",
-				ContentExists:    true,
-				ContentMinLength: 100,
-				ContentRegex:     ".*README.*",
-				ContentPrompt:    "This is a test prompt",
-				ContentPurpose:   true,
-				PurposeExists:    true,
-				TagKey:           "type",
-				TagValue:         "guide",
+			cfg: buildTestConfig(AuditRule{
+				Documentation: []DocumentationFilter{
+					{Source: "backend"},
+				},
+				Checks: AuditChecks{
+					Content: AuditContentChecks{
+						Exists:         true,
+						MinLength:      100,
+						MatchesRegex:   ".*README.*",
+						MatchesPrompt:  "This is a test prompt",
+						MatchesPurpose: true,
+					},
+					Purpose: AuditPurposeChecks{
+						Exists: true,
+					},
+					Tags: AuditTagsChecks{
+						Contains: []DocumentationFilterTag{
+							{Key: "type", Value: "guide"},
+						},
+					},
+				},
 			}),
+			expectError: false,
+		},
+		{
+			name: "valid rule ID",
+			cfg: buildTestConfig(AuditRule{
+				ID: "valid-rule_123",
+				Documentation: []DocumentationFilter{
+					{Source: "backend"},
+				},
+				Checks: AuditChecks{
+					Content: AuditContentChecks{
+						Exists: true,
+					},
+				},
+			}),
+			expectError: false,
+		},
+		{
+			name: "invalid rule ID with spaces",
+			cfg: buildTestConfig(AuditRule{
+				ID: "rule with spaces",
+				Documentation: []DocumentationFilter{
+					{Source: "backend"},
+				},
+				Checks: AuditChecks{
+					Content: AuditContentChecks{
+						Exists: true,
+					},
+				},
+			}),
+			expectError: true,
+			errorMsg:    "must match pattern",
+		},
+		{
+			name: "invalid rule ID starting with hyphen",
+			cfg: buildTestConfig(AuditRule{
+				ID: "-invalid",
+				Documentation: []DocumentationFilter{
+					{Source: "backend"},
+				},
+				Checks: AuditChecks{
+					Content: AuditContentChecks{
+						Exists: true,
+					},
+				},
+			}),
+			expectError: true,
+			errorMsg:    "must match pattern",
+		},
+		{
+			name: "invalid rule ID with special characters",
+			cfg: buildTestConfig(AuditRule{
+				ID: "rule@special",
+				Documentation: []DocumentationFilter{
+					{Source: "backend"},
+				},
+				Checks: AuditChecks{
+					Content: AuditContentChecks{
+						Exists: true,
+					},
+				},
+			}),
+			expectError: true,
+			errorMsg:    "must match pattern",
+		},
+		{
+			name: "invalid rule ID too long",
+			cfg: buildTestConfig(AuditRule{
+				ID: "this-is-a-very-long-rule-id-that-exceeds-the-maximum-length-of-64-characters",
+				Documentation: []DocumentationFilter{
+					{Source: "backend"},
+				},
+				Checks: AuditChecks{
+					Content: AuditContentChecks{
+						Exists: true,
+					},
+				},
+			}),
+			expectError: true,
+			errorMsg:    "must match pattern",
+		},
+		{
+			name: "duplicate rule IDs",
+			cfg: buildTestConfig(
+				AuditRule{
+					ID: "duplicate-id",
+					Documentation: []DocumentationFilter{
+						{Source: "backend"},
+					},
+					Checks: AuditChecks{
+						Content: AuditContentChecks{
+							Exists: true,
+						},
+					},
+				},
+				AuditRule{
+					ID: "duplicate-id",
+					Documentation: []DocumentationFilter{
+						{Source: "frontend"},
+					},
+					Checks: AuditChecks{
+						Content: AuditContentChecks{
+							Exists: true,
+						},
+					},
+				},
+			),
+			expectError: true,
+			errorMsg:    "is not unique",
+		},
+		{
+			name: "empty rule IDs are allowed to coexist",
+			cfg: buildTestConfig(
+				AuditRule{
+					ID: "",
+					Documentation: []DocumentationFilter{
+						{Source: "backend"},
+					},
+					Checks: AuditChecks{
+						Content: AuditContentChecks{
+							Exists: true,
+						},
+					},
+				},
+				AuditRule{
+					ID: "",
+					Documentation: []DocumentationFilter{
+						{Source: "frontend"},
+					},
+					Checks: AuditChecks{
+						Content: AuditContentChecks{
+							Exists: true,
+						},
+					},
+				},
+			),
 			expectError: false,
 		},
 	}
