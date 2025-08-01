@@ -13,12 +13,16 @@ items:
         url: /documentation-v1/how-to/run-mcp
   - title: Explanation
     items:
+      - title: Extract
+        url: /documentation-v1/explanation/extract
       - title: Merge
         url: /documentation-v1/explanation/merge
       - title: MCP
         url: /documentation-v1/explanation/mcp
   - title: Reference
     items:
+      - title: Config
+        url: /documentation-v1/reference/config
       - title: CLI
         url: /documentation-v1/reference/cli
       - title: MCP
