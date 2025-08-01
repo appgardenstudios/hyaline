@@ -29,7 +29,7 @@ func Audit(logLevel *slog.LevelVar) *cli.Command {
 					&cli.StringSliceFlag{
 						Name:     "source",
 						Required: false,
-						Usage:    "Filter by specific source ID(s). Can be specified multiple times.",
+						Usage:    "Only audit specific source ID(s). Can be specified multiple times.",
 					},
 					&cli.StringFlag{
 						Name:     "output",
