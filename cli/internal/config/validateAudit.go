@@ -3,7 +3,6 @@ package config
 import (
 	"fmt"
 	"regexp"
-	"strconv"
 )
 
 func validateAudit(cfg *Config) error {
@@ -18,8 +17,19 @@ func validateAudit(cfg *Config) error {
 		return fmt.Errorf("audit.rules must contain at least one entry, none found")
 	}
 
+	// Track rule IDs to ensure uniqueness
+	usedRuleIDs := make(map[string]int)
+
 	// Validate each rule
 	for i, rule := range cfg.Audit.Rules {
+		// Check for duplicate rule IDs (only for non-empty IDs)
+		if rule.ID != "" {
+			if existingIndex, exists := usedRuleIDs[rule.ID]; exists {
+				return fmt.Errorf("audit.rules[%d].id '%s' is not unique, already used by audit.rules[%d]", i, rule.ID, existingIndex)
+			}
+			usedRuleIDs[rule.ID] = i
+		}
+
 		if err := validateAuditRule(fmt.Sprintf("audit.rules[%d]", i), &rule, i); err != nil {
 			return err
 		}
@@ -29,9 +39,15 @@ func validateAudit(cfg *Config) error {
 }
 
 func validateAuditRule(location string, rule *AuditRule, index int) error {
-	// Set default ID if not provided
-	if rule.ID == "" {
-		rule.ID = strconv.Itoa(index)
+	// Validate rule ID if provided (empty is allowed)
+	if rule.ID != "" {
+		matched, err := regexp.MatchString(auditRuleIDRegex, rule.ID)
+		if err != nil {
+			return fmt.Errorf("%s.id regex compilation error: %v", location, err)
+		}
+		if !matched {
+			return fmt.Errorf("%s.id must match pattern %s, found: %s", location, auditRuleIDRegex, rule.ID)
+		}
 	}
 
 	// Check documentation filters

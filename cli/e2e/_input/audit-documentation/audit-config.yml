@@ -102,3 +102,12 @@ audit:
       checks:
         purpose:
           exists: true
+
+    # Test rule without ID to verify default ID generation
+    - description: "Check that auto-generated IDs work correctly"
+      documentation:
+        - source: "backend"
+          document: "README.md"
+      checks:
+        content:
+          exists: true
