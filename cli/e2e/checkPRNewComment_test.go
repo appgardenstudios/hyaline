@@ -8,14 +8,14 @@ import (
 	"time"
 )
 
-func TestCheckPR(t *testing.T) {
-	goldenPath := "./_golden/check-pr.json"
-	outputPath := fmt.Sprintf("./_output/check-pr-%d.json", time.Now().UnixMilli())
+func TestCheckPRNewComment(t *testing.T) {
+	goldenPath := "./_golden/check-pr-new-comment.json"
+	outputPath := fmt.Sprintf("./_output/check-pr-new-comment-%d.json", time.Now().UnixMilli())
 	args := []string{
 		"check", "pr",
-		"--config", "./_input/check-pr/hyaline.yml",
-		"--documentation", "./_input/check-pr/documentation.sqlite",
-		"--pull-request", "appgardenstudios/hyaline-example/8",
+		"--config", "./_input/check-pr-new-comment/hyaline.yml",
+		"--documentation", "./_input/check-pr-new-comment/documentation.sqlite",
+		"--pull-request", "appgardenstudios/hyaline-example/9",
 		"--issue", "appgardenstudios/hyaline-example/2",
 		"--issue", "appgardenstudios/hyaline-example/3",
 		"--output", outputPath,
@@ -28,8 +28,8 @@ func TestCheckPR(t *testing.T) {
 	}
 
 	// Clean up the comment we just added
-	// gh -R appgardenstudios/hyaline-example pr comment 8 --delete-last --yes
-	cmd := exec.Command("gh", "-R", "appgardenstudios/hyaline-example", "pr", "comment", "8", "--delete-last", "--yes")
+	// gh -R appgardenstudios/hyaline-example pr comment 9 --delete-last --yes
+	cmd := exec.Command("gh", "-R", "appgardenstudios/hyaline-example", "pr", "comment", "9", "--delete-last", "--yes")
 	cmd.Env = os.Environ()
 	stdOutStdErr, err = cmd.CombinedOutput()
 	t.Log(string(stdOutStdErr))

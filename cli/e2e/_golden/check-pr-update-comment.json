@@ -1,0 +1,16 @@
+{
+  "sha": "4eefcddf5a56daff4734039dbb89129877a20dd5",
+  "recommendations": [
+    {
+      "checked": true,
+      "system": "checkPR",
+      "source": "my-app",
+      "document": "README.md",
+      "section": [],
+      "reasons": [
+        "Update this document if any files matching **/* were touched."
+      ]
+    }
+  ],
+  "rawData": "\u003c![CDATA[ [{\"checked\":true,\"system\":\"checkPR\",\"source\":\"my-app\",\"document\":\"README.md\",\"section\":[],\"reasons\":[\"Update this document if any files matching **/* were touched.\"]}] ]]\u003e"
+}
