@@ -98,12 +98,20 @@ func Diff(files []code.FilteredFile, documents []*docs.FilteredDoc, pr *github.P
 }
 
 func formatCheckPrompt(file code.FilteredFile, documents []*docs.FilteredDoc, pr *github.PullRequest, issues []*github.Issue) (string, error) {
-	// Calculate the diff
-	edits := diff.Strings(string(file.OriginalContents), string(file.Contents))
-	textDiff, err := diff.ToUnified("a/"+file.OriginalFilename, "b/"+file.Filename, string(file.OriginalContents), edits, 3)
-	if err != nil {
-		slog.Debug("check.Diff could not generate diff", "file", file.Filename, "error", err)
-		return "", err
+	// Use the Diff property if available, otherwise calculate the diff
+	var textDiff string
+	var err error
+	
+	if file.Diff != "" {
+		textDiff = file.Diff
+	} else {
+		// Fallback to generating diff from Contents and OriginalContents
+		edits := diff.Strings(string(file.OriginalContents), string(file.Contents))
+		textDiff, err = diff.ToUnified("a/"+file.OriginalFilename, "b/"+file.Filename, string(file.OriginalContents), edits, 3)
+		if err != nil {
+			slog.Debug("check.Diff could not generate diff", "file", file.Filename, "error", err)
+			return "", err
+		}
 	}
 
 	var prompt strings.Builder

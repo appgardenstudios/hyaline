@@ -17,6 +17,7 @@ type FilteredFile struct {
 	Action           Action
 	Contents         []byte
 	OriginalContents []byte
+	Diff             string
 }
 
 type Action string

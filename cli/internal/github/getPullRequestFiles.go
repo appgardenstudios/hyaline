@@ -7,31 +7,36 @@ import (
 )
 
 // GetPullRequestFiles retrieves the list of files changed in a GitHub Pull Request
-func GetPullRequestFiles(ref string, token string) ([]*github.CommitFile, string, string, error) {
+func GetPullRequestFiles(ref string, token string) ([]*github.CommitFile, error) {
 	// Parse reference
 	owner, repo, id, err := parseReference(ref)
 	if err != nil {
-		return nil, "", "", err
+		return nil, err
 	}
 
 	// Get GitHub client
 	client := github.NewClient(nil).WithAuthToken(token)
 	ctx := context.Background()
 
-	// Get PR details to get base and head commit SHAs
-	pr, _, err := client.PullRequests.Get(ctx, owner, repo, int(id))
-	if err != nil {
-		return nil, "", "", err
+	// List all files changed in the PR with pagination
+	var allFiles []*github.CommitFile
+	opts := &github.ListOptions{
+		PerPage: 100,
 	}
 
-	baseSHA := pr.Base.SHA
-	headSHA := pr.Head.SHA
+	for {
+		files, resp, err := client.PullRequests.ListFiles(ctx, owner, repo, int(id), opts)
+		if err != nil {
+			return nil, err
+		}
 
-	// List all files changed in the PR
-	files, _, err := client.PullRequests.ListFiles(ctx, owner, repo, int(id), nil)
-	if err != nil {
-		return nil, "", "", err
+		allFiles = append(allFiles, files...)
+
+		if resp.NextPage == 0 {
+			break
+		}
+		opts.Page = resp.NextPage
 	}
 
-	return files, *baseSHA, *headSHA, nil
+	return allFiles, nil
 }

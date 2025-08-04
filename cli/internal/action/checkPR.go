@@ -141,7 +141,7 @@ func CheckPR(args *CheckPRArgs) error {
 	slog.Info("Retrieved filtered documents", "documents", len(documents))
 
 	// Get PR Files
-	filteredFiles, changedFiles, err := code.GetFilteredPR(args.PullRequest, cfg.GitHub.Token, &cfg.Check.Code)
+	filteredFiles, changedFiles, err := code.GetFilteredPRFiles(args.PullRequest, cfg.GitHub.Token, &cfg.Check.Code)
 	if err != nil {
 		slog.Debug("action.CheckPR could not get filtered PR files", "error", err)
 		return err

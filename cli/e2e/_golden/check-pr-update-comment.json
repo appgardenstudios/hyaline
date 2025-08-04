@@ -3,7 +3,6 @@
   "recommendations": [
     {
       "checked": true,
-      "system": "checkPR",
       "source": "my-app",
       "document": "README.md",
       "section": [],
@@ -12,5 +11,5 @@
       ]
     }
   ],
-  "rawData": "\u003c![CDATA[ [{\"checked\":true,\"system\":\"checkPR\",\"source\":\"my-app\",\"document\":\"README.md\",\"section\":[],\"reasons\":[\"Update this document if any files matching **/* were touched.\"]}] ]]\u003e"
+  "rawData": "\u003c![CDATA[ [{\"checked\":true,\"source\":\"my-app\",\"document\":\"README.md\",\"section\":[],\"reasons\":[\"Update this document if any files matching **/* were touched.\"]}] ]]\u003e"
 }
