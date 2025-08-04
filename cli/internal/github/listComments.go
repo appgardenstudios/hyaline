@@ -20,7 +20,7 @@ func ListComments(ref string, token string) (comments []Comment, err error) {
 
 	// List comments with pagination
 	client := github.NewClient(nil).WithAuthToken(token)
-	
+
 	opts := &github.IssueListCommentsOptions{
 		ListOptions: github.ListOptions{
 			PerPage: 100,

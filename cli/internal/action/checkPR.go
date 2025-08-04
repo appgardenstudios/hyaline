@@ -29,9 +29,9 @@ type CheckPRArgs struct {
 }
 
 type CheckPRComment struct {
-	Sha             string                            `json:"sha"`
+	Sha             string                         `json:"sha"`
 	Recommendations []CheckPRCommentRecommendation `json:"recommendations"`
-	RawData         string                            `json:"rawData"`
+	RawData         string                         `json:"rawData"`
 }
 
 type CheckPRCommentRecommendation struct {

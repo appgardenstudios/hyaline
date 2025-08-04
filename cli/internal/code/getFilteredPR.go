@@ -32,7 +32,7 @@ func GetFilteredPR(pullRequest string, token string, cfg *config.CheckCode) (fil
 	// Examine each change in the PR
 	for _, file := range files {
 		slog.Debug("code.GetFilteredPR processing file", "filename", *file.Filename, "status", *file.Status)
-		
+
 		filename := *file.Filename
 		var originalFilename string
 		if file.PreviousFilename != nil {
