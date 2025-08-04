@@ -36,7 +36,6 @@ type CheckPRComment struct {
 
 type CheckPRCommentRecommendation struct {
 	Checked  bool     `json:"checked"`
-	System   string   `json:"system"`
 	Source   string   `json:"source"`
 	Document string   `json:"document"`
 	Section  []string `json:"section"`
@@ -52,12 +51,6 @@ func (c CheckPRCommentRecommendationSort) Swap(i, j int) {
 	c[i], c[j] = c[j], c[i]
 }
 func (c CheckPRCommentRecommendationSort) Less(i, j int) bool {
-	if c[i].System < c[j].System {
-		return true
-	}
-	if c[i].System > c[j].System {
-		return false
-	}
 	if c[i].Source < c[j].Source {
 		return true
 	}
@@ -70,7 +63,7 @@ func (c CheckPRCommentRecommendationSort) Less(i, j int) bool {
 	if c[i].Document > c[j].Document {
 		return false
 	}
-	return strings.Join(c[i].Section, "#") < strings.Join(c[j].Section, "#")
+	return strings.Join(c[i].Section, "/") < strings.Join(c[j].Section, "/")
 }
 
 func CheckPR(args *CheckPRArgs) error {
@@ -162,7 +155,6 @@ func CheckPR(args *CheckPRArgs) error {
 		return err
 	}
 
-	// Update PR comment using SHA from PR head
 	slog.Info("Updating PR comment", "sha", pr.HeadSHA, "recommendations", len(recommendations))
 	comment, err := updatePRComment(pr, pr.HeadSHA, recommendations, args.PullRequest, cfg.GitHub.Token)
 	if err != nil {
@@ -170,7 +162,7 @@ func CheckPR(args *CheckPRArgs) error {
 		return err
 	}
 
-	// Output the comment data (matching updatePR.go format)
+	// Output the comment to a file
 	jsonData, err := json.MarshalIndent(comment, "", "  ")
 	if err != nil {
 		slog.Debug("action.CheckPR could not marshal json", "error", err)
@@ -192,7 +184,7 @@ func CheckPR(args *CheckPRArgs) error {
 	return nil
 }
 
-func getRecommendations(filteredFiles []code.FilteredFile, documents []*docs.FilteredDoc, pr *github.PullRequest, issues []*github.Issue, changedFiles map[string]struct{}, checkConfig *config.Check, llmConfig *config.LLM) ([]CheckDiffRecommendation, error) {
+func getRecommendations(filteredFiles []code.FilteredFile, documents []*docs.FilteredDoc, pr *github.PullRequest, issues []*github.Issue, changedFiles map[string]struct{}, checkConfig *config.Check, llmConfig *config.LLM) ([]CheckPRCommentRecommendation, error) {
 	// Check Diff
 	results, err := check.Diff(filteredFiles, documents, pr, issues, checkConfig, llmConfig)
 	if err != nil {
@@ -201,29 +193,27 @@ func getRecommendations(filteredFiles []code.FilteredFile, documents []*docs.Fil
 	}
 	slog.Info("Got results", "results", len(results))
 
-	// Format results (reuse existing CheckDiffRecommendation format for compatibility)
+	// Format results
 	updateSource := checkConfig.Options.DetectDocumentationUpdates.Source
-	recommendations := []CheckDiffRecommendation{}
+	recommendations := []CheckPRCommentRecommendation{}
 	for _, result := range results {
 		changed := false
 		if updateSource == result.Source {
 			_, changed = changedFiles[result.Document]
 		}
-		recommendations = append(recommendations, CheckDiffRecommendation{
-			Source:         result.Source,
-			Document:       result.Document,
-			Section:        result.Section,
-			Recommendation: "Consider reviewing and updating this documentation",
-			Reasons:        result.Reasons,
-			Changed:        changed,
+		recommendations = append(recommendations, CheckPRCommentRecommendation{
+			Checked:  changed,
+			Source:   result.Source,
+			Document: result.Document,
+			Section:  result.Section,
+			Reasons:  result.Reasons,
 		})
 	}
-	sort.Sort(CheckDiffRecommendationSort(recommendations))
 
 	return recommendations, nil
 }
 
-func updatePRComment(pr *github.PullRequest, sha string, recommendations []CheckDiffRecommendation, prRef string, token string) (*CheckPRComment, error) {
+func updatePRComment(pr *github.PullRequest, sha string, recommendations []CheckPRCommentRecommendation, prRef string, token string) (*CheckPRComment, error) {
 	// Find existing Hyaline comment
 	commentID, err := findHyalineComment(prRef, token)
 	if err != nil {
@@ -231,18 +221,8 @@ func updatePRComment(pr *github.PullRequest, sha string, recommendations []Check
 		return nil, err
 	}
 
-	// Convert CheckDiffRecommendations to format expected by comment functions
-	updateRecs := []CheckPRCommentRecommendation{}
-	for _, rec := range recommendations {
-		updateRecs = append(updateRecs, CheckPRCommentRecommendation{
-			Checked:  rec.Changed,
-			System:   "checkPR", // Use a consistent system identifier
-			Source:   rec.Source,
-			Document: rec.Document,
-			Section:  rec.Section,
-			Reasons:  rec.Reasons,
-		})
-	}
+	// Use recommendations directly since they're already in the correct format
+	updateRecs := recommendations
 
 	var comment *CheckPRComment
 	if commentID == 0 {
@@ -385,9 +365,6 @@ func mergeReasonsForCheckPR(newReasons *[]string, existingReasons *[]string) (me
 }
 
 func newRecMatchesExistingForCheckPR(newRec *CheckPRCommentRecommendation, existingRec *CheckPRCommentRecommendation) bool {
-	if newRec.System != existingRec.System {
-		return false
-	}
 	if newRec.Source != existingRec.Source {
 		return false
 	}
@@ -504,7 +481,7 @@ func formatCheckPRComment(comment *CheckPRComment) string {
 				cleanReasons = append(cleanReasons, html.EscapeString(reason))
 			}
 			reasons := strings.Join(cleanReasons, "</li><li>")
-			md.WriteString(fmt.Sprintf("- [%s] **%s**%s in `%s/%s`", checked, html.EscapeString(rec.Document), html.EscapeString(sections), html.EscapeString(rec.System), html.EscapeString(rec.Source)))
+			md.WriteString(fmt.Sprintf("- [%s] **%s**%s in `%s`", checked, html.EscapeString(rec.Document), html.EscapeString(sections), html.EscapeString(rec.Source)))
 			md.WriteString(fmt.Sprintf("<details><summary>Reasons</summary><ul><li>%s</li></ul></details>", reasons))
 			md.WriteString("\n")
 		}

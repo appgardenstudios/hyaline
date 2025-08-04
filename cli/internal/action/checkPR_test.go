@@ -9,35 +9,30 @@ import (
 func TestCheckPRMergeRecs(t *testing.T) {
 	newRec1 := CheckPRCommentRecommendation{
 		Checked:  false,
-		System:   "system",
 		Source:   "source",
 		Document: "doc1",
 		Reasons:  []string{"newRec1"},
 	}
 	existingRec1 := CheckPRCommentRecommendation{
 		Checked:  false,
-		System:   "system",
 		Source:   "source",
 		Document: "doc1",
 		Reasons:  []string{"existingRec1"},
 	}
 	newToExistingRec1 := CheckPRCommentRecommendation{
 		Checked:  false,
-		System:   "system",
 		Source:   "source",
 		Document: "doc1",
 		Reasons:  []string{"newRec1"},
 	}
 	mergedRec1 := CheckPRCommentRecommendation{
 		Checked:  false,
-		System:   "system",
 		Source:   "source",
 		Document: "doc1",
 		Reasons:  []string{"existingRec1", "newRec1"},
 	}
 	newRec1wSection := CheckPRCommentRecommendation{
 		Checked:  false,
-		System:   "system",
 		Source:   "source",
 		Document: "doc1",
 		Section:  []string{"section1", "section2"},
@@ -45,7 +40,6 @@ func TestCheckPRMergeRecs(t *testing.T) {
 	}
 	existingRec1wSection := CheckPRCommentRecommendation{
 		Checked:  false,
-		System:   "system",
 		Source:   "source",
 		Document: "doc1",
 		Section:  []string{"section1", "section2"},
@@ -53,7 +47,6 @@ func TestCheckPRMergeRecs(t *testing.T) {
 	}
 	mergedRec1wSection := CheckPRCommentRecommendation{
 		Checked:  false,
-		System:   "system",
 		Source:   "source",
 		Document: "doc1",
 		Section:  []string{"section1", "section2"},
@@ -61,35 +54,30 @@ func TestCheckPRMergeRecs(t *testing.T) {
 	}
 	newRec2 := CheckPRCommentRecommendation{
 		Checked:  false,
-		System:   "system",
 		Source:   "source",
 		Document: "doc0",
 		Reasons:  []string{"newRec2"},
 	}
 	newToExistingRec2 := CheckPRCommentRecommendation{
 		Checked:  false,
-		System:   "system",
 		Source:   "source",
 		Document: "doc0",
 		Reasons:  []string{"newRec2"},
 	}
 	newChangedRec1 := CheckPRCommentRecommendation{
 		Checked:  true,
-		System:   "system",
 		Source:   "source",
 		Document: "doc1",
 		Reasons:  []string{"newRec1"},
 	}
 	existingCheckedRec1 := CheckPRCommentRecommendation{
 		Checked:  true,
-		System:   "system",
 		Source:   "source",
 		Document: "doc1",
 		Reasons:  []string{"existingRec1"},
 	}
 	mergedCheckedRec1 := CheckPRCommentRecommendation{
 		Checked:  true,
-		System:   "system",
 		Source:   "source",
 		Document: "doc1",
 		Reasons:  []string{"existingRec1", "newRec1"},
@@ -163,7 +151,6 @@ func TestCheckPRParseComment(t *testing.T) {
 	recs := []CheckPRCommentRecommendation{
 		{
 			Checked:  false,
-			System:   "system",
 			Source:   "source",
 			Document: "document",
 			Section:  []string{"section1", "section2"},
@@ -187,7 +174,6 @@ func TestCheckPRParseComment(t *testing.T) {
 	expectedRecs := []CheckPRCommentRecommendation{
 		{
 			Checked:  true,
-			System:   "system",
 			Source:   "source",
 			Document: "document",
 			Section:  []string{"section1", "section2"},
