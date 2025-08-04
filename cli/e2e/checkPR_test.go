@@ -2,6 +2,8 @@ package e2e
 
 import (
 	"fmt"
+	"os"
+	"os/exec"
 	"testing"
 	"time"
 )
@@ -20,6 +22,16 @@ func TestCheckPR(t *testing.T) {
 	}
 
 	stdOutStdErr, err := runBinary(args, t)
+	t.Log(string(stdOutStdErr))
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	// Clean up the comment we just added
+	// gh -R appgardenstudios/hyaline-example pr comment 8 --delete-last --yes
+	cmd := exec.Command("gh", "-R", "appgardenstudios/hyaline-example", "pr", "comment", "8", "--delete-last", "--yes")
+	cmd.Env = os.Environ()
+	stdOutStdErr, err = cmd.CombinedOutput()
 	t.Log(string(stdOutStdErr))
 	if err != nil {
 		t.Fatal(err)

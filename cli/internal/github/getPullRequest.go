@@ -7,8 +7,9 @@ import (
 )
 
 type PullRequest struct {
-	Title string
-	Body  string
+	Title   string
+	Body    string
+	HeadSHA string
 }
 
 func GetPullRequest(ref string, token string) (pr *PullRequest, err error) {
@@ -25,10 +26,11 @@ func GetPullRequest(ref string, token string) (pr *PullRequest, err error) {
 		return
 	}
 
-	// Get body
+	// Get PR details
 	pr = &PullRequest{
-		Title: *rawPr.Title,
-		Body:  *rawPr.Body,
+		Title:   *rawPr.Title,
+		Body:    *rawPr.Body,
+		HeadSHA: *rawPr.Head.SHA,
 	}
 
 	return
