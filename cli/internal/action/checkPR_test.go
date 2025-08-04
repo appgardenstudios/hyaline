@@ -139,7 +139,7 @@ func TestCheckPRMergeRecs(t *testing.T) {
 	}
 
 	for i, test := range tests {
-		recs := mergeRecsForCheckPR(test.newRecs, test.existingRecs)
+		recs := mergeCheckPRRecs(test.newRecs, test.existingRecs)
 
 		if !reflect.DeepEqual(recs, test.mergedRecs) {
 			t.Errorf("%d: got %v, expected %v", i, recs, test.mergedRecs)

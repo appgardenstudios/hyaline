@@ -231,10 +231,7 @@ func upsertPRComment(pr *github.PullRequest, sha string, recommendations []Check
 			return nil, err
 		}
 	} else {
-		// Extract owner/repo from prRef (which is in format owner/repo/pr_number)
-		prParts := strings.Split(prRef, "/")
-		commentRef := fmt.Sprintf("%s/%s/%d", prParts[0], prParts[1], existingComment.ID)
-		slog.Info("Updating existing comment", "commentRef", commentRef)
+		slog.Info("Updating existing comment", "commentID", existingComment.ID)
 		comment, err = updatePRComment(sha, recommendations, prRef, existingComment, token)
 
 		if err != nil {
@@ -243,11 +240,6 @@ func upsertPRComment(pr *github.PullRequest, sha string, recommendations []Check
 		}
 	}
 
-	commentID := int64(0)
-	if existingComment != nil {
-		commentID = existingComment.ID
-	}
-	slog.Info("Updated PR comment", "commentID", commentID, "recommendations", len(comment.Recommendations))
 	return comment, nil
 }
 
@@ -279,7 +271,6 @@ func updatePRComment(sha string, newRecs []CheckPRCommentRecommendation, pr stri
 	// Format comment
 	formattedComment := formatCheckPRComment(&updatedComment)
 
-	// Update comment - create comment reference from PR and comment ID
 	prParts := strings.Split(pr, "/")
 	commentRef := fmt.Sprintf("%s/%s/%d", prParts[0], prParts[1], existingComment.ID)
 	err = github.UpdateComment(commentRef, formattedComment, token)
@@ -376,8 +367,6 @@ func newCheckPRRecMatchesExisting(newRec *CheckPRCommentRecommendation, existing
 	return reflect.DeepEqual(newRec.Section, existingRec.Section)
 }
 
-// findHyalineComment finds an existing Hyaline comment in a PR
-// Returns the comment if found, or nil if not found
 func findHyalineComment(ref string, token string) (*github.Comment, error) {
 	// Get all comments for the PR
 	comments, err := github.ListComments(ref, token)
@@ -386,10 +375,8 @@ func findHyalineComment(ref string, token string) (*github.Comment, error) {
 	}
 
 	// Search for a comment that starts with the Hyaline header (with zero-width spaces)
-	hyalineHeader := "# H\u200By\u200Ba\u200Bl\u200Bi\u200Bn\u200Be"
-
 	for _, comment := range comments {
-		if strings.HasPrefix(comment.Body, hyalineHeader) {
+		if strings.HasPrefix(comment.Body, CHECKPR_HYALINE_HEADER) {
 			return &comment, nil
 		}
 	}
@@ -408,6 +395,7 @@ func formatCheckPRRawData(recommendations *[]CheckPRCommentRecommendation) (stri
 	return fmt.Sprintf("<![CDATA[ %s ]]>", string(data)), nil
 }
 
+const CHECKPR_HYALINE_HEADER = "# H\u200By\u200Ba\u200Bl\u200Bi\u200Bn\u200Be"
 const CHECKPR_CDATA_START = "<![CDATA[ "
 const CHECKPR_CDATA_END = " ]]>"
 const CHECKPR_RECOMMENDATIONS_START = "### Recommendations"
@@ -459,8 +447,8 @@ func parseCheckPRComment(comment string) (recs []CheckPRCommentRecommendation, e
 func formatCheckPRComment(comment *CheckPRComment) string {
 	var md strings.Builder
 
-	// Note: The comment MUST start with "# Hyaline" filled with 0-width spaces
-	md.WriteString("# H\u200By\u200Ba\u200Bl\u200Bi\u200Bn\u200Be PR Check\n")
+	// Note: The comment MUST start with the Hyaline header
+	md.WriteString(CHECKPR_HYALINE_HEADER + " PR Check\n")
 	md.WriteString(fmt.Sprintf("**ref**: %s\n", html.EscapeString(comment.Sha)))
 	md.WriteString("\n")
 
