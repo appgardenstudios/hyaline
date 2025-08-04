@@ -12,6 +12,7 @@ type Config struct {
 	CommonDocuments []DocumentSet `yaml:"commonDocuments,omitempty"`
 	Extract         *Extract      `yaml:"extract,omitempty"`
 	Check           *Check        `yaml:"check,omitempty"`
+	Audit           *Audit        `yaml:"audit,omitempty"`
 }
 
 func (c *Config) GetSystem(id string) (system System, found bool) {
@@ -339,8 +340,8 @@ type CheckCode struct {
 }
 
 type CheckDocumentation struct {
-	Include []CheckDocumentationFilter `yaml:"include,omitempty"`
-	Exclude []CheckDocumentationFilter `yaml:"exclude,omitempty"`
+	Include []DocumentationFilter `yaml:"include,omitempty"`
+	Exclude []DocumentationFilter `yaml:"exclude,omitempty"`
 }
 
 type CheckOptions struct {
@@ -362,22 +363,22 @@ type CheckOptionsUpdateIf struct {
 
 type CheckOptionsUpdateIfEntry struct {
 	Code          CheckCodeFilter          `yaml:"code,omitempty"`
-	Documentation CheckDocumentationFilter `yaml:"documentation,omitempty"`
+	Documentation DocumentationFilter `yaml:"documentation,omitempty"`
 }
 
 type CheckCodeFilter struct {
 	Path string `yaml:"path,omitempty"`
 }
 
-type CheckDocumentationFilter struct {
-	Source   string                        `yaml:"source,omitempty"`
-	Document string                        `yaml:"document,omitempty"`
-	Section  string                        `yaml:"section,omitempty"`
-	URI      string                        `yaml:"uri,omitempty"`
-	Tags     []CheckDocumentationFilterTag `yaml:"tags,omitempty"`
+type DocumentationFilter struct {
+	Source   string                   `yaml:"source,omitempty"`
+	Document string                   `yaml:"document,omitempty"`
+	Section  string                   `yaml:"section,omitempty"`
+	URI      string                   `yaml:"uri,omitempty"`
+	Tags     []DocumentationFilterTag `yaml:"tags,omitempty"`
 }
 
-func (filter *CheckDocumentationFilter) GetParts() (source string, document string, section string) {
+func (filter *DocumentationFilter) GetParts() (source string, document string, section string) {
 	if filter.URI != "" {
 		var remainder string
 		source, remainder, _ = strings.Cut(strings.TrimPrefix(filter.URI, "document://"), "/")
@@ -391,7 +392,42 @@ func (filter *CheckDocumentationFilter) GetParts() (source string, document stri
 	return
 }
 
-type CheckDocumentationFilterTag struct {
+type DocumentationFilterTag struct {
 	Key   string `yaml:"key,omitempty"`
 	Value string `yaml:"value,omitempty"`
+}
+
+type Audit struct {
+	Rules []AuditRule `yaml:"rules,omitempty"`
+}
+
+type AuditRule struct {
+	ID            string                `yaml:"id,omitempty"`
+	Description   string                `yaml:"description,omitempty"`
+	Documentation []DocumentationFilter `yaml:"documentation,omitempty"`
+	Ignore        []DocumentationFilter `yaml:"ignore,omitempty"`
+	Checks        AuditChecks           `yaml:"checks,omitempty"`
+}
+
+
+type AuditChecks struct {
+	Content AuditContentChecks `yaml:"content,omitempty"`
+	Purpose AuditPurposeChecks `yaml:"purpose,omitempty"`
+	Tags    AuditTagsChecks    `yaml:"tags,omitempty"`
+}
+
+type AuditContentChecks struct {
+	Exists         bool   `yaml:"exists,omitempty"`
+	MinLength      int    `yaml:"min-length,omitempty"`
+	MatchesRegex   string `yaml:"matches-regex,omitempty"`
+	MatchesPrompt  string `yaml:"matches-prompt,omitempty"`
+	MatchesPurpose bool   `yaml:"matches-purpose,omitempty"`
+}
+
+type AuditPurposeChecks struct {
+	Exists bool `yaml:"exists,omitempty"`
+}
+
+type AuditTagsChecks struct {
+	Contains []DocumentationFilterTag `yaml:"contains,omitempty"`
 }
