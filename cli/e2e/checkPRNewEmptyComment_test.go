@@ -2,6 +2,8 @@ package e2e
 
 import (
 	"fmt"
+	"os"
+	"os/exec"
 	"testing"
 	"time"
 )
@@ -27,9 +29,9 @@ func TestCheckPRNewEmptyComment(t *testing.T) {
 
 	// Clean up the comment we just added
 	// gh -R appgardenstudios/hyaline-example pr comment 9 --delete-last --yes
-	// cmd := exec.Command("gh", "-R", "appgardenstudios/hyaline-example", "pr", "comment", "9", "--delete-last", "--yes")
-	// cmd.Env = os.Environ()
-	// stdOutStdErr, err = cmd.CombinedOutput()
+	cmd := exec.Command("gh", "-R", "appgardenstudios/hyaline-example", "pr", "comment", "9", "--delete-last", "--yes")
+	cmd.Env = os.Environ()
+	stdOutStdErr, err = cmd.CombinedOutput()
 	t.Log(string(stdOutStdErr))
 	if err != nil {
 		t.Fatal(err)
