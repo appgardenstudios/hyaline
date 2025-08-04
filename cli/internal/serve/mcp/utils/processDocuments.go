@@ -2,12 +2,12 @@ package utils
 
 import (
 	"fmt"
+	"hyaline/internal/config"
+	"hyaline/internal/docs"
 	"log/slog"
 	"net/url"
 	"path"
 	"strings"
-
-	"hyaline/internal/config"
 
 	giturls "github.com/whilp/git-urls"
 )
@@ -19,7 +19,7 @@ type Results struct {
 }
 
 // ProcessDocuments processes documents based on URI and returns results
-func ProcessDocuments(data *DocumentationData, documentURI *DocumentURI, includeContent bool) *Results {
+func ProcessDocuments(data *DocumentationData, documentURI *docs.DocumentURI, includeContent bool) *Results {
 	results := &Results{}
 
 	// Open documents tag
@@ -60,7 +60,7 @@ func ProcessDocuments(data *DocumentationData, documentURI *DocumentURI, include
 
 // processDocument processes a single document and adds it to results
 func processDocument(results *Results, source *Source, document *Document, includeContent bool) {
-	uri := &DocumentURI{
+	uri := &docs.DocumentURI{
 		SourceID:     source.ID,
 		DocumentPath: document.ID,
 	}
@@ -211,13 +211,13 @@ func generateSourceURL(crawlerType string, root string, documentID string) strin
 }
 
 // writeTags writes tags in a deterministic order (sorted by key)
-func writeTags(builder *strings.Builder, tags Tags, indent string) {
+func writeTags(builder *strings.Builder, tags docs.Tags, indent string) {
 	if len(tags) == 0 {
 		return
 	}
 
 	// Write tags in sorted order using Tags.Keys() method
-	for _, key := range tags.Keys() {
+	for _, key := range tags.SortedKeys() {
 		values := tags[key]
 		builder.WriteString(indent + "  <tag>\n")
 		fmt.Fprintf(builder, indent+"    <key>%s</key>\n", key)

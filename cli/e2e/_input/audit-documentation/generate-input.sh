@@ -1,0 +1,16 @@
+#!/bin/bash
+
+set -e  # Exit on any error
+
+# Get the directory where this script is located
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+CLI_DIR="$(cd "$SCRIPT_DIR/../../../" && pwd)"
+
+echo "Generating input databases for audit documentation e2e tests..."
+
+cd "$CLI_DIR"
+
+echo "Generating documentation.sqlite..."
+./hyaline --debug extract documentation --config "$SCRIPT_DIR/extract-config.yml" --output "$SCRIPT_DIR/documentation.sqlite"
+
+echo "Finished"
