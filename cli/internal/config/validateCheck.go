@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"regexp"
-	"strings"
 
 	"github.com/bmatcuk/doublestar/v4"
 )
@@ -36,12 +35,12 @@ func validateCheck(cfg *Config) error {
 		return errors.New("check.documentation.include must contain at least one entry, none found")
 	}
 	for i, include := range cfg.Check.Documentation.Include {
-		if err := validateCheckDocumentationFilter(fmt.Sprintf("check.documentation.include[%d]", i), include); err != nil {
+		if err := validateDocumentationFilter(fmt.Sprintf("check.documentation.include[%d]", i), &include); err != nil {
 			return err
 		}
 	}
 	for i, exclude := range cfg.Check.Documentation.Exclude {
-		if err := validateCheckDocumentationFilter(fmt.Sprintf("check.documentation.exclude[%d]", i), exclude); err != nil {
+		if err := validateDocumentationFilter(fmt.Sprintf("check.documentation.exclude[%d]", i), &exclude); err != nil {
 			return err
 		}
 	}
@@ -77,7 +76,7 @@ func validateCheckUpdateIf(location string, entries []CheckOptionsUpdateIfEntry)
 		if err := validateCheckCodeFilter(fmt.Sprintf("%s[%d].code", location, i), entry.Code); err != nil {
 			return err
 		}
-		if err := validateCheckDocumentationFilter(fmt.Sprintf("%s[%d].documentation", location, i), entry.Documentation); err != nil {
+		if err := validateDocumentationFilter(fmt.Sprintf("%s[%d].documentation", location, i), &entry.Documentation); err != nil {
 			return err
 		}
 	}
@@ -93,58 +92,3 @@ func validateCheckCodeFilter(location string, filter CheckCodeFilter) error {
 	return nil
 }
 
-func validateCheckDocumentationFilter(location string, filter CheckDocumentationFilter) error {
-	// URI trumps source/document/section
-	if filter.URI != "" {
-		if !strings.HasPrefix(filter.URI, "document://") {
-			return fmt.Errorf("%s.uri must start with document://, found: %s", location, filter.URI)
-		}
-		source, remainder, found := strings.Cut(strings.TrimPrefix(filter.URI, "document://"), "/")
-		if !found {
-			return fmt.Errorf("%s.uri must contain at least one /, found: %s", location, filter.URI)
-		}
-		if source == "" || !doublestar.ValidatePattern(source) {
-			return fmt.Errorf("%s.uri must contain a valid source pattern, found: %s in %s", location, source, filter.URI)
-		}
-		document, section, found := strings.Cut(remainder, "#")
-		if document == "" || !doublestar.ValidatePattern(document) {
-			return fmt.Errorf("%s.uri must contain a valid document pattern, found: %s in %s", location, document, filter.URI)
-		}
-		if found {
-			if section == "" || !doublestar.ValidatePattern(section) {
-				return fmt.Errorf("%s.uri must contain a valid section pattern, found: %s in %s", location, section, filter.URI)
-			}
-		}
-	} else {
-		if filter.Source == "" || !doublestar.ValidatePattern(filter.Source) {
-			return fmt.Errorf("%s.source must be a valid pattern, found: %s", location, filter.Source)
-		}
-		if filter.Document != "" {
-			if !doublestar.ValidatePattern(filter.Document) {
-				return fmt.Errorf("%s.document must be a valid pattern, found: %s", location, filter.Document)
-			}
-		}
-		if filter.Section != "" {
-			if filter.Document == "" {
-				return fmt.Errorf("%s.document must be set if %s.section is set", location, location)
-			}
-			if !doublestar.ValidatePattern(filter.Section) {
-				return fmt.Errorf("%s.section must be a valid pattern, found: %s", location, filter.Section)
-			}
-		}
-	}
-
-	// Check tags
-	keyRegex := regexp.MustCompile(metadataTagKeyRegex)
-	valueRegex := regexp.MustCompile(metadataTagValueRegex)
-	for i, tag := range filter.Tags {
-		if !keyRegex.MatchString(tag.Key) {
-			return fmt.Errorf("%s.tags[%d].key must match regex /%s/, found: %s", location, i, metadataTagKeyRegex, tag.Key)
-		}
-		if !valueRegex.MatchString(tag.Value) {
-			return fmt.Errorf("%s.tags[%d].value must match regex /%s/, found: %s", location, i, metadataTagValueRegex, tag.Value)
-		}
-	}
-
-	return nil
-}

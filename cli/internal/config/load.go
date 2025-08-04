@@ -226,5 +226,12 @@ func validate(cfg *Config) (err error) {
 		return
 	}
 
+	// Verify audit
+	err = validateAudit(cfg)
+	if err != nil {
+		slog.Debug("config.Validate found invalid audit", "error", err)
+		return
+	}
+
 	return
 }
