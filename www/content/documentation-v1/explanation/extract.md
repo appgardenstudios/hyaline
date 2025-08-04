@@ -15,7 +15,7 @@ Hyaline has the ability to extract documentation into a current data set that ca
 
 In this example you can see documentation spread over multiple repositories and documentation sites. Hyaline can extract this documentation into a current [documentation data set](../reference/data-set.md) and make it available for use.
 
-This documentation data set can be used in many different ways. Documentation can be [merged](./merge.md) them together into a unified documentation set or used to [check](./check.md) and [audit](./audit.md) the extracted documentation. It can also be used via an [MCP server](./mcp.md) or by the organization for a variety of other purposes. 
+This documentation data set can be used in many different ways. Documentation can be [merged](./merge.md) together into a unified documentation set or used to [check](./check.md) and [audit](./audit.md) the extracted documentation. It can also be used via an [MCP server](./mcp.md) or by the organization for a variety of other purposes. 
 
 Each repository or documentation site is considered a documentation source, or source for short. All of the documentation in a source is crawled and extracted in a single pass, and then tagged and enhanced with additional metadata. Hyaline supports a number of different crawlers and extractors to make sure you can get all of your documentation extracted and available for use.
 
@@ -76,7 +76,7 @@ extract:
 
 </div>
 
-In this example you can see that Hyaline is configured to start crawling in the `./my-app` directory and process any documents that match `**/*.md`. Hyaline processes all of the markdown documents in the `contributing/` directory and `src/` directory. Hyaline does not process the markdown file in the `old/` directory as everything in that directory is excluded. Hyaline also processes the `README.md` file at the root of the path but does not the `License.md` file as that file is excluded.
+In this example you can see that Hyaline is configured to start crawling in the `./my-app` directory and process any documents that match `**/*.md`. Hyaline processes all of the markdown documents in the `contributing/` directory and `src/` directory. Hyaline does not process the markdown file in the `old/` directory as everything in that directory is excluded. Hyaline also processes the `README.md` file at the root of the path but does not process the `License.md` file as that file is excluded.
 
 ### Crawling Documentation - git
 
@@ -109,7 +109,7 @@ In this example you can see that Hyaline is configured to clone the remote repo 
 
 ### Crawling Documentation - http
 
-The `http` crawler crawls a HTTP or HTTPS website starting at a configured starting url, and processes each document it encounters.
+The `http` crawler crawls an HTTP or HTTPS website starting at a configured starting url, and processes each document it encounters.
 
 <div class="side-by-side">
 
@@ -131,7 +131,7 @@ extract:
 
 </div>
 
-In this example you can see that Hyaline is configured to start crawling at `https://my-app.com/docs/` and process any documents that match `**/*`. Note that this pattern matching is scoped to the starting URL. Hyaline processes the linked documents in the `/docs/` directory with the exception of `/docs/roadmap`. Also, even though the document `/docs/getting-started` links to `/contact`, it is not processed as it does not match any include statements which.
+In this example you can see that Hyaline calculates a starting url of `https://my-app.com/docs/` based off of the `baseUrl` and an optional `start` path (not shown here). Hyaline then starts crawling at `https://my-app.com/docs/` and process any documents that match `**/*`. Note that the include and exclude glob matching is scoped to the `baseUrl`. Hyaline processes the linked documents in the `/docs/` directory with the exception of `/docs/roadmap` (which is excluded). Also note that even though the document `/docs/getting-started` links to `/contact`, `/contact` is not processed as it does not match any include statements.
 
 Note that Hyaline will not crawl outside of the specified domain, so you don't need to worry about it getting lost in the internet.
 
@@ -231,7 +231,7 @@ extract:
   metadata:
     - document: "Document 1"
       purpose: ABC
-    - document: "Document 1"
+    - document: "Document 2"
       section: "Section 1"
       purpose: XYZ
   ...

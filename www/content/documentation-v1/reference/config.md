@@ -47,7 +47,7 @@ github:
   token: ${GITHUB_PAT}
 ```
 
-**token**: The GitHub token. Should be able to read pull requests and issues from relevant repositories.
+**token**: The GitHub token. Should be able to read pull requests and issues from relevant repositories when using `check diff`. Should be able to read pull requests, read issues, read/write issue comments, and read repo files when using `check pr`.
 
 ## Extract
 Stores the configuration to use when extracting documentation.
@@ -150,7 +150,7 @@ When cloning, authorization is handled as follows:
 - If `auth.type` is `ssh`:
   - If `auth.user` is set, then ssh auth uses that for the user
   - Else ssh auth uses the value `git` for the user
-  - Finally basic auth uses the PEM key specified by `auth.pem` as the ssh auth key. Note that if `auth.password` is set it is used as the password when decoding in the PEM key.
+  - Finally ssh auth uses the PEM key specified by `auth.pem` as the ssh auth key. Note that if `auth.password` is set it is used as the password when decoding in the PEM key.
 
 For more information on how extraction works please see the documentation for [Extract](../explanation/extract.md).
 
@@ -178,8 +178,8 @@ extract:
         type: ssh
         options:
           user: git
-          pem: -----BEGIN OPENSSH...
-          password: pem-password...
+          pem: -----BEGIN OPENSSH... # Or use an env var like ${HYALINE_SSH_PEM}
+          password: pem-password... # Or use an env var like ${HYALINE_SSH_PWD}
 ```
 
 ```yaml
@@ -191,10 +191,10 @@ extract:
       branch: main
       clone: true
       auth:
-        type: ssh
+        type: http
         options:
           username: git
-          password: github_pat_...
+          password: github_pat_... # Or use an env var like ${HYALINE_GITHUB_PAT}
 ```
 
 **path**: The local path to the repository. If the path is not absolute it is joined with the current working directory to turn it into an absolute path. If `clone` is false the repository at path is opened. If `clone` is true the repository is cloned to the path before being opened. `path` is required if `clone` is false.
