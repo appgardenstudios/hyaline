@@ -131,7 +131,7 @@ extract:
 
 </div>
 
-In this example you can see that Hyaline calculates a starting url of `https://my-app.com/docs/` based off of the `baseUrl` and an optional `start` path (not shown here). Hyaline then starts crawling at `https://my-app.com/docs/` and process any documents that match `**/*`. Note that the include and exclude glob matching is scoped to the `baseUrl`. Hyaline processes the linked documents in the `/docs/` directory with the exception of `/docs/roadmap` (which is excluded). Also note that even though the document `/docs/getting-started` links to `/contact`, `/contact` is not processed as it does not match any include statements.
+In this example you can see that Hyaline calculates a starting url of `https://my-app.com/docs/` based off of the `baseUrl` and an optional `start` path (not shown here). Hyaline then starts crawling at `https://my-app.com/docs/` and processes any documents that match `**/*`. Note that the include and exclude glob matching is scoped to the `baseUrl`. Hyaline processes the linked documents in the `/docs/` directory with the exception of `/docs/roadmap` (which is excluded). Also note that even though the document `/docs/getting-started` links to `/contact`, `/contact` is not processed as it does not match any include statements.
 
 Note that Hyaline will not crawl outside of the specified domain, so you don't need to worry about it getting lost in the internet.
 

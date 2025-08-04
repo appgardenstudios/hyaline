@@ -213,7 +213,7 @@ extract:
 
 **auth.options.user**: (`ssh`) The ssh user to use when cloning the repository. Defaults to `git`.
 
-**auth.options.pem**: (`ssh`) The contents of the private key to use when cloning the repository.
+**auth.options.pem**: (`ssh`) The contents of the private key to use when cloning the repository. Note that the encoded pem must contain the standard newlines, so use double quotes a la `"-----BEGIN OPENSSH PRIVATE KEY-----\n..." when exporting it to the relevant environment variable.
 
 **auth.options.username**: (`http`) The http username to use when cloning. Defaults to `git`.
 
