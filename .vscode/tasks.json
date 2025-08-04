@@ -113,6 +113,26 @@
       "presentation":{
         "reveal": "silent"
       }
+    },{
+      "label": "cleanup-check-pr",
+      "type": "shell",
+      "command": "rm -f ../.vscode/hyaline/check-pr/comment.json",
+      "options":{
+        "cwd": "${workspaceFolder}/cli/"
+      },
+      "presentation":{
+        "reveal": "silent"
+      }
+    },{
+      "label": "cleanup-check-pr-update-comment",
+      "type": "shell",
+      "command": "rm -f ../.vscode/hyaline/check-pr-update-comment/comment.json",
+      "options":{
+        "cwd": "${workspaceFolder}/cli/"
+      },
+      "presentation":{
+        "reveal": "silent"
+      }
     },
   ]
 }

@@ -345,6 +345,42 @@
         "--input", "../.vscode/hyaline/merge-documentation/input-3.sqlite",
         "--output", "../.vscode/hyaline/merge-documentation/merged.db"
       ]
+    },{
+      "name": "Check PR",
+      "type": "go",
+      "request": "launch",
+      "mode": "debug",
+      "preLaunchTask": "cleanup-check-pr",
+      "cwd": "${workspaceFolder}/cli/",
+      "program": "${workspaceFolder}/cli/cmd/hyaline.go",
+      "envFile": "${workspaceFolder}/cli/.env",
+      "args":[
+        "--debug",
+        "check", "pr",
+        "--config", "../.vscode/hyaline/check-pr/hyaline.yml",
+        "--documentation", "../.vscode/hyaline/check-pr/documentation.sqlite",
+        "--pull-request", "appgardenstudios/hyaline-example/9",
+        "--issue", "appgardenstudios/hyaline-example/2",
+        "--issue", "appgardenstudios/hyaline-example/3",
+        "--output", "../.vscode/hyaline/check-pr/comment.json"
+      ]
+    },{
+      "name": "Check PR Update Comment",
+      "type": "go",
+      "request": "launch",
+      "mode": "debug",
+      "preLaunchTask": "cleanup-check-pr-update-comment",
+      "cwd": "${workspaceFolder}/cli/",
+      "program": "${workspaceFolder}/cli/cmd/hyaline.go",
+      "envFile": "${workspaceFolder}/cli/.env",
+      "args":[
+        "--debug",
+        "check", "pr",
+        "--config", "../.vscode/hyaline/check-pr-update-comment/hyaline.yml",
+        "--documentation", "../.vscode/hyaline/check-pr-update-comment/documentation.sqlite",
+        "--pull-request", "appgardenstudios/hyaline-example/8",
+        "--output", "../.vscode/hyaline/check-pr-update-comment/comment.json"
+      ]
     },
   ]
 }
