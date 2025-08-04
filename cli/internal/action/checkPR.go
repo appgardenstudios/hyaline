@@ -155,10 +155,10 @@ func CheckPR(args *CheckPRArgs) error {
 		return err
 	}
 
-	slog.Info("Updating PR comment", "sha", pr.HeadSHA, "recommendations", len(recommendations))
-	comment, err := updatePRComment(pr, pr.HeadSHA, recommendations, args.PullRequest, cfg.GitHub.Token)
+	slog.Info("Upserting PR comment", "sha", pr.HeadSHA, "recommendations", len(recommendations))
+	comment, err := upsertPRComment(pr, pr.HeadSHA, recommendations, args.PullRequest, cfg.GitHub.Token)
 	if err != nil {
-		slog.Debug("action.CheckPR could not update PR comment", "error", err)
+		slog.Debug("action.CheckPR could not upsert PR comment", "error", err)
 		return err
 	}
 
@@ -213,60 +213,59 @@ func getRecommendations(filteredFiles []code.FilteredFile, documents []*docs.Fil
 	return recommendations, nil
 }
 
-func updatePRComment(pr *github.PullRequest, sha string, recommendations []CheckPRCommentRecommendation, prRef string, token string) (*CheckPRComment, error) {
+func upsertPRComment(pr *github.PullRequest, sha string, recommendations []CheckPRCommentRecommendation, prRef string, token string) (*CheckPRComment, error) {
 	// Find existing Hyaline comment
-	commentID, err := findHyalineComment(prRef, token)
+	existingComment, err := findHyalineComment(prRef, token)
 	if err != nil {
-		slog.Debug("updatePRComment could not find Hyaline comment", "error", err)
+		slog.Debug("upsertPRComment could not search for Hyaline comment", "error", err)
 		return nil, err
 	}
 
-	// Use recommendations directly since they're already in the correct format
-	updateRecs := recommendations
-
 	var comment *CheckPRComment
-	if commentID == 0 {
+	if existingComment == nil {
 		slog.Info("Adding new PR comment")
-		comment, err = checkPRAddComment(sha, updateRecs, prRef, token)
+		comment, err = addPRComment(sha, recommendations, prRef, token)
+
+		if err != nil {
+			slog.Debug("upsertPRComment could not add a comment", "error", err)
+			return nil, err
+		}
 	} else {
 		// Extract owner/repo from prRef (which is in format owner/repo/pr_number)
 		prParts := strings.Split(prRef, "/")
-		commentRef := fmt.Sprintf("%s/%s/%d", prParts[0], prParts[1], commentID)
+		commentRef := fmt.Sprintf("%s/%s/%d", prParts[0], prParts[1], existingComment.ID)
 		slog.Info("Updating existing comment", "commentRef", commentRef)
-		comment, err = checkPRUpdateComment(sha, updateRecs, prRef, commentRef, token)
+		comment, err = updatePRComment(sha, recommendations, prRef, existingComment, token)
+
+		if err != nil {
+			slog.Debug("upsertPRComment could not update a comment", "commentID", existingComment.ID, "error", err)
+			return nil, err
+		}
 	}
 
-	if err != nil {
-		slog.Debug("updatePRComment could not update or add comment", "commentID", commentID, "error", err)
-		return nil, err
+	commentID := int64(0)
+	if existingComment != nil {
+		commentID = existingComment.ID
 	}
-
 	slog.Info("Updated PR comment", "commentID", commentID, "recommendations", len(comment.Recommendations))
 	return comment, nil
 }
 
-func checkPRUpdateComment(sha string, newRecs []CheckPRCommentRecommendation, pr string, comment string, token string) (*CheckPRComment, error) {
-	// Get comment
-	existingComment, err := github.GetComment(comment, token)
-	if err != nil {
-		slog.Debug("checkPRUpdateComment could not get existing comment", "error", err)
-		return nil, err
-	}
-
+func updatePRComment(sha string, newRecs []CheckPRCommentRecommendation, pr string, existingComment *github.Comment, token string) (*CheckPRComment, error) {
 	// Get existing recs from the comment
-	existingRecs, err := parseCheckPRComment(existingComment)
+	existingRecs, err := parseCheckPRComment(existingComment.Body)
 	if err != nil {
-		slog.Debug("checkPRUpdateComment could not extract data from existing comment", "error", err)
+		slog.Debug("updatePRComment could not extract data from existing comment", "error", err)
 		return nil, err
 	}
 
 	// Merge new recommendations with the ones from the comment
-	mergedRecs := mergeRecsForCheckPR(newRecs, existingRecs)
+	mergedRecs := mergeCheckPRRecs(newRecs, existingRecs)
 
 	// Format New Raw Data
 	rawData, err := formatCheckPRRawData(&mergedRecs)
 	if err != nil {
-		slog.Debug("checkPRUpdateComment could not format raw data", "error", err)
+		slog.Debug("updatePRComment could not format raw data", "error", err)
 		return nil, err
 	}
 
@@ -280,21 +279,23 @@ func checkPRUpdateComment(sha string, newRecs []CheckPRCommentRecommendation, pr
 	// Format comment
 	formattedComment := formatCheckPRComment(&updatedComment)
 
-	// Update comment
-	err = github.UpdateComment(comment, formattedComment, token)
+	// Update comment - create comment reference from PR and comment ID
+	prParts := strings.Split(pr, "/")
+	commentRef := fmt.Sprintf("%s/%s/%d", prParts[0], prParts[1], existingComment.ID)
+	err = github.UpdateComment(commentRef, formattedComment, token)
 	if err != nil {
-		slog.Debug("checkPRUpdateComment could not update comment", "pr", pr, "error", err)
+		slog.Debug("updatePRComment could not update comment", "pr", pr, "error", err)
 		return nil, err
 	}
 
 	return &updatedComment, nil
 }
 
-func checkPRAddComment(sha string, recommendations []CheckPRCommentRecommendation, pr string, token string) (*CheckPRComment, error) {
+func addPRComment(sha string, recommendations []CheckPRCommentRecommendation, pr string, token string) (*CheckPRComment, error) {
 	// Format raw data
 	rawData, err := formatCheckPRRawData(&recommendations)
 	if err != nil {
-		slog.Debug("checkPRAddComment could not format raw data", "error", err)
+		slog.Debug("addPRComment could not format raw data", "error", err)
 		return nil, err
 	}
 
@@ -311,14 +312,14 @@ func checkPRAddComment(sha string, recommendations []CheckPRCommentRecommendatio
 	// Add comment to PR
 	err = github.AddComment(pr, formattedComment, token)
 	if err != nil {
-		slog.Debug("checkPRAddComment could not add comment", "pr", pr, "error", err)
+		slog.Debug("addPRComment could not add comment", "pr", pr, "error", err)
 		return nil, err
 	}
 
 	return &comment, nil
 }
 
-func mergeRecsForCheckPR(newRecs []CheckPRCommentRecommendation, existingRecs []CheckPRCommentRecommendation) (mergedRecs []CheckPRCommentRecommendation) {
+func mergeCheckPRRecs(newRecs []CheckPRCommentRecommendation, existingRecs []CheckPRCommentRecommendation) (mergedRecs []CheckPRCommentRecommendation) {
 	// Initialize to empty slice to avoid returning nil
 	mergedRecs = []CheckPRCommentRecommendation{}
 	// Copy over existing recs as is
@@ -329,14 +330,14 @@ func mergeRecsForCheckPR(newRecs []CheckPRCommentRecommendation, existingRecs []
 		// See if this rec already exists
 		match := false
 		for index, existingRec := range existingRecs {
-			if newRecMatchesExistingForCheckPR(&newRec, &existingRec) {
+			if newCheckPRRecMatchesExisting(&newRec, &existingRec) {
 				match = true
 				// Do not overwrite existing rec's checked status so we preserve any "manual" checks
 				if !existingRec.Checked {
 					mergedRecs[index].Checked = newRec.Checked
 				}
 				// Always merge reasons
-				mergedRecs[index].Reasons = mergeReasonsForCheckPR(&newRec.Reasons, &existingRec.Reasons)
+				mergedRecs[index].Reasons = mergeCheckPRReasons(&newRec.Reasons, &existingRec.Reasons)
 				break
 			}
 		}
@@ -352,7 +353,7 @@ func mergeRecsForCheckPR(newRecs []CheckPRCommentRecommendation, existingRecs []
 	return
 }
 
-func mergeReasonsForCheckPR(newReasons *[]string, existingReasons *[]string) (mergedReasons []string) {
+func mergeCheckPRReasons(newReasons *[]string, existingReasons *[]string) (mergedReasons []string) {
 	mergedReasons = append(mergedReasons, *existingReasons...)
 
 	for _, newReason := range *newReasons {
@@ -364,7 +365,7 @@ func mergeReasonsForCheckPR(newReasons *[]string, existingReasons *[]string) (me
 	return
 }
 
-func newRecMatchesExistingForCheckPR(newRec *CheckPRCommentRecommendation, existingRec *CheckPRCommentRecommendation) bool {
+func newCheckPRRecMatchesExisting(newRec *CheckPRCommentRecommendation, existingRec *CheckPRCommentRecommendation) bool {
 	if newRec.Source != existingRec.Source {
 		return false
 	}
@@ -376,12 +377,12 @@ func newRecMatchesExistingForCheckPR(newRec *CheckPRCommentRecommendation, exist
 }
 
 // findHyalineComment finds an existing Hyaline comment in a PR
-// Returns the comment ID if found, or 0 if not found
-func findHyalineComment(ref string, token string) (commentID int64, err error) {
+// Returns the comment if found, or nil if not found
+func findHyalineComment(ref string, token string) (*github.Comment, error) {
 	// Get all comments for the PR
 	comments, err := github.ListComments(ref, token)
 	if err != nil {
-		return 0, err
+		return nil, err
 	}
 
 	// Search for a comment that starts with the Hyaline header (with zero-width spaces)
@@ -389,12 +390,12 @@ func findHyalineComment(ref string, token string) (commentID int64, err error) {
 
 	for _, comment := range comments {
 		if strings.HasPrefix(comment.Body, hyalineHeader) {
-			return comment.ID, nil
+			return &comment, nil
 		}
 	}
 
 	// No Hyaline comment found
-	return 0, nil
+	return nil, nil
 }
 
 func formatCheckPRRawData(recommendations *[]CheckPRCommentRecommendation) (string, error) {
