@@ -49,25 +49,6 @@ $ hyaline extract documentation --config ./hyaline.yml --output ./documentation.
 ```
 Extract documentation from the system defined in the config file found at `./hyaline.yml` and create a current documentation dataset at `./documentation.db`.
 
-## merge documentation
-`hyaline merge documentation` merges 2 or more documentation data sets into a single output database.
-
-**Options**:
-* `--input` - (required, multiple allowed) Path of the sqlite databases to merge. At least 2 inputs are required
-* `--output` - (required) Path of the sqlite database to create
-
-**Example**:
-```
-$ hyaline merge documentation --input ./docs1.db --input ./docs2.db --output ./merged.db
-```
-Merge `./docs1.db` and `./docs2.db` into a single output database `./merged.db`.
-
-**Example**:
-```
-$ hyaline merge documentation --input ./docs1.db --input ./docs2.db --input ./docs3.db --output ./merged.db
-```
-Merge multiple documentation databases `./docs1.db`, `./docs2.db`, and `./docs3.db` into a single output database `./merged.db`.
-
 ## check diff
 `hyaline check diff` checks a diff and outputs a list of recommended documentation updates.
 
@@ -93,6 +74,24 @@ $ hyaline check diff --config ./hyaline.yml --documentation ./documentation.db -
 ```
 Check what documentation in `./documentation.db` should be updated based the changes between the `main` and `feat-1` refs as well as the configuration in `./hyaline.yml`. It takes into account the contents of the pull request `appgardenstudios/hyaline-example/1` and the issues `appgardenstudios/hyaline-example/2` and `appgardenstudios/hyaline-example/3`. The set of recommendations are output to `./recommendations.json`.
 
+## merge documentation
+`hyaline merge documentation` merges 2 or more documentation data sets into a single output database.
+
+**Options**:
+* `--input` - (required, multiple allowed) Path of the sqlite databases to merge. At least 2 inputs are required
+* `--output` - (required) Path of the sqlite database to create
+
+**Example**:
+```
+$ hyaline merge documentation --input ./docs1.db --input ./docs2.db --output ./merged.db
+```
+Merge `./docs1.db` and `./docs2.db` into a single output database `./merged.db`.
+
+**Example**:
+```
+$ hyaline merge documentation --input ./docs1.db --input ./docs2.db --input ./docs3.db --output ./merged.db
+```
+Merge multiple documentation databases `./docs1.db`, `./docs2.db`, and `./docs3.db` into a single output database `./merged.db`.
 
 ## serve mcp
 `hyaline serve mcp` starts an MCP server running locally over stdio and serves up the documentation produced by running `hyaline extract documentation`.
