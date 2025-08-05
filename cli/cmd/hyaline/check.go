@@ -257,7 +257,7 @@ func Check(logLevel *slog.LevelVar) *cli.Command {
 					&cli.StringFlag{
 						Name:     "output",
 						Required: true,
-						Usage:    "Path to write the results to",
+						Usage:    "Path to write the recommendations to",
 					},
 				},
 				Action: func(cCtx *cli.Context) error {

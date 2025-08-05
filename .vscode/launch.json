@@ -350,7 +350,7 @@
       "type": "go",
       "request": "launch",
       "mode": "debug",
-      "preLaunchTask": "cleanup-check-pr",
+      "preLaunchTask": "check-pr",
       "cwd": "${workspaceFolder}/cli/",
       "program": "${workspaceFolder}/cli/cmd/hyaline.go",
       "envFile": "${workspaceFolder}/cli/.env",
@@ -362,14 +362,14 @@
         "--pull-request", "appgardenstudios/hyaline-example/9",
         "--issue", "appgardenstudios/hyaline-example/2",
         "--issue", "appgardenstudios/hyaline-example/3",
-        "--output", "../.vscode/hyaline/check-pr/comment.json"
+        "--output", "../.vscode/hyaline/check-pr/recommendations.json"
       ]
     },{
       "name": "Check PR Update Comment",
       "type": "go",
       "request": "launch",
       "mode": "debug",
-      "preLaunchTask": "cleanup-check-pr-update-comment",
+      "preLaunchTask": "check-pr-update-comment",
       "cwd": "${workspaceFolder}/cli/",
       "program": "${workspaceFolder}/cli/cmd/hyaline.go",
       "envFile": "${workspaceFolder}/cli/.env",
@@ -379,7 +379,7 @@
         "--config", "../.vscode/hyaline/check-pr-update-comment/hyaline.yml",
         "--documentation", "../.vscode/hyaline/check-pr-update-comment/documentation.sqlite",
         "--pull-request", "appgardenstudios/hyaline-example/8",
-        "--output", "../.vscode/hyaline/check-pr-update-comment/comment.json"
+        "--output", "../.vscode/hyaline/check-pr-update-comment/recommendations.json"
       ]
     },
   ]

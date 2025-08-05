@@ -119,9 +119,10 @@ func GetFilteredPRFiles(pullRequest string, token string, cfg *config.CheckCode)
 					})
 				}
 			}
+		case "unmodified":
+			slog.Debug("code.GetFilteredPRFiles skipping unmodified file", "filename", filename)
 		default:
-			slog.Debug("code.GetFilteredPRFiles unknown file status", "status", *file.Status, "filename", filename)
-			continue
+			slog.Warn("Hyaline received an unknown file status from GitHub. Please report this issue.", "status", *file.Status, "filename", filename)
 		}
 	}
 

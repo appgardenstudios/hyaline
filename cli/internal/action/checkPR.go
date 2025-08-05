@@ -15,10 +15,14 @@ import (
 	"os"
 	"path/filepath"
 	"reflect"
-	"slices"
 	"sort"
 	"strings"
 )
+
+const CHECKPR_HYALINE_HEADER = "# H\u200By\u200Ba\u200Bl\u200Bi\u200Bn\u200Be"
+const CHECKPR_CDATA_START = "<![CDATA[ "
+const CHECKPR_CDATA_END = " ]]>"
+const CHECKPR_RECOMMENDATIONS_START = "### Recommendations"
 
 type CheckPRArgs struct {
 	Config        string
@@ -35,35 +39,8 @@ type CheckPRComment struct {
 }
 
 type CheckPRCommentRecommendation struct {
-	Checked  bool     `json:"checked"`
-	Source   string   `json:"source"`
-	Document string   `json:"document"`
-	Section  []string `json:"section"`
-	Reasons  []string `json:"reasons"`
-}
-
-type CheckPRCommentRecommendationSort []CheckPRCommentRecommendation
-
-func (c CheckPRCommentRecommendationSort) Len() int {
-	return len(c)
-}
-func (c CheckPRCommentRecommendationSort) Swap(i, j int) {
-	c[i], c[j] = c[j], c[i]
-}
-func (c CheckPRCommentRecommendationSort) Less(i, j int) bool {
-	if c[i].Source < c[j].Source {
-		return true
-	}
-	if c[i].Source > c[j].Source {
-		return false
-	}
-	if c[i].Document < c[j].Document {
-		return true
-	}
-	if c[i].Document > c[j].Document {
-		return false
-	}
-	return strings.Join(c[i].Section, "/") < strings.Join(c[j].Section, "/")
+	CheckRecommendation
+	Checked bool `json:"checked"`
 }
 
 func CheckPR(args *CheckPRArgs) error {
@@ -155,15 +132,21 @@ func CheckPR(args *CheckPRArgs) error {
 		return err
 	}
 
-	slog.Info("Upserting PR comment", "sha", pr.HeadSHA, "recommendations", len(recommendations))
-	comment, err := upsertPRComment(pr, pr.HeadSHA, recommendations, args.PullRequest, cfg.GitHub.Token)
+	slog.Info("Upserting PR comment", "sha", pr.Head, "recommendations", len(recommendations))
+	err = upsertPRComment(pr, pr.Head, recommendations, args.PullRequest, cfg.GitHub.Token)
 	if err != nil {
 		slog.Debug("action.CheckPR could not upsert PR comment", "error", err)
 		return err
 	}
 
-	// Output the comment to a file
-	jsonData, err := json.MarshalIndent(comment, "", "  ")
+	output := CheckOutput{
+		Recommendations: recommendations,
+		Head:            pr.Head,
+		Base:            pr.Base,
+	}
+
+	// Output the results to a file
+	jsonData, err := json.MarshalIndent(output, "", "  ")
 	if err != nil {
 		slog.Debug("action.CheckPR could not marshal json", "error", err)
 		return err
@@ -179,76 +162,55 @@ func CheckPR(args *CheckPRArgs) error {
 		slog.Debug("action.CheckPR could not write output file", "error", err)
 		return err
 	}
-	slog.Info("Output recommendations", "recommendations", len(comment.Recommendations), "output", outputAbsPath)
+	slog.Info("Output recommendations", "recommendations", len(recommendations), "output", outputAbsPath)
 
 	return nil
 }
 
-func getRecommendations(filteredFiles []code.FilteredFile, documents []*docs.FilteredDoc, pr *github.PullRequest, issues []*github.Issue, changedFiles map[string]struct{}, checkConfig *config.Check, llmConfig *config.LLM) ([]CheckPRCommentRecommendation, error) {
-	// Check Diff
-	results, err := check.Diff(filteredFiles, documents, pr, issues, checkConfig, llmConfig)
-	if err != nil {
-		slog.Debug("getRecommendations could not check diff", "error", err)
-		return nil, err
-	}
-	slog.Info("Got results", "results", len(results))
-
-	// Format results
-	updateSource := checkConfig.Options.DetectDocumentationUpdates.Source
-	recommendations := []CheckPRCommentRecommendation{}
-	for _, result := range results {
-		changed := false
-		if updateSource == result.Source {
-			_, changed = changedFiles[result.Document]
-		}
-		recommendations = append(recommendations, CheckPRCommentRecommendation{
-			Checked:  changed,
-			Source:   result.Source,
-			Document: result.Document,
-			Section:  result.Section,
-			Reasons:  result.Reasons,
+func upsertPRComment(pr *github.PullRequest, sha string, recommendations []CheckRecommendation, prRef string, token string) error {
+	// Convert to CheckPRCommentRecommendation
+	checkPRRecommendations := []CheckPRCommentRecommendation{}
+	for _, rec := range recommendations {
+		checkPRRecommendations = append(checkPRRecommendations, CheckPRCommentRecommendation{
+			CheckRecommendation: rec,
+			Checked:             rec.Changed,
 		})
 	}
 
-	return recommendations, nil
-}
-
-func upsertPRComment(pr *github.PullRequest, sha string, recommendations []CheckPRCommentRecommendation, prRef string, token string) (*CheckPRComment, error) {
 	// Find existing Hyaline comment
 	existingComment, err := findHyalineComment(prRef, token)
 	if err != nil {
 		slog.Debug("upsertPRComment could not search for Hyaline comment", "error", err)
-		return nil, err
+		return err
 	}
 
-	var comment *CheckPRComment
 	if existingComment == nil {
 		slog.Info("Adding new PR comment")
-		comment, err = addPRComment(sha, recommendations, prRef, token)
+		err = addPRComment(sha, checkPRRecommendations, prRef, token)
 
 		if err != nil {
 			slog.Debug("upsertPRComment could not add a comment", "error", err)
-			return nil, err
+			return err
 		}
 	} else {
 		slog.Info("Updating existing comment", "commentID", existingComment.ID)
-		comment, err = updatePRComment(sha, recommendations, prRef, existingComment, token)
+		err = updatePRComment(sha, checkPRRecommendations, prRef, existingComment, token)
 
 		if err != nil {
 			slog.Debug("upsertPRComment could not update a comment", "commentID", existingComment.ID, "error", err)
-			return nil, err
+			return err
 		}
 	}
 
-	return comment, nil
+	return nil
 }
 
-func updatePRComment(sha string, newRecs []CheckPRCommentRecommendation, pr string, existingComment *github.Comment, token string) (*CheckPRComment, error) {
+func updatePRComment(sha string, newRecs []CheckPRCommentRecommendation, pr string, existingComment *github.Comment, token string) error {
 	// Get existing recs from the comment
 	existingRecs, err := parseCheckPRComment(existingComment.Body)
 	if err != nil {
 		slog.Debug("updatePRComment could not extract data from existing comment", "error", err)
-		return nil, err
+		return err
 	}
 
 	// Merge new recommendations with the ones from the comment
@@ -258,7 +220,7 @@ func updatePRComment(sha string, newRecs []CheckPRCommentRecommendation, pr stri
 	rawData, err := formatCheckPRRawData(&mergedRecs)
 	if err != nil {
 		slog.Debug("updatePRComment could not format raw data", "error", err)
-		return nil, err
+		return err
 	}
 
 	// Create comment
@@ -276,18 +238,18 @@ func updatePRComment(sha string, newRecs []CheckPRCommentRecommendation, pr stri
 	err = github.UpdateComment(commentRef, formattedComment, token)
 	if err != nil {
 		slog.Debug("updatePRComment could not update comment", "pr", pr, "error", err)
-		return nil, err
+		return err
 	}
 
-	return &updatedComment, nil
+	return nil
 }
 
-func addPRComment(sha string, recommendations []CheckPRCommentRecommendation, pr string, token string) (*CheckPRComment, error) {
+func addPRComment(sha string, recommendations []CheckPRCommentRecommendation, pr string, token string) error {
 	// Format raw data
 	rawData, err := formatCheckPRRawData(&recommendations)
 	if err != nil {
 		slog.Debug("addPRComment could not format raw data", "error", err)
-		return nil, err
+		return err
 	}
 
 	// Create comment
@@ -304,10 +266,10 @@ func addPRComment(sha string, recommendations []CheckPRCommentRecommendation, pr
 	err = github.AddComment(pr, formattedComment, token)
 	if err != nil {
 		slog.Debug("addPRComment could not add comment", "pr", pr, "error", err)
-		return nil, err
+		return err
 	}
 
-	return &comment, nil
+	return nil
 }
 
 func mergeCheckPRRecs(newRecs []CheckPRCommentRecommendation, existingRecs []CheckPRCommentRecommendation) (mergedRecs []CheckPRCommentRecommendation) {
@@ -339,16 +301,25 @@ func mergeCheckPRRecs(newRecs []CheckPRCommentRecommendation, existingRecs []Che
 	}
 
 	// Sort
-	sort.Sort(CheckPRCommentRecommendationSort(mergedRecs))
+	sort.Slice(mergedRecs, func(i, j int) bool {
+		return CompareRecommendations(mergedRecs[i].CheckRecommendation, mergedRecs[j].CheckRecommendation)
+	})
 
 	return
 }
 
-func mergeCheckPRReasons(newReasons *[]string, existingReasons *[]string) (mergedReasons []string) {
+func mergeCheckPRReasons(newReasons *[]check.Reason, existingReasons *[]check.Reason) (mergedReasons []check.Reason) {
 	mergedReasons = append(mergedReasons, *existingReasons...)
 
 	for _, newReason := range *newReasons {
-		if !slices.Contains(mergedReasons, newReason) {
+		found := false
+		for _, existingReason := range mergedReasons {
+			if existingReason.Reason == newReason.Reason {
+				found = true
+				break
+			}
+		}
+		if !found {
 			mergedReasons = append(mergedReasons, newReason)
 		}
 	}
@@ -394,11 +365,6 @@ func formatCheckPRRawData(recommendations *[]CheckPRCommentRecommendation) (stri
 
 	return fmt.Sprintf("<![CDATA[ %s ]]>", string(data)), nil
 }
-
-const CHECKPR_HYALINE_HEADER = "# H\u200By\u200Ba\u200Bl\u200Bi\u200Bn\u200Be"
-const CHECKPR_CDATA_START = "<![CDATA[ "
-const CHECKPR_CDATA_END = " ]]>"
-const CHECKPR_RECOMMENDATIONS_START = "### Recommendations"
 
 func parseCheckPRComment(comment string) (recs []CheckPRCommentRecommendation, err error) {
 	// Get CData
@@ -467,7 +433,7 @@ func formatCheckPRComment(comment *CheckPRComment) string {
 			}
 			var cleanReasons []string
 			for _, reason := range rec.Reasons {
-				cleanReasons = append(cleanReasons, html.EscapeString(reason))
+				cleanReasons = append(cleanReasons, html.EscapeString(reason.Reason))
 			}
 			reasons := strings.Join(cleanReasons, "</li><li>")
 			md.WriteString(fmt.Sprintf("- [%s] **%s**%s in `%s`", checked, html.EscapeString(rec.Document), html.EscapeString(sections), html.EscapeString(rec.Source)))

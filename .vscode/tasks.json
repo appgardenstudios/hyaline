@@ -114,9 +114,9 @@
         "reveal": "silent"
       }
     },{
-      "label": "cleanup-check-pr",
+      "label": "check-pr",
       "type": "shell",
-      "command": "rm -f ../.vscode/hyaline/check-pr/comment.json",
+      "command": "rm -f ../.vscode/hyaline/check-pr/recommendations.json",
       "options":{
         "cwd": "${workspaceFolder}/cli/"
       },
@@ -124,9 +124,9 @@
         "reveal": "silent"
       }
     },{
-      "label": "cleanup-check-pr-update-comment",
+      "label": "check-pr-update-comment",
       "type": "shell",
-      "command": "rm -f ../.vscode/hyaline/check-pr-update-comment/comment.json",
+      "command": "rm -f ../.vscode/hyaline/check-pr-update-comment/recommendations.json",
       "options":{
         "cwd": "${workspaceFolder}/cli/"
       },

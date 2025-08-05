@@ -16,11 +16,15 @@ import (
 	"github.com/invopop/jsonschema"
 )
 
+type Reason struct {
+	Reason string `json:"reason"`
+}
+
 type Result struct {
 	Source   string
 	Document string
 	Section  []string
-	Reasons  []string
+	Reasons  []Reason
 }
 
 const checkNeedsUpdateName = "needs_update"
@@ -41,15 +45,15 @@ type checkNoUpdateNeededSchema struct {
 type updateResultMapCallback func(id string, reason string)
 
 func Diff(files []code.FilteredFile, documents []*docs.FilteredDoc, pr *github.PullRequest, issues []*github.Issue, checkCfg *config.Check, llmCfg *config.LLM) (results []Result, err error) {
-	resultMap := make(map[string][]string)
+	resultMap := make(map[string][]Reason)
 
 	updateResultMap := func(id string, reason string) {
 		entry, ok := resultMap[id]
 		if ok {
-			entry = append(entry, reason)
+			entry = append(entry, Reason{Reason: reason})
 			resultMap[id] = entry
 		} else {
-			resultMap[id] = []string{reason}
+			resultMap[id] = []Reason{{Reason: reason}}
 		}
 	}
 

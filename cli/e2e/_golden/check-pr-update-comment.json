@@ -1,15 +1,18 @@
 {
-  "sha": "4eefcddf5a56daff4734039dbb89129877a20dd5",
   "recommendations": [
     {
-      "checked": true,
-      "source": "my-app",
+      "documentationSource": "my-app",
       "document": "README.md",
       "section": [],
+      "recommendation": "Consider reviewing and updating this documentation",
       "reasons": [
-        "Update this document if any files matching **/* were touched."
-      ]
+        {
+          "reason": "Update this document if any files matching **/* were touched."
+        }
+      ],
+      "changed": true
     }
   ],
-  "rawData": "\u003c![CDATA[ [{\"checked\":true,\"source\":\"my-app\",\"document\":\"README.md\",\"section\":[],\"reasons\":[\"Update this document if any files matching **/* were touched.\"]}] ]]\u003e"
+  "head": "4eefcddf5a56daff4734039dbb89129877a20dd5",
+  "base": "b564300250288b332d50e2925dbd25e98831adbd"
 }

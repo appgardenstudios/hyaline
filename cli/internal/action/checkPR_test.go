@@ -1,6 +1,7 @@
 package action
 
 import (
+	"hyaline/internal/check"
 	"reflect"
 	"strings"
 	"testing"
@@ -8,79 +9,103 @@ import (
 
 func TestCheckPRMergeRecs(t *testing.T) {
 	newRec1 := CheckPRCommentRecommendation{
-		Checked:  false,
-		Source:   "source",
-		Document: "doc1",
-		Reasons:  []string{"newRec1"},
+		CheckRecommendation: CheckRecommendation{
+			Source:   "source",
+			Document: "doc1",
+			Reasons:  []check.Reason{{Reason: "newRec1"}},
+		},
+		Checked: false,
 	}
 	existingRec1 := CheckPRCommentRecommendation{
-		Checked:  false,
-		Source:   "source",
-		Document: "doc1",
-		Reasons:  []string{"existingRec1"},
+		CheckRecommendation: CheckRecommendation{
+			Source:   "source",
+			Document: "doc1",
+			Reasons:  []check.Reason{{Reason: "existingRec1"}},
+		},
+		Checked: false,
 	}
 	newToExistingRec1 := CheckPRCommentRecommendation{
-		Checked:  false,
-		Source:   "source",
-		Document: "doc1",
-		Reasons:  []string{"newRec1"},
+		CheckRecommendation: CheckRecommendation{
+			Source:   "source",
+			Document: "doc1",
+			Reasons:  []check.Reason{{Reason: "newRec1"}},
+		},
+		Checked: false,
 	}
 	mergedRec1 := CheckPRCommentRecommendation{
-		Checked:  false,
-		Source:   "source",
-		Document: "doc1",
-		Reasons:  []string{"existingRec1", "newRec1"},
+		CheckRecommendation: CheckRecommendation{
+			Source:   "source",
+			Document: "doc1",
+			Reasons:  []check.Reason{{Reason: "existingRec1"}, {Reason: "newRec1"}},
+		},
+		Checked: false,
 	}
 	newRec1wSection := CheckPRCommentRecommendation{
-		Checked:  false,
-		Source:   "source",
-		Document: "doc1",
-		Section:  []string{"section1", "section2"},
-		Reasons:  []string{"newRec1"},
+		CheckRecommendation: CheckRecommendation{
+			Source:   "source",
+			Document: "doc1",
+			Section:  []string{"section1", "section2"},
+			Reasons:  []check.Reason{{Reason: "newRec1"}},
+		},
+		Checked: false,
 	}
 	existingRec1wSection := CheckPRCommentRecommendation{
-		Checked:  false,
-		Source:   "source",
-		Document: "doc1",
-		Section:  []string{"section1", "section2"},
-		Reasons:  []string{"existingRec1"},
+		CheckRecommendation: CheckRecommendation{
+			Source:   "source",
+			Document: "doc1",
+			Section:  []string{"section1", "section2"},
+			Reasons:  []check.Reason{{Reason: "existingRec1"}},
+		},
+		Checked: false,
 	}
 	mergedRec1wSection := CheckPRCommentRecommendation{
-		Checked:  false,
-		Source:   "source",
-		Document: "doc1",
-		Section:  []string{"section1", "section2"},
-		Reasons:  []string{"existingRec1", "newRec1"},
+		CheckRecommendation: CheckRecommendation{
+			Source:   "source",
+			Document: "doc1",
+			Section:  []string{"section1", "section2"},
+			Reasons:  []check.Reason{{Reason: "existingRec1"}, {Reason: "newRec1"}},
+		},
+		Checked: false,
 	}
 	newRec2 := CheckPRCommentRecommendation{
-		Checked:  false,
-		Source:   "source",
-		Document: "doc0",
-		Reasons:  []string{"newRec2"},
+		CheckRecommendation: CheckRecommendation{
+			Source:   "source",
+			Document: "doc0",
+			Reasons:  []check.Reason{{Reason: "newRec2"}},
+		},
+		Checked: false,
 	}
 	newToExistingRec2 := CheckPRCommentRecommendation{
-		Checked:  false,
-		Source:   "source",
-		Document: "doc0",
-		Reasons:  []string{"newRec2"},
+		CheckRecommendation: CheckRecommendation{
+			Source:   "source",
+			Document: "doc0",
+			Reasons:  []check.Reason{{Reason: "newRec2"}},
+		},
+		Checked: false,
 	}
 	newChangedRec1 := CheckPRCommentRecommendation{
-		Checked:  true,
-		Source:   "source",
-		Document: "doc1",
-		Reasons:  []string{"newRec1"},
+		CheckRecommendation: CheckRecommendation{
+			Source:   "source",
+			Document: "doc1",
+			Reasons:  []check.Reason{{Reason: "newRec1"}},
+		},
+		Checked: true,
 	}
 	existingCheckedRec1 := CheckPRCommentRecommendation{
-		Checked:  true,
-		Source:   "source",
-		Document: "doc1",
-		Reasons:  []string{"existingRec1"},
+		CheckRecommendation: CheckRecommendation{
+			Source:   "source",
+			Document: "doc1",
+			Reasons:  []check.Reason{{Reason: "existingRec1"}},
+		},
+		Checked: true,
 	}
 	mergedCheckedRec1 := CheckPRCommentRecommendation{
-		Checked:  true,
-		Source:   "source",
-		Document: "doc1",
-		Reasons:  []string{"existingRec1", "newRec1"},
+		CheckRecommendation: CheckRecommendation{
+			Source:   "source",
+			Document: "doc1",
+			Reasons:  []check.Reason{{Reason: "existingRec1"}, {Reason: "newRec1"}},
+		},
+		Checked: true,
 	}
 
 	tests := []struct {
@@ -150,11 +175,13 @@ func TestCheckPRMergeRecs(t *testing.T) {
 func TestCheckPRParseComment(t *testing.T) {
 	recs := []CheckPRCommentRecommendation{
 		{
-			Checked:  false,
-			Source:   "source",
-			Document: "document",
-			Section:  []string{"section1", "section2"},
-			Reasons:  []string{"reason1", "reason2"},
+			CheckRecommendation: CheckRecommendation{
+				Source:   "source",
+				Document: "document",
+				Section:  []string{"section1", "section2"},
+				Reasons:  []check.Reason{{Reason: "reason1"}, {Reason: "reason2"}},
+			},
+			Checked: false,
 		},
 	}
 	rawData, err := formatCheckPRRawData(&recs)
@@ -173,11 +200,13 @@ func TestCheckPRParseComment(t *testing.T) {
 
 	expectedRecs := []CheckPRCommentRecommendation{
 		{
-			Checked:  true,
-			Source:   "source",
-			Document: "document",
-			Section:  []string{"section1", "section2"},
-			Reasons:  []string{"reason1", "reason2"},
+			CheckRecommendation: CheckRecommendation{
+				Source:   "source",
+				Document: "document",
+				Section:  []string{"section1", "section2"},
+				Reasons:  []check.Reason{{Reason: "reason1"}, {Reason: "reason2"}},
+			},
+			Checked: true,
 		},
 	}
 

@@ -8,12 +8,15 @@ import (
 	"hyaline/internal/config"
 	"hyaline/internal/docs"
 	"hyaline/internal/github"
+	"hyaline/internal/repo"
 	"hyaline/internal/sqlite"
 	"log/slog"
 	"os"
 	"path/filepath"
 	"sort"
 	"strings"
+
+	"github.com/go-git/go-git/v5"
 )
 
 type CheckDiffArgs struct {
@@ -29,41 +32,36 @@ type CheckDiffArgs struct {
 	Output        string
 }
 
-type CheckDiffOutput struct {
-	Recommendations []CheckDiffRecommendation `json:"recommendations"`
+type CheckOutput struct {
+	Recommendations []CheckRecommendation `json:"recommendations"`
+	Head            string                `json:"head"`
+	Base            string                `json:"base"`
 }
 
-type CheckDiffRecommendation struct {
-	Source         string   `json:"documentationSource"`
-	Document       string   `json:"document"`
-	Section        []string `json:"section,omitempty"`
-	Recommendation string   `json:"recommendation"`
-	Reasons        []string `json:"reasons"`
-	Changed        bool     `json:"changed"`
+type CheckRecommendation struct {
+	Source         string         `json:"documentationSource"`
+	Document       string         `json:"document"`
+	Section        []string       `json:"section"`
+	Recommendation string         `json:"recommendation"`
+	Reasons        []check.Reason `json:"reasons"`
+	Changed        bool           `json:"changed"`
 }
 
-type CheckDiffRecommendationSort []CheckDiffRecommendation
-
-func (c CheckDiffRecommendationSort) Len() int {
-	return len(c)
-}
-func (c CheckDiffRecommendationSort) Swap(i, j int) {
-	c[i], c[j] = c[j], c[i]
-}
-func (c CheckDiffRecommendationSort) Less(i, j int) bool {
-	if c[i].Source < c[j].Source {
+// CompareRecommendations returns true if recommendation a should sort before recommendation b
+func CompareRecommendations(a, b CheckRecommendation) bool {
+	if a.Source < b.Source {
 		return true
 	}
-	if c[i].Source > c[j].Source {
+	if a.Source > b.Source {
 		return false
 	}
-	if c[i].Document < c[j].Document {
+	if a.Document < b.Document {
 		return true
 	}
-	if c[i].Document > c[j].Document {
+	if a.Document > b.Document {
 		return false
 	}
-	return strings.Join(c[i].Section, "/") < strings.Join(c[j].Section, "/")
+	return strings.Join(a.Section, "/") < strings.Join(b.Section, "/")
 }
 
 func CheckDiff(args *CheckDiffArgs) error {
@@ -149,42 +147,52 @@ func CheckDiff(args *CheckDiffArgs) error {
 	}
 	slog.Info("Retrieved filtered documents", "documents", len(documents))
 
+	// Open repo and resolve head and base references
+	var absPath string
+	absPath, err = filepath.Abs(args.Path)
+	if err != nil {
+		slog.Debug("action.CheckDiff could not determine absolute path", "error", err, "path", args.Path)
+		return err
+	}
+	slog.Info("Opening repo on disk", "absPath", absPath)
+	var r *git.Repository
+	r, err = git.PlainOpen(absPath)
+	if err != nil {
+		slog.Debug("action.CheckDiff could not open git repo", "error", err, "path", args.Path)
+		return err
+	}
+
+	// Resolve head and base references
+	resolvedHead, err := repo.ResolveRef(r, args.Head, args.HeadRef)
+	if err != nil {
+		slog.Debug("action.CheckDiff could not resolve head reference", "error", err)
+		return err
+	}
+	resolvedBase, err := repo.ResolveRef(r, args.Base, args.BaseRef)
+	if err != nil {
+		slog.Debug("action.CheckDiff could not resolve base reference", "error", err)
+		return err
+	}
+
 	// Get Diff
-	filteredFiles, changedFiles, err := code.GetFilteredDiff(args.Path, args.Head, args.HeadRef, args.Base, args.BaseRef, &cfg.Check.Code)
+	filteredFiles, changedFiles, err := code.GetFilteredDiff(r, *resolvedHead, *resolvedBase, &cfg.Check.Code)
 	if err != nil {
 		slog.Debug("action.CheckDiff could not get filtered diff", "error", err)
 		return err
 	}
 	slog.Info("Retrieved filtered files from diff", "files", len(filteredFiles))
 
-	// Check Diff
-	results, err := check.Diff(filteredFiles, documents, pr, issues, cfg.Check, &cfg.LLM)
+	// Get recommendations
+	recommendations, err := getRecommendations(filteredFiles, documents, pr, issues, changedFiles, cfg.Check, &cfg.LLM)
 	if err != nil {
-		slog.Debug("action.CheckDiff could not check diff", "error", err)
+		slog.Debug("action.CheckDiff could not get recommendations", "error", err)
 		return err
 	}
-	slog.Info("Got results", "results", len(results))
 
-	// Format results
-	updateSource := cfg.Check.Options.DetectDocumentationUpdates.Source
-	recommendations := []CheckDiffRecommendation{}
-	for _, result := range results {
-		changed := false
-		if updateSource == result.Source {
-			_, changed = changedFiles[result.Document]
-		}
-		recommendations = append(recommendations, CheckDiffRecommendation{
-			Source:         result.Source,
-			Document:       result.Document,
-			Section:        result.Section,
-			Recommendation: "Consider reviewing and updating this documentation",
-			Reasons:        result.Reasons,
-			Changed:        changed,
-		})
-	}
-	sort.Sort(CheckDiffRecommendationSort(recommendations))
-	output := CheckDiffOutput{
+	output := CheckOutput{
 		Recommendations: recommendations,
+		Head:            (*resolvedHead).String(),
+		Base:            (*resolvedBase).String(),
 	}
 
 	// Output the results
@@ -207,4 +215,38 @@ func CheckDiff(args *CheckDiffArgs) error {
 	slog.Info("Output recommendations", "recommendations", len(recommendations), "output", outputAbsPath)
 
 	return nil
+}
+
+func getRecommendations(filteredFiles []code.FilteredFile, documents []*docs.FilteredDoc, pr *github.PullRequest, issues []*github.Issue, changedFiles map[string]struct{}, checkConfig *config.Check, llmConfig *config.LLM) ([]CheckRecommendation, error) {
+	// Check Diff
+	results, err := check.Diff(filteredFiles, documents, pr, issues, checkConfig, llmConfig)
+	if err != nil {
+		slog.Debug("getRecommendations could not check diff", "error", err)
+		return nil, err
+	}
+	slog.Info("Got results", "results", len(results))
+
+	// Format results
+	updateSource := checkConfig.Options.DetectDocumentationUpdates.Source
+	recommendations := []CheckRecommendation{}
+	for _, result := range results {
+		changed := false
+		if updateSource == result.Source {
+			_, changed = changedFiles[result.Document]
+		}
+		recommendations = append(recommendations, CheckRecommendation{
+			Source:         result.Source,
+			Document:       result.Document,
+			Section:        result.Section,
+			Recommendation: "Consider reviewing and updating this documentation",
+			Reasons:        result.Reasons,
+			Changed:        changed,
+		})
+	}
+
+	sort.Slice(recommendations, func(i, j int) bool {
+		return CompareRecommendations(recommendations[i], recommendations[j])
+	})
+
+	return recommendations, nil
 }
