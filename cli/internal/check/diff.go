@@ -101,7 +101,7 @@ func formatCheckPrompt(file code.FilteredFile, documents []*docs.FilteredDoc, pr
 	// Use the Diff property if available, otherwise calculate the diff
 	var textDiff string
 	var err error
-	
+
 	if file.Diff != "" {
 		textDiff = file.Diff
 	} else {
@@ -154,18 +154,29 @@ func formatCheckPrompt(file code.FilteredFile, documents []*docs.FilteredDoc, pr
 	// Add type-of-change specific information
 	switch file.Action {
 	case code.ActionInsert:
-		// Add <file>
-		prompt.WriteString("<file>\n")
-		prompt.WriteString(fmt.Sprintf("  <file_name>%s</file_name>\n", file.Filename))
-		prompt.WriteString("  <file_content>\n")
-		prompt.WriteString(string(file.Contents))
-		prompt.WriteString("\n")
-		prompt.WriteString("  </file_content>\n")
-		prompt.WriteString("</file>\n")
-		prompt.WriteString("\n")
-		// Add prompt
-		prompt.WriteString(fmt.Sprintf("Given that the file %s was created, ", file.Filename))
-		prompt.WriteString("and that the contents of the created file are in <file>, ")
+		if file.Diff != "" {
+			// Add <diff>
+			prompt.WriteString("<diff>\n")
+			prompt.WriteString(textDiff)
+			prompt.WriteString("</diff>\n")
+			prompt.WriteString("\n")
+			// Add prompt
+			prompt.WriteString(fmt.Sprintf("Given that the file %s was created, ", file.Filename))
+			prompt.WriteString("and that a patch representing the created file is in <diff>, ")
+		} else {
+			// Add <file>
+			prompt.WriteString("<file>\n")
+			prompt.WriteString(fmt.Sprintf("  <file_name>%s</file_name>\n", file.Filename))
+			prompt.WriteString("  <file_content>\n")
+			prompt.WriteString(string(file.Contents))
+			prompt.WriteString("\n")
+			prompt.WriteString("  </file_content>\n")
+			prompt.WriteString("</file>\n")
+			prompt.WriteString("\n")
+			// Add prompt
+			prompt.WriteString(fmt.Sprintf("Given that the file %s was created, ", file.Filename))
+			prompt.WriteString("and that the contents of the created file are in <file>, ")
+		}
 	case code.ActionModify:
 		// Add <diff>
 		prompt.WriteString("<diff>\n")
@@ -189,18 +200,29 @@ func formatCheckPrompt(file code.FilteredFile, documents []*docs.FilteredDoc, pr
 			prompt.WriteString("and that a patch representing the changes to the renamed file is in <diff>, ")
 		}
 	case code.ActionDelete:
-		// Add <file>
-		prompt.WriteString("<file>\n")
-		prompt.WriteString(fmt.Sprintf("  <file_name>%s</file_name>\n", file.OriginalFilename))
-		prompt.WriteString("  <file_content>\n")
-		prompt.WriteString(string(file.OriginalContents))
-		prompt.WriteString("\n")
-		prompt.WriteString("  </file_content>\n")
-		prompt.WriteString("</file>\n")
-		prompt.WriteString("\n")
-		// Add prompt
-		prompt.WriteString(fmt.Sprintf("Given that the file %s was deleted, ", file.OriginalFilename))
-		prompt.WriteString("and that the contents of the deleted file are in <file>, ")
+		if file.Diff != "" {
+			// Add <diff>
+			prompt.WriteString("<diff>\n")
+			prompt.WriteString(textDiff)
+			prompt.WriteString("</diff>\n")
+			prompt.WriteString("\n")
+			// Add prompt
+			prompt.WriteString(fmt.Sprintf("Given that the file %s was deleted, ", file.OriginalFilename))
+			prompt.WriteString("and that a patch representing the deleted file is in <diff>, ")
+		} else {
+			// Add <file>
+			prompt.WriteString("<file>\n")
+			prompt.WriteString(fmt.Sprintf("  <file_name>%s</file_name>\n", file.OriginalFilename))
+			prompt.WriteString("  <file_content>\n")
+			prompt.WriteString(string(file.OriginalContents))
+			prompt.WriteString("\n")
+			prompt.WriteString("  </file_content>\n")
+			prompt.WriteString("</file>\n")
+			prompt.WriteString("\n")
+			// Add prompt
+			prompt.WriteString(fmt.Sprintf("Given that the file %s was deleted, ", file.OriginalFilename))
+			prompt.WriteString("and that the contents of the deleted file are in <file>, ")
+		}
 	default:
 		// Do nothing and return
 		slog.Warn("check.Change encountered an unknown action", "file", file.Filename, "action", file.Action)
