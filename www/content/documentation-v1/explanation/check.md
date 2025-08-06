@@ -100,7 +100,7 @@ $ hyaline check diff /
 
 </div>
 
-In the example above we have the hyaline command `check diff` that is passing in a pull request and two issues. The image on the right lists the available issues and pull requests in the `appgardenstudios/hyaline-example` repo on GitHub. Hyaline will pull in the titles and bodies of Pull Request #7 and Issues #4 and #5 and them to the LLM's prompt context when considering the set of documentation that may need to be updated.
+In the example above we have the hyaline command `check diff` that is passing in a pull request and two issues. The image on the right lists the available issues and pull requests in the `appgardenstudios/hyaline-example` repo on GitHub. Hyaline will pull in the titles and bodies of `Pull Request #7` and `Issues #4` and `#5` and them to the LLM's prompt context when considering the set of documentation that may need to be updated.
 
 ### UpdateIf Rules
 Hyaline supports the ability to link code directly to relevant documentation via configuration. This linking is done by specifying an "update if" condition, where if certain code is updated then a set of documentation should also be updated. This can help in instances where changes to certain files (like routes or security rules) always need to be reflected in other documentation. Hyaline supports specifying that documentation needs to be updated if files are touched, added, modified, deleted, or renamed.
@@ -126,9 +126,7 @@ check:
 In the example above we have a configuration that specifies the the document `docs/routes.md` should be updated any time the file `src/routes.js` is touched. Note that the documentation does not need to be in the same repository/source as the code being checked, allowing you to keep disparate documentation in sync. when Hyaline checks for which documentation may need to be updated it detects changes to the file `src/routes.js` and adds the document `docs/routes.md` in the source `my-app` to the list of recommended updates with a reason referencing the configured update if statement.
 
 ### LLM Prompt
-Hyaline prompts an LLM to determine which pieces of documentation (if any) should be updated for a specific code change. TODO talk about context provided.
-
-TODO TODO
+Hyaline prompts an LLM to determine which pieces of documentation (if any) should be updated for a specific code change. Hyaline provides the code change, a list of document and sections (along with their purpose if available), and the pull request and issues (if provided) to the LLM to help it determine which documents and/or sections should be updated.
 
 <div class="side-by-side">
 
@@ -151,6 +149,7 @@ TODO TODO
 
 </div>
 
+In the example above we have a code file diff under examination. Hyaline provides the diff, a list of documents and sections, the pull request, and any issues provided to the LLM as context for the prompt. Then the prompt asks the llm to use the documentation, diff, and other context to determine what documentation (if any) should be updated.
 
 ## Check Process
 
@@ -158,9 +157,13 @@ TODO TODO
 
 ![Check Process](./_img/check-process.svg)
 
-TODO talk about process of looping through list
+When Hyaline performs a check on a diff or PR it collects all of the relevant context it needs, such as the list of code files that have changed and are in scope, the set of documentation to consider, and the contents of a pull request or issues. Once collected, Hyaline checks for needed documentation updates in a 3 step process:
 
-TODO portrait (square or portrait) image of check process (zoom in on) of looping through diffs to collect llm recommendations and updateIf matches, then merging everything together, then marking what documentation has already been updated.
+**1: Check each Changed File** - Hyaline loops through each changed file in the diff and evaluates it to see what documentation may need updated. It makes a single call to an LLM passing in context and prompting it to respond with a list of documents and/or sections that may need to be updated along with the reason why. It also looks at the configuration file to see if there are any update if statements that apply to the changed file. The resulting set of documents and sections that may require updates is then returned.
+
+**2: Collate the Results** - Hyaline then takes the set of document and sections that may require updates, along with the reason(s) provided, and collates them into a single unified set of recommendations. This set  of recommendations contains a sorted list of documents and sections with the reason(s) they may need to be updated attached to each document or section.
+
+**3: Check for Documentation Changes** - Once the set of recommendations is collated Hyaline scans the diff and updates the recommendations to mark any documents that have been changed as a part of the diff. Note that this step is only done if Hyaline is configured to do so. For more information on configuring Hyaline to detect and mark changed documents please see the configuration option `detectDocumentationUpdates` in the [configuration reference](../reference/config.md).
 
 </div>
 
@@ -171,8 +174,34 @@ TODO portrait (square or portrait) image of check process (zoom in on) of loopin
 
 ![Recommendations](./_img/check-recommendations.svg)
 
-output to json file or update PR
+Once Hyaline has generated a set of recommendations they can either be output as a JSON file (using the `--output` option) or added as a comment to the pull request (only available for `hyaline check pr`).
 
-TODO square image of recommendations output from process to either json file or pr comment
+The schema for the recommendations output can be viewed [here](../reference/recommendations.md).
+
+The comment on the pull request contains the following:
+
+- The Git SHA of the commit that was compared
+- A list of recommendations where each one has:
+  - A checkbox used to indicate that the recommendation for the document/section has been addressed
+  - The name the document (and section if applicable)
+  - The system and documentation source name
+  - The list of reasons the documentation should be updated
+
+</div>
+
+### Pull Request Comment Updates
+
+<div class="portrait">
+
+![Screenshot of a Pull Request Comment](_img/check-pr-comment.png)
+
+If `hyaline check pr` is run more than once for the same PR, Hyaline will update the previous comment instead of creating a new one. This ensures that the comment from Hyaline always stays up-to-date with the latest changes. When updating Hyaline merges the original set of recommendations with the new set as follows:
+
+1. Any original recommendation for a document or section that do not have a corresponding match in the new set is copied over as is.
+2. Any new recommendation for a document or section that does not have a corresponding match in the original set is used as is.
+3. Any original recommendation for a document if section that does have a match in the new set is merged, and the new set of reasons is appended to the original set of reasons before being used.
+4. The final set of recommendations is sorted by source, document, and section
+
+Note that the state of the checkboxes are preserved, allowing you to track which recommendations have been addressed. Hyaline will automatically check the box if it detects that the document has been updated as a part of the PR (provided it is configured to perform that check).
 
 </div>
