@@ -232,7 +232,7 @@ func Check(logLevel *slog.LevelVar) *cli.Command {
 				},
 			}, {
 				Name:  "pr",
-				Usage: "Check a pull request for issues",
+				Usage: "Check a pull request for issues and add recommendations as a comment on the PR",
 				Flags: []cli.Flag{
 					&cli.StringFlag{
 						Name:     "config",
@@ -256,8 +256,8 @@ func Check(logLevel *slog.LevelVar) *cli.Command {
 					},
 					&cli.StringFlag{
 						Name:     "output",
-						Required: true,
-						Usage:    "Path to write the recommendations to",
+						Required: false,
+						Usage:    "Path to write the recommendations to (optional)",
 					},
 				},
 				Action: func(cCtx *cli.Context) error {

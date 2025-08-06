@@ -70,16 +70,19 @@ func CheckPR(args *CheckPRArgs) error {
 		return errors.New("github token required to retrieve pull-request information")
 	}
 
-	// Ensure output file does not exist
-	outputAbsPath, err := filepath.Abs(args.Output)
-	if err != nil {
-		slog.Debug("action.CheckPR could not get an absolute path for output", "output", args.Output, "error", err)
-		return err
-	}
-	_, err = os.Stat(outputAbsPath)
-	if err == nil {
-		slog.Debug("action.CheckPR detected that output already exists", "absPath", outputAbsPath)
-		return errors.New("output file already exists")
+	// Check output file if provided
+	var outputAbsPath string
+	if args.Output != "" {
+		outputAbsPath, err = filepath.Abs(args.Output)
+		if err != nil {
+			slog.Debug("action.CheckPR could not get an absolute path for output", "output", args.Output, "error", err)
+			return err
+		}
+		_, err = os.Stat(outputAbsPath)
+		if err == nil {
+			slog.Debug("action.CheckPR detected that output already exists", "absPath", outputAbsPath)
+			return errors.New("output file already exists")
+		}
 	}
 
 	// Get Pull Request
@@ -139,30 +142,33 @@ func CheckPR(args *CheckPRArgs) error {
 		return err
 	}
 
-	output := CheckOutput{
-		Recommendations: recommendations,
-		Head:            pr.Head,
-		Base:            pr.Base,
-	}
+	// Write output to file if path was provided
+	if args.Output != "" {
+		output := CheckOutput{
+			Recommendations: recommendations,
+			Head:            pr.Head,
+			Base:            pr.Base,
+		}
 
-	// Output the results to a file
-	jsonData, err := json.MarshalIndent(output, "", "  ")
-	if err != nil {
-		slog.Debug("action.CheckPR could not marshal json", "error", err)
-		return err
+		// Output the results to a file
+		jsonData, err := json.MarshalIndent(output, "", "  ")
+		if err != nil {
+			slog.Debug("action.CheckPR could not marshal json", "error", err)
+			return err
+		}
+		outputFile, err := os.Create(outputAbsPath)
+		if err != nil {
+			slog.Debug("action.CheckPR could not open output file", "error", err)
+			return err
+		}
+		defer outputFile.Close()
+		_, err = outputFile.Write(jsonData)
+		if err != nil {
+			slog.Debug("action.CheckPR could not write output file", "error", err)
+			return err
+		}
+		slog.Info("Output recommendations", "recommendations", len(recommendations), "output", outputAbsPath)
 	}
-	outputFile, err := os.Create(outputAbsPath)
-	if err != nil {
-		slog.Debug("action.CheckPR could not open output file", "error", err)
-		return err
-	}
-	defer outputFile.Close()
-	_, err = outputFile.Write(jsonData)
-	if err != nil {
-		slog.Debug("action.CheckPR could not write output file", "error", err)
-		return err
-	}
-	slog.Info("Output recommendations", "recommendations", len(recommendations), "output", outputAbsPath)
 
 	return nil
 }
