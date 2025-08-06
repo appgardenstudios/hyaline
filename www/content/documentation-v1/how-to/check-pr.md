@@ -29,4 +29,4 @@ Create a [GitHub Workflow](https://docs.github.com/en/actions/writing-workflows/
 Alternatively you could set Hyaline up to be run [manually on dispatch](https://docs.github.com/en/actions/managing-workflow-runs-and-deployments/managing-workflow-runs/manually-running-a-workflow).
 
 ## Next Steps
-Visit [Config Reference](../reference/config.md) or [GitHub Actions Reference](../reference/github-actions.md).
+Visit [Config Reference](../reference/config.md), [GitHub Actions Reference](../reference/github-actions.md), or [Check Explanation](../explanation/check.md).
