@@ -36,6 +36,22 @@ $ hyaline help
 $ hyaline version
 ```
 
+## check pr
+`hyaline check pr` checks a pull request for issues and adds recommendations as a comment on the PR.
+
+**Options**:
+* `--config` - (required) Path to the config file
+* `--documentation` - (required) Path to the current documentation data set
+* `--pull-request` - (required) GitHub Pull Request to check (OWNER/REPO/PR_NUMBER)
+* `--issue` - (optional, multiple allowed) GitHub Issue to include in the change (OWNER/REPO/ISSUE_NUMBER). Accepts multiple issues by setting multiple times
+* `--output` - (optional) Path to write the recommendations to
+
+**Example**:
+```
+$ hyaline check pr --config ./hyaline.yml --documentation ./documentation.db --pull-request owner/repo/123 --issue owner/repo/456 --issue owner/repo/789 --output ./recommendations.md
+```
+Check pull request #123 including context from issues #456 and #789, and save the recommendations to `./recommendations.md` in addition to commenting on the PR.
+
 ## extract documentation
 `hyaline extract documentation` extracts documentation from a documentation source. Please see the explanation for [extract](../explanation/extract.md) for more details.
 
