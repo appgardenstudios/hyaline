@@ -36,6 +36,19 @@ $ hyaline help
 $ hyaline version
 ```
 
+## extract documentation
+`hyaline extract documentation` extracts documentation from a documentation source. Please see the explanation for [extract](../explanation/extract.md) for more details.
+
+**Options**:
+* `--config` - (required) Path to the config file
+* `--output` - (required) Path of the data set to create (file must not already exist)
+
+**Example**:
+```
+$ hyaline extract documentation --config ./hyaline.yml --output ./documentation.db
+```
+Extract documentation from the system defined in the config file found at `./hyaline.yml` and create a current documentation dataset at `./documentation.db`.
+
 ## merge documentation
 `hyaline merge documentation` merges 2 or more documentation data sets into a single output database.
 

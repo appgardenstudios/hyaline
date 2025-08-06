@@ -2,6 +2,8 @@
 title: "How To: Run the Hyaline MCP Server"
 description: "Configure and run the Hyaline MCP server to make documentation available to AI assistants."
 purpose: Document how to run the Hyaline MCP Server
+sitemap:
+  disable: true
 ---
 ## Purpose
 Run the hyaline mcp server locally.
