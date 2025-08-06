@@ -71,7 +71,7 @@ TODO side-by-side command (left) and pr/issue info selected (right)
 $ hyaline check diff /
   ...
   --pull-request /
-    appgardenstudios/hyaline-example/1 /
+    appgardenstudios/hyaline-example/7 /
   --issue /
     appgardenstudios/hyaline-example/2 /
   --issue /
@@ -133,7 +133,7 @@ TODO side-by-side code diff (text diff) on left, input to prompt on right
 
 <div class="portrait">
 
-![Overview](./_img/check-process.svg)
+![Check Process](./_img/check-process.svg)
 
 TODO talk about process of looping through list
 
@@ -146,7 +146,7 @@ TODO portrait (square or portrait) image of check process (zoom in on) of loopin
 
 <div class="portrait">
 
-![Overview](./_img/check-recommendations.svg)
+![Recommendations](./_img/check-recommendations.svg)
 
 output to json file or update PR
 
