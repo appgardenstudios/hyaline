@@ -8,6 +8,8 @@ sitemap:
 ## Overview
 This documents the configuration options and format present in the Hyaline configuration file.
 
+Note that sections prefixed with **(Common)** are used in multiple places and are defined at the bottom.
+
 ## Secrets
 Hyaline has the ability to pull configuration values from environment variables. To use this functionality set the value of a key to `${ENV_VAR_NAME}` to use the value of the environment variable called `ENV_VAR_NAME`.
 
@@ -33,7 +35,7 @@ llm:
   key: ${LLM_API_KEY}
 ```
 
-**provider**: The provider to use when calling out to an LLM. possible values are `anthropic` and  `testing`.
+**provider**: The provider to use when calling out to an LLM. possible values are `anthropic` and `testing`.
 
 **model**: The LLM model to use. See each provider's documentation for a list of possible values.
 
@@ -425,7 +427,28 @@ check:
 
 **renamed**: A list of UpdateIf Entries (see UpdateIf Entry below) detailing that this document should be updated if any matching files are renamed (e.g. moved).
 
-## Documentation Filter
+##### **Check Options UpdateIF Entry**
+An entry that specifies that matching documentation should be updated if matching code was changed.
+
+```yaml
+check:
+  options:
+    updateIf:
+      touched: # A list of UpdateIF Entries
+        - code:
+            path: "src/routes.js"
+          documentation: # A Documentation Filter
+            source: "my-app"
+            document: "docs/routes.md"
+```
+
+**code**: The code that triggers the update.
+
+**code.path**: A glob dictating what code files to match. This uses the [doublestar](https://pkg.go.dev/github.com/bmatcuk/doublestar/v4) package to match paths. The glob is relative to the root of the repository.
+
+**documentation**: The Documentation Filter (see above) that determines which documentation to match.
+
+## (Common) Documentation Filter
 A filter to use to select a subset of documentation.
 
 ```yaml
@@ -458,24 +481,3 @@ check:
 **tags[n].value**: A tag value. Must match `/^[A-z0-9][A-z0-9_-]{0,63}$/`
 
 **uri**: An encoded document URI in the format of `document://<source-id>/<path/of/document.md>#<path/of/section>`. Must start with `document://` and contain at least a source and document glob. Each section (source, document, section) must be a valid [doublestar](https://pkg.go.dev/github.com/bmatcuk/doublestar/v4) glob. Must be set if `source` is not set.
-
-## UpdateIF Entry
-An entry that specifies that matching documentation should be updated if matching code was changed.
-
-```yaml
-check:
-  options:
-    updateIf:
-      touched: # A list of UpdateIF Entries
-        - code:
-            path: "src/routes.js"
-          documentation: # A Documentation Filter
-            source: "my-app"
-            document: "docs/routes.md"
-```
-
-**code**: The code that triggers the update.
-
-**code.path**: A glob dictating what code files to match. This uses the [doublestar](https://pkg.go.dev/github.com/bmatcuk/doublestar/v4) package to match paths. The glob is relative to the root of the repository.
-
-**documentation**: The Documentation Filter (see above) that determines which documentation to match.
