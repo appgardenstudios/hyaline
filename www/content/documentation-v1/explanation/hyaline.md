@@ -38,6 +38,8 @@ In this workflow people, assisted by AI, build products and systems. While doing
 
 TODO talk about extract and merge
 
+TODO talk about organization by source and link to data-set reference.
+
 </div>
 
 ## Check
@@ -54,7 +56,7 @@ TODO talk about check
 
 <div class="portrait">
 
-![Check Process](./_img/audit-overview.svg)
+![Check Process](./_img/hyaline-audit.svg)
 
 TODO talk about audit
 
