@@ -14,7 +14,6 @@ import (
 	"log/slog"
 	"os"
 	"path/filepath"
-	"reflect"
 	"sort"
 	"strings"
 )
@@ -341,7 +340,7 @@ func newCheckPRRecMatchesExisting(newRec *CheckPRCommentRecommendation, existing
 		return false
 	}
 
-	return reflect.DeepEqual(newRec.Section, existingRec.Section)
+	return strings.Join(newRec.Section, "/") == strings.Join(existingRec.Section, "/")
 }
 
 func findHyalineComment(ref string, token string) (*github.Comment, error) {
