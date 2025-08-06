@@ -25,7 +25,7 @@ To help you understand a bit more about what Hyaline does and does not do, consi
 
 <div class="portrait">
 
-![Check Process](./_img/hyaline-workflow.svg)
+![Workflow](./_img/hyaline-workflow.svg)
 
 In this workflow people, assisted by AI, build products and systems. While doing so they create and update Documentation. That documentation is then read and used by people to build products and systems, and the cycle continues. Hyaline sits in between People/AI and Documentation, and is intended to assist in both creating/updating documentation and reading/using documentation to build products and systems.
 
@@ -34,7 +34,7 @@ In this workflow people, assisted by AI, build products and systems. While doing
 ## Extract
 <div class="portrait">
 
-![Check Process](./_img/hyaline-extract.svg)
+![Extract](./_img/hyaline-extract.svg)
 
 TODO talk about extract and merge
 
@@ -46,7 +46,7 @@ TODO talk about organization by source and link to data-set reference.
 
 <div class="portrait">
 
-![Check Process](./_img/hyaline-check.svg)
+![Check](./_img/hyaline-check.svg)
 
 TODO talk about check
 
@@ -56,7 +56,7 @@ TODO talk about check
 
 <div class="portrait">
 
-![Check Process](./_img/hyaline-audit.svg)
+![Audit](./_img/hyaline-audit.svg)
 
 TODO talk about audit
 
@@ -66,7 +66,7 @@ TODO talk about audit
 
 <div class="portrait">
 
-![Check Process](./_img/hyaline-mcp.svg)
+![MCP](./_img/hyaline-mcp.svg)
 
 TODO talk about mcp
 </div>
