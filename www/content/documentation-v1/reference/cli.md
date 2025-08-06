@@ -42,8 +42,8 @@ $ hyaline version
 **Options**:
 * `--config` - (required) Path to the config file
 * `--documentation` - (required) Path to the current documentation data set
-* `--pull-request` - (required) GitHub Pull Request to check (OWNER/REPO/PR_NUMBER)
-* `--issue` - (optional, multiple allowed) GitHub Issue to include in the change (OWNER/REPO/ISSUE_NUMBER). Accepts multiple issues by setting multiple times
+* `--pull-request` - (required) GitHub Pull Request to check (`<owner>/<repo>/<pr_number>`)
+* `--issue` - (optional, multiple allowed) GitHub Issue to include in the change (`<owner>/<repo>/<issue_number>`). Accepts multiple issues by setting multiple times
 * `--output` - (optional) Path to write the recommendations to
 
 **Example**:
