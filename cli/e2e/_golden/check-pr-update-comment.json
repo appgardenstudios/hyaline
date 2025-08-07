@@ -12,8 +12,21 @@
       ],
       "changed": true,
       "checked": true
+    },
+    {
+      "documentationSource": "my-app",
+      "document": "docs/docsDoc.md",
+      "section": [],
+      "recommendation": "Consider reviewing and updating this documentation",
+      "reasons": [
+        {
+          "reason": "Update this document if any files matching **/*.js were touched."
+        }
+      ],
+      "changed": false,
+      "checked": false
     }
   ],
-  "head": "b4c5c736fd31d30a04067af9c0929d7dc42f049e",
+  "head": "3e487a6980fe31da4c75c9a52c81a6cf9505ace8",
   "base": "b564300250288b332d50e2925dbd25e98831adbd"
 }

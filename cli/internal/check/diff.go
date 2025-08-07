@@ -16,11 +16,15 @@ import (
 	"github.com/invopop/jsonschema"
 )
 
+type Reason struct {
+	Reason string `json:"reason"`
+}
+
 type Result struct {
 	Source   string
 	Document string
 	Section  []string
-	Reasons  []string
+	Reasons  []Reason
 }
 
 const checkNeedsUpdateName = "needs_update"
@@ -41,15 +45,15 @@ type checkNoUpdateNeededSchema struct {
 type updateResultMapCallback func(id string, reason string)
 
 func Diff(files []code.FilteredFile, documents []*docs.FilteredDoc, pr *github.PullRequest, issues []*github.Issue, checkCfg *config.Check, llmCfg *config.LLM) (results []Result, err error) {
-	resultMap := make(map[string][]string)
+	resultMap := make(map[string][]Reason)
 
 	updateResultMap := func(id string, reason string) {
 		entry, ok := resultMap[id]
 		if ok {
-			entry = append(entry, reason)
+			entry = append(entry, Reason{Reason: reason})
 			resultMap[id] = entry
 		} else {
-			resultMap[id] = []string{reason}
+			resultMap[id] = []Reason{{Reason: reason}}
 		}
 	}
 
@@ -98,12 +102,20 @@ func Diff(files []code.FilteredFile, documents []*docs.FilteredDoc, pr *github.P
 }
 
 func formatCheckPrompt(file code.FilteredFile, documents []*docs.FilteredDoc, pr *github.PullRequest, issues []*github.Issue) (string, error) {
-	// Calculate the diff
-	edits := diff.Strings(string(file.OriginalContents), string(file.Contents))
-	textDiff, err := diff.ToUnified("a/"+file.OriginalFilename, "b/"+file.Filename, string(file.OriginalContents), edits, 3)
-	if err != nil {
-		slog.Debug("check.Diff could not generate diff", "file", file.Filename, "error", err)
-		return "", err
+	// Use the Diff property if available, otherwise calculate the diff
+	var textDiff string
+	var err error
+
+	if file.Diff != "" {
+		textDiff = file.Diff
+	} else {
+		// Fallback to generating diff from Contents and OriginalContents
+		edits := diff.Strings(string(file.OriginalContents), string(file.Contents))
+		textDiff, err = diff.ToUnified("a/"+file.OriginalFilename, "b/"+file.Filename, string(file.OriginalContents), edits, 3)
+		if err != nil {
+			slog.Debug("check.Diff could not generate diff", "file", file.Filename, "error", err)
+			return "", err
+		}
 	}
 
 	var prompt strings.Builder
@@ -146,18 +158,29 @@ func formatCheckPrompt(file code.FilteredFile, documents []*docs.FilteredDoc, pr
 	// Add type-of-change specific information
 	switch file.Action {
 	case code.ActionInsert:
-		// Add <file>
-		prompt.WriteString("<file>\n")
-		prompt.WriteString(fmt.Sprintf("  <file_name>%s</file_name>\n", file.Filename))
-		prompt.WriteString("  <file_content>\n")
-		prompt.WriteString(string(file.Contents))
-		prompt.WriteString("\n")
-		prompt.WriteString("  </file_content>\n")
-		prompt.WriteString("</file>\n")
-		prompt.WriteString("\n")
-		// Add prompt
-		prompt.WriteString(fmt.Sprintf("Given that the file %s was created, ", file.Filename))
-		prompt.WriteString("and that the contents of the created file are in <file>, ")
+		if len(file.Contents) > 0 {
+			// Add <file>
+			prompt.WriteString("<file>\n")
+			prompt.WriteString(fmt.Sprintf("  <file_name>%s</file_name>\n", file.Filename))
+			prompt.WriteString("  <file_content>\n")
+			prompt.WriteString(string(file.Contents))
+			prompt.WriteString("\n")
+			prompt.WriteString("  </file_content>\n")
+			prompt.WriteString("</file>\n")
+			prompt.WriteString("\n")
+			// Add prompt
+			prompt.WriteString(fmt.Sprintf("Given that the file %s was created, ", file.Filename))
+			prompt.WriteString("and that the contents of the created file are in <file>, ")
+		} else {
+			// Add <diff>
+			prompt.WriteString("<diff>\n")
+			prompt.WriteString(textDiff)
+			prompt.WriteString("</diff>\n")
+			prompt.WriteString("\n")
+			// Add prompt
+			prompt.WriteString(fmt.Sprintf("Given that the file %s was created, ", file.Filename))
+			prompt.WriteString("and that a patch representing the created file is in <diff>, ")
+		}
 	case code.ActionModify:
 		// Add <diff>
 		prompt.WriteString("<diff>\n")
@@ -181,18 +204,29 @@ func formatCheckPrompt(file code.FilteredFile, documents []*docs.FilteredDoc, pr
 			prompt.WriteString("and that a patch representing the changes to the renamed file is in <diff>, ")
 		}
 	case code.ActionDelete:
-		// Add <file>
-		prompt.WriteString("<file>\n")
-		prompt.WriteString(fmt.Sprintf("  <file_name>%s</file_name>\n", file.OriginalFilename))
-		prompt.WriteString("  <file_content>\n")
-		prompt.WriteString(string(file.OriginalContents))
-		prompt.WriteString("\n")
-		prompt.WriteString("  </file_content>\n")
-		prompt.WriteString("</file>\n")
-		prompt.WriteString("\n")
-		// Add prompt
-		prompt.WriteString(fmt.Sprintf("Given that the file %s was deleted, ", file.OriginalFilename))
-		prompt.WriteString("and that the contents of the deleted file are in <file>, ")
+		if len(file.OriginalContents) > 0 {
+			// Add <file>
+			prompt.WriteString("<file>\n")
+			prompt.WriteString(fmt.Sprintf("  <file_name>%s</file_name>\n", file.OriginalFilename))
+			prompt.WriteString("  <file_content>\n")
+			prompt.WriteString(string(file.OriginalContents))
+			prompt.WriteString("\n")
+			prompt.WriteString("  </file_content>\n")
+			prompt.WriteString("</file>\n")
+			prompt.WriteString("\n")
+			// Add prompt
+			prompt.WriteString(fmt.Sprintf("Given that the file %s was deleted, ", file.OriginalFilename))
+			prompt.WriteString("and that the contents of the deleted file are in <file>, ")
+		} else {
+			// Add <diff>
+			prompt.WriteString("<diff>\n")
+			prompt.WriteString(textDiff)
+			prompt.WriteString("</diff>\n")
+			prompt.WriteString("\n")
+			// Add prompt
+			prompt.WriteString(fmt.Sprintf("Given that the file %s was deleted, ", file.OriginalFilename))
+			prompt.WriteString("and that a patch representing the deleted file is in <diff>, ")
+		}
 	default:
 		// Do nothing and return
 		slog.Warn("check.Change encountered an unknown action", "file", file.Filename, "action", file.Action)
