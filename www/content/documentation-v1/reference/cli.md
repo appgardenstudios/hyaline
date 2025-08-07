@@ -66,7 +66,7 @@ Extract documentation from the system defined in the config file found at `./hya
 ```
 $ hyaline check diff --config ./hyaline.yml --documentation ./documentation.db --path ./ --base main --head feat-1 --pull-request appgardenstudios/hyaline-example/1 --issue appgardenstudios/hyaline-example/2 --issue appgardenstudios/hyaline-example/3 --output ./recommendations.json
 ```
-Check what documentation in `./documentation.db` should be updated based the changes between the `main` and `feat-1` branches as well as the configuration in `./hyaline.yml`. It takes into account the contents of the pull request `appgardenstudios/hyaline-example/1` and the issues `appgardenstudios/hyaline-example/2` and `appgardenstudios/hyaline-example/3`. The set of recommendations are output to `./recommendations.json`.
+Check what documentation in `./documentation.db` should be updated based on the changes between the `main` and `feat-1` branches as well as the configuration in `./hyaline.yml`. It takes into account the contents of the pull request `appgardenstudios/hyaline-example/1` and the issues `appgardenstudios/hyaline-example/2` and `appgardenstudios/hyaline-example/3`. The set of recommendations are output to `./recommendations.json`.
 
 **Example**:
 ```

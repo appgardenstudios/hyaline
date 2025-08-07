@@ -404,7 +404,7 @@ check:
 **source**: If set, Hyaline will mark documents and sections as changed if they 1) have the same source and 2) the document was touched as a part of the change being examined (i.e. the document was changed in the diff or the pull request)
 
 #### Check Options UpdateIf
-configure Hyaline to recommend that documentation be updated if a corresponding file change occurs.
+Configure Hyaline to recommend that documentation be updated if a corresponding file change occurs.
 
 ```yaml
 check:
@@ -434,7 +434,7 @@ An entry that specifies that matching documentation should be updated if matchin
 check:
   options:
     updateIf:
-      touched: # A list of UpdateIF Entries
+      touched: # A list of UpdateIf Entries
         - code:
             path: "src/routes.js"
           documentation: # A Documentation Filter
@@ -446,7 +446,7 @@ check:
 
 **code.path**: A glob dictating what code files to match. This uses the [doublestar](https://pkg.go.dev/github.com/bmatcuk/doublestar/v4) package to match paths. The glob is relative to the root of the repository.
 
-**documentation**: The Documentation Filter (see above) that determines which documentation to match.
+**documentation**: The Documentation Filter (see below) that determines which documentation to match.
 
 ## (Common) Documentation Filter
 A filter to use to select a subset of documentation.
