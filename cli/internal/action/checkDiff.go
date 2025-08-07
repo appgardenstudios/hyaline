@@ -45,23 +45,25 @@ type CheckRecommendation struct {
 	Recommendation string         `json:"recommendation"`
 	Reasons        []check.Reason `json:"reasons"`
 	Changed        bool           `json:"changed"`
+	Checked        bool           `json:"checked"`
 }
 
-// CompareRecommendations returns true if recommendation a should sort before recommendation b
-func CompareRecommendations(a, b CheckRecommendation) bool {
-	if a.Source < b.Source {
-		return true
-	}
-	if a.Source > b.Source {
-		return false
-	}
-	if a.Document < b.Document {
-		return true
-	}
-	if a.Document > b.Document {
-		return false
-	}
-	return strings.Join(a.Section, "/") < strings.Join(b.Section, "/")
+func sortCheckRecommendations(recommendations []CheckRecommendation) {
+	sort.Slice(recommendations, func(i, j int) bool {
+		if recommendations[i].Source < recommendations[j].Source {
+			return true
+		}
+		if recommendations[i].Source > recommendations[j].Source {
+			return false
+		}
+		if recommendations[i].Document < recommendations[j].Document {
+			return true
+		}
+		if recommendations[i].Document > recommendations[j].Document {
+			return false
+		}
+		return strings.Join(recommendations[i].Section, "/") < strings.Join(recommendations[j].Section, "/")
+	})
 }
 
 func CheckDiff(args *CheckDiffArgs) error {
@@ -241,12 +243,11 @@ func getRecommendations(filteredFiles []code.FilteredFile, documents []*docs.Fil
 			Recommendation: "Consider reviewing and updating this documentation",
 			Reasons:        result.Reasons,
 			Changed:        changed,
+			Checked:        changed,
 		})
 	}
 
-	sort.Slice(recommendations, func(i, j int) bool {
-		return CompareRecommendations(recommendations[i], recommendations[j])
-	})
+	sortCheckRecommendations(recommendations)
 
 	return recommendations, nil
 }

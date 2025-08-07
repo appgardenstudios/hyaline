@@ -58,3 +58,8 @@ check:
           documentation:
             source: "**/*"
             document: "README.md"
+        - code:
+            path: "**/*.js"
+          documentation:
+            source: "**/*"
+            document: "docs/docsDoc.md"

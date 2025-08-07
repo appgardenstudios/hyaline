@@ -11,6 +11,8 @@ import (
 func TestCheckPRNewComment(t *testing.T) {
 	goldenPath := "./_golden/check-pr-new-comment.json"
 	outputPath := fmt.Sprintf("./_output/check-pr-new-comment-%d.json", time.Now().UnixMilli())
+	outputCurrentPath := fmt.Sprintf("./_output/check-pr-new-comment-current-%d.json", time.Now().UnixMilli())
+	outputPreviousPath := fmt.Sprintf("./_output/check-pr-new-comment-previous-%d.json", time.Now().UnixMilli())
 	args := []string{
 		"check", "pr",
 		"--config", "./_input/check-pr-new-comment/hyaline.yml",
@@ -19,6 +21,8 @@ func TestCheckPRNewComment(t *testing.T) {
 		"--issue", "appgardenstudios/hyaline-example/2",
 		"--issue", "appgardenstudios/hyaline-example/3",
 		"--output", outputPath,
+		"--output-current", outputCurrentPath,
+		"--output-previous", outputPreviousPath,
 	}
 
 	stdOutStdErr, err := runBinary(args, t)
@@ -39,7 +43,11 @@ func TestCheckPRNewComment(t *testing.T) {
 
 	if *update {
 		updateGolden(goldenPath, outputPath, t)
+		updateGolden("./_golden/check-pr-new-comment-current.json", outputCurrentPath, t)
+		updateGolden("./_golden/check-pr-new-comment-previous.json", outputPreviousPath, t)
 	}
 
 	compareFiles(goldenPath, outputPath, t)
+	compareFiles("./_golden/check-pr-new-comment-current.json", outputCurrentPath, t)
+	compareFiles("./_golden/check-pr-new-comment-previous.json", outputPreviousPath, t)
 }

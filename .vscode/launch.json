@@ -359,7 +359,7 @@
         "check", "pr",
         "--config", "../.vscode/hyaline/check-pr/hyaline.yml",
         "--documentation", "../.vscode/hyaline/check-pr/documentation.sqlite",
-        "--pull-request", "appgardenstudios/hyaline-example/9",
+        "--pull-request", "appgardenstudios/hyaline-example/12",
         "--issue", "appgardenstudios/hyaline-example/2",
         "--issue", "appgardenstudios/hyaline-example/3",
         "--output", "../.vscode/hyaline/check-pr/recommendations.json"
@@ -378,7 +378,7 @@
         "check", "pr",
         "--config", "../.vscode/hyaline/check-pr-update-comment/hyaline.yml",
         "--documentation", "../.vscode/hyaline/check-pr-update-comment/documentation.sqlite",
-        "--pull-request", "appgardenstudios/hyaline-example/8",
+        "--pull-request", "appgardenstudios/hyaline-example/11",
         "--output", "../.vscode/hyaline/check-pr-update-comment/recommendations.json"
       ]
     },

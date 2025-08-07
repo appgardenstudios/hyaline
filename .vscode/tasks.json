@@ -116,7 +116,7 @@
     },{
       "label": "check-pr",
       "type": "shell",
-      "command": "rm -f ../.vscode/hyaline/check-pr/recommendations.json",
+      "command": "rm -f ../.vscode/hyaline/check-pr/recommendations.json && gh -R appgardenstudios/hyaline-example pr comment 12 --delete-last --yes",
       "options":{
         "cwd": "${workspaceFolder}/cli/"
       },

@@ -257,7 +257,17 @@ func Check(logLevel *slog.LevelVar) *cli.Command {
 					&cli.StringFlag{
 						Name:     "output",
 						Required: false,
-						Usage:    "Path to write the recommendations to (optional)",
+						Usage:    "Path to write the combined (current and previous merged together) recommendations to (optional)",
+					},
+					&cli.StringFlag{
+						Name:     "output-current",
+						Required: false,
+						Usage:    "Path to write the current recommendations to (optional)",
+					},
+					&cli.StringFlag{
+						Name:     "output-previous",
+						Required: false,
+						Usage:    "Path to write the previous recommendations to (optional)",
 					},
 				},
 				Action: func(cCtx *cli.Context) error {
@@ -268,11 +278,13 @@ func Check(logLevel *slog.LevelVar) *cli.Command {
 
 					// Execute action
 					err := action.CheckPR(&action.CheckPRArgs{
-						Config:        cCtx.String("config"),
-						Documentation: cCtx.String("documentation"),
-						PullRequest:   cCtx.String("pull-request"),
-						Issues:        cCtx.StringSlice("issue"),
-						Output:        cCtx.String("output"),
+						Config:         cCtx.String("config"),
+						Documentation:  cCtx.String("documentation"),
+						PullRequest:    cCtx.String("pull-request"),
+						Issues:         cCtx.StringSlice("issue"),
+						Output:         cCtx.String("output"),
+						OutputCurrent:  cCtx.String("output-current"),
+						OutputPrevious: cCtx.String("output-previous"),
 					})
 					if err != nil {
 						return cli.Exit(err.Error(), 1)

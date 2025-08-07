@@ -10,7 +10,8 @@
           "reason": "Update this document if any files matching **/* were touched."
         }
       ],
-      "changed": true
+      "changed": true,
+      "checked": true
     }
   ],
   "head": "b4c5c736fd31d30a04067af9c0929d7dc42f049e",
