@@ -143,12 +143,14 @@ func CheckPR(args *CheckPRArgs) error {
 	}
 	slog.Info("Retrieved recommendations", "recommendations", len(recommendations))
 
+	// Get existing Hyaline comment
 	existingComment, err := findHyalineComment(args.PullRequest, cfg.GitHub.Token)
 	if err != nil {
 		slog.Debug("action.CheckPR could not search for existing Hyaline comment", "error", err)
 		return err
 	}
 
+	// Get previous recommendations from existing comment if available
 	var previousOutput *CheckOutput
 	if existingComment != nil {
 		slog.Info("Retrieving previous recommendations from comment", "commentID", existingComment.ID)
@@ -161,9 +163,11 @@ func CheckPR(args *CheckPRArgs) error {
 
 	previousRecommendations := []CheckRecommendation{}
 	if previousOutput != nil {
+		slog.Info("Found previous recommendations", "recommendations", len(previousOutput.Recommendations))
 		previousRecommendations = previousOutput.Recommendations
 	}
 
+	// Merge current and previous recommendations
 	mergedRecommendations := mergeCheckRecommendations(recommendations, previousRecommendations)
 
 	mergedOutput := CheckOutput{
@@ -171,6 +175,8 @@ func CheckPR(args *CheckPRArgs) error {
 		Head:            pr.Head,
 		Base:            pr.Base,
 	}
+
+	slog.Info("Merged recommendations", "mergedRecommendations", len(mergedRecommendations))
 
 	err = upsertPRComment(args.PullRequest, existingComment, mergedOutput, cfg.GitHub.Token)
 	if err != nil {
@@ -220,13 +226,7 @@ func CheckPR(args *CheckPRArgs) error {
 				return err
 			}
 		} else {
-			output := CheckOutput{
-				Recommendations: previousRecommendations,
-				Head:            previousOutput.Head,
-				Base:            previousOutput.Base,
-			}
-
-			err = io.WriteJSON(outputPreviousFile, output)
+			err = io.WriteJSON(outputPreviousFile, previousOutput)
 			if err != nil {
 				slog.Debug("action.CheckPR could not write previous recommendations to output file", "error", err)
 				return err
