@@ -36,9 +36,13 @@ In this workflow people, assisted by AI, build products and systems. While doing
 
 ![Extract](./_img/hyaline-extract.svg)
 
-TODO talk about extract and merge
+Hyaline has the ability to [extract documentation](./extract.md) from many different types of repositories and documentation sites. It supports extracting from local file systems, local or remote git repositories, and HTTP or HTTPS websites.
 
-TODO talk about organization by source and link to data-set reference.
+Each set of extracted documentation is considered a documentation source, and is stored by Hyaline in [an SQLite database](../reference/data-set.md). You can extract and store as many documentation sources as you wish, and each documentation source can be assigned metadata and tagged during the extraction process. Hyaline also separates out sections within a document, letting you be granular when using or updating each piece of documentation. 
+
+This extracted documentation can be [merged](merge.md) into a single current documentation data set and used for a variety of purposes including: [checking code changes](./check.md) to determine what documentation may need to be updated, [auditing](./audit.md) the organization's documentation for compliance with regulations or internal processes, or using the documentation to develop products and systems via an [MCP server](./mcp.md).
+
+However it is used, the documentation extracted by Hyaline helps you both use your documentation and keep it up to date.
 
 </div>
 
@@ -48,7 +52,21 @@ TODO talk about organization by source and link to data-set reference.
 
 ![Check](./_img/hyaline-check.svg)
 
-TODO talk about check
+Hyaline has the ability to [check](./check.md) code changes and recommend documentation updates based on the code that was updated. To support this process Hyaline utilizes several resources to provide recommendations:
+
+**Code Diffs**: Hyaline examines each piece of code that was changed to determine what documentation may need to be updated based on each change.
+
+**Current Documentation**: Hyaline uses the entire set of current documentation when determining which documentation may need to be updated for a code change.
+
+**Pull Request and Issues**: Hyaline can pull in a pull request and one or more issues to provide additional context when evaluating potential documentation updates.
+
+**Configuration**: Hyaline provides fine-grained control over what code and documentation to consider, and provides the ability to directly link code to relevant documentation using “Update If” statements.
+
+**AI/LLMs**: Hyaline uses an LLM to help determine what documents should be updated for each code change. This information goes from you to your configured LLM directly, and we do not see or process your code or documentation in any way.
+
+Hyaline supports checking a the difference between two local branches or the code changes in a PR. It can be configured to run locally or in a CI process such as GitHub Actions to provide critical insight into what documentation may need to be updated across your organization.
+
+However you choose to configure Hyaline, it helps you keep your documentation accurate and up-to-date.
 
 </div>
 
@@ -58,7 +76,9 @@ TODO talk about check
 
 ![Audit](./_img/hyaline-audit.svg)
 
-TODO talk about audit
+Hyaline has the ability to audit your current set of documentation based on a set of rules and checks. Using Hyaline, you can ensure that your documentation contains the information necessary to comply with industry regulations or internal compliance rules. You can also check for consistency in documentation across all of your products and systems.
+
+It is up to you to decide what and when to audit, but when you do Hyaline is there to help.
 
 </div>
 
@@ -68,7 +88,12 @@ TODO talk about audit
 
 ![MCP](./_img/hyaline-mcp.svg)
 
-TODO talk about mcp
+Hyaline comes with a built-in MCP server that makes your documentation available to LLM models via the [Model Context Protocol](https://modelcontextprotocol.io/) (MCP). MCP is a standardized mechanism to provide LLMs and AI systems the context they need to do their job.
+
+To use Hyaline's MCP server you first use Hyaline to [extract](./extract.md) and [merge](./merge.md) all of your organization's documentation into a documentation data set. Once complete, you then install Hyaline’s MCP server in your host of choice (i.e. Claude Desktop) and configure Hyaline to use your current documentation data set. Once installed, your AI assistant has the ability to list and retrieve all of your organization's documentation. Then, when you as a developer ask your LLM to complete a task that requires documentation, your LLM can use the tools exposed by Hyaline's MCP server to list and retrieve relevant documentation.
+
+Regardless of the type of documentation your organization maintains, Hyaline can help you use that documentation when leveraging AIs and LLMs to help build products and systems.
+
 </div>
 
 ## Next Steps
