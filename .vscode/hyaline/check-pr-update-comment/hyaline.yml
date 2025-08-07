@@ -1,0 +1,60 @@
+llm:
+  provider: anthropic
+  model: claude-sonnet-4-20250514
+  key: ${HYALINE_ANTHROPIC_KEY}
+
+github:
+  token: ${HYALINE_GITHUB_PAT}
+
+extract:
+  source:
+    id: my-app
+    description: documentation for my application
+  crawler:
+    type: git
+    options:
+      repo: https://github.com/appgardenstudios/hyaline-example.git
+      branch: main
+      clone: true
+      auth:
+        type: http
+        options:
+          username: git
+          password: ${HYALINE_GITHUB_PAT}
+    include:
+      - "**/*.md"
+  extractors:
+    - type: md
+      include:
+        - "**/*"
+  metadata:
+    - document: "**/*"
+      tags:
+        - key: system
+          value: my-app
+    - document: "docs/docsDoc.md"
+      purpose: "The purpose of this file is to document all changes to js files, especially files contained in subdir/"
+
+check:
+  code:
+    include:
+      - "**/*.js"
+      - "package.json"
+    exclude:
+      - "**/*.test.js"
+  documentation:
+    include:
+      - source: "**/*"
+    exclude:
+      - source: my-app
+        document: docs/preDoc.md
+  options:
+    detectDocumentationUpdates:
+      source: my-app
+    updateIf:
+      touched:
+        - code:
+            path: "**/*"
+          documentation:
+            source: "**/*"
+            document: "README.md"

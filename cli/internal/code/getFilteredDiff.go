@@ -4,9 +4,9 @@ import (
 	"hyaline/internal/config"
 	"hyaline/internal/repo"
 	"log/slog"
-	"path/filepath"
 
 	"github.com/go-git/go-git/v5"
+	"github.com/go-git/go-git/v5/plumbing"
 	"github.com/go-git/go-git/v5/plumbing/object"
 	"github.com/go-git/go-git/v5/utils/merkletrie"
 )
@@ -17,6 +17,7 @@ type FilteredFile struct {
 	Action           Action
 	Contents         []byte
 	OriginalContents []byte
+	Diff             string
 }
 
 type Action string
@@ -28,38 +29,11 @@ const (
 	ActionDelete Action = "Delete"
 )
 
-func GetFilteredDiff(path string, head string, headRef string, base string, baseRef string, cfg *config.CheckCode) (filteredFiles []FilteredFile, changedFiles map[string]struct{}, err error) {
+func GetFilteredDiff(r *git.Repository, head plumbing.Hash, base plumbing.Hash, cfg *config.CheckCode) (filteredFiles []FilteredFile, changedFiles map[string]struct{}, err error) {
 	changedFiles = make(map[string]struct{})
 
-	// Open repo already on disk
-	var absPath string
-	absPath, err = filepath.Abs(path)
-	if err != nil {
-		slog.Debug("code.GetFilteredDiff could not determine absolute path", "error", err, "path", path)
-		return
-	}
-	slog.Info("Opening repo on disk", "absPath", absPath)
-	var r *git.Repository
-	r, err = git.PlainOpen(absPath)
-	if err != nil {
-		slog.Debug("code.GetFilteredDiff could not open git repo", "error", err, "path", path)
-		return
-	}
-
-	// Resolve head and base references
-	resolvedHead, err := repo.ResolveRef(r, head, headRef)
-	if err != nil {
-		slog.Debug("code.GetFilteredDiff could not resolve head reference", "error", err)
-		return
-	}
-	resolvedBase, err := repo.ResolveRef(r, base, baseRef)
-	if err != nil {
-		slog.Debug("code.GetFilteredDiff could not resolve base reference", "error", err)
-		return
-	}
-
 	// Get our diff
-	diff, err := repo.GetDiff(r, *resolvedHead, *resolvedBase)
+	diff, err := repo.GetDiff(r, head, base)
 	if err != nil {
 		slog.Debug("code.GetFilteredDiff could not get diff", "error", err)
 		return
