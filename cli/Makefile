@@ -209,3 +209,7 @@ benchmark-prompts:
 .PHONY: release
 release:
 	./scripts/release.sh
+
+.PHONY: release-v1
+release-v1:
+	./scripts/release-v1.sh
