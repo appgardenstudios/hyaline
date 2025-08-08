@@ -41,7 +41,7 @@ type CheckOutput struct {
 type CheckRecommendation struct {
 	Source         string         `json:"documentationSource"`
 	Document       string         `json:"document"`
-	Section        []string       `json:"section"`
+	Section        []string       `json:"section,omitempty"`
 	Recommendation string         `json:"recommendation"`
 	Reasons        []check.Reason `json:"reasons"`
 	Changed        bool           `json:"changed"`
