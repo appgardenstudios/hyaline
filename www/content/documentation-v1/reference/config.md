@@ -427,7 +427,7 @@ check:
 
 **renamed**: A list of UpdateIf Entries (see UpdateIf Entry below) detailing that this document should be updated if any matching files are renamed (e.g. moved).
 
-##### **Check Options UpdateIF Entry**
+##### **Check Options UpdateIf Entry**
 An entry that specifies that matching documentation should be updated if matching code was changed.
 
 ```yaml
@@ -447,6 +447,119 @@ check:
 **code.path**: A glob dictating what code files to match. This uses the [doublestar](https://pkg.go.dev/github.com/bmatcuk/doublestar/v4) package to match paths. The glob is relative to the root of the repository.
 
 **documentation**: The Documentation Filter (see below) that determines which documentation to match.
+
+## Audit
+Stores the configuration to use when auditing documentation.
+
+```yaml
+audit:
+  rules:
+```
+
+**rules**: A list of audit rules to evaluate against the documentation.
+
+### Audit Rules
+Define specific checks to run against your documentation.
+
+```yaml
+audit:
+  rules:
+    - id: "content-exists-check"
+      description: "Check that critical documentation exists"
+      documentation:
+        - source: "backend"
+          document: "README.md"
+      checks:
+        content:
+          exists: true
+```
+
+**id**: A unique identifier for the rule. Must match the regex `/^[A-z0-9][A-z0-9_-]{0,63}$/`. If not provided, an auto-generated ID will be assigned (e.g., `_0`, `_1`).
+
+**description**: A human-readable description of what this rule audits.
+
+**documentation**: A list of Documentation Filters (see below) dictating what documentation this rule applies to. At least one filter is required.
+
+**ignore**: A list of Documentation Filters (see below) dictating what documentation to exclude from this rule's evaluation.
+
+**checks**: The validation checks to perform on matching documentation.
+
+#### Audit Rules Checks
+Configure the specific validation checks to perform on matching documentation.
+
+```yaml
+audit:
+  rules:
+    - checks:
+        content:
+        purpose:
+        tags:
+```
+
+**content**: Content-based validation checks.
+
+**purpose**: Purpose-related validation checks.
+
+**tags**: Tag-based validation checks.
+
+##### Audit Rules Checks Content
+Validate the content of documentation.
+
+```yaml
+audit:
+  rules:
+    - checks:
+        content:
+          exists: true
+          min-length: 100
+          matches-regex: "(?i)installation"
+          matches-prompt: "Does this document contain deployment instructions?"
+          matches-purpose: true
+```
+
+**exists**: Boolean indicating whether the content must exist. When true, the check passes if at least one document or section matches the documentation filters.
+
+**min-length**: Minimum required content length in characters. The check fails if the content is shorter than this value.
+
+**matches-regex**: A regular expression pattern that the content must match.
+
+**matches-prompt**: An LLM prompt to evaluate against the content. The LLM will assess whether the content satisfies the prompt's criteria.
+
+**matches-purpose**: Boolean indicating whether the content should match its defined purpose. Requires the document or section to have a purpose defined.
+
+##### Audit Rules Checks Purpose
+Validate that documentation has defined purposes.
+
+```yaml
+audit:
+  rules:
+    - checks:
+        purpose:
+          exists: true
+```
+
+**exists**: Boolean indicating whether a purpose must be defined for the documentation.
+
+##### Audit Rules Checks Tags
+Validate the presence of specific tags on documentation.
+
+```yaml
+audit:
+  rules:
+    - checks:
+        tags:
+          contains:
+            - key: "type"
+              value: ".*guide"
+            - key: "level"
+              value: "beginner"
+```
+
+**contains**: A list of tags that must be present on the documentation.
+
+**contains[].key**: The tag key to check for. Uses regex pattern matching.
+
+**contains[].value**: The tag value to check for. Uses regex pattern matching.
 
 ## (Common) Documentation Filter
 A filter to use to select a subset of documentation.
