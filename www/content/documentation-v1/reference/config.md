@@ -8,6 +8,8 @@ sitemap:
 ## Overview
 This documents the configuration options and format present in the Hyaline configuration file.
 
+Note that sections prefixed with **(Common)** are used in multiple places and are defined at the bottom.
+
 ## Secrets
 Hyaline has the ability to pull configuration values from environment variables. To use this functionality set the value of a key to `${ENV_VAR_NAME}` to use the value of the environment variable called `ENV_VAR_NAME`.
 
@@ -33,7 +35,7 @@ llm:
   key: ${LLM_API_KEY}
 ```
 
-**provider**: The provider to use when calling out to an LLM. possible values are `anthropic` and  `testing`.
+**provider**: The provider to use when calling out to an LLM. possible values are `anthropic` and `testing`.
 
 **model**: The LLM model to use. See each provider's documentation for a list of possible values.
 
@@ -316,3 +318,166 @@ extract:
 **tags[].key**: The key of the tag to add. Must match the regex `/^[A-z0-9][A-z0-9_-]{0,63}$/`.
 
 **tags[].value**: The value of the tag to add. Must match the regex `/^[A-z0-9][A-z0-9_-]{0,63}$/`.
+
+## Check
+Stores the configuration to use when checking documentation.
+
+```yaml
+check:
+  code:
+  documentation:
+  options:
+```
+
+**code**: The set of code to evaluate when checking for recommended updates.
+
+**documentation**: The set of documentation to include when evaluating which documents/sections need to be updated.
+
+**options**: Options used to configure how the check process runs.
+
+### Check Code
+Determine what code is included when checking for recommended updates. Only code that is included is used when evaluating what documentation should be updated, so only include code that affects documentation (i.e. source code and not tests or tool configuration files).
+
+```yaml
+check:
+  code:
+    include:
+      - "**/*.js"
+      - "package.json"
+    exclude:
+      - "old/**/*"
+      - "**/*.test.js"
+```
+
+**include**: The set of globs dictating what code files to include and consider during the check process. This uses the [doublestar](https://pkg.go.dev/github.com/bmatcuk/doublestar/v4) package to match paths. Each glob is relative to the root of the repository.
+
+**exclude**: The set of globs dictating what code files to exclude and not consider during the check process. This uses the [doublestar](https://pkg.go.dev/github.com/bmatcuk/doublestar/v4) package to match paths. Each glob is relative to the root of the repository.
+
+### Check Documentation
+Determine what documentation should be included in the set of documentation considered. Note that documents and sections must be included and not excluded to be considered when recommending what documentation to update.
+
+```yaml
+check:
+  documentation:
+    include:
+      - source: "my-app"
+        document: "**/*"
+      - source: "**/*"
+        tags:
+          - key: system
+            value: my-app
+      - uri: document://product-docs/**/*
+    exclude:
+      - source: my-app
+        document: README.md
+        section: License
+```
+
+**include**: A set of Documentation Filters (see below) dictating what documentation is in scope of this check.
+
+**exclude**: A set of Documentation Filters (see below) dictating what documentation is not in scope of this check.
+
+### Check Options
+Various options used when checking what documentation needs to be updated based on a code change.
+
+```yaml
+check:
+  options:
+    detectDocumentationUpdates:
+    updateIf:
+```
+
+**detectDocumentationUpdates**: Option to detect documentation updates and mark recommendations as changed.
+
+**updateIf**: Options to link code and documents so that code changes will generate documentation update recommendations based on the configuration.
+
+#### Check Options DetectDocumentationUpdates
+Detect documentation updates and mark recommendations as changed.
+
+```yaml
+check:
+  options:
+    detectDocumentationUpdates:
+      source: my-app
+```
+
+**source**: If set, Hyaline will mark documents and sections as changed if they 1) have the same source and 2) the document was touched as a part of the change being examined (i.e. the document was changed in the diff or the pull request)
+
+#### Check Options UpdateIf
+Configure Hyaline to recommend that documentation be updated if a corresponding file change occurs.
+
+```yaml
+check:
+  options:
+    updateIf:
+      touched: [...]
+      added: [...]
+      modified: [...]
+      deleted: [...]
+      renamed: [...]
+```
+
+**touched**: A list of UpdateIf Entries (see UpdateIf Entry below) detailing that this document should be updated if any matching files are touched (e.g. added, modified, deleted, or renamed).
+
+**added**: A list of UpdateIf Entries (see UpdateIf Entry below) detailing that this document should be updated if any matching files are added (e.g. created or inserted).
+
+**modified**: A list of UpdateIf Entries (see UpdateIf Entry below) detailing that this document should be updated if any matching files are modified (e.g. changed).
+
+**deleted**: A list of UpdateIf Entries (see UpdateIf Entry below) detailing that this document should be updated if any matching files are deleted (e.g. removed).
+
+**renamed**: A list of UpdateIf Entries (see UpdateIf Entry below) detailing that this document should be updated if any matching files are renamed (e.g. moved).
+
+##### **Check Options UpdateIF Entry**
+An entry that specifies that matching documentation should be updated if matching code was changed.
+
+```yaml
+check:
+  options:
+    updateIf:
+      touched: # A list of UpdateIf Entries
+        - code:
+            path: "src/routes.js"
+          documentation: # A Documentation Filter
+            source: "my-app"
+            document: "docs/routes.md"
+```
+
+**code**: The code that triggers the update.
+
+**code.path**: A glob dictating what code files to match. This uses the [doublestar](https://pkg.go.dev/github.com/bmatcuk/doublestar/v4) package to match paths. The glob is relative to the root of the repository.
+
+**documentation**: The Documentation Filter (see below) that determines which documentation to match.
+
+## (Common) Documentation Filter
+A filter to use to select a subset of documentation.
+
+```yaml
+check:
+  documentation:
+    include: # An array of Documentation Filters
+      - source: "my-app"
+      - source: "api"
+        document: "my-app/**/*"
+      - source: "security"
+        document: "frontend.md"
+        section: "my-app"
+      - source: "**/*"
+        tags:
+          - key: system
+            value: my-app
+      - uri: document://product-docs/**/*
+```
+
+**source**: A glob that matches against a document or section's source ID. This uses the [doublestar](https://pkg.go.dev/github.com/bmatcuk/doublestar/v4) package to match paths. Must be set if `uri` is not set.
+
+**document**: A glob that matches against a document or section's document ID. This uses the [doublestar](https://pkg.go.dev/github.com/bmatcuk/doublestar/v4) package to match paths.
+
+**section**: A glob that matches against a section's section ID. This uses the [doublestar](https://pkg.go.dev/github.com/bmatcuk/doublestar/v4) package to match paths.
+
+**tags**: A set of tags to match the document or section against.
+
+**tags[n].key**: A tag key. Must match `/^[A-z0-9][A-z0-9_-]{0,63}$/`
+
+**tags[n].value**: A tag value. Must match `/^[A-z0-9][A-z0-9_-]{0,63}$/`
+
+**uri**: An encoded document URI in the format of `document://<source-id>/<path/of/document.md>#<path/of/section>`. Must start with `document://` and contain at least a source and document glob. Each section (source, document, section) must be a valid [doublestar](https://pkg.go.dev/github.com/bmatcuk/doublestar/v4) glob. Must be set if `source` is not set.
