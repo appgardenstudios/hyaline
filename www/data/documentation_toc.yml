@@ -33,6 +33,8 @@ items:
         url: /documentation-v1/reference/data-set
       - title: Recommendations
         url: /documentation-v1/reference/recommendations
+      - title: Results
+        url: /documentation-v1/reference/results
       - title: MCP
         url: /documentation-v1/reference/mcp
   - title: Roadmap
