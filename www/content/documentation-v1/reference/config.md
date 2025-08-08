@@ -467,8 +467,10 @@ audit:
     - id: "content-exists-check"
       description: "Check that critical documentation exists"
       documentation:
-        - source: "backend"
+        - source: "**/*"
           document: "README.md"
+      ignore:
+        - source: "internal"
       checks:
         content:
           exists: true
