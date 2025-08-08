@@ -16,7 +16,7 @@ if [ "$CURRENT_BRANCH" != "main" ]; then
   exit 1
 fi
 
-# Calculate tag YYYY-MM-DD-HASH
+# Calculate tag v1-YYYY-MM-DD-HASH
 DATE=`git log -n1 --pretty='%cd' --date=format:'%Y-%m-%d'`
 HASH=`git rev-parse --short HEAD`
 TAG="v1-$DATE-$HASH"
