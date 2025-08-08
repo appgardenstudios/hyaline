@@ -98,7 +98,7 @@ Check pull request #1 including context from issues #2 and #3, and save the comb
 ```
 $ hyaline check pr --config ./hyaline.yml --documentation ./documentation.db --pull-request appgardenstudios/hyaline-example/1 --issue appgardenstudios/hyaline-example/2 --issue appgardenstudios/hyaline-example/3 --output-current ./current-recommendations.md
 ```
-Check pull request #1 including context from issues #2 and #3, and save the recommendations from the current run to `./recommendations.md` in addition to commenting on the PR.
+Check pull request #1 including context from issues #2 and #3, and save the recommendations from the current run to `./current-recommendations.md` in addition to commenting on the PR.
 
 ## merge documentation
 `hyaline merge documentation` merges 2 or more documentation data sets into a single output database.
