@@ -473,7 +473,8 @@ audit:
         - source: "internal"
       checks:
         content:
-          exists: true
+        purpose:
+        tags:
 ```
 
 **id**: A unique identifier for the rule. Must match the regex `/^[A-z0-9][A-z0-9_-]{0,63}$/`. If not provided, an auto-generated ID will be assigned (e.g., `_0`, `_1`).
@@ -486,25 +487,7 @@ audit:
 
 **checks**: The validation checks to perform on matching documentation.
 
-#### Audit Rules Checks
-Configure the specific validation checks to perform on matching documentation.
-
-```yaml
-audit:
-  rules:
-    - checks:
-        content:
-        purpose:
-        tags:
-```
-
-**content**: Content-based validation checks.
-
-**purpose**: Purpose-related validation checks.
-
-**tags**: Tag-based validation checks.
-
-##### Audit Rules Checks Content
+#### Audit Rules Checks Content
 Validate the content of documentation.
 
 ```yaml
@@ -529,7 +512,7 @@ audit:
 
 **matches-purpose**: Boolean indicating whether the content should match its defined purpose. Requires the document or section to have a purpose defined.
 
-##### Audit Rules Checks Purpose
+#### Audit Rules Checks Purpose
 Validate that documentation has defined purposes.
 
 ```yaml
@@ -542,7 +525,7 @@ audit:
 
 **exists**: Boolean indicating whether a purpose must be defined for the documentation.
 
-##### Audit Rules Checks Tags
+#### Audit Rules Checks Tags
 Validate the presence of specific tags on documentation.
 
 ```yaml
@@ -559,9 +542,9 @@ audit:
 
 **contains**: A list of tags that must be present on the documentation.
 
-**contains[].key**: The tag key to check for. Uses regex pattern matching.
+**contains[n].key**: The tag key to check for. Uses regex pattern matching.
 
-**contains[].value**: The tag value to check for. Uses regex pattern matching.
+**contains[n].value**: The tag value to check for. Uses regex pattern matching.
 
 ## (Common) Documentation Filter
 A filter to use to select a subset of documentation.
