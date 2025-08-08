@@ -74,6 +74,27 @@ $ hyaline check diff --config ./hyaline.yml --documentation ./documentation.db -
 ```
 Check what documentation in `./documentation.db` should be updated based the changes between the `main` and `feat-1` refs as well as the configuration in `./hyaline.yml`. It takes into account the contents of the pull request `appgardenstudios/hyaline-example/1` and the issues `appgardenstudios/hyaline-example/2` and `appgardenstudios/hyaline-example/3`. The set of recommendations are output to `./recommendations.json`.
 
+## audit documentation
+`hyaline audit documentation` audits documentation against configurable rule checks to ensure compliance with documentation standards.
+
+**Options**:
+* `--config` - (required) Path to the config file
+* `--documentation` - (required) Path to the documentation database (output of `hyaline extract documentation`)
+* `--source` - (optional, multiple allowed) Only audit specific source ID(s). Can be specified multiple times
+* `--output` - (required) Path to write the audit results JSON file (file must not already exist)
+
+**Example**:
+```
+$ hyaline audit documentation --config ./hyaline.yml --documentation ./documentation.db --output ./audit-results.json
+```
+Audit all documentation in `./documentation.db` against the rules defined in `./hyaline.yml` and output the results to `./audit-results.json`.
+
+**Example**:
+```
+$ hyaline audit documentation --config ./hyaline.yml --documentation ./documentation.db --source source1 --source source2 --output ./audit-results.json
+```
+Audit only specific sources (`source1` and `source2`) in `./documentation.db` against the rules defined in `./hyaline.yml` and output the results to `./audit-results.json`.
+
 ## merge documentation
 `hyaline merge documentation` merges 2 or more documentation data sets into a single output database.
 
