@@ -74,7 +74,7 @@ Check what documentation in `./documentation.db` should be updated based on the 
 ```
 $ hyaline check diff --config ./hyaline.yml --documentation ./documentation.db --path ./ --base-ref refs/heads/main --head-ref refs/remotes/origin/feat-1 --pull-request appgardenstudios/hyaline-example/1 --issue appgardenstudios/hyaline-example/2 --issue appgardenstudios/hyaline-example/3 --output ./recommendations.json
 ```
-Check what documentation in `./documentation.db` should be updated based the changes between the `main` and `feat-1` refs as well as the configuration in `./hyaline.yml`. It takes into account the contents of the pull request `appgardenstudios/hyaline-example/1` and the issues `appgardenstudios/hyaline-example/2` and `appgardenstudios/hyaline-example/3`. The set of recommendations are output to `./recommendations.json`.
+Check what documentation in `./documentation.db` should be updated based on the changes between the `main` and `feat-1` refs as well as the configuration in `./hyaline.yml`. It takes into account the contents of the pull request `appgardenstudios/hyaline-example/1` and the issues `appgardenstudios/hyaline-example/2` and `appgardenstudios/hyaline-example/3`. The set of recommendations are output to `./recommendations.json`.
 
 ## check pr
 `hyaline check pr` checks a pull request for issues and adds recommendations as a comment on the PR.
@@ -92,13 +92,13 @@ Check what documentation in `./documentation.db` should be updated based the cha
 ```
 $ hyaline check pr --config ./hyaline.yml --documentation ./documentation.db --pull-request appgardenstudios/hyaline-example/1 --issue appgardenstudios/hyaline-example/2 --issue appgardenstudios/hyaline-example/3 --output ./recommendations.md
 ```
-Check pull request #1 including context from issues #2 and #3, and save the combined recommendations to `./recommendations.md` in addition to commenting on the PR.
+Check what documentation in `./documentation.db` should be updated based on the changes in the pull request `appgardenstudios/hyaline-example/1` as well as the configuration in `./hyaline.yml`. It takes into account the content of the pull request `appgardenstudios/hyaline-example/1` and the issues `appgardenstudios/hyaline-example/2` and `appgardenstudios/hyaline-example/3`. If a comment already exists on the PR, the recommendations from the current run are merged with the recommendations from the previous run, and the comment is updated. Otherwise, a new comment is added with the current recommendations. The set of combined recommendations is output to `./recommendations.json`.
 
 **Example**:
 ```
 $ hyaline check pr --config ./hyaline.yml --documentation ./documentation.db --pull-request appgardenstudios/hyaline-example/1 --issue appgardenstudios/hyaline-example/2 --issue appgardenstudios/hyaline-example/3 --output-current ./current-recommendations.md
 ```
-Check pull request #1 including context from issues #2 and #3, and save the recommendations from the current run to `./current-recommendations.md` in addition to commenting on the PR.
+Check what documentation in `./documentation.db` should be updated based on the changes in the pull request `appgardenstudios/hyaline-example/1` as well as the configuration in `./hyaline.yml`. It takes into account the content of the pull request `appgardenstudios/hyaline-example/1` and the issues `appgardenstudios/hyaline-example/2` and `appgardenstudios/hyaline-example/3`. If a comment already exists on the PR, the recommendations from the current run are merged with the recommendations from the previous run, and the comment is updated. Otherwise, a new comment is added with the current recommendations. The set of recommendations from the current run is output to `./current-recommendations.json`
 
 ## merge documentation
 `hyaline merge documentation` merges 2 or more documentation data sets into a single output database.
