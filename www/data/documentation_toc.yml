@@ -19,6 +19,8 @@ items:
         url: /documentation-v1/explanation/extract
       - title: Check
         url: /documentation-v1/explanation/check
+      - title: Audit
+        url: /documentation-v1/explanation/audit
       - title: Merge
         url: /documentation-v1/explanation/merge
       - title: MCP
