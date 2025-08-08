@@ -173,10 +173,6 @@ func Check(logLevel *slog.LevelVar) *cli.Command {
 						Required: true,
 						Usage:    "Path to write the results to",
 					},
-					&cli.BoolFlag{
-						Name:  "suggest",
-						Usage: "Call the llm to suggest what edits to make to the documentation for each recommended update",
-					},
 				},
 				Action: func(cCtx *cli.Context) error {
 					// Helper function to show help and exit with error

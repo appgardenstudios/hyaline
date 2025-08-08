@@ -7,6 +7,8 @@ items:
         url: /documentation-v1/how-to/install-cli
       - title: Run the CLI
         url: /documentation-v1/how-to/run-cli
+      - title: Check a PR
+        url: /documentation-v1/how-to/check-pr
       - title: Build the CLI
         url: /documentation-v1/how-to/build-cli
       - title: Run the MCP Server
