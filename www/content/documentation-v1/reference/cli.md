@@ -77,7 +77,7 @@ $ hyaline check diff --config ./hyaline.yml --documentation ./documentation.db -
 Check what documentation in `./documentation.db` should be updated based on the changes between the `main` and `feat-1` refs as well as the configuration in `./hyaline.yml`. It takes into account the contents of the pull request `appgardenstudios/hyaline-example/1` and the issues `appgardenstudios/hyaline-example/2` and `appgardenstudios/hyaline-example/3`. The set of recommendations are output to `./recommendations.json`.
 
 ## check pr
-`hyaline check pr` checks a pull request for issues and adds recommendations as a comment on the PR.
+`hyaline check pr` checks a pull request to see what documentation may need to be updated and adds any recommendations as a comment on the PR.
 
 **Options**:
 * `--config` - (required) Path to the config file
