@@ -20,7 +20,7 @@ The results of this audit, including the results of all checks that were preform
 </div>
 
 ## Rules
-Hyaline uses audit rules defined in the configuration file to determine what documentation to audit and what checks to perform. Each rule can target specific documentation using filters and apply multiple types of validation checks.
+Hyaline uses audit rules defined in the configuration file to determine what documentation to audit and what checks to perform. You can define multiple rules, and each rule can target specific documentation using filters and apply multiple checks.
 
 <div class="code-example">
 
@@ -46,7 +46,7 @@ audit:
 In the example above, the audit rule `content-exists-check` targets the `README.md` document for all sources except for `internal` and performs three checks: verify the content exists, ensure it meets a minimum length of 100 characters, and confirm a purpose is defined.
 
 ## Checks
-Hyaline supports several types of checks that can be applied to documentation. These checks fall into three categories: "content checks" for validating documentation structure and content, "purpose checks" for ensuring documentation purposes are correct, and "tag checks" for verifying documentation has the right tags.
+Hyaline supports several types of checks that can be applied to documentation. These checks fall into three categories: "content checks" for validating documentation structure and content, "purpose checks" for ensuring documentation purposes are correct, and "tag checks" for verifying documents and sections have the right tags.
 
 ### Content Checks
 Content checks validate the existence, structure, and content of documentation.
@@ -93,7 +93,7 @@ audit:
 
 </div>
 
-This example ensures all markdown files in the "api" source contain at least 500 characters. Documents shorter than this will fail the check.
+This example ensures all markdown files in the "api" source contain at least 500 characters. Documentation shorter than this will fail the check.
 
 #### Content Matches Regex
 Validates documentation content against a regular expression pattern. This is useful for ensuring specific information or formatting is present.
@@ -115,7 +115,7 @@ audit:
 
 </div>
 
-This example verifies that README files contain installation-related keywords (case-insensitive). The check fails if none of the specified terms are found.
+This example verifies that README files contain installation-related keywords (case-insensitive). Documentation that doesn't match the regex will fail the check.
 
 #### Content Matches Prompt
 Uses an LLM to validate content against a custom prompt or criteria. This provides flexible validation for complex requirements that cannot be expressed with simple rules.
@@ -159,7 +159,7 @@ audit:
 
 </div>
 
-This example verifies that the actual content of each document aligns with its stated purpose. The LLM evaluates whether the documentation fulfills its intended function.
+This example uses an LLM to verify that the actual content of each document aligns with its stated purpose. The LLM provides a reason for its pass/fail decision.
 
 ### Purpose Checks
 Purpose checks ensure that documentation has a defined purpose. Purposes help ensure documentation serves a clear function and can be maintained effectively.
@@ -184,13 +184,13 @@ audit:
 
 </div>
 
-This example ensures all markdown files have a defined purpose. Documents without a purpose statement will fail this check.
+This example ensures all markdown files have a defined purpose. Documentation without a purpose statement will fail this check.
 
 ### Tag Checks
 Tag checks validate the presence and values of metadata tags on documentation. Tags are used for categorization, compliance tracking, and filtering, making these checks essential for maintaining organized and compliant documentation.
 
 #### Tags Contains
-Validates that required tags are present on documentation. Tags provide metadata that can be used for categorization, compliance tracking, and automated processing.
+Validates that required tags are present on documentation. Tag keys and values can be specified as a regex pattern.
 
 <div class="code-example">
 
