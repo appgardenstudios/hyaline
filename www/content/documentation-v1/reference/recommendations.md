@@ -1,12 +1,12 @@
 ---
 title: "Reference: Recommendations"
-description: JSON output format for recommendations produced by the check diff command
-purpose: Detail the JSON output format for recommendations produced by the check diff command
+description: JSON output format for recommendations produced by the check diff and check pr commands
+purpose: Detail the JSON output format for recommendations produced by the check diff and check pr commands
 sitemap:
   disable: true
 ---
 ## Overview
-This documents the recommendations produced by the `check diff` command.
+This documents the recommendations produced by the `check diff` and `check pr` commands.
 
 ## JSON Format
 ```js

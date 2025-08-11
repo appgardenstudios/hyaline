@@ -1,3 +1,7 @@
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
 @source "hugo_stats.json";
+
+pre {
+  border-radius: 0;
+}

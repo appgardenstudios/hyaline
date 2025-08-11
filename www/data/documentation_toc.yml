@@ -21,6 +21,8 @@ items:
         url: /documentation-v1/explanation/extract
       - title: Check
         url: /documentation-v1/explanation/check
+      - title: Audit
+        url: /documentation-v1/explanation/audit
       - title: Merge
         url: /documentation-v1/explanation/merge
       - title: MCP
@@ -35,6 +37,8 @@ items:
         url: /documentation-v1/reference/data-set
       - title: Recommendations
         url: /documentation-v1/reference/recommendations
+      - title: Audit Results
+        url: /documentation-v1/reference/audit-results
       - title: GitHub Actions
         url: /documentation-v1/reference/github-actions
       - title: MCP
