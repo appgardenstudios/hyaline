@@ -176,6 +176,8 @@ When Hyaline performs a check on a diff or PR it collects all of the relevant co
 
 Once Hyaline has generated a set of recommendations they can either be output as a JSON file (using the `--output` option) or added as a comment to the pull request (only available for `hyaline check pr`).
 
+For `hyaline check pr`, the `--output` option outputs the combined recommendations of the current run and previous run (if there is one). This is the same set of recommendations that is added as a comment to the pull request. In order to output the recommendations from the current `hyaline check pr` run, you can provide the `--output-current` option. Similarly, the previous recommendations can be output by providing the `--output-previous` option.
+
 The schema for the recommendations output can be viewed [here](../reference/recommendations.md).
 
 The comment on the pull request contains the following:

@@ -7,6 +7,8 @@ items:
         url: /documentation-v1/how-to/install-cli
       - title: Run the CLI
         url: /documentation-v1/how-to/run-cli
+      - title: Check a PR
+        url: /documentation-v1/how-to/check-pr
       - title: Build the CLI
         url: /documentation-v1/how-to/build-cli
       - title: Run the MCP Server
@@ -37,6 +39,8 @@ items:
         url: /documentation-v1/reference/recommendations
       - title: Audit Results
         url: /documentation-v1/reference/audit-results
+      - title: GitHub Actions
+        url: /documentation-v1/reference/github-actions
       - title: MCP
         url: /documentation-v1/reference/mcp
   - title: Roadmap
