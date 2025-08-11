@@ -1,3 +1,37 @@
+extract:
+  source:
+    id: backend
+    description: Backend documentation source for audit testing
+    root: ../.vscode/hyaline/audit-documentation/docs
+
+  crawler:
+    type: fs
+    options:
+      path: ../.vscode/hyaline/audit-documentation/docs
+    include:
+      - "*.md"
+    exclude:
+      - "node_modules/**"
+
+  extractors:
+    - type: md
+      include:
+        - "*.md"
+
+  metadata:
+    - document: "README.md"
+      purpose: "This document provides an overview of the project and installation instructions."
+      tags:
+        - key: "type"
+          value: "guide"
+        - key: "level"
+          value: "beginner"
+    - document: "CHANGELOG.md" 
+      purpose: "This document tracks all changes and releases."
+      tags:
+        - key: "type"
+          value: "reference"
+
 audit:
   rules:
     - id: "content-exists-check"

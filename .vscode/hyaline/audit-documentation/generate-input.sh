@@ -6,7 +6,7 @@ set -e  # Exit on any error
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 CLI_DIR="$(cd "$SCRIPT_DIR/../../../" && pwd)"
 
-echo "Generating input databases for audit documentation e2e tests..."
+echo "Generating input databases for audit documentation launch config tests..."
 
 cd "$CLI_DIR"
 
