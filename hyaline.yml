@@ -17,7 +17,13 @@ extract:
       branch: origin/main
     include:
       - "www/content/documentation-v1/**/*.md"
+      - "www/content/about.md"
+      - "www/content/security.md"
       - "cli/**/*.md"
+    exclude:
+      - "cli/_example/**/*"
+      - "cli/e2e/**/*"
+      - "cli/internal/**/*"
   extractors:
     - type: md
       include:
@@ -28,6 +34,8 @@ extract:
       tags:
         - key: component
           value: cli
+
+    # cli - README.md
     - document: "cli/README.md"
       purpose: "Provide a high-level introduction of the Hyaline CLI and provide guidance for developing, testing, running, and releasing Hyaline."
     - document: "cli/README.md"
@@ -52,7 +60,38 @@ extract:
         - key: component
           value: www
 
-    # www - root documents
+    # www - root
+    - document: "www/content/about.md"
+      purpose: "Provide an overview of Hyaline and its purpose"
+    - document: "www/content/about.md"
+      section: "About Hyaline/What is Hyaline?"
+      purpose: "Explain what Hyaline is and its main features"
+    
+    - document: "www/content/security.md"
+      purpose: "Provide an overview of the security practices and policies of Hyaline"
+    - document: "www/content/security.md"
+      section: "Security/Data Privacy"
+      purpose: "Explain how Hyaline handles data privacy"
+    - document: "www/content/security.md"
+      section: "Security/Local Operation"
+      purpose: "Explain the operations that Hyaline performs locally"
+    - document: "www/content/security.md"
+      section: "Security/Network Communications"
+      purpose: "Document what types of network communications Hyaline performs"
+    - document: "www/content/security.md"
+      section: "Security/File System Access"
+      purpose: "Document Hyaline's file system access requirements"
+    - document: "www/content/security.md"
+      section: "Security/Authentication & Secrets"
+      purpose: "Explain the types of authentication Hyaline uses and how secrets should be managed"
+    - document: "www/content/security.md"
+      section: "Security/MCP Server"
+      purpose: "Document the security aspects of the MCP server"
+    - document: "www/content/security.md"
+      section: "Security/Reporting Security Issues"
+      purpose: "Provide contact information for reporting security vulnerabilities"
+
+    # www - documentation - root
     - document: "www/content/documentation-v1/overview.md"
       purpose: "Give an overview of Hyaline and the documentation"
     - document: "www/content/documentation-v1/getting-started.md"
@@ -60,7 +99,7 @@ extract:
     - document: "www/content/documentation-v1/roadmap.md"
       purpose: "Explain at a high level what is coming for Hyaline"
 
-    # www - how to
+    # www - documentation - how to
     - document: "www/content/documentation-v1/how-to/install-cli.md"
       purpose: "Document how to install the Hyaline CLI"
     - document: "www/content/documentation-v1/how-to/build-cli.md"
@@ -72,7 +111,7 @@ extract:
     - document: "www/content/documentation-v1/how-to/check-pr.md"
       purpose: "How to check a PR using the Hyaline CLI"
 
-    # www - explanation
+    # www - documentation - explanation
     - document: "www/content/documentation-v1/explanation/hyaline.md"
       purpose: "Explain the overall data flow and architecture of Hyaline"
     - document: "www/content/documentation-v1/explanation/extract.md"
@@ -86,7 +125,7 @@ extract:
     - document: "www/content/documentation-v1/explanation/mcp.md"
       purpose: "Explain how Hyaline's MCP server works"
 
-    # www - reference
+    # www - documentation - reference
     - document: "www/content/documentation-v1/reference/cli.md"
       purpose: "Detail each command/sub-command of the Hyaline CLI"
     - document: "www/content/documentation-v1/reference/config.md"
