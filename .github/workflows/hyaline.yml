@@ -10,22 +10,14 @@ jobs:
     permissions:
       pull-requests: write
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
       - name: Setup Hyaline
-        uses: appgardenstudios/hyaline-actions/setup@v0
-      - name: Print Hyaline version
-        run: hyaline version
+        uses: appgardenstudios/hyaline-actions/setup@v1
       - name: Check PR
-        uses: appgardenstudios/hyaline-actions/check-pr@v0
+        uses: appgardenstudios/hyaline-actions/check-pr@v1
         with:
           config: ./hyaline.yml
-          system: hyaline
           repository: ${{ github.repository }}
           pr_number: ${{ github.event.pull_request.number }}
-          github_token: ${{ secrets.GITHUB_TOKEN }}
         env:
           # Set env vars needed by the hyaline CLI when interpolating the hyaline config
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

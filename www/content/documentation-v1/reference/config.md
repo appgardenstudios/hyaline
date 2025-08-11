@@ -16,7 +16,7 @@ Hyaline has the ability to pull configuration values from environment variables.
 ```yaml
 llm:
   provider: anthropic
-  model: claude-3-5-sonnet-20241022
+  model: claude-sonnet-4-20250514
   key: ${HYALINE_ANTHROPIC_KEY}
 
 github:
