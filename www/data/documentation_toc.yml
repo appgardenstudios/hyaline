@@ -35,6 +35,8 @@ items:
         url: /documentation-v1/reference/data-set
       - title: Recommendations
         url: /documentation-v1/reference/recommendations
+      - title: GitHub Actions
+        url: /documentation-v1/reference/github-actions
       - title: MCP
         url: /documentation-v1/reference/mcp
   - title: Roadmap
