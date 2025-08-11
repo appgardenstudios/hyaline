@@ -136,7 +136,7 @@
     },{
       "label": "audit-documentation",
       "type": "shell",
-      "command": "rm -f ../.vscode/hyaline/audit-documentation/recommendations.json",
+      "command": "rm -f ../.vscode/hyaline/audit-documentation/results.json",
       "options":{
         "cwd": "${workspaceFolder}/cli/"
       },

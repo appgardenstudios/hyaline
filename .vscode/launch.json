@@ -395,7 +395,7 @@
         "audit", "documentation",
         "--config", "../.vscode/hyaline/audit-documentation/hyaline.yml",
         "--documentation", "../.vscode/hyaline/audit-documentation/documentation.sqlite",
-        "--output", "../.vscode/hyaline/audit-documentation/recommendations.json"
+        "--output", "../.vscode/hyaline/audit-documentation/results.json"
       ]
     },
   ]
