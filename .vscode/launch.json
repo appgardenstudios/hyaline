@@ -381,6 +381,22 @@
         "--pull-request", "appgardenstudios/hyaline-example/11",
         "--output", "../.vscode/hyaline/check-pr-update-comment/recommendations.json"
       ]
+    },{
+      "name": "Audit Documentation",
+      "type": "go",
+      "request": "launch",
+      "mode": "debug",
+      "preLaunchTask": "audit-documentation",
+      "cwd": "${workspaceFolder}/cli/",
+      "program": "${workspaceFolder}/cli/cmd/hyaline.go",
+      "envFile": "${workspaceFolder}/cli/.env",
+      "args":[
+        "--debug",
+        "audit", "documentation",
+        "--config", "../.vscode/hyaline/audit-documentation/hyaline.yml",
+        "--documentation", "../.vscode/hyaline/audit-documentation/documentation.sqlite",
+        "--output", "../.vscode/hyaline/audit-documentation/recommendations.json"
+      ]
     },
   ]
 }
