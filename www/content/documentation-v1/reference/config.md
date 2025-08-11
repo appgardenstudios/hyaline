@@ -502,15 +502,15 @@ audit:
           matches-purpose: true
 ```
 
-**exists**: Boolean indicating whether the content must exist. When true, the check passes if at least one document or section matches the documentation filters.
+**exists**: Boolean indicating whether the content must exist. When true, the check passes if at least one document or section matches the documentation filters. When false or not set, this check is disabled.
 
-**min-length**: Minimum required content length in characters. The check fails if the content is shorter than this value.
+**min-length**: Minimum required content length in characters. The check fails if the content is shorter than this value. When not set, this check is disabled.
 
-**matches-regex**: A regular expression pattern that the content must match.
+**matches-regex**: A regular expression pattern that the content must match. When not set, this check is disabled.
 
-**matches-prompt**: An LLM prompt to evaluate against the content. The LLM will assess whether the content satisfies the prompt's criteria.
+**matches-prompt**: An LLM prompt to evaluate against the content. The LLM will assess whether the content satisfies the prompt's criteria. When not set, this check is disabled.
 
-**matches-purpose**: Boolean indicating whether the content should match its defined purpose. Requires the document or section to have a purpose defined.
+**matches-purpose**: Boolean indicating whether the content should match its defined purpose. Requires the document or section to have a purpose defined. When false or not set, this check is disabled.
 
 #### Audit Rules Checks Purpose
 Validate that documentation has defined purposes.
@@ -523,7 +523,7 @@ audit:
           exists: true
 ```
 
-**exists**: Boolean indicating whether a purpose must be defined for the documentation.
+**exists**: Boolean indicating whether a purpose must be defined for the documentation. When false or not set, this check is disabled.
 
 #### Audit Rules Checks Tags
 Validate the presence of specific tags on documentation.
@@ -540,7 +540,7 @@ audit:
               value: "beginner"
 ```
 
-**contains**: A list of tags that must be present on the documentation.
+**contains**: A list of tags that must be present on the documentation. When set, the check passes if documentation has all of the listed tags. When not set, this check is disabled.
 
 **contains[n].key**: The tag key to check for. Uses regex pattern matching.
 

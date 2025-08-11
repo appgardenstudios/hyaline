@@ -35,8 +35,8 @@ items:
         url: /documentation-v1/reference/data-set
       - title: Recommendations
         url: /documentation-v1/reference/recommendations
-      - title: Results
-        url: /documentation-v1/reference/results
+      - title: Audit Results
+        url: /documentation-v1/reference/audit-results
       - title: MCP
         url: /documentation-v1/reference/mcp
   - title: Roadmap
