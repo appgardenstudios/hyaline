@@ -22,6 +22,7 @@ extract:
       - "cli/**/*.md"
     exclude:
       - "cli/_example/**/*"
+      - "cli/benchmarks/**/*"
       - "cli/e2e/**/*"
       - "cli/internal/**/*"
   extractors:
