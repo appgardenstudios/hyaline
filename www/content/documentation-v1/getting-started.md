@@ -12,7 +12,7 @@ Welcome to Hyaline (pronounced "HIGH-uh-leen"), a documentation tool that helps 
 In this guide, you'll learn how to:
 - Install the Hyaline CLI
 - Create a basic configuration file
-- Extract your current documentation
+- Extract your documentation
 - Set up the MCP server for AI integration
 
 ## Prerequisites
@@ -103,9 +103,9 @@ extract:
 
 Note that the above configuration is for a simple example, but Hyaline can be configured to extract documentation from multiple systems and sources (e.g. websites, remote git repositories). For complete configuration options and details, see the [Configuration Reference](./reference/config.md).
 
-## Step 3: Extract Current Documentation
+## Step 3: Extract Documentation
 
-Now let's extract your current documentation into a data set (note that you will need to run this from the root of the documentation source):
+Now let's extract your documentation into a data set (note that you will need to run this from the root of the documentation source):
 
 ```bash
 $ hyaline extract documentation \
@@ -118,13 +118,13 @@ This command will:
 - Extract and process them according to the defined extractors
 - Store everything in a SQLite database (`documentation.db`)
 
-For more details on how extraction works, see [Explanation: Extract Current](./explanation/extract.md).
+For more details on how extraction works, see [Explanation: Extract](./explanation/extract.md).
 
 ## Step 4: Set Up MCP Server
 
 To make your documentation available to AI assistants like Claude:
 
-1. **Extract current documentation** (if not already done):
+1. **Extract documentation** (if not already done):
    ```bash
    hyaline extract documentation --config ./hyaline.yml --output ./documentation.db
    ```

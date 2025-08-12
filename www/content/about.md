@@ -1,6 +1,6 @@
 ---
-title: "About Hyaline"
-purpose: "Provide an overview of Hyaline and its purpose"
+title: About Hyaline
+purpose: Provide an overview of Hyaline and its purpose
 ---
 
 # About Hyaline

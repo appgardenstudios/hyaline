@@ -1,5 +1,6 @@
 ---
-title: "Security"
+title: Security
+purpose: Provide an overview of the security practices and policies of Hyaline
 ---
 
 # Security
