@@ -19,7 +19,7 @@ enableGitInfo = true
     source = 'assets'
     target = 'assets'
   [[module.mounts]]
-    includeFiles = ['/documentation/**.svg','/documentation/**.png', '/documentation-v1/**.svg','/documentation-v1/**.png', '/articles/**.svg','/articles/**.png']
+    includeFiles = ['/documentation/**.svg','/documentation/**.png', '/articles/**.svg','/articles/**.png']
     source = 'content'
     target = 'assets'
   [[module.mounts]]
