@@ -1,49 +1,49 @@
 items:
   - title: Overview
-    url: /documentation-v1/overview
+    url: /documentation/overview
   - title: Getting Started
-    url: /documentation-v1/getting-started
+    url: /documentation/getting-started
   - title: How To
     items:
       - title: Install the CLI
-        url: /documentation-v1/how-to/install-cli
+        url: /documentation/how-to/install-cli
       - title: Run the CLI
-        url: /documentation-v1/how-to/run-cli
+        url: /documentation/how-to/run-cli
       - title: Check a PR
-        url: /documentation-v1/how-to/check-pr
+        url: /documentation/how-to/check-pr
       - title: Build the CLI
-        url: /documentation-v1/how-to/build-cli
+        url: /documentation/how-to/build-cli
       - title: Run the MCP Server
-        url: /documentation-v1/how-to/run-mcp
+        url: /documentation/how-to/run-mcp
   - title: Explanation
     items:
       - title: Hyaline
-        url: /documentation-v1/explanation/hyaline
+        url: /documentation/explanation/hyaline
       - title: Extract
-        url: /documentation-v1/explanation/extract
+        url: /documentation/explanation/extract
       - title: Check
-        url: /documentation-v1/explanation/check
+        url: /documentation/explanation/check
       - title: Audit
-        url: /documentation-v1/explanation/audit
+        url: /documentation/explanation/audit
       - title: Merge
-        url: /documentation-v1/explanation/merge
+        url: /documentation/explanation/merge
       - title: MCP
-        url: /documentation-v1/explanation/mcp
+        url: /documentation/explanation/mcp
   - title: Reference
     items:
       - title: Config
-        url: /documentation-v1/reference/config
+        url: /documentation/reference/config
       - title: CLI
-        url: /documentation-v1/reference/cli
+        url: /documentation/reference/cli
       - title: Data Set
-        url: /documentation-v1/reference/data-set
+        url: /documentation/reference/data-set
       - title: Recommendations
-        url: /documentation-v1/reference/recommendations
+        url: /documentation/reference/recommendations
       - title: Audit Results
-        url: /documentation-v1/reference/audit-results
+        url: /documentation/reference/audit-results
       - title: GitHub Actions
-        url: /documentation-v1/reference/github-actions
+        url: /documentation/reference/github-actions
       - title: MCP
-        url: /documentation-v1/reference/mcp
+        url: /documentation/reference/mcp
   - title: Roadmap
-    url: /documentation-v1/roadmap
+    url: /documentation/roadmap

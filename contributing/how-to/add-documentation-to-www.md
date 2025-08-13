@@ -12,19 +12,19 @@ Example structure:
 ```yaml
 items:
   - title: Overview
-    url: /documentation-v1/overview # an item can have a link
+    url: /documentation/overview # an item can have a link
   - title: How To # an item does not have to have a link
     items: # an item can have sub-items
       - title: Install the CLI
-        url: /documentation-v1/how-to/install-cli
+        url: /documentation/how-to/install-cli
       - title: Run the CLI
-        url: /documentation-v1/how-to/run-cli
+        url: /documentation/how-to/run-cli
   - title: Reference
     items:
       - title: CLI
-        url: /documentation-v1/reference/cli
+        url: /documentation/reference/cli
   - title: Roadmap
-    url: /documentation-v1/roadmap
+    url: /documentation/roadmap
 ```
 
 To add a new documentation page:
