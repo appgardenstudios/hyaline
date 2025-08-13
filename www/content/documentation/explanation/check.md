@@ -183,8 +183,8 @@ The comment on the pull request contains the following:
 - The Git SHA of the commit that was compared
 - A list of recommendations where each one has:
   - A checkbox used to indicate that the recommendation for the document/section has been addressed
-  - The name the document (and section if applicable)
-  - The system and documentation source name
+  - The name of the document (and section if applicable)
+  - The documentation source name
   - The list of reasons the documentation should be updated
 
 </div>
