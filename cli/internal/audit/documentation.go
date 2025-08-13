@@ -88,7 +88,7 @@ func Documentation(cfg *config.Config, db *sqlite.Queries, sources []string) ([]
 	for i, configRule := range cfg.Audit.Rules {
 		// Create a copy of the rule to avoid modifying the original config
 		rule := configRule
-		
+
 		// Set default ID if not provided
 		if rule.ID == "" {
 			rule.ID = "_" + strconv.Itoa(i)

@@ -111,7 +111,6 @@ func documentIsIncluded(documentID string, sourceID string, tags []FilteredTag, 
 	return isIncluded
 }
 
-
 func sectionIsIncluded(sectionID string, documentID string, sourceID string, tags []FilteredTag, cfg *config.CheckDocumentation) bool {
 	isIncluded := false
 
@@ -134,7 +133,6 @@ func sectionIsIncluded(sectionID string, documentID string, sourceID string, tag
 
 	return isIncluded
 }
-
 
 func tagMatches(tags []FilteredTag, filterTags []config.DocumentationFilterTag) bool {
 	// If there are no filter tags we always match

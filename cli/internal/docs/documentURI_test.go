@@ -74,10 +74,10 @@ func TestDocumentURI_String_Section(t *testing.T) {
 
 func TestNewDocumentURI(t *testing.T) {
 	tests := []struct {
-		name           string
-		uriStr         string
-		expectedURI    *DocumentURI
-		expectedError  bool
+		name          string
+		uriStr        string
+		expectedURI   *DocumentURI
+		expectedError bool
 	}{
 		{
 			name:   "basic document URI",
@@ -111,19 +111,19 @@ func TestNewDocumentURI(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			result, err := NewDocumentURI(tt.uriStr)
-			
+
 			if tt.expectedError {
 				if err == nil {
 					t.Errorf("NewDocumentURI() expected error but got none")
 				}
 				return
 			}
-			
+
 			if err != nil {
 				t.Errorf("NewDocumentURI() unexpected error: %v", err)
 				return
 			}
-			
+
 			if result.SourceID != tt.expectedURI.SourceID {
 				t.Errorf("SourceID = %v, expected %v", result.SourceID, tt.expectedURI.SourceID)
 			}

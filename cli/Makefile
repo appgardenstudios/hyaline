@@ -210,6 +210,10 @@ benchmark-prompts:
 release:
 	./scripts/release.sh
 
+.PHONY: git-hooks
+git-hooks:
+	cp scripts/hooks/* ../.git/hooks/
+
 .PHONY: release-v1
 release-v1:
 	./scripts/release-v1.sh

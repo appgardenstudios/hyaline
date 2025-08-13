@@ -362,7 +362,7 @@ type CheckOptionsUpdateIf struct {
 }
 
 type CheckOptionsUpdateIfEntry struct {
-	Code          CheckCodeFilter          `yaml:"code,omitempty"`
+	Code          CheckCodeFilter     `yaml:"code,omitempty"`
 	Documentation DocumentationFilter `yaml:"documentation,omitempty"`
 }
 
@@ -408,7 +408,6 @@ type AuditRule struct {
 	Ignore        []DocumentationFilter `yaml:"ignore,omitempty"`
 	Checks        AuditChecks           `yaml:"checks,omitempty"`
 }
-
 
 type AuditChecks struct {
 	Content AuditContentChecks `yaml:"content,omitempty"`
