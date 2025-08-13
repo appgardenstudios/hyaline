@@ -11,8 +11,9 @@ These guides are intended for contributors and maintainers working on Hyaline.
 
 ## Setup
 
-After cloning the repository, run the setup script to setup the development environment, including installing git hooks:
+After cloning the repository, install git hooks from the `cli` directory:
 
 ```sh
-$ ./scripts/setup.sh
+$ cd cli
+$ make git-hooks
 ```
