@@ -45,9 +45,7 @@ func main() {
 			hyaline.Audit(logLevel),
 			hyaline.Check(logLevel),
 			hyaline.Extract(logLevel),
-			hyaline.Generate(logLevel),
 			hyaline.Merge(logLevel),
-			hyaline.MCP(logLevel, Version),
 			hyaline.Serve(logLevel, Version),
 		},
 	}
