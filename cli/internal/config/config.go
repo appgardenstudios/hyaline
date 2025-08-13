@@ -82,19 +82,19 @@ func (s *System) GetDocumentationSource(id string) (doc DocumentationSource, fou
 }
 
 type Extractor struct {
-	Type    ExtractorType    `yaml:"type,omitempty"`
-	Options ExtractorOptions `yaml:"options,omitempty"`
-	Include []string         `yaml:"include,omitempty"`
-	Exclude []string         `yaml:"exclude,omitempty"`
+	Type    CrawlerType    `yaml:"type,omitempty"`
+	Options CrawlerOptions `yaml:"options,omitempty"`
+	Include []string       `yaml:"include,omitempty"`
+	Exclude []string       `yaml:"exclude,omitempty"`
 }
 
-type ExtractorType string
+type CrawlerType string
 
-func (e ExtractorType) String() string {
+func (e CrawlerType) String() string {
 	return string(e)
 }
 
-func (e ExtractorType) IsValidCodeExtractor() bool {
+func (e CrawlerType) IsValidCodeExtractor() bool {
 	switch e {
 	case ExtractorTypeFs, ExtractorTypeGit:
 		return true
@@ -103,7 +103,7 @@ func (e ExtractorType) IsValidCodeExtractor() bool {
 	}
 }
 
-func (e ExtractorType) IsValidDocExtractor() bool {
+func (e CrawlerType) IsValidDocExtractor() bool {
 	switch e {
 	case ExtractorTypeFs, ExtractorTypeGit, ExtractorTypeHttp:
 		return true
@@ -112,7 +112,7 @@ func (e ExtractorType) IsValidDocExtractor() bool {
 	}
 }
 
-func (e ExtractorType) IsValid() bool {
+func (e CrawlerType) IsValid() bool {
 	switch e {
 	case ExtractorTypeFs, ExtractorTypeGit, ExtractorTypeHttp:
 		return true
@@ -121,18 +121,18 @@ func (e ExtractorType) IsValid() bool {
 	}
 }
 
-func (e ExtractorType) PossibleValues() string {
+func (e CrawlerType) PossibleValues() string {
 	return fmt.Sprintf("%s, %s, %s", ExtractorTypeFs, ExtractorTypeGit, ExtractorTypeHttp)
 }
 
 const (
-	ExtractorTypeFs   ExtractorType = "fs"
-	ExtractorTypeGit  ExtractorType = "git"
-	ExtractorTypeHttp ExtractorType = "http"
+	ExtractorTypeFs   CrawlerType = "fs"
+	ExtractorTypeGit  CrawlerType = "git"
+	ExtractorTypeHttp CrawlerType = "http"
 )
 
 // Note: there should be a better way rather than crunching everything together
-type ExtractorOptions struct {
+type CrawlerOptions struct {
 	Path    string            `yaml:"path,omitempty"`
 	Repo    string            `yaml:"repo,omitempty"`
 	Branch  string            `yaml:"branch,omitempty"`
@@ -172,12 +172,12 @@ type CodeSource struct {
 }
 
 type DocumentationSource struct {
-	ID               string                     `yaml:"id,omitempty"`
-	Type             DocType                    `yaml:"type,omitempty"`
-	Options          DocumentationSourceOptions `yaml:"options,omitempty"`
-	Extractor        Extractor                  `yaml:"extractor,omitempty"`
-	IncludeDocuments []string                   `yaml:"includeDocuments,omitempty"`
-	Documents        []Document                 `yaml:"documents,omitempty"`
+	ID               string           `yaml:"id,omitempty"`
+	Type             ExtractorType    `yaml:"type,omitempty"`
+	Options          ExtractorOptions `yaml:"options,omitempty"`
+	Extractor        Extractor        `yaml:"extractor,omitempty"`
+	IncludeDocuments []string         `yaml:"includeDocuments,omitempty"`
+	Documents        []Document       `yaml:"documents,omitempty"`
 }
 
 func (d *DocumentationSource) GetDocuments(c *Config) (documents []Document) {
@@ -225,13 +225,13 @@ func (d *DocumentationSource) GetDocument(c *Config, path string) (document Docu
 	return
 }
 
-type DocType string
+type ExtractorType string
 
-func (dt DocType) String() string {
+func (dt ExtractorType) String() string {
 	return string(dt)
 }
 
-func (dt DocType) IsValid() bool {
+func (dt ExtractorType) IsValid() bool {
 	switch dt {
 	case DocTypeMarkdown, DocTypeHTML:
 		return true
@@ -240,16 +240,16 @@ func (dt DocType) IsValid() bool {
 	}
 }
 
-func (dt DocType) PossibleValues() string {
+func (dt ExtractorType) PossibleValues() string {
 	return fmt.Sprintf("%s, %s", DocTypeMarkdown, DocTypeHTML)
 }
 
 const (
-	DocTypeMarkdown DocType = "md"
-	DocTypeHTML     DocType = "html"
+	DocTypeMarkdown ExtractorType = "md"
+	DocTypeHTML     ExtractorType = "html"
 )
 
-type DocumentationSourceOptions struct {
+type ExtractorOptions struct {
 	Selector string `yaml:"selector,omitempty"`
 }
 
@@ -303,17 +303,17 @@ type ExtractSource struct {
 }
 
 type ExtractCrawler struct {
-	Type    ExtractorType    `yaml:"type,omitempty"`    // TODO rename ExtractorType to CrawlerType during cleanup in #206
-	Options ExtractorOptions `yaml:"options,omitempty"` // TODO rename ExtractorOptions to CrawlerOptions during cleanup in #206
-	Include []string         `yaml:"include,omitempty"`
-	Exclude []string         `yaml:"exclude,omitempty"`
+	Type    CrawlerType    `yaml:"type,omitempty"`
+	Options CrawlerOptions `yaml:"options,omitempty"`
+	Include []string       `yaml:"include,omitempty"`
+	Exclude []string       `yaml:"exclude,omitempty"`
 }
 
 type ExtractExtractor struct {
-	Type    DocType                    `yaml:"type,omitempty"`    // TODO rename DocType to ExtractorType during cleanup in #206
-	Options DocumentationSourceOptions `yaml:"options,omitempty"` // TODO rename DocumentationSourceOptions to ExtractorOptions during cleanup in #206
-	Include []string                   `yaml:"include,omitempty"`
-	Exclude []string                   `yaml:"exclude,omitempty"`
+	Type    ExtractorType    `yaml:"type,omitempty"`
+	Options ExtractorOptions `yaml:"options,omitempty"`
+	Include []string         `yaml:"include,omitempty"`
+	Exclude []string         `yaml:"exclude,omitempty"`
 }
 
 type ExtractMetadata struct {
