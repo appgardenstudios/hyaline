@@ -4,11 +4,9 @@ description: "Current development focus and upcoming features planned for Hyalin
 purpose: Explain at a high level what is coming for Hyaline
 ---
 ## Main Focus
-* Shipping a general release and gathering feedback
+* Gathering and responding to feedback
+* Implementing centralized configuration
 
 ## Up Next
-* React to feedback
+* Improving the onboarding experience
 * Recommendation refinements
-* Improve the onboarding experience
-* Support for products/process documentation
-* Implement a centralized server
