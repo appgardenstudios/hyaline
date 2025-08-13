@@ -1,6 +1,8 @@
 items:
   - title: Overview
     url: /documentation-v1/overview
+  - title: Getting Started
+    url: /documentation-v1/getting-started
   - title: How To
     items:
       - title: Install the CLI
