@@ -19,12 +19,7 @@ extract:
       - "www/content/documentation-v1/**/*.md"
       - "www/content/about.md"
       - "www/content/security.md"
-      - "cli/**/*.md"
-    exclude:
-      - "cli/_example/**/*"
-      - "cli/benchmarks/**/*"
-      - "cli/e2e/**/*"
-      - "cli/internal/**/*"
+      - "cli/README.md"
   extractors:
     - type: md
       include:
