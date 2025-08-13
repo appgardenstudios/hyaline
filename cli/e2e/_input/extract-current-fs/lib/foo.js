@@ -1,1 +1,0 @@
-/** Contents of lib/foo.js */
