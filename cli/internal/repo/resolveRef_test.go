@@ -76,7 +76,6 @@ func setupTestRepo(t *testing.T) (*git.Repository, plumbing.Hash) {
 func TestResolveAlias(t *testing.T) {
 	r, hash := setupTestRepo(t)
 
-
 	// Test resolving already qualified reference
 	resolved, err := ResolveAlias(r, "refs/heads/main")
 	if err != nil {

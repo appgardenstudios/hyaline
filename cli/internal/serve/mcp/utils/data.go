@@ -9,7 +9,6 @@ import (
 	"log/slog"
 )
 
-
 type Source struct {
 	sqlite.SOURCE
 	Documents []Document

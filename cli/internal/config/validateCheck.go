@@ -91,4 +91,3 @@ func validateCheckCodeFilter(location string, filter CheckCodeFilter) error {
 
 	return nil
 }
-
