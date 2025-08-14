@@ -16,10 +16,10 @@ if [ "$CURRENT_BRANCH" != "main" ]; then
   exit 1
 fi
 
-# Calculate tag YYYY-MM-DD-HASH
+# Calculate tag v1-YYYY-MM-DD-HASH
 DATE=`git log -n1 --pretty='%cd' --date=format:'%Y-%m-%d'`
 HASH=`git rev-parse --short HEAD`
-TAG="$DATE-$HASH"
+TAG="v1-$DATE-$HASH"
 
 # Build/zip binaries
 GOOS=darwin GOARCH=amd64 go build -o ./dist/hyaline -ldflags="-X 'main.Version=$TAG'" ./cmd/hyaline.go
