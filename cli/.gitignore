@@ -14,7 +14,6 @@ hyaline-e2e
 
 # Other files used for testing
 e2e/_output/*
-benchmarks/prompts/_output/*
 generated-config.yml
 results.json
 comment.json
