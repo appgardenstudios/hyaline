@@ -312,10 +312,15 @@ func formatCheckPromptSections(sections []docs.FilteredSection, indent int) stri
 			str.WriteString(fmt.Sprintf("%s<section_purpose>%s</section_purpose>\n", strings.Repeat(" ", indent), section.Section.Purpose))
 		}
 
+		// <sections> if present
+		if len(section.Sections) > 0 {
+			str.WriteString(formatCheckPromptSections(section.Sections, indent))
+		}
+
 		indent -= 2
 
 		// </section>
-		str.WriteString(fmt.Sprintf("%s<section>\n", strings.Repeat(" ", indent)))
+		str.WriteString(fmt.Sprintf("%s</section>\n", strings.Repeat(" ", indent)))
 	}
 
 	indent -= 2
