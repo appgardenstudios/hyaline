@@ -3,7 +3,6 @@
     {
       "documentationSource": "my-app",
       "document": "README.md",
-      "section": [],
       "recommendation": "Consider reviewing and updating this documentation",
       "reasons": [
         {

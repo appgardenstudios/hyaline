@@ -11,7 +11,7 @@ func TestAuditDocumentation(t *testing.T) {
 	outputPath := fmt.Sprintf("./_output/audit-documentation-%d.json", time.Now().UnixMilli())
 	args := []string{
 		"audit", "documentation",
-		"--config", "./_input/audit-documentation/audit-config.yml",
+		"--config", "./_input/audit-documentation/hyaline.yml",
 		"--documentation", "./_input/audit-documentation/documentation.sqlite",
 		"--output", outputPath,
 	}

@@ -12,7 +12,7 @@ import (
 	"github.com/go-git/go-git/v5/storage/memory"
 )
 
-func GetRepo(options config.ExtractorOptions) (r *git.Repository, err error) {
+func GetRepo(options config.CrawlerOptions) (r *git.Repository, err error) {
 	if options.Clone {
 		// Ensure remote repo is passed in
 		if options.Repo == "" {

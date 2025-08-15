@@ -11,6 +11,6 @@ echo "Generating input databases for audit documentation e2e tests..."
 cd "$CLI_DIR"
 
 echo "Generating documentation.sqlite..."
-./hyaline --debug extract documentation --config "$SCRIPT_DIR/extract-config.yml" --output "$SCRIPT_DIR/documentation.sqlite"
+./hyaline --debug extract documentation --config "$SCRIPT_DIR/hyaline.yml" --output "$SCRIPT_DIR/documentation.sqlite"
 
 echo "Finished"

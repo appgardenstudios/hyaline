@@ -13,7 +13,7 @@ import (
 	"golang.org/x/net/html"
 )
 
-func extractHtml(id string, sourceID string, rawData []byte, options *config.DocumentationSourceOptions, db *sqlite.Queries) error {
+func extractHtml(id string, sourceID string, rawData []byte, options *config.ExtractorOptions, db *sqlite.Queries) error {
 	// Parse the raw HTML, which will clean it up a bit and ensure it is well formatted
 	rootNode, err := html.Parse(strings.NewReader(string(rawData)))
 	if err != nil {

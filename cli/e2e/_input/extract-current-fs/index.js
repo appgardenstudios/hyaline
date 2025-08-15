@@ -1,1 +1,0 @@
-/** Contents of index.js */

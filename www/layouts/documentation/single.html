@@ -5,6 +5,33 @@
     margin: 0 auto 1rem auto;
     display: block;
   }
+
+  .code-example {
+    max-width: calc(360px * 2 + 1.25em);
+    margin: 0 auto 1rem auto;
+  }
+
+  .side-by-side {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: stretch;
+    max-width: calc(360px * 2 + 1.25em);
+    margin: 0 auto 1rem auto;
+  }
+
+  .side-by-side > * {
+    width: 360px;
+    margin: .75rem 0;
+  }
+  .side-by-side img {
+    margin: 0;
+  }
+  .side-by-side pre {
+    height: 100%;
+    margin: 0;
+  }
   
   /* Small viewports and up: float image right */
   @media (min-width: 640px) {
@@ -17,5 +44,6 @@
     }
   }
 </style>
-{{ partial "toc.html" (dict "currentPage" . "sectionName" "documentation") }}
+{{ $tocData := .Site.Data.documentation_toc }}
+{{ partial "table-of-contents.html" (dict "currentPage" . "tocData" $tocData) }}
 {{ end }}
