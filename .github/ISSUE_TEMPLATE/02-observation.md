@@ -25,7 +25,7 @@ TODO The decision of which action(s) should be completed.
 TODO The date and person(s) who endorsed the decision (i.e. YYYY-MM-DD user).
 
 # Action(s)
-* TODO A list of actions that should be completed (if any). Once complete they should be marked with a date and person who completed it (i.e. Completed YYYY-MM-DD user)
+- TODO A list of actions that should be completed (if any). Once complete they should be marked with a date and person who completed it (i.e. Completed YYYY-MM-DD user)
 
 ## Reflection
 TODO The results of reflecting on the observation, the decision, and any actions taken.
