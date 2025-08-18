@@ -26,6 +26,11 @@ func Audit(logLevel *slog.LevelVar) *cli.Command {
 						Required: true,
 						Usage:    "Path to the documentation database",
 					},
+					&cli.StringFlag{
+						Name:     "new-flag",
+						Required: true,
+						Usage:    "Path to the new flag",
+					},
 					&cli.StringSliceFlag{
 						Name:     "source",
 						Required: false,
