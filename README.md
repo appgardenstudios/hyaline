@@ -16,7 +16,7 @@ The primary means of communication is via [GitHub Discussions](https://github.co
 If you run into issues using Hyaline, feel free to reach out to us via [GitHub Discussions](https://github.com/appgardenstudios/hyaline/discussions), [Create a Bug](https://github.com/appgardenstudios/hyaline/issues), or email us at support@hyaline.dev.
 
 ## License
-Hyaline requires a license for any purpose other than evaluation or demonstration. Please visit https://www.hyaline.dev to purchase a license.
+Hyaline requires a license for any purpose other than evaluation or demonstration. Please visit [www.hyaline.dev](https://www.hyaline.dev) to purchase a license.
 
 ## This Repo
 This repository is publicly available to allow you to view the full source code of Hyaline and to follow changes as they are made. Being public does **not** make Hyaline open source. Please see [License.md](./LICENSE.md) for license information.
