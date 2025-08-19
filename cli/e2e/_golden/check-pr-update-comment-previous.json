@@ -6,11 +6,27 @@
       "recommendation": "Consider reviewing and updating this documentation",
       "reasons": [
         {
-          "reason": "Update this document if any files matching **/* were touched."
+          "reason": "Update this document if any files matching `**/*` were touched (matching file: subdir/subdirfile.js).",
+          "outdated": false,
+          "check": {
+            "type": "update_if_touched",
+            "file": "subdir/subdirfile.js",
+            "contextHash": "48219b27"
+          }
+        },
+        {
+          "reason": "Update this document if any files matching `**/*` were touched (matching file: subdir/new.js).",
+          "outdated": true,
+          "check": {
+            "type": "update_if_touched",
+            "file": "subdir/new.js",
+            "contextHash": "48219b27"
+          }
         }
       ],
       "changed": true,
-      "checked": true
+      "checked": true,
+      "outdated": false
     },
     {
       "documentationSource": "my-app",
@@ -18,13 +34,48 @@
       "recommendation": "Consider reviewing and updating this documentation",
       "reasons": [
         {
-          "reason": "Update this document if any files matching **/*.js were touched."
+          "reason": "Update this document if any files matching `**/*.js` were touched (matching file: subdir/subdirfile.js).",
+          "outdated": false,
+          "check": {
+            "type": "update_if_touched",
+            "file": "subdir/subdirfile.js",
+            "contextHash": "48219b27"
+          }
+        },
+        {
+          "reason": "Update this document if any files matching `**/*.js` were touched (matching file: subdir/new.js).",
+          "outdated": true,
+          "check": {
+            "type": "update_if_touched",
+            "file": "subdir/new.js",
+            "contextHash": "48219b27"
+          }
         }
       ],
       "changed": false,
-      "checked": false
+      "checked": false,
+      "outdated": false
+    },
+    {
+      "documentationSource": "my-app",
+      "document": "docs/doc.html",
+      "recommendation": "Consider reviewing and updating this documentation",
+      "reasons": [
+        {
+          "reason": "Update this document if any files matching `**/new.js` were touched (matching file: subdir/new.js).",
+          "outdated": true,
+          "check": {
+            "type": "update_if_touched",
+            "file": "subdir/new.js",
+            "contextHash": "48219b27"
+          }
+        }
+      ],
+      "changed": false,
+      "checked": false,
+      "outdated": true
     }
   ],
-  "head": "3e487a6980fe31da4c75c9a52c81a6cf9505ace8",
+  "head": "02de222e423e919cc71f5460182dafdb96768958",
   "base": "b564300250288b332d50e2925dbd25e98831adbd"
 }

@@ -23,8 +23,12 @@ extract:
           password: ${HYALINE_GITHUB_PAT}
     include:
       - "**/*.md"
+      - "**/*.html"
   extractors:
     - type: md
+      include:
+        - "**/*"
+    - type: html
       include:
         - "**/*"
   metadata:
@@ -63,3 +67,8 @@ check:
           documentation:
             source: "**/*"
             document: "docs/docsDoc.md"
+        - code:
+            path: "**/new.js"
+          documentation:
+            source: "**/*"
+            document: "docs/doc.html"

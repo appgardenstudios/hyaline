@@ -46,10 +46,14 @@ type CheckRecommendation struct {
 	Reasons        []check.Reason `json:"reasons"`
 	Changed        bool           `json:"changed"`
 	Checked        bool           `json:"checked"`
+	Outdated       bool           `json:"outdated"`
 }
 
 func sortCheckRecommendations(recommendations []CheckRecommendation) {
 	sort.Slice(recommendations, func(i, j int) bool {
+		if recommendations[i].Outdated != recommendations[j].Outdated {
+			return !recommendations[i].Outdated
+		}
 		if recommendations[i].Source < recommendations[j].Source {
 			return true
 		}
@@ -63,6 +67,21 @@ func sortCheckRecommendations(recommendations []CheckRecommendation) {
 			return false
 		}
 		return strings.Join(recommendations[i].Section, "/") < strings.Join(recommendations[j].Section, "/")
+	})
+}
+
+func sortCheckReasons(reasons []check.Reason) {
+	sort.Slice(reasons, func(i, j int) bool {
+		if reasons[i].Outdated != reasons[j].Outdated {
+			return !reasons[i].Outdated
+		}
+		if reasons[i].Check.File < reasons[j].Check.File {
+			return true
+		}
+		if reasons[i].Check.File > reasons[j].Check.File {
+			return false
+		}
+		return reasons[i].Check.Type < reasons[j].Check.Type
 	})
 }
 
@@ -185,7 +204,7 @@ func CheckDiff(args *CheckDiffArgs) error {
 	slog.Info("Retrieved filtered files from diff", "files", len(filteredFiles))
 
 	// Get recommendations
-	recommendations, err := getRecommendations(filteredFiles, documents, pr, issues, changedFiles, cfg.Check, &cfg.LLM)
+	recommendations, _, err := getRecommendations(filteredFiles, documents, pr, issues, changedFiles, cfg.Check, &cfg.LLM)
 	if err != nil {
 		slog.Debug("action.CheckDiff could not get recommendations", "error", err)
 		return err
@@ -219,12 +238,12 @@ func CheckDiff(args *CheckDiffArgs) error {
 	return nil
 }
 
-func getRecommendations(filteredFiles []code.FilteredFile, documents []*docs.FilteredDoc, pr *github.PullRequest, issues []*github.Issue, changedFiles map[string]struct{}, checkConfig *config.Check, llmConfig *config.LLM) ([]CheckRecommendation, error) {
+func getRecommendations(filteredFiles []code.FilteredFile, documents []*docs.FilteredDoc, pr *github.PullRequest, issues []*github.Issue, changedFiles map[string]struct{}, checkConfig *config.Check, llmConfig *config.LLM) ([]CheckRecommendation, check.FileCheckContextHashes, error) {
 	// Check Diff
-	results, err := check.Diff(filteredFiles, documents, pr, issues, checkConfig, llmConfig)
+	results, fileCheckContextHashes, err := check.Diff(filteredFiles, documents, pr, issues, checkConfig, llmConfig)
 	if err != nil {
 		slog.Debug("getRecommendations could not check diff", "error", err)
-		return nil, err
+		return nil, nil, err
 	}
 	slog.Info("Got results", "results", len(results))
 
@@ -249,5 +268,5 @@ func getRecommendations(filteredFiles []code.FilteredFile, documents []*docs.Fil
 
 	sortCheckRecommendations(recommendations)
 
-	return recommendations, nil
+	return recommendations, fileCheckContextHashes, nil
 }

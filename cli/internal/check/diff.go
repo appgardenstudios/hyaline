@@ -3,6 +3,7 @@ package check
 import (
 	"encoding/json"
 	"fmt"
+	"hash/fnv"
 	"hyaline/internal/code"
 	"hyaline/internal/config"
 	"hyaline/internal/diff"
@@ -16,8 +17,32 @@ import (
 	"github.com/invopop/jsonschema"
 )
 
+type DiffCheckType string
+
+const (
+	DiffCheckTypeLLM              DiffCheckType = "llm"
+	DiffCheckTypeUpdateIfTouched  DiffCheckType = "update_if_touched"
+	DiffCheckTypeUpdateIfAdded    DiffCheckType = "update_if_added"
+	DiffCheckTypeUpdateIfModified DiffCheckType = "update_if_modified"
+	DiffCheckTypeUpdateIfDeleted  DiffCheckType = "update_if_deleted"
+	DiffCheckTypeUpdateIfRenamed  DiffCheckType = "update_if_renamed"
+)
+
+type DiffCheck struct {
+	Type        DiffCheckType `json:"type"`
+	File        string        `json:"file"`
+	ContextHash string        `json:"contextHash"`
+}
+
+// FileCheckContextHashes represents context hashes for different check types per file
+// It maps file path -> check type -> context hash
+type CheckContextHashes map[DiffCheckType]string
+type FileCheckContextHashes map[string]CheckContextHashes
+
 type Reason struct {
-	Reason string `json:"reason"`
+	Reason   string    `json:"reason"`
+	Outdated bool      `json:"outdated"`
+	Check    DiffCheck `json:"check"`
 }
 
 type Result struct {
@@ -42,28 +67,45 @@ type checkNeedsUpdateSchemaEntry struct {
 type checkNoUpdateNeededSchema struct {
 }
 
-type updateResultMapCallback func(id string, reason string)
+type updateResultMapCallback func(id string, reason string, check DiffCheck)
 
-func Diff(files []code.FilteredFile, documents []*docs.FilteredDoc, pr *github.PullRequest, issues []*github.Issue, checkCfg *config.Check, llmCfg *config.LLM) (results []Result, err error) {
+func Diff(files []code.FilteredFile, documents []*docs.FilteredDoc, pr *github.PullRequest, issues []*github.Issue, checkCfg *config.Check, llmCfg *config.LLM) (results []Result, fileCheckContextHashes FileCheckContextHashes, err error) {
 	resultMap := make(map[string][]Reason)
+	fileCheckContextHashes = make(FileCheckContextHashes)
 
-	updateResultMap := func(id string, reason string) {
+	updateFileCheckContextHashes := func(check DiffCheck) {
+		checkContextHashes, exists := fileCheckContextHashes[check.File]
+		if !exists {
+			checkContextHashes = make(CheckContextHashes)
+			fileCheckContextHashes[check.File] = checkContextHashes
+		}
+		checkContextHashes[check.Type] = check.ContextHash
+	}
+
+	updateResultMap := func(id string, reason string, check DiffCheck) {
 		entry, ok := resultMap[id]
+		newReason := Reason{
+			Reason:   reason,
+			Outdated: false,
+			Check:    check,
+		}
 		if ok {
-			entry = append(entry, Reason{Reason: reason})
+			entry = append(entry, newReason)
 			resultMap[id] = entry
 		} else {
-			resultMap[id] = []Reason{{Reason: reason}}
+			resultMap[id] = []Reason{newReason}
 		}
+
+		updateFileCheckContextHashes(check)
 	}
 
 	// LLM system prompt and tools
 	systemPrompt := "You are a senior technical writer who writes clear and accurate documentation."
-	tools := getCheckTools(updateResultMap)
 
 	// Check each file in the diff
 	for _, file := range files {
 		slog.Info("Checking file", "filename", file.Filename, "originalFilename", file.OriginalFilename)
+
 		// See if there are any updateIfs that apply
 		checkNewUpdateIfs(&file, documents, checkCfg, updateResultMap)
 
@@ -74,6 +116,18 @@ func Diff(files []code.FilteredFile, documents []*docs.FilteredDoc, pr *github.P
 			slog.Debug("check.Diff could not format prompt", "error", err)
 			return
 		}
+		filename := file.Filename
+		if filename == "" {
+			filename = file.OriginalFilename
+		}
+		check := DiffCheck{
+			File:        filename,
+			Type:        DiffCheckTypeLLM,
+			ContextHash: getContextHash(prompt),
+		}
+		// Always track the context hash for LLM checks, since they are non-deterministic
+		updateFileCheckContextHashes(check)
+		tools := getCheckTools(updateResultMap, check)
 		slog.Debug("check.Diff calling llm", "file", file.Filename, "systemPrompt", systemPrompt, "prompt", prompt, "tools", len(tools))
 		_, err = llm.CallLLM(systemPrompt, prompt, tools, llmCfg)
 		if err != nil {
@@ -331,7 +385,7 @@ func formatCheckPromptSections(sections []docs.FilteredSection, indent int) stri
 	return str.String()
 }
 
-func getCheckTools(cb updateResultMapCallback) (tools []*llm.Tool) {
+func getCheckTools(cb updateResultMapCallback, check DiffCheck) (tools []*llm.Tool) {
 	reflector := jsonschema.Reflector{
 		AllowAdditionalProperties: false,
 		DoNotReference:            true,
@@ -353,7 +407,7 @@ func getCheckTools(cb updateResultMapCallback) (tools []*llm.Tool) {
 
 				// Loop through and handle each document/section identified by the llm
 				for _, update := range needsUpdate.Entries {
-					cb(update.ID, update.Reason)
+					cb(update.ID, update.Reason, check)
 				}
 
 				// Return with done = true so we stop
@@ -381,9 +435,9 @@ func checkNewUpdateIfs(file *code.FilteredFile, documents []*docs.FilteredDoc, c
 		if (file.Filename != "" && doublestar.MatchUnvalidated(entry.Code.Path, file.Filename)) ||
 			(file.OriginalFilename != "" && doublestar.MatchUnvalidated(entry.Code.Path, file.OriginalFilename)) {
 			if file.Action == code.ActionRename {
-				checkNewUpdateIfDocuments(entry.Code.Path, documents, entry.Documentation, cb, fmt.Sprintf("touched (%s was renamed to %s)", file.OriginalFilename, file.Filename))
+				checkNewUpdateIfDocuments(entry.Code.Path, documents, entry.Documentation, cb, fmt.Sprintf("touched (%s was renamed to %s)", file.OriginalFilename, file.Filename), file, DiffCheckTypeUpdateIfTouched)
 			} else {
-				checkNewUpdateIfDocuments(entry.Code.Path, documents, entry.Documentation, cb, "touched")
+				checkNewUpdateIfDocuments(entry.Code.Path, documents, entry.Documentation, cb, "touched", file, DiffCheckTypeUpdateIfTouched)
 			}
 		}
 	}
@@ -393,50 +447,68 @@ func checkNewUpdateIfs(file *code.FilteredFile, documents []*docs.FilteredDoc, c
 	case code.ActionInsert:
 		for _, entry := range cfg.Options.UpdateIf.Added {
 			if doublestar.MatchUnvalidated(entry.Code.Path, file.Filename) {
-				checkNewUpdateIfDocuments(entry.Code.Path, documents, entry.Documentation, cb, "added")
+				checkNewUpdateIfDocuments(entry.Code.Path, documents, entry.Documentation, cb, "added", file, DiffCheckTypeUpdateIfAdded)
 			}
 		}
 	case code.ActionModify:
 		for _, entry := range cfg.Options.UpdateIf.Modified {
 			if doublestar.MatchUnvalidated(entry.Code.Path, file.Filename) {
-				checkNewUpdateIfDocuments(entry.Code.Path, documents, entry.Documentation, cb, "modified")
+				checkNewUpdateIfDocuments(entry.Code.Path, documents, entry.Documentation, cb, "modified", file, DiffCheckTypeUpdateIfModified)
 			}
 		}
 	case code.ActionRename:
 		for _, entry := range cfg.Options.UpdateIf.Renamed {
 			if doublestar.MatchUnvalidated(entry.Code.Path, file.Filename) ||
 				doublestar.MatchUnvalidated(entry.Code.Path, file.OriginalFilename) {
-				checkNewUpdateIfDocuments(entry.Code.Path, documents, entry.Documentation, cb, "renamed")
+				checkNewUpdateIfDocuments(entry.Code.Path, documents, entry.Documentation, cb, "renamed", file, DiffCheckTypeUpdateIfRenamed)
 			}
 		}
 	case code.ActionDelete:
 		for _, entry := range cfg.Options.UpdateIf.Deleted {
 			if doublestar.MatchUnvalidated(entry.Code.Path, file.OriginalFilename) {
-				checkNewUpdateIfDocuments(entry.Code.Path, documents, entry.Documentation, cb, "deleted")
+				checkNewUpdateIfDocuments(entry.Code.Path, documents, entry.Documentation, cb, "deleted", file, DiffCheckTypeUpdateIfDeleted)
 			}
 		}
 	}
 }
 
-func checkNewUpdateIfDocuments(glob string, documents []*docs.FilteredDoc, filter config.DocumentationFilter, cb updateResultMapCallback, action string) {
+func checkNewUpdateIfDocuments(glob string, documents []*docs.FilteredDoc, filter config.DocumentationFilter, cb updateResultMapCallback, action string, file *code.FilteredFile, checkType DiffCheckType) {
+	filename := file.Filename
+	if filename == "" {
+		filename = file.OriginalFilename
+	}
+	check := DiffCheck{
+		File:        filename,
+		Type:        checkType,
+		ContextHash: getContextHash(string(checkType)),
+	}
+
 	for _, document := range documents {
 		if docs.DocumentMatches(document.Document.ID, document.Document.SourceID, document.Tags, &filter) {
 			cb(document.Document.SourceID+"/"+document.Document.ID,
-				fmt.Sprintf("Update this document if any files matching %s were %s.", glob, action))
+				fmt.Sprintf("Update this document if any files matching `%s` were %s (matching file: %s).", glob, action, check.File),
+				check)
 		} else {
 			// Only check sections if document does not match to avoid pulling in a document
 			// and all of its sections (we just need the document in that case)
-			checkNewUpdateIfSections(glob, document.Sections, filter, cb, action)
+			checkNewUpdateIfSections(glob, document.Sections, filter, cb, action, check)
 		}
 	}
 }
 
-func checkNewUpdateIfSections(glob string, sections []docs.FilteredSection, filter config.DocumentationFilter, cb updateResultMapCallback, action string) {
+func checkNewUpdateIfSections(glob string, sections []docs.FilteredSection, filter config.DocumentationFilter, cb updateResultMapCallback, action string, check DiffCheck) {
 	for _, section := range sections {
 		if docs.SectionMatches(section.Section.ID, section.Section.DocumentID, section.Section.SourceID, section.Tags, &filter, false) {
 			cb(section.Section.SourceID+"/"+section.Section.DocumentID+"#"+section.Section.ID,
-				fmt.Sprintf("Update this document if any files matching %s were %s.", glob, action))
+				fmt.Sprintf("Update this document if any files matching `%s` were %s (matching file: %s).", glob, action, check.File),
+				check)
 		}
-		checkNewUpdateIfSections(glob, section.Sections, filter, cb, action)
+		checkNewUpdateIfSections(glob, section.Sections, filter, cb, action, check)
 	}
+}
+
+func getContextHash(context string) string {
+	h := fnv.New32a()
+	h.Write([]byte(context))
+	return fmt.Sprintf("%x", h.Sum32())
 }

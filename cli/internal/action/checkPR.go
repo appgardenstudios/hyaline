@@ -136,7 +136,7 @@ func CheckPR(args *CheckPRArgs) error {
 	slog.Info("Retrieved filtered files from PR", "files", len(filteredFiles))
 
 	// Get recommendations
-	recommendations, err := getRecommendations(filteredFiles, documents, pr, issues, changedFiles, cfg.Check, &cfg.LLM)
+	recommendations, fileCheckContextHashes, err := getRecommendations(filteredFiles, documents, pr, issues, changedFiles, cfg.Check, &cfg.LLM)
 	if err != nil {
 		slog.Debug("action.CheckPR could not get recommendations", "error", err)
 		return err
@@ -168,7 +168,7 @@ func CheckPR(args *CheckPRArgs) error {
 	}
 
 	// Merge current and previous recommendations
-	mergedRecommendations := mergeCheckRecommendations(recommendations, previousRecommendations)
+	mergedRecommendations := mergeCheckRecommendations(recommendations, previousRecommendations, fileCheckContextHashes)
 
 	mergedOutput := CheckOutput{
 		Recommendations: mergedRecommendations,
@@ -265,67 +265,110 @@ func upsertPRComment(pr string, existingComment *github.Comment, output CheckOut
 	return nil
 }
 
-func mergeCheckRecommendations(newRecs []CheckRecommendation, existingRecs []CheckRecommendation) (mergedRecs []CheckRecommendation) {
+func mergeCheckRecommendations(newRecs []CheckRecommendation, existingRecs []CheckRecommendation, fileCheckContextHashes check.FileCheckContextHashes) (mergedRecs []CheckRecommendation) {
 	// Initialize to empty slice to avoid returning nil
 	mergedRecs = []CheckRecommendation{}
-	// Copy over existing recs as is
-	mergedRecs = append(mergedRecs, existingRecs...)
 
-	// Add new recs
-	for _, newRec := range newRecs {
+	// 1. Copy over all new recommendations as-is
+	mergedRecs = append(mergedRecs, newRecs...)
+
+	// 2. Merge existing recommendations
+	for _, existingRec := range existingRecs {
 		// See if this rec already exists
 		match := false
-		for index, existingRec := range existingRecs {
-			if newCheckRecommendationMatchesExisting(&newRec, &existingRec) {
+		for index, mergedRec := range mergedRecs {
+			// If a matching recommendation is found, merge it with the existing one
+			if recommendationsMatch(&mergedRec, &existingRec) {
 				match = true
-				// Do not overwrite existing rec's checked status so we preserve any "manual" checks
-				if !existingRec.Checked {
-					mergedRecs[index].Checked = newRec.Checked
-				}
-				// Always merge reasons
-				mergedRecs[index].Reasons = mergeCheckReasons(&newRec.Reasons, &existingRec.Reasons)
+				// Merge recommendations
+				updatedMergedRec := mergedRec
+				updatedMergedRec.Checked = existingRec.Checked
+				updatedMergedRec.Reasons = mergeCheckReasons(&mergedRec.Reasons, &existingRec.Reasons, fileCheckContextHashes)
+				mergedRecs[index] = updatedMergedRec
 				break
 			}
 		}
-		// If it does not, add it
+
+		// If no match was found, merge the existing recommendation
 		if !match {
-			mergedRecs = append(mergedRecs, newRec)
+			mergedRec := existingRec
+			// Call mergeCheckReasons with an empty newReasons so that outdated old reasons still get marked outdated
+			mergedRec.Reasons = mergeCheckReasons(&[]check.Reason{}, &existingRec.Reasons, fileCheckContextHashes)
+			mergedRecs = append(mergedRecs, mergedRec)
 		}
 	}
 
+	// 3. Mark recommendations as outdated if all their reasons are outdated
+	for i := range mergedRecs {
+		allReasonsOutdated := true
+		for _, reason := range mergedRecs[i].Reasons {
+			if !reason.Outdated {
+				allReasonsOutdated = false
+				break
+			}
+		}
+		mergedRecs[i].Outdated = allReasonsOutdated
+	}
+
+	// 4. Sort recommendations
 	sortCheckRecommendations(mergedRecs)
 
 	return
 }
 
-func mergeCheckReasons(newReasons *[]check.Reason, existingReasons *[]check.Reason) (mergedReasons []check.Reason) {
-	mergedReasons = append(mergedReasons, *existingReasons...)
+func mergeCheckReasons(newReasons *[]check.Reason, existingReasons *[]check.Reason, fileCheckContextHashes check.FileCheckContextHashes) (mergedReasons []check.Reason) {
+	// 1. Copy over all new reasons as-is
+	mergedReasons = append(mergedReasons, *newReasons...)
 
-	for _, newReason := range *newReasons {
-		found := false
-		for _, existingReason := range mergedReasons {
-			if existingReason.Reason == newReason.Reason {
-				found = true
+	// 2. Merge existing reasons
+	for _, existingReason := range *existingReasons {
+		// See if the reason already exists
+		match := false
+		for _, mergedReason := range mergedReasons {
+			if reasonsMatch(&mergedReason, &existingReason) {
+				match = true
 				break
 			}
 		}
-		if !found {
-			mergedReasons = append(mergedReasons, newReason)
+
+		// If no match was found, merge the existing reason
+		if !match {
+			updatedExistingReason := existingReason
+			// Check if the file context hash has changed. If so, or if it doesn't exist, mark as outdated
+			if fileContextHash, exists := fileCheckContextHashes[existingReason.Check.File]; exists {
+				if fileContextHash[existingReason.Check.Type] != existingReason.Check.ContextHash {
+					updatedExistingReason.Outdated = true
+				}
+			} else {
+				updatedExistingReason.Outdated = true
+			}
+			// Add the existing reason to the merged reasons
+			mergedReasons = append(mergedReasons, updatedExistingReason)
 		}
 	}
+
+	sortCheckReasons(mergedReasons)
 
 	return
 }
 
-func newCheckRecommendationMatchesExisting(newRec *CheckRecommendation, existingRec *CheckRecommendation) bool {
-	if newRec.Source != existingRec.Source {
+func recommendationsMatch(recA *CheckRecommendation, recB *CheckRecommendation) bool {
+	if recA.Source != recB.Source {
 		return false
 	}
-	if newRec.Document != existingRec.Document {
+	if recA.Document != recB.Document {
 		return false
 	}
 
-	return strings.Join(newRec.Section, "/") == strings.Join(existingRec.Section, "/")
+	return strings.Join(recA.Section, "/") == strings.Join(recB.Section, "/")
+}
+
+func reasonsMatch(reasonA *check.Reason, reasonB *check.Reason) bool {
+	if reasonA.Check.File != reasonB.Check.File {
+		return false
+	}
+
+	return reasonA.Check.Type == reasonB.Check.Type
 }
 
 func findHyalineComment(ref string, token string) (*github.Comment, error) {
@@ -411,11 +454,25 @@ func formatCheckPRComment(output *CheckOutput) string {
 	md.WriteString(fmt.Sprintf("**ref**: %s\n", html.EscapeString(output.Head)))
 	md.WriteString("\n")
 
+	// Split recommendations into valid and outdated
+	var validRecs []CheckRecommendation
+	var outdatedRecs []CheckRecommendation
+
+	for _, rec := range output.Recommendations {
+		if rec.Outdated {
+			outdatedRecs = append(outdatedRecs, rec)
+		} else {
+			validRecs = append(validRecs, rec)
+		}
+	}
+
 	// Note: This starting line always needs to be present because we use it as a sentinel for getting the check marks
 	md.WriteString(fmt.Sprintf("%s\n", CHECK_PR_RECOMMENDATIONS_START))
-	if len(output.Recommendations) > 0 {
+
+	// Render valid recommendations
+	if len(validRecs) > 0 {
 		md.WriteString("Review the following recommendations and update the corresponding documentation as needed:\n")
-		for _, rec := range output.Recommendations {
+		for _, rec := range validRecs {
 			checked := " "
 			if rec.Checked {
 				checked = "x"
@@ -426,7 +483,11 @@ func formatCheckPRComment(output *CheckOutput) string {
 			}
 			var cleanReasons []string
 			for _, reason := range rec.Reasons {
-				cleanReasons = append(cleanReasons, html.EscapeString(reason.Reason))
+				reasonText := html.EscapeString(reason.Reason)
+				if reason.Outdated {
+					reasonText = fmt.Sprintf("~~%s~~ (Outdated)", reasonText)
+				}
+				cleanReasons = append(cleanReasons, reasonText)
 			}
 			reasons := strings.Join(cleanReasons, "</li><li>")
 			md.WriteString(fmt.Sprintf("- [%s] **%s**%s in `%s`", checked, html.EscapeString(rec.Document), html.EscapeString(sections), html.EscapeString(rec.Source)))
@@ -434,8 +495,32 @@ func formatCheckPRComment(output *CheckOutput) string {
 			md.WriteString("\n")
 		}
 		md.WriteString("\nNote: Hyaline will automatically detect documentation updated in this PR and mark corresponding recommendations as reviewed.\n")
-	} else {
+	} else if len(outdatedRecs) == 0 {
 		md.WriteString("Hyaline did not find any documentation related to the contents of this PR. If you are aware of documentation that should have been updated please update it and let your Hyaline administrator know about this message. Thanks!\n")
+	}
+
+	// Render outdated recommendations section if any exist
+	if len(outdatedRecs) > 0 {
+		md.WriteString("\n<details><summary>Changes have caused the following recommendations to be outdated:</summary>\n\n")
+		for _, rec := range outdatedRecs {
+			sections := ""
+			if len(rec.Section) > 0 {
+				sections = fmt.Sprintf(" > %s", strings.Join(rec.Section, " > "))
+			}
+			var cleanReasons []string
+			for _, reason := range rec.Reasons {
+				reasonText := html.EscapeString(reason.Reason)
+				if reason.Outdated {
+					reasonText = fmt.Sprintf("~~%s~~ (Outdated)", reasonText)
+				}
+				cleanReasons = append(cleanReasons, reasonText)
+			}
+			reasons := strings.Join(cleanReasons, "</li><li>")
+			md.WriteString(fmt.Sprintf("- **%s**%s in `%s`", html.EscapeString(rec.Document), html.EscapeString(sections), html.EscapeString(rec.Source)))
+			md.WriteString(fmt.Sprintf("<details><summary>Reasons</summary><ul><li>%s</li></ul></details>", reasons))
+			md.WriteString("\n")
+		}
+		md.WriteString("</details>\n")
 	}
 
 	// Add raw data
