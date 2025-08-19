@@ -20,12 +20,12 @@ import (
 type DiffCheckType string
 
 const (
-	DiffCheckTypeLLM              DiffCheckType = "llm"
-	DiffCheckTypeUpdateIfTouched  DiffCheckType = "update_if_touched"
-	DiffCheckTypeUpdateIfAdded    DiffCheckType = "update_if_added"
-	DiffCheckTypeUpdateIfModified DiffCheckType = "update_if_modified"
-	DiffCheckTypeUpdateIfDeleted  DiffCheckType = "update_if_deleted"
-	DiffCheckTypeUpdateIfRenamed  DiffCheckType = "update_if_renamed"
+	DiffCheckTypeLLM              DiffCheckType = "LLM"
+	DiffCheckTypeUpdateIfTouched  DiffCheckType = "UPDATE_IF_TOUCHED"
+	DiffCheckTypeUpdateIfAdded    DiffCheckType = "UPDATE_IF_ADDED"
+	DiffCheckTypeUpdateIfModified DiffCheckType = "UPDATE_IF_MODIFIED"
+	DiffCheckTypeUpdateIfDeleted  DiffCheckType = "UPDATE_IF_DELETED"
+	DiffCheckTypeUpdateIfRenamed  DiffCheckType = "UPDATE_IF_RENAMED"
 )
 
 type DiffCheck struct {

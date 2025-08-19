@@ -9,9 +9,9 @@
           "reason": "Update this document if any files matching `**/*` were touched (matching file: subdir/subdirfile.js).",
           "outdated": false,
           "check": {
-            "type": "update_if_touched",
+            "type": "UPDATE_IF_TOUCHED",
             "file": "subdir/subdirfile.js",
-            "contextHash": "48219b27"
+            "contextHash": "95cdc207"
           }
         }
       ],
@@ -28,9 +28,9 @@
           "reason": "Update this document if any files matching `**/*.js` were touched (matching file: subdir/subdirfile.js).",
           "outdated": false,
           "check": {
-            "type": "update_if_touched",
+            "type": "UPDATE_IF_TOUCHED",
             "file": "subdir/subdirfile.js",
-            "contextHash": "48219b27"
+            "contextHash": "95cdc207"
           }
         }
       ],
