@@ -477,19 +477,8 @@ func formatCheckPRComment(output *CheckOutput) string {
 			if rec.Checked {
 				checked = "x"
 			}
-			sections := ""
-			if len(rec.Section) > 0 {
-				sections = fmt.Sprintf(" > %s", strings.Join(rec.Section, " > "))
-			}
-			var cleanReasons []string
-			for _, reason := range rec.Reasons {
-				reasonText := html.EscapeString(reason.Reason)
-				if reason.Outdated {
-					reasonText = fmt.Sprintf("~~%s~~ (Outdated)", reasonText)
-				}
-				cleanReasons = append(cleanReasons, reasonText)
-			}
-			reasons := strings.Join(cleanReasons, "</li><li>")
+			sections := formatSections(rec.Section)
+			reasons := formatReasons(rec.Reasons)
 			md.WriteString(fmt.Sprintf("- [%s] **%s**%s in `%s`", checked, html.EscapeString(rec.Document), html.EscapeString(sections), html.EscapeString(rec.Source)))
 			md.WriteString(fmt.Sprintf("<details><summary>Reasons</summary><ul><li>%s</li></ul></details>", reasons))
 			md.WriteString("\n")
@@ -503,19 +492,8 @@ func formatCheckPRComment(output *CheckOutput) string {
 	if len(outdatedRecs) > 0 {
 		md.WriteString("\n<details><summary>Changes have caused the following recommendations to be outdated:</summary>\n\n")
 		for _, rec := range outdatedRecs {
-			sections := ""
-			if len(rec.Section) > 0 {
-				sections = fmt.Sprintf(" > %s", strings.Join(rec.Section, " > "))
-			}
-			var cleanReasons []string
-			for _, reason := range rec.Reasons {
-				reasonText := html.EscapeString(reason.Reason)
-				if reason.Outdated {
-					reasonText = fmt.Sprintf("~~%s~~ (Outdated)", reasonText)
-				}
-				cleanReasons = append(cleanReasons, reasonText)
-			}
-			reasons := strings.Join(cleanReasons, "</li><li>")
+			sections := formatSections(rec.Section)
+			reasons := formatReasons(rec.Reasons)
 			md.WriteString(fmt.Sprintf("- **%s**%s in `%s`", html.EscapeString(rec.Document), html.EscapeString(sections), html.EscapeString(rec.Source)))
 			md.WriteString(fmt.Sprintf("<details><summary>Reasons</summary><ul><li>%s</li></ul></details>", reasons))
 			md.WriteString("\n")
@@ -529,4 +507,23 @@ func formatCheckPRComment(output *CheckOutput) string {
 	md.WriteString(fmt.Sprintf("%s\n", rawData))
 
 	return md.String()
+}
+
+func formatSections(sections []string) string {
+	if len(sections) > 0 {
+		return fmt.Sprintf(" > %s", strings.Join(sections, " > "))
+	}
+	return ""
+}
+
+func formatReasons(reasons []check.Reason) string {
+	var cleanReasons []string
+	for _, reason := range reasons {
+		reasonText := html.EscapeString(reason.Reason)
+		if reason.Outdated {
+			reasonText = fmt.Sprintf("~~%s~~ (Outdated)", reasonText)
+		}
+		cleanReasons = append(cleanReasons, reasonText)
+	}
+	return strings.Join(cleanReasons, "</li><li>")
 }

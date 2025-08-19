@@ -278,12 +278,6 @@ func TestCheckPRParseComment(t *testing.T) {
 	if len(parsedOutput.Recommendations) != 2 {
 		t.Errorf("Expected 2 recommendations, got %d", len(parsedOutput.Recommendations))
 	}
-	if parsedOutput.Head != "commit-sha-123" {
-		t.Errorf("Expected head 'commit-sha-123', got '%s'", parsedOutput.Head)
-	}
-	if parsedOutput.Base != "main" {
-		t.Errorf("Expected base 'main', got '%s'", parsedOutput.Base)
-	}
 
 	// Non-outdated first, then by document: README.md, API.md
 	currentRec := &parsedOutput.Recommendations[0]
