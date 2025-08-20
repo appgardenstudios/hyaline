@@ -103,6 +103,16 @@
       "presentation":{
         "reveal": "silent"
       }
-    },
+    },{
+      "label": "export-documentation",
+      "type": "shell",
+      "command": "rm -rf ../.vscode/hyaline/export-documentation/fs",
+      "options":{
+        "cwd": "${workspaceFolder}/cli/"
+      },
+      "presentation":{
+        "reveal": "silent"
+      }
+    }
   ]
 }

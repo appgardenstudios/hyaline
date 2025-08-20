@@ -35,50 +35,6 @@
         "--output", "../.vscode/hyaline/extract-documentation-git-local/documentation.db"
       ]
     },{
-      "name": "Check Diff (branch)",
-      "type": "go",
-      "request": "launch",
-      "mode": "debug",
-      "preLaunchTask": "check-diff",
-      "cwd": "${workspaceFolder}/cli/",
-      "program": "${workspaceFolder}/cli/cmd/hyaline.go",
-      "envFile": "${workspaceFolder}/cli/.env",
-      "args":[
-        "--debug",
-        "check", "diff",
-        "--config", "../.vscode/hyaline/check-diff/hyaline.yml",
-        "--documentation", "../.vscode/hyaline/check-diff/documentation.sqlite",
-        "--path", "../../hyaline-example",
-        "--base", "main",
-        "--head", "feat-1",
-        "--pull-request", "appgardenstudios/hyaline-example/1",
-        "--issue", "appgardenstudios/hyaline-example/2",
-        "--issue", "appgardenstudios/hyaline-example/3",
-        "--output", "../.vscode/hyaline/check-diff/recommendations.json"
-      ]
-    },{
-      "name": "Check Diff (ref)",
-      "type": "go",
-      "request": "launch",
-      "mode": "debug",
-      "preLaunchTask": "check-diff",
-      "cwd": "${workspaceFolder}/cli/",
-      "program": "${workspaceFolder}/cli/cmd/hyaline.go",
-      "envFile": "${workspaceFolder}/cli/.env",
-      "args":[
-        "--debug",
-        "check", "diff",
-        "--config", "../.vscode/hyaline/check-diff/hyaline.yml",
-        "--documentation", "../.vscode/hyaline/check-diff/documentation.sqlite",
-        "--path", "../../hyaline-example",
-        "--base-ref", "refs/heads/main",
-        "--head-ref", "refs/remotes/origin/feat-1",
-        "--pull-request", "appgardenstudios/hyaline-example/1",
-        "--issue", "appgardenstudios/hyaline-example/2",
-        "--issue", "appgardenstudios/hyaline-example/3",
-        "--output", "../.vscode/hyaline/check-diff/recommendations.json"
-      ]
-    },{
       "name": "Extract Documentation (git-ssh)",
       "type": "go",
       "request": "launch",
@@ -124,19 +80,6 @@
         "--output", "../.vscode/hyaline/extract-documentation-http/documentation.db"
       ]
     },{
-      "name": "Serve MCP",
-      "type": "go",
-      "request": "launch",
-      "mode": "debug",
-      "cwd": "${workspaceFolder}/cli/",
-      "program": "${workspaceFolder}/cli/cmd/hyaline.go",
-      "envFile": "${workspaceFolder}/cli/.env",
-      "args":[
-        "--debug",
-        "serve", "mcp",
-        "--documentation", "../.vscode/hyaline/serve-mcp/documentation.sqlite"
-      ]
-    },{
       "name": "Merge Documentation",
       "type": "go",
       "request": "launch",
@@ -152,6 +95,50 @@
         "--input", "../.vscode/hyaline/merge-documentation/input-2.sqlite",
         "--input", "../.vscode/hyaline/merge-documentation/input-3.sqlite",
         "--output", "../.vscode/hyaline/merge-documentation/merged.db"
+      ]
+    },{
+      "name": "Check Diff (branch)",
+      "type": "go",
+      "request": "launch",
+      "mode": "debug",
+      "preLaunchTask": "check-diff",
+      "cwd": "${workspaceFolder}/cli/",
+      "program": "${workspaceFolder}/cli/cmd/hyaline.go",
+      "envFile": "${workspaceFolder}/cli/.env",
+      "args":[
+        "--debug",
+        "check", "diff",
+        "--config", "../.vscode/hyaline/check-diff/hyaline.yml",
+        "--documentation", "../.vscode/hyaline/check-diff/documentation.sqlite",
+        "--path", "../../hyaline-example",
+        "--base", "main",
+        "--head", "feat-1",
+        "--pull-request", "appgardenstudios/hyaline-example/1",
+        "--issue", "appgardenstudios/hyaline-example/2",
+        "--issue", "appgardenstudios/hyaline-example/3",
+        "--output", "../.vscode/hyaline/check-diff/recommendations.json"
+      ]
+    },{
+      "name": "Check Diff (ref)",
+      "type": "go",
+      "request": "launch",
+      "mode": "debug",
+      "preLaunchTask": "check-diff",
+      "cwd": "${workspaceFolder}/cli/",
+      "program": "${workspaceFolder}/cli/cmd/hyaline.go",
+      "envFile": "${workspaceFolder}/cli/.env",
+      "args":[
+        "--debug",
+        "check", "diff",
+        "--config", "../.vscode/hyaline/check-diff/hyaline.yml",
+        "--documentation", "../.vscode/hyaline/check-diff/documentation.sqlite",
+        "--path", "../../hyaline-example",
+        "--base-ref", "refs/heads/main",
+        "--head-ref", "refs/remotes/origin/feat-1",
+        "--pull-request", "appgardenstudios/hyaline-example/1",
+        "--issue", "appgardenstudios/hyaline-example/2",
+        "--issue", "appgardenstudios/hyaline-example/3",
+        "--output", "../.vscode/hyaline/check-diff/recommendations.json"
       ]
     },{
       "name": "Check PR",
@@ -205,6 +192,36 @@
         "--documentation", "../.vscode/hyaline/audit-documentation/documentation.sqlite",
         "--output", "../.vscode/hyaline/audit-documentation/results.json"
       ]
-    },
+    },{
+      "name": "Serve MCP",
+      "type": "go",
+      "request": "launch",
+      "mode": "debug",
+      "cwd": "${workspaceFolder}/cli/",
+      "program": "${workspaceFolder}/cli/cmd/hyaline.go",
+      "envFile": "${workspaceFolder}/cli/.env",
+      "args":[
+        "--debug",
+        "serve", "mcp",
+        "--documentation", "../.vscode/hyaline/serve-mcp/documentation.sqlite"
+      ]
+    },{
+      "name": "Export Documentation",
+      "type": "go",
+      "request": "launch",
+      "mode": "debug",
+      "preLaunchTask": "export-documentation",
+      "cwd": "${workspaceFolder}/cli/",
+      "program": "${workspaceFolder}/cli/cmd/hyaline.go",
+      "envFile": "${workspaceFolder}/cli/.env",
+      "args":[
+        "--debug",
+        "export", "documentation",
+        "--documentation", "../.vscode/hyaline/export-documentation/documentation.sqlite",
+        "--format", "fs",
+        "--exclude", "document://*/cli/*",
+        "--output", "../.vscode/hyaline/export-documentation/fs"
+      ]
+    }
   ]
 }
