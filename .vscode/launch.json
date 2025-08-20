@@ -219,6 +219,7 @@
         "export", "documentation",
         "--documentation", "../.vscode/hyaline/export-documentation/documentation.sqlite",
         "--format", "fs",
+        "--include", "document://*/**/*?type=security",
         "--exclude", "document://*/cli/*",
         "--output", "../.vscode/hyaline/export-documentation/fs"
       ]

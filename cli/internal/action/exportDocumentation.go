@@ -8,7 +8,9 @@ import (
 	"hyaline/internal/sqlite"
 	"log/slog"
 	"os"
+	"path"
 	"path/filepath"
+	"strings"
 )
 
 type ExportDocumentationArgs struct {
@@ -125,13 +127,76 @@ func ExportDocumentation(args *ExportDocumentationArgs) error {
 	}
 	documents, err := docs.GetFilteredDocs(filters, docDB)
 	if err != nil {
-		slog.Debug("action.CheckDiff could not get filtered documents", "error", err)
+		slog.Debug("action.ExportDocumentation could not get filtered documents", "error", err)
 		return err
 	}
 	slog.Info("Retrieved filtered documents", "documents", len(documents))
 
 	// Output documentation
-	// TODO
+	err = exportFs(documents, outputAbsPath)
+	if err != nil {
+		slog.Debug("action.ExportDocumentation could not export to path", "error", err)
+		return err
+	}
+
+	slog.Info("Export Complete")
 
 	return nil
+}
+
+func exportFs(documents []*docs.FilteredDoc, outputPath string) (err error) {
+	slog.Info(fmt.Sprintf("Exporting %d documents to %s", len(documents), outputPath))
+
+	// Create path
+	err = os.MkdirAll(outputPath, 0755)
+	if err != nil {
+		slog.Debug("action.exportFs could not MkdirAll for outputPath", "outputPath", outputPath, "error", err)
+		return
+	}
+
+	// Output documents
+	for _, document := range documents {
+		// Get dir and filename
+		dir := path.Join(outputPath, document.Document.SourceID, filepath.Dir(document.Document.ID))
+		var filename string
+		if strings.HasSuffix(document.Document.ID, "/") {
+			filename = "index.md"
+		} else {
+			filename = filepath.Base(document.Document.ID)
+		}
+		if !strings.HasSuffix(filename, ".md") {
+			filename = filename + ".md"
+		}
+		finalPath := path.Join(dir, filename)
+		slog.Debug("Writing document",
+			"source", document.Document.SourceID,
+			"document", document.Document.ID,
+			"finalPath", finalPath)
+
+		// Ensure dir exists
+		err = os.MkdirAll(dir, 0755)
+		if err != nil {
+			slog.Debug("action.exportFs could not MkdirAll for dir", "dir", dir, "error", err)
+			return
+		}
+
+		// Output file
+		var file *os.File
+		file, err = os.Create(finalPath)
+		if err != nil {
+			slog.Debug("action.exportFs could not create file", "finalPath", finalPath, "error", err)
+			return
+		}
+		defer file.Close()
+		_, err = file.WriteString(document.Document.ExtractedData)
+		if err != nil {
+			slog.Debug("action.exportFs could not write string to file", "finalPath", finalPath, "error", err)
+			return
+		}
+	}
+
+	// Format and output README.md
+	// TODO
+
+	return
 }
