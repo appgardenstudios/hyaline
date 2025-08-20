@@ -149,3 +149,25 @@ Merge multiple documentation databases `./docs1.db`, `./docs2.db`, and `./docs3.
 $ hyaline serve mcp --documentation ./documentation.db
 ```
 Start a local MCP server using the standard I/O transport and have it use the extracted documentation found in `./documentation.db`.
+
+## export documentation
+`hyaline export documentation` exports documentation from a documentation data set. Please see the explanation for [export](../explanation/export.md) for more details.
+
+**Options**:
+* `--documentation` - (required) Path to the current documentation data set (output of `hyaline extract documentation`).
+* `--format` - (required) The format to export the documentation in. Must be one of `fs`, `llmsfulltxt`, `json`, or `sqlite`.
+* `--include` - (optional, allows multiple) The documentation to include in the export, specified as a document uri in the form of `document://<source>/<path/to/document>(?tagValue=tagKey)`.
+* `--exclude` - (optional, allows multiple) The documentation to exclude from the export, specified as a document uri in the form of `document://<source>/<path/to/document>(?tagValue=tagKey)`.
+* `--output` - (required) The path to export the documentation to.
+
+**Example**:
+```
+$ hyaline export documentation --documentation ./documentation.db --format json --output ./export.json
+```
+Export the documentation in `./documentation.db` in JSON format and output it to the file `./export.json`.
+
+**Example**:
+```
+$ hyaline export documentation --documentation ./documentation.db --format json --output ./export.json --include 'document://frontend/**/*' --exclude 'document://*/**/*?type=customer'
+```
+Export the documentation in `./documentation.db` in JSON format and output it to the file `./export.json`. Only include documentation from the `frontend` source, but exclude any documentation with the tag `type=customer`.
