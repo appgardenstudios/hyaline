@@ -12,7 +12,6 @@ import (
 	"path"
 	"path/filepath"
 	"strings"
-	"time"
 )
 
 type ExportDocumentationArgs struct {
@@ -214,7 +213,6 @@ func exportFs(documents []*docs.FilteredDoc, sources map[string]*sqlite.SOURCE, 
 	}
 
 	// Format and output README.md
-	date := time.Now().UTC().Format(time.RFC3339)
 	readmeIncludes := includes
 	readmeExcludes := excludes
 	if len(readmeIncludes) == 0 {
@@ -236,7 +234,7 @@ func exportFs(documents []*docs.FilteredDoc, sources map[string]*sqlite.SOURCE, 
 		readmeSources = append(readmeSources, "(none)")
 	}
 	contents := fmt.Sprintf(`# Exported Documentation
-Documentation exported from `+"`"+`%s`+"`"+` on `+"`"+`%s`+"`"+`
+Documentation exported from `+"`"+`%s`+"`"+`
 
 **Includes**:
   - `+"`"+`%s`+"`"+`
@@ -248,7 +246,7 @@ Documentation exported from `+"`"+`%s`+"`"+` on `+"`"+`%s`+"`"+`
 
 ## Sources
 - %s
-`, inputPath, date, strings.Join(readmeIncludes, "`\n  - `"), strings.Join(readmeExcludes, "`\n  - `"), len(documents), strings.Join(readmeSources, "\n- "))
+`, inputPath, strings.Join(readmeIncludes, "`\n  - `"), strings.Join(readmeExcludes, "`\n  - `"), len(documents), strings.Join(readmeSources, "\n- "))
 	readmePath := path.Join(outputPath, "README.md")
 	var file *os.File
 	file, err = os.Create(readmePath)
