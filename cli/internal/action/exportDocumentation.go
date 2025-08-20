@@ -64,7 +64,7 @@ func ExportDocumentation(args *ExportDocumentationArgs) error {
 		return fmt.Errorf("invalid format, got: %s, wanted one of: %s", format.String(), format.PossibleValues())
 	}
 
-	// Parse/Validate includes/excludes
+	// Parse and validate includes/excludes
 	includes := []*docs.DocumentURI{}
 	excludes := []*docs.DocumentURI{}
 	for _, include := range args.Includes {
@@ -133,7 +133,7 @@ func ExportDocumentation(args *ExportDocumentationArgs) error {
 	}
 	slog.Info("Retrieved filtered documents", "documents", len(documents))
 
-	// Get Sources
+	// Get sources
 	sources, err := docDB.GetAllSources(context.Background())
 	if err != nil {
 		slog.Debug("action.ExportDocumentation could not get sources", "error", err)
@@ -166,13 +166,14 @@ func exportFs(documents []*docs.FilteredDoc, sources map[string]*sqlite.SOURCE, 
 		return
 	}
 
-	// Gather sourcesCount for our README
+	// Record the number of documents for each source for our README
 	sourcesCount := make(map[string]int)
 
 	// Output documents
 	for _, document := range documents {
 		count := sourcesCount[document.Document.SourceID]
 		sourcesCount[document.Document.SourceID] = count + 1
+
 		// Get dir and filename
 		dir := path.Join(outputPath, document.Document.SourceID, filepath.Dir(document.Document.ID))
 		var filename string
