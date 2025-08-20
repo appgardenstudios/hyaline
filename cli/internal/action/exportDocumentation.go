@@ -1,6 +1,7 @@
 package action
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"hyaline/internal/config"
@@ -11,6 +12,7 @@ import (
 	"path"
 	"path/filepath"
 	"strings"
+	"time"
 )
 
 type ExportDocumentationArgs struct {
@@ -132,8 +134,19 @@ func ExportDocumentation(args *ExportDocumentationArgs) error {
 	}
 	slog.Info("Retrieved filtered documents", "documents", len(documents))
 
+	// Get Sources
+	sources, err := docDB.GetAllSources(context.Background())
+	if err != nil {
+		slog.Debug("action.ExportDocumentation could not get sources", "error", err)
+		return err
+	}
+	sourcesMap := make(map[string]*sqlite.SOURCE)
+	for _, source := range sources {
+		sourcesMap[source.ID] = &source
+	}
+
 	// Output documentation
-	err = exportFs(documents, outputAbsPath)
+	err = exportFs(documents, sourcesMap, args.Includes, args.Excludes, args.Documentation, outputAbsPath)
 	if err != nil {
 		slog.Debug("action.ExportDocumentation could not export to path", "error", err)
 		return err
@@ -144,7 +157,7 @@ func ExportDocumentation(args *ExportDocumentationArgs) error {
 	return nil
 }
 
-func exportFs(documents []*docs.FilteredDoc, outputPath string) (err error) {
+func exportFs(documents []*docs.FilteredDoc, sources map[string]*sqlite.SOURCE, includes []string, excludes []string, inputPath string, outputPath string) (err error) {
 	slog.Info(fmt.Sprintf("Exporting %d documents to %s", len(documents), outputPath))
 
 	// Create path
@@ -154,8 +167,13 @@ func exportFs(documents []*docs.FilteredDoc, outputPath string) (err error) {
 		return
 	}
 
+	// Gather sourcesCount for our README
+	sourcesCount := make(map[string]int)
+
 	// Output documents
 	for _, document := range documents {
+		count := sourcesCount[document.Document.SourceID]
+		sourcesCount[document.Document.SourceID] = count + 1
 		// Get dir and filename
 		dir := path.Join(outputPath, document.Document.SourceID, filepath.Dir(document.Document.ID))
 		var filename string
@@ -196,7 +214,54 @@ func exportFs(documents []*docs.FilteredDoc, outputPath string) (err error) {
 	}
 
 	// Format and output README.md
-	// TODO
+	date := time.Now().UTC().Format(time.RFC3339)
+	readmeIncludes := includes
+	readmeExcludes := excludes
+	if len(readmeIncludes) == 0 {
+		readmeIncludes = append(readmeIncludes, "(all)")
+	}
+	if len(readmeExcludes) == 0 {
+		readmeExcludes = append(readmeExcludes, "(none)")
+	}
+	readmeSources := []string{}
+	for sourceID, count := range sourcesCount {
+		description := ""
+		source := sources[sourceID]
+		if source != nil {
+			description = source.Description
+		}
+		readmeSources = append(readmeSources, fmt.Sprintf("%s - %s (%d)", sourceID, description, count))
+	}
+	if len(readmeSources) == 0 {
+		readmeSources = append(readmeSources, "(none)")
+	}
+	contents := fmt.Sprintf(`# Exported Documentation
+Documentation exported from `+"`"+`%s`+"`"+` on `+"`"+`%s`+"`"+`
+
+**Includes**:
+  - `+"`"+`%s`+"`"+`
+
+**Excludes**:
+  - `+"`"+`%s`+"`"+`
+
+**Documents Exported**: %d
+
+## Sources
+- %s
+`, inputPath, date, strings.Join(readmeIncludes, "`\n  - `"), strings.Join(readmeExcludes, "`\n  - `"), len(documents), strings.Join(readmeSources, "\n- "))
+	readmePath := path.Join(outputPath, "README.md")
+	var file *os.File
+	file, err = os.Create(readmePath)
+	if err != nil {
+		slog.Debug("action.exportFs could not create file", "readmePath", readmePath, "error", err)
+		return
+	}
+	defer file.Close()
+	_, err = file.WriteString(contents)
+	if err != nil {
+		slog.Debug("action.exportFs could not write string to file", "readmePath", readmePath, "error", err)
+		return
+	}
 
 	return
 }
