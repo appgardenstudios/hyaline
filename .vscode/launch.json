@@ -206,7 +206,7 @@
         "--documentation", "../.vscode/hyaline/serve-mcp/documentation.sqlite"
       ]
     },{
-      "name": "Export Documentation",
+      "name": "Export Documentation (fs)",
       "type": "go",
       "request": "launch",
       "mode": "debug",
