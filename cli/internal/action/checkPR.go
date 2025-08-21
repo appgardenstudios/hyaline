@@ -289,7 +289,7 @@ func mergeCheckRecommendations(newRecs []CheckRecommendation, existingRecs []Che
 			}
 		}
 
-		// If no match was found, merge the existing recommendation
+		// If no match was found, append it
 		if !match {
 			mergedRec := existingRec
 			// Call mergeCheckReasons with an empty newReasons so that outdated old reasons still get marked outdated
