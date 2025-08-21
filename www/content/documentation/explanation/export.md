@@ -9,7 +9,7 @@ purpose: Explain how Hyaline exports documentation, including the available form
 
 ![Overview](./_img/export-overview.svg)
 
-Hyaline has the ability to export your extracted documentation into a variety of formats. You can use hyaline to generate a llms-full.txt file for use with internal libraries, output all your documentation to JSON for use in an external system, dump all your documentation to disk so you can publish or archive it, or simply use the export to get a filtered data set from your centralized extract as a SQLite database.
+Hyaline has the ability to export your extracted documentation into a variety of formats. You can use hyaline to generate an llms-full.txt file for use with internal libraries, output all your documentation to JSON for use in an external system, dump all your documentation to disk so you can publish or archive it, or simply use export to get a filtered data set from your centralized documentation as an SQLite database.
 
 When you export you can include or exclude specific sources or documentation using a set of document URIs (see the `hyaline export` command in the [CLI Reference](../reference/cli.md) for more information).
 

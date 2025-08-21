@@ -93,7 +93,7 @@ func ExportDocumentation(args *ExportDocumentationArgs) error {
 	_, err = os.Stat(outputAbsPath)
 	if err == nil {
 		slog.Debug("action.ExportDocumentation detected that output already exists", "absPath", outputAbsPath)
-		return errors.New("output file already exists")
+		return errors.New("output path already exists")
 	}
 
 	// Open Documentation database
@@ -182,6 +182,7 @@ func exportFs(documents []*docs.FilteredDoc, sources map[string]*sqlite.SOURCE, 
 		} else {
 			filename = filepath.Base(document.Document.ID)
 		}
+		// Only add ".md" to the filename if it doesn't exist so we don't end up with file.md.md
 		if !strings.HasSuffix(filename, ".md") {
 			filename = filename + ".md"
 		}
