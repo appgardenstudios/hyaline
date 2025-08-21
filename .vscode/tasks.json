@@ -106,7 +106,7 @@
     },{
       "label": "export-documentation",
       "type": "shell",
-      "command": "rm -rf ../.vscode/hyaline/export-documentation/fs",
+      "command": "rm -rf ../.vscode/hyaline/export-documentation/fs ../.vscode/hyaline/export-documentation/llms-full.txt",
       "options":{
         "cwd": "${workspaceFolder}/cli/"
       },
