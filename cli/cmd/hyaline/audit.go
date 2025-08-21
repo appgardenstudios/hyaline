@@ -29,7 +29,7 @@ func Audit(logLevel *slog.LevelVar) *cli.Command {
 					&cli.StringFlag{
 						Name:     "new-flag",
 						Required: true,
-						Usage:    "The path to the new flag",
+						Usage:    "The path to the new flag.",
 					},
 					&cli.StringSliceFlag{
 						Name:     "source",
