@@ -2,191 +2,311 @@ package action
 
 import (
 	"hyaline/internal/check"
-	"reflect"
 	"strings"
 	"testing"
 )
 
-func TestCheckPRMergeRecs(t *testing.T) {
-	newRec1 := CheckRecommendation{
-		Source:   "source",
-		Document: "doc1",
-		Reasons:  []check.Reason{{Reason: "newRec1"}},
-		Checked:  false,
+func createTestReason(reason string, checkType check.DiffCheckType, file string, contextHash string, outdated bool) check.Reason {
+	return check.Reason{
+		Reason:   reason,
+		Outdated: outdated,
+		Check: check.DiffCheck{
+			Type:        checkType,
+			File:        file,
+			ContextHash: contextHash,
+		},
 	}
-	existingRec1 := CheckRecommendation{
-		Source:   "source",
-		Document: "doc1",
-		Reasons:  []check.Reason{{Reason: "existingRec1"}},
-		Checked:  false,
+}
+
+func TestMergeCheckRecommendations_NewOnly(t *testing.T) {
+	newRec := CheckRecommendation{
+		Source:   "docs",
+		Document: "README.md",
+		Reasons:  []check.Reason{createTestReason("New file added", check.DiffCheckTypeLLM, "main.go", "hash1", false)},
 	}
-	newToExistingRec1 := CheckRecommendation{
-		Source:   "source",
-		Document: "doc1",
-		Reasons:  []check.Reason{{Reason: "newRec1"}},
-		Checked:  false,
+
+	contextHashes := check.FileCheckContextHashes{
+		"main.go": {check.DiffCheckTypeLLM: "hash1"},
 	}
-	mergedRec1 := CheckRecommendation{
-		Source:   "source",
-		Document: "doc1",
-		Reasons:  []check.Reason{{Reason: "existingRec1"}, {Reason: "newRec1"}},
-		Checked:  false,
+
+	result := mergeCheckRecommendations([]CheckRecommendation{newRec}, []CheckRecommendation{}, contextHashes)
+
+	if len(result) != 1 {
+		t.Errorf("Expected 1 recommendation, got %d", len(result))
 	}
-	newRec1wSection := CheckRecommendation{
-		Source:   "source",
-		Document: "doc1",
-		Section:  []string{"section1", "section2"},
-		Reasons:  []check.Reason{{Reason: "newRec1"}},
-		Checked:  false,
+	if result[0].Outdated {
+		t.Errorf("Expected recommendation to not be outdated")
 	}
-	existingRec1wSection := CheckRecommendation{
-		Source:   "source",
-		Document: "doc1",
-		Section:  []string{"section1", "section2"},
-		Reasons:  []check.Reason{{Reason: "existingRec1"}},
-		Checked:  false,
-	}
-	mergedRec1wSection := CheckRecommendation{
-		Source:   "source",
-		Document: "doc1",
-		Section:  []string{"section1", "section2"},
-		Reasons:  []check.Reason{{Reason: "existingRec1"}, {Reason: "newRec1"}},
-		Checked:  false,
-	}
-	newRec2 := CheckRecommendation{
-		Source:   "source",
-		Document: "doc0",
-		Reasons:  []check.Reason{{Reason: "newRec2"}},
-		Checked:  false,
-	}
-	newToExistingRec2 := CheckRecommendation{
-		Source:   "source",
-		Document: "doc0",
-		Reasons:  []check.Reason{{Reason: "newRec2"}},
-		Checked:  false,
-	}
-	newChangedRec1 := CheckRecommendation{
-		Source:   "source",
-		Document: "doc1",
-		Reasons:  []check.Reason{{Reason: "newRec1"}},
-		Checked:  true,
-	}
-	existingCheckedRec1 := CheckRecommendation{
-		Source:   "source",
-		Document: "doc1",
-		Reasons:  []check.Reason{{Reason: "existingRec1"}},
-		Checked:  true,
-	}
-	mergedCheckedRec1 := CheckRecommendation{
-		Source:   "source",
-		Document: "doc1",
-		Reasons:  []check.Reason{{Reason: "existingRec1"}, {Reason: "newRec1"}},
+}
+
+func TestMergeCheckRecommendations_ExistingOnly(t *testing.T) {
+	existingRec := CheckRecommendation{
+		Source:   "docs",
+		Document: "README.md",
+		Reasons:  []check.Reason{createTestReason("Existing reason", check.DiffCheckTypeLLM, "main.go", "hash1", false)},
 		Checked:  true,
 	}
 
-	tests := []struct {
-		newRecs      []CheckRecommendation
-		existingRecs []CheckRecommendation
-		mergedRecs   []CheckRecommendation
-	}{
-		// 1 existing rec, no new recs
-		{
-			[]CheckRecommendation{},
-			[]CheckRecommendation{existingRec1},
-			[]CheckRecommendation{existingRec1},
-		},
-		// 0 existing recs, 1 new rec
-		{
-			[]CheckRecommendation{newRec1},
-			[]CheckRecommendation{},
-			[]CheckRecommendation{newToExistingRec1},
-		},
-		// Existing and new recs the same (+ merge reasons)
-		{
-			[]CheckRecommendation{newRec1},
-			[]CheckRecommendation{existingRec1},
-			[]CheckRecommendation{mergedRec1},
-		},
-		// Existing and new recs the same w/ sections (+ merge reasons)
-		{
-			[]CheckRecommendation{newRec1wSection},
-			[]CheckRecommendation{existingRec1wSection},
-			[]CheckRecommendation{mergedRec1wSection},
-		},
-		// Existing rec and new rec (new rec sorts before existing rec)
-		{
-			[]CheckRecommendation{newRec2},
-			[]CheckRecommendation{existingRec1},
-			[]CheckRecommendation{newToExistingRec2, existingRec1},
-		},
-		// Existing rec w/ section, new rec same document (but not section)
-		{
-			[]CheckRecommendation{newRec1},
-			[]CheckRecommendation{existingRec1wSection},
-			[]CheckRecommendation{newToExistingRec1, existingRec1wSection},
-		},
-		// Existing rec unchecked, new rec changed
-		{
-			[]CheckRecommendation{newChangedRec1},
-			[]CheckRecommendation{existingRec1},
-			[]CheckRecommendation{mergedCheckedRec1},
-		},
-		// Existing rec checked, new rec unchanged
-		{
-			[]CheckRecommendation{newRec1},
-			[]CheckRecommendation{existingCheckedRec1},
-			[]CheckRecommendation{mergedCheckedRec1},
+	contextHashes := check.FileCheckContextHashes{
+		"main.go": {check.DiffCheckTypeLLM: "hash1"},
+	}
+
+	result := mergeCheckRecommendations([]CheckRecommendation{}, []CheckRecommendation{existingRec}, contextHashes)
+
+	if len(result) != 1 {
+		t.Errorf("Expected 1 recommendation, got %d", len(result))
+	}
+	if result[0].Outdated {
+		t.Errorf("Expected recommendation to not be outdated")
+	}
+	if !result[0].Checked {
+		t.Errorf("Expected recommendation to remain checked")
+	}
+}
+
+func TestMergeCheckRecommendations_ExistingOutdated(t *testing.T) {
+	existingRec := CheckRecommendation{
+		Source:   "docs",
+		Document: "README.md",
+		Reasons:  []check.Reason{createTestReason("Old reason", check.DiffCheckTypeLLM, "main.go", "old-hash", false)},
+		Checked:  true,
+	}
+
+	contextHashes := check.FileCheckContextHashes{
+		"main.go": {check.DiffCheckTypeLLM: "new-hash"},
+	}
+
+	result := mergeCheckRecommendations([]CheckRecommendation{}, []CheckRecommendation{existingRec}, contextHashes)
+
+	if len(result) != 1 {
+		t.Errorf("Expected 1 recommendation, got %d", len(result))
+	}
+	if !result[0].Outdated {
+		t.Errorf("Expected recommendation to be outdated")
+	}
+	if !result[0].Reasons[0].Outdated {
+		t.Errorf("Expected reason to be marked as outdated")
+	}
+}
+
+func TestMergeCheckRecommendations_MergeMatching(t *testing.T) {
+	newRec := CheckRecommendation{
+		Source:   "docs",
+		Document: "README.md",
+		Reasons:  []check.Reason{createTestReason("New LLM reason", check.DiffCheckTypeLLM, "main.go", "hash2", false)},
+	}
+
+	existingRec := CheckRecommendation{
+		Source:   "docs",
+		Document: "README.md",
+		Reasons:  []check.Reason{createTestReason("Existing touched reason", check.DiffCheckTypeUpdateIfTouched, "main.go", "hash1", false)},
+		Checked:  true,
+	}
+
+	contextHashes := check.FileCheckContextHashes{
+		"main.go": {
+			check.DiffCheckTypeLLM:             "hash2",
+			check.DiffCheckTypeUpdateIfTouched: "hash3",
 		},
 	}
 
-	for i, test := range tests {
-		recs := mergeCheckRecommendations(test.newRecs, test.existingRecs)
+	result := mergeCheckRecommendations([]CheckRecommendation{newRec}, []CheckRecommendation{existingRec}, contextHashes)
 
-		if !reflect.DeepEqual(recs, test.mergedRecs) {
-			t.Errorf("%d: got %v, expected %v", i, recs, test.mergedRecs)
-		}
+	if len(result) != 1 {
+		t.Errorf("Expected 1 recommendation, got %d", len(result))
+	}
+	if len(result[0].Reasons) != 2 {
+		t.Errorf("Expected 2 reasons, got %d", len(result[0].Reasons))
+	}
+	if !result[0].Checked {
+		t.Errorf("Expected to preserve checked state")
+	}
+
+	// Non-outdated reasons sort first
+	if result[0].Reasons[0].Outdated {
+		t.Errorf("Expected first reason to be current")
+	}
+	if !result[0].Reasons[1].Outdated {
+		t.Errorf("Expected second reason to be outdated")
+	}
+	if result[0].Outdated {
+		t.Errorf("Expected recommendation to not be outdated")
+	}
+}
+
+func TestMergeCheckRecommendations_DifferentDocuments(t *testing.T) {
+	newRec := CheckRecommendation{
+		Source:   "docs",
+		Document: "API.md",
+		Reasons:  []check.Reason{createTestReason("New API change", check.DiffCheckTypeLLM, "api.go", "hash1", false)},
+	}
+
+	existingRec := CheckRecommendation{
+		Source:   "docs",
+		Document: "README.md",
+		Reasons:  []check.Reason{createTestReason("Existing readme update", check.DiffCheckTypeLLM, "main.go", "hash2", false)},
+		Checked:  true,
+	}
+
+	contextHashes := check.FileCheckContextHashes{
+		"api.go":  {check.DiffCheckTypeLLM: "hash1"},
+		"main.go": {check.DiffCheckTypeLLM: "hash2"},
+	}
+
+	result := mergeCheckRecommendations([]CheckRecommendation{newRec}, []CheckRecommendation{existingRec}, contextHashes)
+
+	if len(result) != 2 {
+		t.Errorf("Expected 2 recommendations, got %d", len(result))
+	}
+
+	// Sorted alphabetically by document: API.md, README.md
+	if result[0].Document != "API.md" {
+		t.Errorf("Expected first document to be API.md, got %s", result[0].Document)
+	}
+	if result[0].Outdated {
+		t.Errorf("Expected API.md to not be outdated")
+	}
+	if result[1].Document != "README.md" {
+		t.Errorf("Expected second document to be README.md, got %s", result[1].Document)
+	}
+	if result[1].Outdated {
+		t.Errorf("Expected README.md to not be outdated")
+	}
+}
+
+func TestMergeCheckRecommendations_EmptyContextHashes(t *testing.T) {
+	existingRec := CheckRecommendation{
+		Source:   "docs",
+		Document: "README.md",
+		Reasons:  []check.Reason{createTestReason("Existing reason", check.DiffCheckTypeLLM, "main.go", "some-hash", false)},
+		Checked:  true,
+	}
+
+	result := mergeCheckRecommendations([]CheckRecommendation{}, []CheckRecommendation{existingRec}, make(check.FileCheckContextHashes))
+
+	if len(result) != 1 {
+		t.Errorf("Expected 1 recommendation, got %d", len(result))
+	}
+	if !result[0].Outdated {
+		t.Errorf("Expected recommendation to be outdated")
+	}
+	if !result[0].Reasons[0].Outdated {
+		t.Errorf("Expected reason to be outdated")
+	}
+}
+
+func TestMergeCheckRecommendations_MatchingReasons(t *testing.T) {
+	newRec := CheckRecommendation{
+		Source:   "docs",
+		Document: "README.md",
+		Reasons:  []check.Reason{createTestReason("New reason", check.DiffCheckTypeLLM, "main.go", "new-hash", false)},
+	}
+
+	existingRec := CheckRecommendation{
+		Source:   "docs",
+		Document: "README.md",
+		Reasons:  []check.Reason{createTestReason("Old reason", check.DiffCheckTypeLLM, "main.go", "old-hash", true)},
+		Checked:  true,
+		Outdated: true,
+	}
+
+	contextHashes := check.FileCheckContextHashes{
+		"main.go": {check.DiffCheckTypeLLM: "new-hash"},
+	}
+
+	result := mergeCheckRecommendations([]CheckRecommendation{newRec}, []CheckRecommendation{existingRec}, contextHashes)
+
+	if len(result) != 1 {
+		t.Errorf("Expected 1 recommendation, got %d", len(result))
+	}
+	if len(result[0].Reasons) != 1 {
+		t.Errorf("Expected 1 reason, got %d", len(result[0].Reasons))
+	}
+	if !result[0].Checked {
+		t.Errorf("Expected to preserve checked state")
+	}
+	if result[0].Reasons[0].Outdated {
+		t.Errorf("Expected reason not to be outdated")
+	}
+	if result[0].Reasons[0].Reason != "New reason" {
+		t.Errorf("Expected new reason, got: %s", result[0].Reasons[0].Reason)
 	}
 }
 
 func TestCheckPRParseComment(t *testing.T) {
 	recs := []CheckRecommendation{
 		{
-			Source:   "source",
-			Document: "document",
-			Section:  []string{"section1", "section2"},
-			Reasons:  []check.Reason{{Reason: "reason1"}, {Reason: "reason2"}},
-			Checked:  false,
+			Source:   "docs",
+			Document: "README.md",
+			Section:  []string{"getting-started"},
+			Reasons:  []check.Reason{createTestReason("API endpoint changed", check.DiffCheckTypeLLM, "api.go", "hash1", false)},
+		},
+		{
+			Source:   "docs",
+			Document: "API.md",
+			Reasons: []check.Reason{
+				createTestReason("Old requirement", check.DiffCheckTypeLLM, "old-file.go", "old-hash", true),
+				createTestReason("This is outdated", check.DiffCheckTypeUpdateIfTouched, "removed.go", "outdated-hash", true),
+			},
+			Checked:  true,
+			Outdated: true,
 		},
 	}
+
 	output := CheckOutput{
 		Recommendations: recs,
-		Head:            "sha",
-		Base:            "base",
+		Head:            "commit-sha-123",
+		Base:            "main",
 	}
+
 	formattedComment := formatCheckPRComment(&output)
 
-	// mark everything as checked
-	formattedComment = strings.ReplaceAll(formattedComment, "- [ ]", "- [x]")
-
-	expectedOutput := CheckOutput{
-		Recommendations: []CheckRecommendation{
-			{
-				Source:   "source",
-				Document: "document",
-				Section:  []string{"section1", "section2"},
-				Reasons:  []check.Reason{{Reason: "reason1"}, {Reason: "reason2"}},
-				Checked:  true,
-			},
-		},
-		Head: "sha",
-		Base: "base",
+	if !strings.Contains(formattedComment, "### Recommendations") {
+		t.Errorf("Missing recommendations section")
+	}
+	if !strings.Contains(formattedComment, "Changes have caused the following recommendations to be outdated") {
+		t.Errorf("Missing outdated recommendations section")
 	}
 
-	existingOutput, err := parseCheckPRComment(formattedComment)
+	formattedComment = strings.ReplaceAll(formattedComment, "- [ ]", "- [x]")
+
+	parsedOutput, err := parseCheckPRComment(formattedComment)
 	if err != nil {
 		t.Fatal(err)
 	}
-	if !reflect.DeepEqual(expectedOutput, *existingOutput) {
-		t.Errorf("got %v, expected %v", *existingOutput, expectedOutput)
+
+	if len(parsedOutput.Recommendations) != 2 {
+		t.Errorf("Expected 2 recommendations, got %d", len(parsedOutput.Recommendations))
+	}
+
+	// Non-outdated first, then by document: README.md, API.md
+	currentRec := &parsedOutput.Recommendations[0]
+	outdatedRec := &parsedOutput.Recommendations[1]
+
+	if currentRec.Document != "README.md" {
+		t.Errorf("Expected first to be README.md, got %s", currentRec.Document)
+	}
+	if !currentRec.Checked {
+		t.Errorf("Expected current rec to be checked")
+	}
+	if currentRec.Outdated {
+		t.Errorf("Expected current rec to not be outdated")
+	}
+
+	if outdatedRec.Document != "API.md" {
+		t.Errorf("Expected second to be API.md, got %s", outdatedRec.Document)
+	}
+	if !outdatedRec.Outdated {
+		t.Errorf("Expected outdated rec to be outdated")
+	}
+	if !outdatedRec.Checked {
+		t.Errorf("Expected outdated rec to preserve checked state")
+	}
+
+	if len(currentRec.Reasons) != 1 {
+		t.Errorf("Expected current rec to have 1 reason, got %d", len(currentRec.Reasons))
+	}
+	if len(outdatedRec.Reasons) != 2 {
+		t.Errorf("Expected outdated rec to have 2 reasons, got %d", len(outdatedRec.Reasons))
 	}
 }

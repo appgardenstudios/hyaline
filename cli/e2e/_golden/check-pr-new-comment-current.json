@@ -6,11 +6,18 @@
       "recommendation": "Consider reviewing and updating this documentation",
       "reasons": [
         {
-          "reason": "Update this document if any files matching **/* were touched."
+          "reason": "Update this document if any files matching `**/*` were touched (matching file: subdir/subdirfile.js).",
+          "outdated": false,
+          "check": {
+            "type": "UPDATE_IF_TOUCHED",
+            "file": "subdir/subdirfile.js",
+            "contextHash": "95cdc207"
+          }
         }
       ],
       "changed": true,
-      "checked": true
+      "checked": true,
+      "outdated": false
     },
     {
       "documentationSource": "my-app",
@@ -18,11 +25,18 @@
       "recommendation": "Consider reviewing and updating this documentation",
       "reasons": [
         {
-          "reason": "Update this document if any files matching **/*.js were touched."
+          "reason": "Update this document if any files matching `**/*.js` were touched (matching file: subdir/subdirfile.js).",
+          "outdated": false,
+          "check": {
+            "type": "UPDATE_IF_TOUCHED",
+            "file": "subdir/subdirfile.js",
+            "contextHash": "95cdc207"
+          }
         }
       ],
       "changed": false,
-      "checked": false
+      "checked": false,
+      "outdated": false
     }
   ],
   "head": "33576658eabc453a79a4f57d6a88c3a54f94e895",

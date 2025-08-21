@@ -180,12 +180,13 @@ The schema for the recommendations output can be viewed [here](../reference/reco
 
 The comment on the pull request contains the following:
 
-- The Git SHA of the commit that was compared
-- A list of recommendations where each one has:
-  - A checkbox used to indicate that the recommendation for the document/section has been addressed
-  - The name of the document (and section if applicable)
-  - The documentation source name
-  - The list of reasons the documentation should be updated
+- The Git SHA of the commit that was compared.
+- A list of recommendations, where each one has:
+  - A checkbox used to indicate that the recommendation for the document/section has been addressed.
+  - The name of the document (and section if applicable).
+  - The system and documentation source name.
+  - The list of reasons the documentation should be updated. If a reason is outdated, it is crossed out and marked as "(Outdated)".
+- A list of outdated recommendations when there are recommendations that only have outdated reasons.
 
 </div>
 
@@ -197,10 +198,9 @@ The comment on the pull request contains the following:
 
 If `hyaline check pr` is run more than once for the same PR, Hyaline will update the previous comment instead of creating a new one. This ensures that the comment from Hyaline always stays up-to-date with the latest changes. When updating Hyaline merges the original set of recommendations with the new set as follows:
 
-1. Any original recommendation for a document or section that does not have a corresponding match in the new set is copied over as is.
-2. Any new recommendation for a document or section that does not have a corresponding match in the original set is used as is.
-3. Any original recommendation for a document or section that does have a match in the new set is merged, and the new set of reasons is appended to the original set of reasons before being used.
-4. The final set of recommendations is sorted by source, document, and section
+1. All current recommendations are copied over as-is.
+2. All previous recommendations are merged, and any reasons that are no longer valid because the relevant context changed are marked "outdated".
+3. If a previous recommendation only has outdated reasons, it is moved into an outdated recommendations section in the comment.
 
 Note that the state of the checkboxes are preserved, allowing you to track which recommendations have been addressed. Hyaline will automatically check the box if it detects that the document has been updated as a part of the PR (provided it is configured to perform that check).
 
