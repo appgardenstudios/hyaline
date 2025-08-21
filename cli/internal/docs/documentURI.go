@@ -2,6 +2,7 @@ package docs
 
 import (
 	"fmt"
+	"hyaline/internal/config"
 	"net/url"
 	"sort"
 	"strings"
@@ -24,6 +25,19 @@ func (t Tags) SortedKeys() []string {
 	// Sort for deterministic order
 	sort.Strings(keys)
 	return keys
+}
+
+func (t Tags) ToDocumentationFilterTags() (tags []config.DocumentationFilterTag) {
+	for key, values := range t {
+		for _, value := range values {
+			tags = append(tags, config.DocumentationFilterTag{
+				Key:   key,
+				Value: value,
+			})
+		}
+	}
+
+	return
 }
 
 // NewTags creates a new Tags instance

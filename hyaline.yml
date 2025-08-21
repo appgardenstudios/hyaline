@@ -106,6 +106,8 @@ extract:
       purpose: "Document how to run the Hyaline MCP Server"
     - document: "www/content/documentation/how-to/check-pr.md"
       purpose: "How to check a PR using the Hyaline CLI"
+    - document: "www/content/documentation/how-to/export-documentation.md"
+      purpose: "How to export documentation using the Hyaline CLI"
 
     # www - documentation - explanation
     - document: "www/content/documentation/explanation/hyaline.md"
@@ -120,6 +122,8 @@ extract:
       purpose: "Explain how Hyaline merge documentation works"
     - document: "www/content/documentation/explanation/mcp.md"
       purpose: "Explain how Hyaline's MCP server works"
+    - document: "www/content/documentation/explanation/export.md"
+      purpose: "Explain how Hyaline exports documentation in various formats"
 
     # www - documentation - reference
     - document: "www/content/documentation/reference/cli.md"
@@ -145,6 +149,8 @@ extract:
     - document: "www/content/documentation/reference/mcp.md"
       section: "Prompts"
       purpose: "Document all the available prompts the Hyaline MCP server provides"
+    - document: "www/content/documentation/reference/export.md"
+      purpose: "Detail the various export output formats that Hyaline supports"
 
 # Check configuration
 check:

@@ -15,6 +15,8 @@ items:
         url: /documentation/how-to/build-cli
       - title: Run the MCP Server
         url: /documentation/how-to/run-mcp
+      - title: Export Documentation
+        url: /documentation/how-to/export-documentation
   - title: Explanation
     items:
       - title: Hyaline
@@ -29,6 +31,8 @@ items:
         url: /documentation/explanation/merge
       - title: MCP
         url: /documentation/explanation/mcp
+      - title: Export
+        url: /documentation/explanation/export
   - title: Reference
     items:
       - title: Config
@@ -45,5 +49,7 @@ items:
         url: /documentation/reference/github-actions
       - title: MCP
         url: /documentation/reference/mcp
+      - title: Export
+        url: /documentation/reference/export
   - title: Roadmap
     url: /documentation/roadmap
