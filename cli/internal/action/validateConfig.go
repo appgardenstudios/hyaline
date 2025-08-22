@@ -63,6 +63,7 @@ func ValidateConfig(args *ValidateConfigArgs) error {
 		return fmt.Errorf("output file already exists")
 	}
 
+	// Initialize our result
 	result := ValidateConfigOutput{}
 
 	// Check overall config
@@ -132,14 +133,12 @@ func ValidateConfig(args *ValidateConfigArgs) error {
 		slog.Debug("action.ValidateConfig could not marshal JSON", "error", err)
 		return err
 	}
-
 	outputFile, err := os.Create(outputAbsPath)
 	if err != nil {
 		slog.Debug("action.ValidateConfig could not create output file", "error", err)
 		return err
 	}
 	defer outputFile.Close()
-
 	_, err = outputFile.Write(jsonData)
 	if err != nil {
 		slog.Debug("action.ValidateConfig could not write output file", "error", err)
