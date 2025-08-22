@@ -241,6 +241,21 @@
         "--exclude", "document://*/cli/*",
         "--output", "../.vscode/hyaline/export-documentation/llms-full.txt"
       ]
+    },{
+      "name": "Validate Config",
+      "type": "go",
+      "request": "launch",
+      "mode": "debug",
+      "preLaunchTask": "validate-config",
+      "cwd": "${workspaceFolder}/cli/",
+      "program": "${workspaceFolder}/cli/cmd/hyaline.go",
+      "envFile": "${workspaceFolder}/cli/.env",
+      "args":[
+        "--debug",
+        "validate", "config",
+        "--config", "../.vscode/hyaline/validate-config/hyaline.yml",
+        "--output", "../.vscode/hyaline/validate-config/output.json"
+      ]
     }
   ]
 }

@@ -99,7 +99,7 @@ func CheckDiff(args *CheckDiffArgs) error {
 		"output", args.Output)
 
 	// Load Config
-	cfg, err := config.Load(args.Config)
+	cfg, err := config.Load(args.Config, true)
 	if err != nil {
 		slog.Debug("action.CheckDiff could not load the config", "error", err)
 		return err

@@ -48,6 +48,7 @@ func main() {
 			hyaline.Audit(logLevel),
 			hyaline.Serve(logLevel, Version),
 			hyaline.Export(logLevel),
+			hyaline.Validate(logLevel),
 		},
 	}
 

@@ -44,7 +44,7 @@ func CheckPR(args *CheckPRArgs) error {
 	)
 
 	// Load Config
-	cfg, err := config.Load(args.Config)
+	cfg, err := config.Load(args.Config, true)
 	if err != nil {
 		slog.Debug("action.CheckPR could not load the config", "error", err)
 		return err

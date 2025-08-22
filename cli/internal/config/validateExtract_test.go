@@ -163,7 +163,7 @@ func TestValidateExtract(t *testing.T) {
 			Extract: test.extract,
 		}
 
-		err := validateExtract(cfg)
+		err := ValidateExtract(cfg)
 
 		if test.err == "" && err != nil {
 			t.Errorf("test %d - expected no error, got error: %s", i, err.Error())

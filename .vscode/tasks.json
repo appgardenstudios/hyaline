@@ -113,6 +113,16 @@
       "presentation":{
         "reveal": "silent"
       }
+    },{
+      "label": "validate-config",
+      "type": "shell",
+      "command": "rm -rf ../.vscode/hyaline/validate-config/output.json",
+      "options":{
+        "cwd": "${workspaceFolder}/cli/"
+      },
+      "presentation":{
+        "reveal": "silent"
+      }
     }
   ]
 }

@@ -10,7 +10,7 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-func Load(path string) (cfg *Config, err error) {
+func Load(path string, validate bool) (cfg *Config, err error) {
 	slog.Debug("config.Load config starting")
 	// Read file from disk
 	absPath, err := filepath.Abs(path)
@@ -37,10 +37,12 @@ func Load(path string) (cfg *Config, err error) {
 	}
 
 	// Validate
-	err = validate(cfg)
-	if err != nil {
-		slog.Debug("config.Load found an invalid config", "error", err)
-		return
+	if validate {
+		err = Validate(cfg)
+		if err != nil {
+			slog.Debug("config.Load found an invalid config", "error", err)
+			return
+		}
 	}
 
 	slog.Debug("config.Load config complete")

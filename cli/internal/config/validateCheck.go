@@ -8,7 +8,7 @@ import (
 	"github.com/bmatcuk/doublestar/v4"
 )
 
-func validateCheck(cfg *Config) error {
+func ValidateCheck(cfg *Config) error {
 	// If check was not defined in the config don't check anything.
 	// Check is not always required, so actions requiring the config need to check for nil themselves
 	if cfg.Check == nil {
