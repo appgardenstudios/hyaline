@@ -48,6 +48,7 @@ Ready to streamline your documentation workflow? Have technical questions about 
 
 **Contact us**: [john@hyaline.dev](mailto:john@hyaline.dev)
 
+
 # www/content/documentation/_index.md
 Source: document://hyaline/www/content/documentation/_index.md
 
@@ -55,6 +56,7 @@ Source: document://hyaline/www/content/documentation/_index.md
 title: "Documentation"
 description: "Documentation to understand and use Hyaline effectively"
 ---
+
 
 # Overview
 Source: document://hyaline/www/content/documentation/explanation/audit.md
@@ -280,6 +282,7 @@ Once Hyaline completes the audit, it generates a JSON file containing detailed r
 
 For detailed information about the results schema, see the [Audit Results Reference](../reference/audit-results.md).
 
+
 # Overview
 Source: document://hyaline/www/content/documentation/explanation/check.md
 
@@ -490,6 +493,7 @@ If `hyaline check pr` is run more than once for the same PR, Hyaline will update
 Note that the state of the checkboxes are preserved, allowing you to track which recommendations have been addressed. Hyaline will automatically check the box if it detects that the document has been updated as a part of the PR (provided it is configured to perform that check).
 
 </div>
+
 
 # Overview
 Source: document://hyaline/www/content/documentation/explanation/extract.md
@@ -768,6 +772,7 @@ In this example you can see a document that have been extracted. Based on the co
 ## Next Steps
 Read on about how [checking documentation](./check.md) works, or visit the [configuration reference documentation](../reference/config.md) to see how to configure Hyaline to extract your documentation.
 
+
 # Introduction
 Source: document://hyaline/www/content/documentation/explanation/hyaline.md
 
@@ -870,6 +875,7 @@ Regardless of the type of documentation your organization maintains, Hyaline can
 ## Next Steps
 Continue reading about various Hyaline concepts such as [extract](./extract.md), or get started by visiting [getting started](../getting-started.md).
 
+
 # Overview
 Source: document://hyaline/www/content/documentation/explanation/mcp.md
 
@@ -941,6 +947,7 @@ Example filtering URIs:
 ## Next Steps
 You can go read the [MCP reference](../reference/mcp.md) to see details on the tools exposed by the MCP server, or go and view the [CLI reference](../reference/cli.md) to see how to run the MCP server.
 
+
 # Overview
 Source: document://hyaline/www/content/documentation/explanation/merge.md
 
@@ -971,6 +978,7 @@ When merging, Hyaline does the following:
 The final output database contains all three sources: **Source 1** from **Input 1**, **Source 2** from **Input 2**, and **Source 3** from **Input 2**.
 
 </div>
+
 
 # What You'll Learn
 Source: document://hyaline/www/content/documentation/getting-started.md
@@ -1116,6 +1124,7 @@ For detailed MCP setup instructions, see [How To: Run the MCP Server](./how-to/r
 ## Next Steps
 To set up GitHub Actions for automatic PR checks visit [How To: Check a PR](./how-to/check-pr.md), or see the [CLI Reference](./reference/cli.md) for complete command documentation.
 
+
 # Purpose
 Source: document://hyaline/www/content/documentation/how-to/build-cli.md
 
@@ -1168,6 +1177,7 @@ $ ./hyaline version
 ## Next Steps
 Visit [CLI Reference](../reference/cli.md).
 
+
 # Purpose
 Source: document://hyaline/www/content/documentation/how-to/check-pr.md
 
@@ -1201,6 +1211,7 @@ Alternatively you could set Hyaline up to be run [manually on dispatch](https://
 
 ## Next Steps
 Visit [Config Reference](../reference/config.md), [GitHub Actions Reference](../reference/github-actions.md), or [Check Explanation](../explanation/check.md).
+
 
 # Purpose
 Source: document://hyaline/www/content/documentation/how-to/install-cli.md
@@ -1236,6 +1247,7 @@ Depending on your operating system you will need to do one or more of the follow
 ## Next Steps
 Visit [How To Run the CLI](./run-cli.md) or the [CLI Reference](../reference/cli.md).
 
+
 # Purpose
 Source: document://hyaline/www/content/documentation/how-to/run-cli.md
 
@@ -1266,6 +1278,7 @@ Now you can execute the hyaline command, passing in all of the required and (opt
 
 ## Next Steps
 Visit [CLI Reference](../reference/cli.md) or [How to build the CLI](./build-cli.md).
+
 
 # Purpose
 Source: document://hyaline/www/content/documentation/how-to/run-mcp.md
@@ -1299,6 +1312,7 @@ Please see your client documentation for specific steps.
 ## Next Steps
 Visit the [CLI Reference](../reference/cli.md).
 
+
 # Structure
 Source: document://hyaline/www/content/documentation/overview.md
 
@@ -1323,6 +1337,7 @@ To learn how to get started and install Hyaline please visit [Getting Started](.
 For an in depth explanation of Hyaline itself please visit the [Explanation of Hyaline](./explanation/hyaline.md)
 
 For a reference guide to the CLI please visit the [CLI Reference](./reference/cli.md)
+
 
 # Overview
 Source: document://hyaline/www/content/documentation/reference/audit-results.md
@@ -1411,6 +1426,7 @@ The list of available checks, their associated config property (under `audit.rul
 | TAGS_CONTAINS | `checks.tags.contains` | Verifies required tags are present |
 
 Note: When the `CONTENT_EXISTS` check fails to find matching content, the source, document, section, and uri fields will be empty
+
 
 # Overview
 Source: document://hyaline/www/content/documentation/reference/cli.md
@@ -1566,6 +1582,7 @@ Merge multiple documentation databases `./docs1.db`, `./docs2.db`, and `./docs3.
 $ hyaline serve mcp --documentation ./documentation.db
 ```
 Start a local MCP server using the standard I/O transport and have it use the extracted documentation found in `./documentation.db`.
+
 
 # Overview
 Source: document://hyaline/www/content/documentation/reference/config.md
@@ -2150,6 +2167,7 @@ check:
 
 **uri**: An encoded document URI in the format of `document://<source-id>/<path/of/document.md>#<path/of/section>`. Must start with `document://` and contain at least a source and document glob. Each section (source, document, section) must be a valid [doublestar](https://pkg.go.dev/github.com/bmatcuk/doublestar/v4) glob. Must be set if `source` is not set.
 
+
 # Overview
 Source: document://hyaline/www/content/documentation/reference/data-set.md
 
@@ -2227,6 +2245,7 @@ A tag associated with a section.
 **Primary Key**: (SOURCE_ID, DOCUMENT_ID, SECTION_ID, TAG_KEY, TAG_VALUE)
 
 **Index**: (TAG_KEY, TAG_VALUE)
+
 
 # Overview
 Source: document://hyaline/www/content/documentation/reference/github-actions.md
@@ -2327,6 +2346,7 @@ This action provides the following outputs:
 * `outstanding_recommendations` - The number of recommendations that are unchecked and not marked as completed.
 * `total_recommendations` - The total number of recommendations (sum of `completed_recommendations` and `outstanding_recommendations`)
 
+
 # Overview
 Source: document://hyaline/www/content/documentation/reference/mcp.md
 
@@ -2367,6 +2387,7 @@ Answer a question based on available documentation.
 
 **Arguments**
 - `question` - The question to answer
+
 
 # Overview
 Source: document://hyaline/www/content/documentation/reference/recommendations.md
@@ -2424,6 +2445,7 @@ A list of fields, their types, and a description of each.
 | head | String | The commit hash used as the head reference in the diff |
 | base | String | The commit hash used as the base reference in the diff |
 
+
 # Main Focus
 Source: document://hyaline/www/content/documentation/roadmap.md
 
@@ -2439,6 +2461,7 @@ purpose: Explain at a high level what is coming for Hyaline
 ## Up Next
 * Improving the onboarding experience
 * Recommendation refinements
+
 
 # Security
 Source: document://hyaline/www/content/security.md

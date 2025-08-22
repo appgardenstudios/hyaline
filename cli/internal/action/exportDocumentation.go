@@ -296,12 +296,12 @@ func exportLlmsFullTxt(documents []*docs.FilteredDoc, outputPath string) (err er
 			title = document.Document.ID
 		}
 		if i > 0 {
-			str.WriteString("\n\n")
+			str.WriteString("\n\n\n")
 		}
 		str.WriteString(fmt.Sprintf("# %s\n", title))
 		str.WriteString(fmt.Sprintf("Source: document://%s/%s\n", document.Document.SourceID, document.Document.ID))
 		str.WriteString("\n")
-		str.WriteString(document.Document.ExtractedData)
+		str.WriteString(strings.TrimSpace(document.Document.ExtractedData))
 	}
 
 	// Write output
