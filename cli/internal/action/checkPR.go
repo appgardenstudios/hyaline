@@ -57,6 +57,12 @@ func CheckPR(args *CheckPRArgs) error {
 		return err
 	}
 
+	// If check is disabled, skip
+	if cfg.Check.Disabled {
+		slog.Info("Check disabled. Skipping...")
+		return nil
+	}
+
 	// Ensure GitHub token is available
 	if cfg.GitHub.Token == "" {
 		return errors.New("github token required to retrieve pull-request information")

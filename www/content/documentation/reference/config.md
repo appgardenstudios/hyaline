@@ -54,11 +54,14 @@ Stores the configuration to use when extracting documentation.
 
 ```yaml
 extract:
+  disabled: false
   source:
   crawler:
   extractors:
   metadata:
 ```
+
+**disabled**: If extract is disabled or not. Defaults to false.
 
 **source**: Metadata assigned to the source being extracted.
 
@@ -322,10 +325,13 @@ Stores the configuration to use when checking documentation.
 
 ```yaml
 check:
+  disabled: false
   code:
   documentation:
   options:
 ```
+
+**disabled**: If check is disabled or not. Defaults to false.
 
 **code**: The set of code to evaluate when checking for recommended updates.
 
@@ -451,8 +457,11 @@ Stores the configuration to use when auditing documentation.
 
 ```yaml
 audit:
+  disabled: false
   rules:
 ```
+
+**disabled**: If audit is disabled or not. Defaults to false.
 
 **rules**: A list of audit rules to evaluate against the documentation.
 
