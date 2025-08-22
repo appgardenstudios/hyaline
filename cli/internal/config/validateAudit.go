@@ -13,7 +13,7 @@ func validateAudit(cfg *Config) error {
 	}
 
 	// Check that we have at least one rule
-	if len(cfg.Audit.Rules) == 0 {
+	if !cfg.Audit.Disabled && len(cfg.Audit.Rules) == 0 {
 		return fmt.Errorf("audit.rules must contain at least one entry, none found")
 	}
 

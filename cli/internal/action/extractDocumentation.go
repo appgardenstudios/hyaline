@@ -32,6 +32,12 @@ func ExtractDocumentation(args *ExtractDocumentationArgs) error {
 		return err
 	}
 
+	// If extract is disabled, skip
+	if cfg.Extract.Disabled {
+		slog.Info("Extract disabled. Skipping...")
+		return nil
+	}
+
 	// Initialize our output database
 	docDb, close, err := sqlite.InitOutput(args.Output)
 	if err != nil {

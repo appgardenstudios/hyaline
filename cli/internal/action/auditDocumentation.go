@@ -43,6 +43,12 @@ func AuditDocumentation(args *AuditDocumentationArgs) error {
 		return fmt.Errorf("audit configuration not found in config file")
 	}
 
+	// If audit is disabled, skip
+	if cfg.Audit.Disabled {
+		slog.Info("Audit disabled. Skipping...")
+		return nil
+	}
+
 	// Ensure output JSON file does not exist
 	outputAbsPath, err := filepath.Abs(args.Output)
 	if err != nil {

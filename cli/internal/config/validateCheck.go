@@ -16,7 +16,7 @@ func validateCheck(cfg *Config) error {
 	}
 
 	// Check code
-	if len(cfg.Check.Code.Include) == 0 {
+	if !cfg.Check.Disabled && len(cfg.Check.Code.Include) == 0 {
 		return errors.New("check.code.include must contain at least one entry, none found")
 	}
 	for i, include := range cfg.Check.Code.Include {
@@ -31,7 +31,7 @@ func validateCheck(cfg *Config) error {
 	}
 
 	// Check documentation
-	if len(cfg.Check.Documentation.Include) == 0 {
+	if !cfg.Check.Disabled && len(cfg.Check.Documentation.Include) == 0 {
 		return errors.New("check.documentation.include must contain at least one entry, none found")
 	}
 	for i, include := range cfg.Check.Documentation.Include {

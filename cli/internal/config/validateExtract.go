@@ -16,12 +16,12 @@ func validateExtract(cfg *Config) (err error) {
 	}
 
 	// Check source
-	if !regexp.MustCompile(sourceIDRegex).MatchString(cfg.Extract.Source.ID) {
+	if !cfg.Extract.Disabled && !regexp.MustCompile(sourceIDRegex).MatchString(cfg.Extract.Source.ID) {
 		return fmt.Errorf("extract.source.id must match regex /%s/, found: %s", sourceIDRegex, cfg.Extract.Source.ID)
 	}
 
 	// Check crawler
-	if !cfg.Extract.Crawler.Type.IsValid() {
+	if !cfg.Extract.Disabled && !cfg.Extract.Crawler.Type.IsValid() {
 		return fmt.Errorf("extract.crawler.type must be one of %s, found: %s", cfg.Extract.Crawler.Type.PossibleValues(), cfg.Extract.Crawler.Type)
 	}
 	for i, include := range cfg.Extract.Crawler.Include {
@@ -36,7 +36,7 @@ func validateExtract(cfg *Config) (err error) {
 	}
 
 	// Check extractors
-	if len(cfg.Extract.Extractors) == 0 {
+	if !cfg.Extract.Disabled && len(cfg.Extract.Extractors) == 0 {
 		return errors.New("extract.extractors must contain at least one extractor, none found")
 	}
 	for i, extractor := range cfg.Extract.Extractors {

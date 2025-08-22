@@ -207,6 +207,7 @@ type UpdateIfEntry struct {
 }
 
 type Extract struct {
+	Disabled   bool               `yaml:"disabled,omitempty"`
 	Source     ExtractSource      `yaml:"source,omitempty"`
 	Crawler    ExtractCrawler     `yaml:"crawler,omitempty"`
 	Extractors []ExtractExtractor `yaml:"extractors,omitempty"`
@@ -246,6 +247,7 @@ type ExtractMetadataTag struct {
 }
 
 type Check struct {
+	Disabled      bool               `yaml:"disabled,omitempty"`
 	Code          CheckCode          `yaml:"code,omitempty"`
 	Documentation CheckDocumentation `yaml:"documentation,omitempty"`
 	Options       CheckOptions       `yaml:"options,omitempty"`
@@ -315,7 +317,8 @@ type DocumentationFilterTag struct {
 }
 
 type Audit struct {
-	Rules []AuditRule `yaml:"rules,omitempty"`
+	Disabled bool        `yaml:"disabled,omitempty"`
+	Rules    []AuditRule `yaml:"rules,omitempty"`
 }
 
 type AuditRule struct {
