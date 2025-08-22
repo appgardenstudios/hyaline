@@ -112,6 +112,12 @@ func CheckDiff(args *CheckDiffArgs) error {
 		return err
 	}
 
+	// If check is disabled, skip
+	if cfg.Check.Disabled {
+		slog.Info("Check disabled. Skipping...")
+		return nil
+	}
+
 	// Ensure output file does not exist
 	outputAbsPath, err := filepath.Abs(args.Output)
 	if err != nil {
