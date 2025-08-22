@@ -1,12 +1,9 @@
 package action
 
 import (
-	"encoding/json"
-	"fmt"
 	"hyaline/internal/config"
+	"hyaline/internal/io"
 	"log/slog"
-	"os"
-	"path/filepath"
 )
 
 type ValidateConfigArgs struct {
@@ -52,16 +49,12 @@ func ValidateConfig(args *ValidateConfigArgs) error {
 	}
 
 	// Ensure output JSON file does not exist
-	outputAbsPath, err := filepath.Abs(args.Output)
+	outputFile, err := io.InitOutput(args.Output)
 	if err != nil {
-		slog.Debug("action.ValidateConfig could not get an absolute path for output", "output", args.Output, "error", err)
+		slog.Debug("action.ValidateConfig could not initialize output file", "error", err)
 		return err
 	}
-	_, err = os.Stat(outputAbsPath)
-	if err == nil {
-		slog.Debug("action.ValidateConfig detected that output already exists", "absPath", outputAbsPath)
-		return fmt.Errorf("output file already exists")
-	}
+	defer outputFile.Close()
 
 	// Initialize our result
 	result := ValidateConfigOutput{}
@@ -128,18 +121,7 @@ func ValidateConfig(args *ValidateConfigArgs) error {
 	}
 
 	// Output result
-	jsonData, err := json.MarshalIndent(result, "", "  ")
-	if err != nil {
-		slog.Debug("action.ValidateConfig could not marshal JSON", "error", err)
-		return err
-	}
-	outputFile, err := os.Create(outputAbsPath)
-	if err != nil {
-		slog.Debug("action.ValidateConfig could not create output file", "error", err)
-		return err
-	}
-	defer outputFile.Close()
-	_, err = outputFile.Write(jsonData)
+	err = io.WriteJSON(outputFile, result)
 	if err != nil {
 		slog.Debug("action.ValidateConfig could not write output file", "error", err)
 		return err
