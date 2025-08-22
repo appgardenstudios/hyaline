@@ -171,3 +171,16 @@ Export the documentation in `./documentation.db` in JSON format and output it to
 $ hyaline export documentation --documentation ./documentation.db --format json --output ./export.json --include 'document://frontend/**/*' --exclude 'document://*/**/*?type=customer'
 ```
 Export the documentation in `./documentation.db` in JSON format and output it to the file `./export.json`. Only include documentation from the `frontend` source, but exclude any documentation with the tag `type=customer`.
+
+## validate config
+`hyaline validate config` validates the configuration and outputs the results of the validation. For more information on the validation output see [Config Validation](./config-validation.md).
+
+**Options**:
+* `--config` - (required) Path to the configuration file to validate.
+* `--output` - (required) The file to export the results of the validation to.
+
+**Example**:
+```
+$ hyaline validate config --config ./hyaline.yml --output ./output.json
+```
+Validate the config in `./hyaline.yml` and output it to the file `./output.json`.
