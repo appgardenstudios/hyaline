@@ -11,6 +11,7 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+	"sort"
 	"strings"
 )
 
@@ -145,9 +146,14 @@ func ExportDocumentation(args *ExportDocumentationArgs) error {
 	}
 
 	// Output documentation
-	err = exportFs(documents, sourcesMap, args.Includes, args.Excludes, args.Documentation, outputAbsPath)
+	switch format {
+	case ExportFormatFs:
+		err = exportFs(documents, sourcesMap, args.Includes, args.Excludes, args.Documentation, outputAbsPath)
+	case ExportFormatLlmsFullTxt:
+		err = exportLlmsFullTxt(documents, outputAbsPath)
+	}
 	if err != nil {
-		slog.Debug("action.ExportDocumentation could not export to path", "error", err)
+		slog.Debug("action.ExportDocumentation could not export", "error", err)
 		return err
 	}
 
@@ -260,6 +266,55 @@ Documentation exported from `+"`"+`%s`+"`"+`
 	_, err = file.WriteString(contents)
 	if err != nil {
 		slog.Debug("action.exportFs could not write string to file", "readmePath", readmePath, "error", err)
+		return
+	}
+
+	return
+}
+
+func exportLlmsFullTxt(documents []*docs.FilteredDoc, outputPath string) (err error) {
+	slog.Info(fmt.Sprintf("Exporting %d documents to %s", len(documents), outputPath))
+
+	// Sort documents
+	sort.SliceStable(documents, func(i int, j int) bool {
+		if documents[i].Document.SourceID < documents[j].Document.SourceID {
+			return true
+		}
+		if documents[i].Document.SourceID > documents[j].Document.SourceID {
+			return false
+		}
+		return documents[i].Document.ID < documents[j].Document.ID
+	})
+
+	// Format output
+	var str strings.Builder
+	for i, document := range documents {
+		var title string
+		if len(document.Sections) > 0 {
+			title = document.Sections[0].Section.Name
+		} else {
+			title = document.Document.ID
+		}
+		if i > 0 {
+			str.WriteString("\n\n\n")
+		}
+		str.WriteString(fmt.Sprintf("# %s\n", title))
+		str.WriteString(fmt.Sprintf("Source: document://%s/%s\n", document.Document.SourceID, document.Document.ID))
+		str.WriteString("\n")
+		str.WriteString(strings.TrimSpace(document.Document.ExtractedData))
+	}
+
+	// Write output
+	var file *os.File
+	file, err = os.Create(outputPath)
+	if err != nil {
+		slog.Debug("action.exportLlmsFullTxt could not create file", "outputPath", outputPath, "error", err)
+		return
+	}
+	defer file.Close()
+	_, err = file.WriteString(str.String())
+	if err != nil {
+		slog.Debug("action.exportLlmsFullTxt could not write string to file", "outputPath", outputPath, "error", err)
 		return
 	}
 

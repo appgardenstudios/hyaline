@@ -223,6 +223,24 @@
         "--exclude", "document://*/cli/*",
         "--output", "../.vscode/hyaline/export-documentation/fs"
       ]
+    },{
+      "name": "Export Documentation (llmsfulltxt)",
+      "type": "go",
+      "request": "launch",
+      "mode": "debug",
+      "preLaunchTask": "export-documentation",
+      "cwd": "${workspaceFolder}/cli/",
+      "program": "${workspaceFolder}/cli/cmd/hyaline.go",
+      "envFile": "${workspaceFolder}/cli/.env",
+      "args":[
+        "--debug",
+        "export", "documentation",
+        "--documentation", "../.vscode/hyaline/export-documentation/documentation.sqlite",
+        "--format", "llmsfulltxt",
+        "--include", "document://*/**/*?type=security",
+        "--exclude", "document://*/cli/*",
+        "--output", "../.vscode/hyaline/export-documentation/llms-full.txt"
+      ]
     }
   ]
 }
