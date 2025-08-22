@@ -8,6 +8,11 @@ func TestValidateExtract(t *testing.T) {
 		Description: "The Description",
 		Root:        "My Root",
 	}
+	emptySourceID := ExtractSource{
+		ID:          "",
+		Description: "The Description",
+		Root:        "My Root",
+	}
 	invalidSourceID := ExtractSource{
 		ID:          "my-app!",
 		Description: "The Description",
@@ -15,6 +20,9 @@ func TestValidateExtract(t *testing.T) {
 	}
 	validCrawler := ExtractCrawler{
 		Type: "fs",
+	}
+	emptyCrawlerType := ExtractCrawler{
+		Type: "",
 	}
 	invalidCrawlerType := ExtractCrawler{
 		Type: "bogus",
@@ -138,7 +146,9 @@ func TestValidateExtract(t *testing.T) {
 		{nil, ``},
 		{&Extract{false, validSource, validCrawler, validExtractors, validMetadata}, ``},
 		{&Extract{Disabled: true}, ``},
+		{&Extract{false, emptySourceID, validCrawler, validExtractors, validMetadata}, `extract.source.id must match regex /^[A-z0-9][A-z0-9_-]{0,63}$/, found: `},
 		{&Extract{false, invalidSourceID, validCrawler, validExtractors, validMetadata}, `extract.source.id must match regex /^[A-z0-9][A-z0-9_-]{0,63}$/, found: my-app!`},
+		{&Extract{false, validSource, emptyCrawlerType, validExtractors, validMetadata}, `extract.crawler.type must be one of fs, git, http, found: `},
 		{&Extract{false, validSource, invalidCrawlerType, validExtractors, validMetadata}, `extract.crawler.type must be one of fs, git, http, found: bogus`},
 		{&Extract{false, validSource, invalidCrawlerInclude, validExtractors, validMetadata}, `extract.crawler.include[0] must be a valid pattern, found: {a`},
 		{&Extract{false, validSource, invalidCrawlerIncludeEmpty, validExtractors, validMetadata}, `extract.crawler.include[0] must be a valid pattern, found: `},
