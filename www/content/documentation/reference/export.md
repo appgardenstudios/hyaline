@@ -6,7 +6,7 @@ purpose: Detail the output formats available to be used with the export document
 ## Overview
 This documents the output formats available in the `export documentation` command.
 
-## fs
+## File System
 The file system export format (`--format fs`). This format will output documentation to a file system in the folder structure shown below:
 
 ```txt
@@ -19,3 +19,19 @@ output-path/ # The path specified by --output
     ...
   README.md # Metadata about the export
 ```
+
+## llms-full.txt
+The llms-full.txt export format (`--format llmsfulltxt`). This format will output documentation to the output path as a text file using the structure shown below:
+
+```txt
+# <Title> (Name of first section, or document ID if none found)
+Source: <Document URI> (document://<source>/<document>)
+
+<Document Contents>
+
+
+# <Title>
+...
+```
+
+**Note**: The documentation is sorted by source ID ascending, document ID ascending
