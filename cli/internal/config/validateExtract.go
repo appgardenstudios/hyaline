@@ -8,20 +8,26 @@ import (
 	"github.com/bmatcuk/doublestar/v4"
 )
 
-func validateExtract(cfg *Config) (err error) {
+func ValidateExtract(cfg *Config) (err error) {
 	// If extract was not defined in the config check nothing as extract is not always required
 	// Note that actions requiring the config need to check for nil themselves
 	if cfg.Extract == nil {
 		return
 	}
 
-	// Check source
-	if !cfg.Extract.Disabled && !regexp.MustCompile(sourceIDRegex).MatchString(cfg.Extract.Source.ID) {
+	// Check source (only required if !disabled)
+	if !cfg.Extract.Disabled && cfg.Extract.Source.ID == "" {
+		return fmt.Errorf("extract.source.id must match regex /%s/, found: %s", sourceIDRegex, cfg.Extract.Source.ID)
+	}
+	if cfg.Extract.Source.ID != "" && !regexp.MustCompile(sourceIDRegex).MatchString(cfg.Extract.Source.ID) {
 		return fmt.Errorf("extract.source.id must match regex /%s/, found: %s", sourceIDRegex, cfg.Extract.Source.ID)
 	}
 
 	// Check crawler
-	if !cfg.Extract.Disabled && !cfg.Extract.Crawler.Type.IsValid() {
+	if !cfg.Extract.Disabled && cfg.Extract.Crawler.Type == "" {
+		return fmt.Errorf("extract.crawler.type must be one of %s, found: %s", cfg.Extract.Crawler.Type.PossibleValues(), cfg.Extract.Crawler.Type)
+	}
+	if cfg.Extract.Crawler.Type != "" && !cfg.Extract.Crawler.Type.IsValid() {
 		return fmt.Errorf("extract.crawler.type must be one of %s, found: %s", cfg.Extract.Crawler.Type.PossibleValues(), cfg.Extract.Crawler.Type)
 	}
 	for i, include := range cfg.Extract.Crawler.Include {

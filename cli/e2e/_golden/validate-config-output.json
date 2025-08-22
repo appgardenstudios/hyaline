@@ -1,0 +1,34 @@
+{
+  "valid": false,
+  "error": "invalid llm provider detected: bogus",
+  "detail": {
+    "llm": {
+      "present": true,
+      "valid": false,
+      "error": "invalid llm provider detected: bogus"
+    },
+    "github": {
+      "present": false,
+      "valid": false,
+      "error": ""
+    },
+    "extract": {
+      "present": true,
+      "disabled": false,
+      "valid": false,
+      "error": "extract.crawler.type must be one of fs, git, http, found: bogus"
+    },
+    "check": {
+      "present": true,
+      "disabled": true,
+      "valid": true,
+      "error": ""
+    },
+    "audit": {
+      "present": false,
+      "disabled": false,
+      "valid": false,
+      "error": ""
+    }
+  }
+}

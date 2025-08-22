@@ -1,0 +1,53 @@
+llm:
+  provider: bogus
+
+extract:
+  source:
+    id: my-app
+    description: documentation for my application
+  crawler:
+    type: bogus
+    options:
+      path: ../.vscode/hyaline/bogus/
+    include:
+      - "**/*.md"
+      - "**/*.html"
+  extractors:
+    - type: md
+      include:
+        - "**/*.md"
+    - type: html
+      options:
+        selector: main
+      include:
+        - "**/*"
+  metadata:
+    - document: "**/*"
+      tags:
+        - key: system
+          value: my-app
+
+check:
+  disabled: true
+  code:
+    include:
+      - "**/*.js"
+      - "package.json"
+    exclude:
+      - "**/*.test.js"
+  documentation:
+    include:
+      - source: "**/*"
+    exclude:
+      - source: my-app
+        document: docs/preDoc.md
+  options:
+    detectDocumentationUpdates:
+      source: my-app
+    updateIf:
+      touched:
+        - code:
+            path: "**/*"
+          documentation:
+            source: "**/*"
+            document: "README.md"

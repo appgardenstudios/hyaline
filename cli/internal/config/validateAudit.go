@@ -5,7 +5,7 @@ import (
 	"regexp"
 )
 
-func validateAudit(cfg *Config) error {
+func ValidateAudit(cfg *Config) error {
 	// If audit was not defined in the config don't check anything.
 	// Audit is not always required, so actions requiring the config need to check for nil themselves
 	if cfg.Audit == nil {

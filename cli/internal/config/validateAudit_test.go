@@ -399,7 +399,7 @@ func TestValidateAudit(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			err := validateAudit(tt.cfg)
+			err := ValidateAudit(tt.cfg)
 			if tt.expectError && err == nil {
 				t.Errorf("Expected error but got none")
 			}

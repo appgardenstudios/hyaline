@@ -51,5 +51,7 @@ items:
         url: /documentation/reference/mcp
       - title: Export
         url: /documentation/reference/export
+      - title: Config Validation
+        url: /documentation/reference/config-validation
   - title: Roadmap
     url: /documentation/roadmap

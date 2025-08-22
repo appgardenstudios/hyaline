@@ -151,6 +151,8 @@ extract:
       purpose: "Document all the available prompts the Hyaline MCP server provides"
     - document: "www/content/documentation/reference/export.md"
       purpose: "Detail the various export output formats that Hyaline supports"
+    - document: "www/content/documentation/reference/config-validation.md"
+      purpose: "Detail the JSON output format for output produced by the validate config command"
 
 # Check configuration
 check:

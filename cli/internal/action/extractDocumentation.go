@@ -19,7 +19,7 @@ func ExtractDocumentation(args *ExtractDocumentationArgs) error {
 	slog.Info("Extracting documentation", "config", args.Config, "output", args.Output)
 
 	// Load Config
-	cfg, err := config.Load(args.Config)
+	cfg, err := config.Load(args.Config, true)
 	if err != nil {
 		slog.Debug("action.ExtractDocumentation could not load the config", "error", err)
 		return err

@@ -112,7 +112,7 @@ func TestValidateCheck(t *testing.T) {
 			Check: test.check,
 		}
 
-		err := validateCheck(cfg)
+		err := ValidateCheck(cfg)
 
 		if test.err == "" && err != nil {
 			t.Errorf("test %d - expected no error, got error: %s", i, err.Error())
