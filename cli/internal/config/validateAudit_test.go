@@ -27,6 +27,15 @@ func TestValidateAudit(t *testing.T) {
 			expectError: false,
 		},
 		{
+			name: "disabled audit config",
+			cfg: &Config{
+				Audit: &Audit{
+					Disabled: true,
+				},
+			},
+			expectError: false,
+		},
+		{
 			name:        "empty rules",
 			cfg:         buildTestConfig(),
 			expectError: true,

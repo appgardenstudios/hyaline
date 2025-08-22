@@ -137,6 +137,7 @@ func TestValidateExtract(t *testing.T) {
 	}{
 		{nil, ``},
 		{&Extract{false, validSource, validCrawler, validExtractors, validMetadata}, ``},
+		{&Extract{Disabled: true}, ``},
 		{&Extract{false, invalidSourceID, validCrawler, validExtractors, validMetadata}, `extract.source.id must match regex /^[A-z0-9][A-z0-9_-]{0,63}$/, found: my-app!`},
 		{&Extract{false, validSource, invalidCrawlerType, validExtractors, validMetadata}, `extract.crawler.type must be one of fs, git, http, found: bogus`},
 		{&Extract{false, validSource, invalidCrawlerInclude, validExtractors, validMetadata}, `extract.crawler.include[0] must be a valid pattern, found: {a`},

@@ -90,6 +90,7 @@ func TestValidateCheck(t *testing.T) {
 	}{
 		{nil, ``},
 		{&Check{false, validCode, validDocumentation, validOptions}, ``},
+		{&Check{Disabled: true}, ``},
 		{&Check{false, invalidCodeNoIncludes, validDocumentation, validOptions}, `check.code.include must contain at least one entry, none found`},
 		{&Check{false, invalidCodeBlankInclude, validDocumentation, validOptions}, `check.code.include[0] must be a valid pattern, found: `},
 		{&Check{false, invalidCodeInvalidInclude, validDocumentation, validOptions}, `check.code.include[0] must be a valid pattern, found: {a`},
