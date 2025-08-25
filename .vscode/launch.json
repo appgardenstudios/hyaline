@@ -255,7 +255,7 @@
         "export", "documentation",
         "--documentation", "../.vscode/hyaline/export-documentation/documentation.sqlite",
         "--format", "json",
-        // "--include", "document://*/**/*?type=security",
+        "--include", "document://*/**/*?type=security",
         "--exclude", "document://*/cli/*",
         "--output", "../.vscode/hyaline/export-documentation/export.json"
       ]
