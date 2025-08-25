@@ -35,3 +35,25 @@ Source: <Document URI> (document://<source>/<document>)
 ```
 
 **Note**: The documentation is sorted by source ID ascending, document ID ascending
+
+## JSON
+The JSON export format (`--format json`). This format will output documentation to the output path as a JSON file using the structure shown below:
+
+```js
+[
+  {
+    "source": "<source ID>",
+    "document": "<document ID>",
+    "uri": "document://<source>/<document>",
+    "purpose": "", // omitted if blank
+    "content": "",
+    "tags": [ // Empty array if no tags
+      {"key":"foo", "value":"bar"},
+      ....
+    ],
+  },
+  ...
+]
+```
+
+**Note**: The output is sorted by source ID ascending, document ID ascending
