@@ -2,6 +2,7 @@ package action
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"hyaline/internal/config"
@@ -151,6 +152,8 @@ func ExportDocumentation(args *ExportDocumentationArgs) error {
 		err = exportFs(documents, sourcesMap, args.Includes, args.Excludes, args.Documentation, outputAbsPath)
 	case ExportFormatLlmsFullTxt:
 		err = exportLlmsFullTxt(documents, outputAbsPath)
+	case ExportFormatJson:
+		err = exportJson(documents, outputAbsPath)
 	}
 	if err != nil {
 		slog.Debug("action.ExportDocumentation could not export", "error", err)
@@ -316,6 +319,75 @@ func exportLlmsFullTxt(documents []*docs.FilteredDoc, outputPath string) (err er
 	if err != nil {
 		slog.Debug("action.exportLlmsFullTxt could not write string to file", "outputPath", outputPath, "error", err)
 		return
+	}
+
+	return
+}
+
+func exportJson(documents []*docs.FilteredDoc, outputPath string) (err error) {
+	slog.Info(fmt.Sprintf("Exporting %d documents to %s", len(documents), outputPath))
+
+	type outputTag struct {
+		Key   string `json:"key"`
+		Value string `json:"value"`
+	}
+
+	type outputDocument struct {
+		Source   string      `json:"source"`
+		Document string      `json:"document"`
+		URI      string      `json:"uri"`
+		Purpose  string      `json:"purpose,omitempty"`
+		Content  string      `json:"content"`
+		Tags     []outputTag `json:"tags"`
+	}
+
+	// Format output
+	output := make([]outputDocument, 0)
+	for _, document := range documents {
+		tags := make([]outputTag, 0)
+		for _, tag := range document.Tags {
+			tags = append(tags, outputTag{
+				Key:   tag.Key,
+				Value: tag.Value,
+			})
+		}
+		output = append(output, outputDocument{
+			Source:   document.Document.SourceID,
+			Document: document.Document.ID,
+			URI:      fmt.Sprintf("document://%s/%s", document.Document.SourceID, document.Document.ID),
+			Purpose:  document.Document.Purpose,
+			Content:  document.Document.ExtractedData,
+			Tags:     tags,
+		})
+	}
+
+	// Sort output
+	sort.SliceStable(output, func(i int, j int) bool {
+		if output[i].Source < output[j].Source {
+			return true
+		}
+		if output[i].Source > output[j].Source {
+			return false
+		}
+		return output[i].Document < output[j].Document
+	})
+
+	// Write JSON
+	jsonData, err := json.MarshalIndent(output, "", "  ")
+	if err != nil {
+		slog.Debug("action.exportJson could not marshal json", "error", err)
+		return err
+	}
+	outputFile, err := os.Create(outputPath)
+	if err != nil {
+		slog.Debug("action.exportJson could not open output file", "error", err)
+		return err
+	}
+	defer outputFile.Close()
+	_, err = outputFile.Write(jsonData)
+	if err != nil {
+		slog.Debug("action.exportJson could not write output file", "error", err)
+		return err
 	}
 
 	return

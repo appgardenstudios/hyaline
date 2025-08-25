@@ -242,6 +242,24 @@
         "--output", "../.vscode/hyaline/export-documentation/llms-full.txt"
       ]
     },{
+      "name": "Export Documentation (json)",
+      "type": "go",
+      "request": "launch",
+      "mode": "debug",
+      "preLaunchTask": "export-documentation",
+      "cwd": "${workspaceFolder}/cli/",
+      "program": "${workspaceFolder}/cli/cmd/hyaline.go",
+      "envFile": "${workspaceFolder}/cli/.env",
+      "args":[
+        "--debug",
+        "export", "documentation",
+        "--documentation", "../.vscode/hyaline/export-documentation/documentation.sqlite",
+        "--format", "json",
+        // "--include", "document://*/**/*?type=security",
+        "--exclude", "document://*/cli/*",
+        "--output", "../.vscode/hyaline/export-documentation/export.json"
+      ]
+    },{
       "name": "Validate Config",
       "type": "go",
       "request": "launch",
