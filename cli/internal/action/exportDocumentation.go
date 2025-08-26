@@ -2,11 +2,11 @@ package action
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"hyaline/internal/config"
 	"hyaline/internal/docs"
+	"hyaline/internal/io"
 	"hyaline/internal/sqlite"
 	"log/slog"
 	"os"
@@ -351,10 +351,14 @@ func exportJson(documents []*docs.FilteredDoc, outputPath string) (err error) {
 				Value: tag.Value,
 			})
 		}
+		uri := docs.DocumentURI{
+			SourceID:     document.Document.SourceID,
+			DocumentPath: document.Document.ID,
+		}
 		output = append(output, outputDocument{
-			Source:   document.Document.SourceID,
-			Document: document.Document.ID,
-			URI:      fmt.Sprintf("document://%s/%s", document.Document.SourceID, document.Document.ID),
+			Source:   uri.SourceID,
+			Document: uri.DocumentPath,
+			URI:      uri.String(),
 			Purpose:  document.Document.Purpose,
 			Content:  document.Document.ExtractedData,
 			Tags:     tags,
@@ -373,22 +377,12 @@ func exportJson(documents []*docs.FilteredDoc, outputPath string) (err error) {
 	})
 
 	// Write JSON
-	jsonData, err := json.MarshalIndent(output, "", "  ")
-	if err != nil {
-		slog.Debug("action.exportJson could not marshal json", "error", err)
-		return err
-	}
 	outputFile, err := os.Create(outputPath)
 	if err != nil {
 		slog.Debug("action.exportJson could not open output file", "error", err)
 		return err
 	}
 	defer outputFile.Close()
-	_, err = outputFile.Write(jsonData)
-	if err != nil {
-		slog.Debug("action.exportJson could not write output file", "error", err)
-		return err
-	}
-
+	io.WriteJSON(outputFile, output)
 	return
 }
