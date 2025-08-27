@@ -404,7 +404,7 @@ func exportSqlite(documents []*docs.FilteredDoc, sources map[string]*sqlite.SOUR
 	sourcesSeen := make(map[string]struct{})
 
 	for _, document := range documents {
-		// Mark source as seem
+		// Mark source as seen
 		sourcesSeen[document.Document.SourceID] = struct{}{}
 
 		// Insert document
