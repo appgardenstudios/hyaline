@@ -57,3 +57,6 @@ The JSON export format (`--format json`). This format will output documentation 
 ```
 
 **Note**: The output is sorted by source ID ascending, document ID ascending
+
+## SQLite
+The SQLite export format (`--format sqlite`). This format will export documentation to an SQLite database in the same format as the input documentation. Please see [Documentation Data Set](./data-set.md) for the schema.
