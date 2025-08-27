@@ -154,6 +154,10 @@ func ExportDocumentation(args *ExportDocumentationArgs) error {
 		err = exportLlmsFullTxt(documents, outputAbsPath)
 	case ExportFormatJson:
 		err = exportJson(documents, outputAbsPath)
+	case ExportFormatSqlite:
+		err = exportSqlite(documents, sourcesMap, outputAbsPath)
+	default:
+		err = fmt.Errorf("unknown format %s", format.String())
 	}
 	if err != nil {
 		slog.Debug("action.ExportDocumentation could not export", "error", err)
@@ -384,5 +388,120 @@ func exportJson(documents []*docs.FilteredDoc, outputPath string) (err error) {
 	}
 	defer outputFile.Close()
 	io.WriteJSON(outputFile, output)
+	return
+}
+
+func exportSqlite(documents []*docs.FilteredDoc, sources map[string]*sqlite.SOURCE, outputPath string) (err error) {
+	// Initialize our output database
+	docDb, close, err := sqlite.InitOutput(outputPath)
+	if err != nil {
+		slog.Debug("action.exportSqlite could not initialize output", "error", err)
+		return err
+	}
+	defer close()
+
+	// Record the set of sources seen
+	sourcesSeen := make(map[string]struct{})
+
+	for _, document := range documents {
+		// Mark source as seen
+		sourcesSeen[document.Document.SourceID] = struct{}{}
+
+		// Insert document
+		err = docDb.InsertDocument(context.Background(), sqlite.InsertDocumentParams{
+			ID:            document.Document.ID,
+			SourceID:      document.Document.SourceID,
+			Type:          document.Document.Type,
+			Purpose:       document.Document.Purpose,
+			RawData:       document.Document.RawData,
+			ExtractedData: document.Document.ExtractedData,
+		})
+		if err != nil {
+			slog.Debug("action.exportSqlite could not insert document", "error", err)
+			return
+		}
+
+		// Insert document tags
+		for _, tag := range document.Tags {
+			err = docDb.UpsertDocumentTag(context.Background(), sqlite.UpsertDocumentTagParams{
+				SourceID:   document.Document.SourceID,
+				DocumentID: document.Document.ID,
+				TagKey:     tag.Key,
+				TagValue:   tag.Value,
+			})
+			if err != nil {
+				slog.Debug("action.exportSqlite could not insert document tags", "error", err)
+				return
+			}
+		}
+
+		// Insert sections and tags
+		if len(document.Sections) > 0 {
+			err = exportSqliteSections(document.Sections, docDb)
+			if err != nil {
+				slog.Debug("action.exportSqlite could not insert sections or tags", "error", err)
+				return
+			}
+		}
+	}
+
+	// Insert sources
+	for id := range sourcesSeen {
+		source := sources[id]
+		err = docDb.InsertSource(context.Background(), sqlite.InsertSourceParams{
+			ID:          source.ID,
+			Description: source.Description,
+			Crawler:     source.Crawler,
+			Root:        source.Root,
+		})
+		if err != nil {
+			slog.Debug("action.exportSqlite could not insert source", "error", err)
+			return
+		}
+	}
+
+	return
+}
+
+func exportSqliteSections(sections []docs.FilteredSection, docDb *sqlite.Queries) (err error) {
+	for _, section := range sections {
+		// Insert section
+		err = docDb.InsertSection(context.Background(), sqlite.InsertSectionParams{
+			ID:            section.Section.ID,
+			DocumentID:    section.Section.DocumentID,
+			SourceID:      section.Section.SourceID,
+			ParentID:      section.Section.ParentID,
+			PeerOrder:     section.Section.PeerOrder,
+			Name:          section.Section.Name,
+			Purpose:       section.Section.Purpose,
+			ExtractedData: section.Section.ExtractedData,
+		})
+		if err != nil {
+			return
+		}
+
+		// Insert section tags
+		for _, tag := range section.Tags {
+			err = docDb.UpsertSectionTag(context.Background(), sqlite.UpsertSectionTagParams{
+				SourceID:   section.Section.SourceID,
+				DocumentID: section.Section.DocumentID,
+				SectionID:  section.Section.ID,
+				TagKey:     tag.Key,
+				TagValue:   tag.Value,
+			})
+			if err != nil {
+				return
+			}
+		}
+
+		// If children, recurse
+		if len(section.Sections) > 0 {
+			err = exportSqliteSections(section.Sections, docDb)
+			if err != nil {
+				return
+			}
+		}
+	}
+
 	return
 }
