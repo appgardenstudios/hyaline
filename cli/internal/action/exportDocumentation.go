@@ -395,7 +395,7 @@ func exportSqlite(documents []*docs.FilteredDoc, sources map[string]*sqlite.SOUR
 	// Initialize our output database
 	docDb, close, err := sqlite.InitOutput(outputPath)
 	if err != nil {
-		slog.Debug("action.ExtractDocumentation could not initialize output", "error", err)
+		slog.Debug("action.exportSqlite could not initialize output", "error", err)
 		return err
 	}
 	defer close()
@@ -417,7 +417,7 @@ func exportSqlite(documents []*docs.FilteredDoc, sources map[string]*sqlite.SOUR
 			ExtractedData: document.Document.ExtractedData,
 		})
 		if err != nil {
-			// TODO debug
+			slog.Debug("action.exportSqlite could not insert document", "error", err)
 			return
 		}
 
@@ -430,7 +430,7 @@ func exportSqlite(documents []*docs.FilteredDoc, sources map[string]*sqlite.SOUR
 				TagValue:   tag.Value,
 			})
 			if err != nil {
-				// TODO debug
+				slog.Debug("action.exportSqlite could not insert document tags", "error", err)
 				return
 			}
 		}
@@ -439,7 +439,7 @@ func exportSqlite(documents []*docs.FilteredDoc, sources map[string]*sqlite.SOUR
 		if len(document.Sections) > 0 {
 			err = exportSqliteSections(document.Sections, docDb)
 			if err != nil {
-				// TODO debug
+				slog.Debug("action.exportSqlite could not insert sections or tags", "error", err)
 				return
 			}
 		}
@@ -455,7 +455,7 @@ func exportSqlite(documents []*docs.FilteredDoc, sources map[string]*sqlite.SOUR
 			Root:        source.Root,
 		})
 		if err != nil {
-			// TODO debug
+			slog.Debug("action.exportSqlite could not insert source", "error", err)
 			return
 		}
 	}
