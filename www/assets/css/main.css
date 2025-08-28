@@ -2,6 +2,38 @@
 @plugin "@tailwindcss/typography";
 @source "hugo_stats.json";
 
+/* Inter Variable Font - Normal */
+@font-face {
+  font-family: 'Inter';
+  src: url('/fonts/Inter-Variable.woff2') format('woff2-variations');
+  font-weight: 200 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Inter Variable Font - Italic */
+@font-face {
+  font-family: 'Inter';
+  src: url('/fonts/Inter-Variable-Italic.woff2') format('woff2-variations');
+  font-weight: 200 800;
+  font-style: italic;
+  font-display: swap;
+}
+
+/* Quicksand Variable Font */
+@font-face {
+  font-family: 'Quicksand';
+  src: url('/fonts/Quicksand-Variable.woff2') format('woff2-variations');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Tailwind Theme Variables */
+@theme {
+  --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
+}
+
 pre {
   border-radius: 0;
 }

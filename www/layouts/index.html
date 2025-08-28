@@ -1,4 +1,18 @@
 {{ define "main" }}
+<!-- Hero Section -->
+<section class="h-screen w-full">
+  <div class="h-full px-4 sm:px-6 lg:px-8 mx-auto max-w-[110rem] flex gap-16 flex-wrap items-center">
+    <div class="flex-1">
+      <h1 class="text-4xl md:text-5xl xl:text-6xl font-bold mb-4">Is your documentation </br>up-to-date?</h1>
+      <p class="text-lg text-gray-700">
+        Hyaline extracts documentation from wherever it lives, uses AI to detect when code changes require documentation updates, performs compliance checks, and makes your documentation available everywhere your team and tools need it.
+    </div>
+    <div class="flex-1">
+      Hello
+    </div>
+  </div>
+</section>
+
 <!-- Pricing Section -->
 <section id="pricing" class="py-16 md:py-24 bg-blue-900 text-white">
   <div class="mx-auto px-4 sm:px-6 lg:px-8">
@@ -675,5 +689,22 @@
     updatePricing(monthlyPricing);
     setActiveButton(monthlyBtn, annualBtn);
   });
+
+  // Header shadow toggle on scroll
+  function updateHeaderShadow() {
+    const shadowClasses = ['shadow-sm', 'transition-shadow', 'duration-300', 'ease-in-out'];
+    const header = document.querySelector('header');
+    if (window.scrollY > 16) {
+      header.classList.add(...shadowClasses);
+    } else {
+      header.classList.remove(...shadowClasses);
+    }
+  }
+
+  // Check initial scroll position on page load
+  updateHeaderShadow();
+  
+  // Listen for scroll events
+  window.addEventListener('scroll', updateHeaderShadow);
 </script>
 {{ end }}
