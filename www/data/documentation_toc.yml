@@ -5,22 +5,28 @@ items:
     url: /documentation/getting-started
   - title: How To
     items:
-      - title: Install the CLI
-        url: /documentation/how-to/install-cli
-      - title: Run the CLI
-        url: /documentation/how-to/run-cli
-      - title: Check a PR
-        url: /documentation/how-to/check-pr
-      - title: Build the CLI
-        url: /documentation/how-to/build-cli
+      - title: Install the GitHub App
+        url: /documentation/how-to/install-github-app
+      - title: Extract Documentation
+        url: /documentation/how-to/extract-documentation
+      - title: Check a Pull Request
+        url: /documentation/how-to/check-pull-request
+      - title: Audit Documentation
+        url: /documentation/how-to/audit-documentation
       - title: Run the MCP Server
-        url: /documentation/how-to/run-mcp
+        url: /documentation/how-to/run-mcp-server
       - title: Export Documentation
         url: /documentation/how-to/export-documentation
+      - title: Install the CLI Locally
+        url: /documentation/how-to/install-cli-locally
+      - title: Use Hyaline Solo (Advanced)
+        url: /documentation/how-to/use-hyaline-solo
   - title: Explanation
     items:
       - title: Hyaline
         url: /documentation/explanation/hyaline
+      - title: GitHub App
+        url: /documentation/explanation/github-app
       - title: Extract
         url: /documentation/explanation/extract
       - title: Check

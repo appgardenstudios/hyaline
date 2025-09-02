@@ -7,7 +7,8 @@ purpose: Document how to run the Hyaline MCP Server
 Run the hyaline mcp server locally.
 
 ## Prerequisite(s)
-* [Install the CLI](./install-cli.md)
+* [Install the CLI](./install-cli-locally.md)
+* (Optionally) TODO install the GitHub App
 
 ## Steps
 

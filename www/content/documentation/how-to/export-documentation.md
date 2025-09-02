@@ -7,7 +7,8 @@ purpose: Document how to export documentation using the Hyaline CLI
 Export documentation using the Hyaline CLI.
 
 ## Prerequisite(s)
-* [Installed the CLI](./install-cli.md)
+- TODO install the GitHub App
+* [Installed the CLI](./install-cli-locally.md)
 * Extracted and (optionally) merged documentation in a documentation data set (e.g. `./documentation.db`)
 
 ## Steps
@@ -38,4 +39,4 @@ $ hyaline export documentation --documentation ./documentation.db /
 For example, the command above exports the documentation in `./documentation.db` to the file `./export.json` in JSON format. It only includes documentation from the `frontend` source, and excludes any documentation with the tag `type=customer`.
 
 ## Next Steps
-Visit [How To Run the Hyaline MCP Server](./run-mcp.md) or the [CLI Reference](../reference/cli.md).
+Visit [How To Run the Hyaline MCP Server](./run-mcp-server.md) or the [CLI Reference](../reference/cli.md).

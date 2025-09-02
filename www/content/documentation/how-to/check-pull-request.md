@@ -1,13 +1,14 @@
 ---
-title: "How To: Check a PR using the Hyaline CLI"
-description: "Set up GitHub Actions to automatically check documentation in pull requests using Hyaline."
-purpose: How to check a PR using the Hyaline CLI
+title: "How To: Check a GitHub Pull Request"
+description: "Use the GitHub App to automatically check documentation in pull requests using Hyaline."
+purpose: How to check a pull request using the Hyaline GitHub App
 ---
 ## Purpose
 Use hyaline to check a pull request in GitHub.
 
 ## Prerequisite(s)
 * A repository on GitHub with [GitHub Actions](https://github.com/features/actions) available.
+* TODO install the GitHub App
 
 ## Steps
 
