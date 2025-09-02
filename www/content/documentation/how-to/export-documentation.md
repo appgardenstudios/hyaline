@@ -8,7 +8,7 @@ Export current documentation using the Hyaline CLI.
 
 ## Prerequisite(s)
 - [Install GitHub App](./install-github-app.md)
-- [Installed the CLI Locally](./install-cli-locally.md)
+- [Install the CLI Locally](./install-cli-locally.md)
 - Have at least some documentation that has been extracted
 
 ## Steps

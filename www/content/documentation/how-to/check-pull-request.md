@@ -52,5 +52,8 @@ check:
 ### 2. Run Doctor
 Run the `Doctor` workflow in the forked `hyaline-github-app-config` repo to ensure that the configuration is valid. Merge the resulting PR if needed.
 
+### 3. Create Pull Request
+TODO
+
 ## Next Steps
 Read more about [how checking pull requests works](../explanation/check.md) or more about Hyaline's [configuration](../reference/config.md).

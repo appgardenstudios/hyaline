@@ -9,6 +9,7 @@ Install the Hyaline GitHub App into a GitHub organization or personal account
 ## Prerequisite(s)
 - A GitHub organization or personal account
 - One or more documentation sources (e.g. git repo, documentation website, etc...)
+- An LLM Provider (TODO)
 
 ## Steps
 
@@ -26,6 +27,9 @@ Note that we ask that you fork the configuration repository to make it easy to p
 
 ### 2. Setup Secrets and Environment Variables
 You will need to setup the following secrets and environment variables in the forked `hyaline-github-app-config` repository.
+
+TODO note about since Hyaline will be using a PAT to act within the org and whomever owns that name will be the name on the comments/PRs, we suggest using a service account (link to GitHub Doc)
+TODO A good way to do this is using a Service Account rather than creating a PAT from a user in the org. That service account will only need read access to the repos (since it )
 
 #### Secrets
 The following repository secrets should be created in the forked `hyaline-github-app-config` repo:

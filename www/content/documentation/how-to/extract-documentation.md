@@ -57,5 +57,7 @@ Run the `Doctor` workflow in the forked `hyaline-github-app-config` repo to ensu
 ### 3. Run Extract
 Run the `Manual - Extract` workflow in the forked `hyaline-github-app-config` repo to trigger an extraction and a merge (if desired) of the extracted documentation into the set of current documentation.
 
+TODO note that this will (optionally) trigger the merge workflow.
+
 ## Next Steps
 Read more about [how extraction works](../explanation/extract.md) or more about Hyaline's [configuration](../reference/config.md).
