@@ -4,28 +4,53 @@ description: "Use the GitHub App to automatically check documentation in pull re
 purpose: How to check a pull request using the Hyaline GitHub App
 ---
 ## Purpose
-Use hyaline to check a pull request in GitHub.
+Configure Hyaline to check a pull request using the Hyaline GitHub App
 
 ## Prerequisite(s)
-* A repository on GitHub with [GitHub Actions](https://github.com/features/actions) available.
-* TODO install the GitHub App
+- [Install GitHub App](./install-github-app.md)
+- Have one or more repos that should be checked
 
 ## Steps
 
-### 1. Check In Hyaline Configuration
-Create a Hyaline Configuration File with [extract](../reference/config.md#extract) and [check](../reference/config.md#check) configured, and check it into your GitHub repository.
+### 1. Create Configuration
+The first step is to create a configuration file for the repo in the `repos/` folder in the forked `hyaline-github-app-config` repo.
 
-Make sure you don't check in any secrets, like the LLM Provider Key or the GitHub Token. Instead, setup the configuration to pull them from the environment.
+For example, the configuration to could look something like:
 
-See [config reference](../reference/config.md) for more information on creating a configuration file and referencing secrets.
+```yml
+llm:
+  provider: ${HYALINE_LLM_PROVIDER}
+  model: ${HYALINE_LLM_MODEL}
+  key: ${HYALINE_LLM_TOKEN}
 
-### 2. Set Up Secrets
-For each environment variable used in the Hyaline configuration that references a secret, set that variable up to be pulled in as a [secret in GitHub](https://docs.github.com/en/actions/security-for-github-actions/security-guides/using-secrets-in-github-actions).
+github:
+  token: ${HYALINE_GITHUB_TOKEN}
 
-### 3. Create Workflow File
-Create a [GitHub Workflow](https://docs.github.com/en/actions/writing-workflows/quickstart) file to run when a pull request is updated. You can see an example file in the [GitHub Actions reference](../reference/github-actions.md).
+extract:
+  source:
+    id: <documentation source id>
+    description: <documentation source description>
+  ...
 
-Alternatively you could set Hyaline up to be run [manually on dispatch](https://docs.github.com/en/actions/managing-workflow-runs-and-deployments/managing-workflow-runs/manually-running-a-workflow).
+check:
+  code:
+    include:
+      - "cli/**/*.go"
+    exclude:
+      - "**/*_test.go"
+      - "e2e/**/*"
+      - "benchmarks/**/*"
+  documentation:
+    include:
+      - source: "<documentation source id>"
+        document: "**/*"
+  options:
+    detectDocumentationUpdates:
+      source: <documentation source id>
+```
+
+### 2. Run Doctor
+Run the `Doctor` workflow in the forked `hyaline-github-app-config` repo to ensure that the configuration is valid. Merge the resulting PR if needed.
 
 ## Next Steps
-Visit [Config Reference](../reference/config.md), [GitHub Actions Reference](../reference/github-actions.md), or [Check Explanation](../explanation/check.md).
+Read more about [how checking pull requests works](../explanation/check.md) or more about Hyaline's [configuration](../reference/config.md).

@@ -7,21 +7,17 @@ purpose: Document how to run the Hyaline MCP Server
 Run the hyaline mcp server locally.
 
 ## Prerequisite(s)
-* [Install the CLI](./install-cli-locally.md)
-* (Optionally) TODO install the GitHub App
+- [Install GitHub App](./install-github-app.md)
+- [Installed the CLI Locally](./install-cli-locally.md)
+- Have at least some documentation that has been extracted
 
 ## Steps
 
-### 1. Ensure CLI is Installed
-Run `hyaline version` to ensure that the Hyaline CLI is installed and working properly.
+### 1. Download Current Documentation
+Go to the latest `Internal - Merge` workflow run in the forked `hyaline-github-app-config` repo and download the artifact `_current-documentation`. Once downloaded extract the folder and note the location of the extracted `documentation.db` file for later use.
 
-### 2. Extract Documentation
-Run `hyaline extract documentation` for each system you want to include. If you have multiple systems you can combine them into a single data set using `hyaline merge documentation`.
-
-Place the resulting data set in a convenient location.
-
-### 3. Add MCP Server to Client
-This will vary by client, but the gist of it is you want to have the client run the command `hyaline serve mcp --documentation ./path/to/documentation-data-set.db` to start a local MCP server listening over stdio.
+### 2. Add MCP Server to Client
+This will vary by client, but the gist of it is you want to have the client run the command `hyaline serve mcp --documentation ./path/to/documentation.db` to start a local MCP server listening over stdio.
 
 Please see your client documentation for specific steps.
 

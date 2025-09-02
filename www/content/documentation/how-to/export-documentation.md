@@ -4,19 +4,22 @@ description: "How to export documentation extracted by Hyaline."
 purpose: Document how to export documentation using the Hyaline CLI
 ---
 ## Purpose
-Export documentation using the Hyaline CLI.
+Export current documentation using the Hyaline CLI.
 
 ## Prerequisite(s)
-- TODO install the GitHub App
-* [Installed the CLI](./install-cli-locally.md)
-* Extracted and (optionally) merged documentation in a documentation data set (e.g. `./documentation.db`)
+- [Install GitHub App](./install-github-app.md)
+- [Installed the CLI Locally](./install-cli-locally.md)
+- Have at least some documentation that has been extracted
 
 ## Steps
 
-### 1. Select Output Format
-Hyaline supports exporting extracted documentation in a variety of formats. See [CLI](../reference/cli.md) or [Export](../reference/export.md) reference documentation to see the available options and choose a format.
+### 1. Download Current Documentation
+Go to the latest `Internal - Merge` workflow run in the forked `hyaline-github-app-config` repo and download the artifact `_current-documentation`. Once downloaded extract the folder and note the location of the extracted `documentation.db` file for later use.
 
-### 2. Select Included Documentation
+### 2. Select Output Format
+Hyaline supports exporting extracted documentation in a variety of formats. See [CLI](../reference/cli.md) or [Export](../reference/export.md) reference documentation to see the available options and select an output format.
+
+### 3. Select Included Documentation
 By default Hyaline will export all available documentation. If you wish, you can include or exclude specific documentation by passing in `--include` or `--exclude` document URIs in the form of `document://<source>/<path/to/document>(?tagValue=tagKey)`.
 
 For example:
@@ -27,7 +30,7 @@ For example:
 
 Note that you can include any number of `--include` and `--exclude` in the export command. Hyaline will export any document that matches at least one include and does not match any exclude.
 
-### 3. Run Export
+### 4. Run Export
 Run `hyaline export documentation` with your desired arguments to export your documentation.
 
 ```
