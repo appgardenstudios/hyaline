@@ -8,7 +8,7 @@ Run Hyaline solo without using the GitHub App
 
 ## Prerequisite(s)
 - [Go Toolchain Installed](https://go.dev/) if building from scratch (version 1.24+)
-- An LLM Provider (TODO)
+- A [supported LLM Provider](../reference/config.md)
 
 ## Steps
 

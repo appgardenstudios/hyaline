@@ -19,8 +19,8 @@ items:
         url: /documentation/how-to/export-documentation
       - title: Install the CLI Locally
         url: /documentation/how-to/install-cli-locally
-      - title: Use Hyaline Solo (Advanced)
-        url: /documentation/how-to/use-hyaline-solo
+      - title: Use Hyaline From Scratch
+        url: /documentation/how-to/use-hyaline-from-scratch
   - title: Explanation
     items:
       - title: Hyaline

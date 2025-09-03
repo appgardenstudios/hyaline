@@ -9,7 +9,7 @@ Install the Hyaline GitHub App into a GitHub organization or personal account
 ## Prerequisite(s)
 - A GitHub organization or personal account
 - One or more documentation sources (e.g. git repo, documentation website, etc...)
-- An LLM Provider (TODO)
+- A [supported LLM Provider](../reference/config.md)
 
 ## Steps
 
