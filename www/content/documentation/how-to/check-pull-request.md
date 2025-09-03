@@ -1,10 +1,10 @@
 ---
 title: "How To: Check a GitHub Pull Request"
-description: "Use the GitHub App to automatically check documentation in pull requests using Hyaline."
+description: "Use the GitHub App to automatically check for needed documentation updates in pull requests using Hyaline."
 purpose: How to check a pull request using the Hyaline GitHub App
 ---
 ## Purpose
-Configure Hyaline to check a pull request using the Hyaline GitHub App
+Configure Hyaline to check a pull request using the Hyaline GitHub App.
 
 ## Prerequisite(s)
 - [Install GitHub App](./install-github-app.md)
@@ -13,7 +13,7 @@ Configure Hyaline to check a pull request using the Hyaline GitHub App
 ## Steps
 
 ### 1. Create Configuration
-The first step is to create a configuration file for the repo in the `repos/` folder in the forked `hyaline-github-app-config` repo.
+The first step is to create a configuration file for the repo in the `repos/` folder in the forked `hyaline-github-app-config` configuration repository.
 
 For example, the configuration to could look something like:
 

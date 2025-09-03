@@ -53,7 +53,7 @@ Based on the contents of the configuration file above there may be one or more e
 Now you can execute the hyaline command, passing in all of the required and (optionally) optional parameters. Please see [CLI Reference](../reference/cli.md) for a full list of commands and their associated options.
 
 ### 3. Extract Documentation
-To extract documentation you need to create a configuration file and then run Hyaline to extract your documentation.
+To extract documentation you need to create a configuration file (**3.1**) and then run Hyaline to extract your documentation (**3.2**).
 
 #### Step 3.1 Create a Configuration File
 
@@ -70,8 +70,6 @@ extract:
       path: .
       branch: main
     include:
-      - "README.md"
-      - "docs/**/*.md"
       - "**/*.md"
     exclude:
       - "node_modules/**/*"
@@ -109,7 +107,7 @@ This command will:
 For more details on how extraction works, see [Explanation: Extract](../explanation/extract.md).
 
 ### 4. Check a PR
-To check a GitHub pull request you need to check in your configuration file, setup the required secrets, and then create a GitHub Workflow file to run a GitHub Action to check a pull request.
+To check a GitHub pull request you need to check in your configuration file (**4.1**), setup the required secrets (**4.2**), and then create a GitHub Workflow file to run a GitHub Action to check a pull request (**4.3**).
 
 #### 4.1 Check in Configuration
 Create a Hyaline Configuration File with [extract](../reference/config.md#extract) and [check](../reference/config.md#check) configured, and check it into your GitHub repository.

@@ -4,7 +4,7 @@ description: "Install the Hyaline GitHub App."
 purpose: Document how to install the Hyaline GitHub App
 ---
 ## Purpose
-Install the Hyaline GitHub App into a GitHub organization or personal account
+Install the Hyaline GitHub App into a GitHub organization or personal account.
 
 ## Prerequisite(s)
 - A GitHub organization or personal account
@@ -17,8 +17,6 @@ Install the Hyaline GitHub App into a GitHub organization or personal account
 All of your configuration for the Hyaline GitHub App will live in a single repository in your organization or personal account. The easiest way to set this up is to fork the 
 [hyaline-github-app-config](https://github.com/appgardenstudios/hyaline-github-app-config) repository into the organization or personal account that you will install the GitHub App into.
 
-#### Fork hyaline-github-app-config
-
 Fork (or otherwise clone/push) the [hyaline-github-app-config](https://github.com/appgardenstudios/hyaline-github-app-config) into your organization or personal account. Note that the repository name MUST remain `hyaline-github-app-config` in order to use the hosted version of the Hyaline GitHub App.
 
 Please see GitHub's documentation on [how to fork a repository](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks/fork-a-repo#forking-a-repository).
@@ -28,7 +26,7 @@ Note that we ask that you fork the configuration repository to make it easy to p
 ### 2. Setup Secrets and Environment Variables
 You will need to setup the following secrets and environment variables in the forked `hyaline-github-app-config` repository.
 
-Note: Since Hyaline uses GitHub Personal Access Tokens (PATs) issued by you to act on your behalf, it is recommended to create a service account and use that account to issue the necessary tokens. This is so that the comments made by Hyaline on pull requests will use the service account name. The service account will need read access to each repository that the GitHub App has access to, and write access to the forked `hyaline-github-app-config` repository. 
+Note: Since Hyaline uses GitHub Personal Access Tokens (PATs) issued by you to act on your behalf, it is recommended to create a dedicated service account to use when issuing PATs. This is so that the comments made by Hyaline on pull requests will use the service account name instead of an individual's name. The service account will need read access to each repository that the GitHub App has access to, and write access to the forked `hyaline-github-app-config` repository.
 
 #### Secrets
 The following repository secrets should be created in the forked `hyaline-github-app-config` repo:
@@ -47,10 +45,10 @@ Note that this PAT will include access to public repositories in the organizatio
 - Pull requests: Read and Write - Used by the doctor to open a pull request with suggested changes
 - Workflows: Read and Write - Used by the doctor to push suggested changes to extract and audit workflows to a branch for review
 
-**HYALINE_LLM_TOKEN** - A LLM provider API token used in auditing and checking PRs. This will need to come from the LLM provider and will be referenced as the value for `llm.key` in the configs (using environment substitution)
+**HYALINE_LLM_TOKEN** - A LLM provider API token used in auditing and checking PRs. This will need to come from the LLM provider and will be referenced as the value for `llm.key` in the configs (using environment substitution).
 
 #### Environment Variables
-The following repository variables  should be created in the forked `hyaline-github-app-config` repo:
+The following repository variables should be created in the forked `hyaline-github-app-config` repo:
 
 **HYALINE_LLM_PROVIDER** - The LLM provider to be used. This will be referenced as the value for `llm.provider` in the configs (using environment substitution). Please see [configuration reference](../reference/config.md) for supported values.
 
@@ -73,7 +71,7 @@ Manually trigger the `Manual - Extract All` workflow in the forked `hyaline-gith
 Install the [Hyaline GitHub App (hyaline.dev)](https://github.com/apps/hyaline-dev) into your organization or personal account. Only grant it access to repositories that you want Hyaline to extract and check pull requests on.
 
 ### 7. Verify Installation
-You can verify the installation of the GitHub App by opening a non-draft PR in one of the repositories in your organization. Once you do you should see the workflow `Internal - Check PR` kicked off in the forked `hyaline-github-app-config` repository and a comment on the pull request with Hyaline's documentation update recommendations. Then, once the pull request is merged, you should see a corresponding workflow run of `Internal - Extract` followed by a workflow run of `Internal - Merge` also in the forked `hyaline-github-app-config` repository.
+You can verify the installation of the GitHub App by opening a non-draft PR in one of the repositories in your organization. Once you do you should see the workflow `Internal - Check PR` kicked off in the forked `hyaline-github-app-config` repository and a comment on the pull request with Hyaline's documentation update recommendations. Then, once the pull request is merged, you should see a corresponding workflow run of `Internal - Extract` followed by a workflow run of `Internal - Merge` in the forked `hyaline-github-app-config` repository.
 
 ## Next Steps
 To read more about the Hyaline GitHub App please see [an explanation of Hyaline's GitHub App](../explanation/github-app.md) or read on to see how to [extract documentation from a repository or site](./extract-documentation.md).
