@@ -1,27 +1,28 @@
 {{ define "main" }}
 <!-- Hero Section -->
 <section class="w-full">
-  <div class="h-full px-4 sm:px-6 lg:px-8 mx-auto max-w-[110rem] flex flex-col gap-16 justify-center items-center">
-    <div class="text-center pt-16 md:pt-44">
+  <div class="h-full py-16 px-4 sm:px-6 lg:px-8 mx-auto max-w-[110rem] flex flex-col lg:flex-row gap-16 justify-center items-center relative overflow-hidden">
+    <div class="flex-1">
       <h1 class="text-4xl md:text-5xl xl:text-6xl font-bold mb-4">Is your documentation <br/> up-to-date?</h1>
-      <p class="text-md md:text-lg text-gray-700 max-w-4xl">
+      <p class="text-md md:text-lg text-gray-700 max-w-lg">
         Hyaline extracts documentation from any source, uses AI to detect when code changes require documentation updates, runs compliance checks, and makes documentation available where it's needed.
       </p>
       <a href="#keep-up-to-date" class="inline-block mt-6 px-6 py-3 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 transition-colors">Learn more</a>
     </div>
-    <div class="max-w-4xl pb-24">
+    <div class="flex-1">
       <img src="/images/hero.png" alt="Screenshot of Hyaline PR Check in GitHub showing code diff with green additions and red deletions, plus a bot comment from hyaline-bot displaying documentation
    recommendations including updating README.md usage examples due to CLI output format changes and updating docs/CLI.md output formats section, with a note that
   Hyaline will automatically detect documentation updates in the PR and mark recommendations as reviewed" class="w-full h-auto">
     </div>
+    <img src="/images/blobs.png" alt="" class="max-w-[unset] h-auto absolute top-0 z-[-1]">
   </div>
 </section>
 
 <!-- How it Works -->
-<section class="w-full bg-neutral-100">
-  <div class="px-4 sm:px-6 lg:px-8 py-12 sm:py-18 lg:py-24 mx-auto max-w-[110rem] flex gap-16 flex-col md:flex-row items-center">
+<section class="bg-neutral-100">
+  <div class="px-4 sm:px-6 lg:px-8 py-12 sm:py-18 lg:py-24 mx-auto max-w-7xl flex gap-16 flex-col md:flex-row items-center">
     <div class="flex-1">
-      <div class="mx-auto max-w-sm md:max-w-md">
+      <div class="max-w-sm md:max-w-md">
         <img src="/images/up-to-date.png" alt="" class="w-full h-auto">
       </div>
     </div>
@@ -36,7 +37,7 @@
 </section>
 
 <section class="w-full">
-  <div class="px-4 sm:px-6 lg:px-8 py-12 sm:py-18 lg:py-24 mx-auto max-w-[110rem] flex gap-16 flex-wrap items-center">
+  <div class="px-4 sm:px-6 lg:px-8 py-12 sm:py-18 lg:py-24 mx-auto max-w-7xl flex gap-16 flex-col md:flex-row items-center">
     <div class="flex-1">
       <h2 id="stay-compliant" class="text-2xl md:text-3xl xl:text-4xl font-bold mb-4">Stay compliant</h2>
       <p class="text-lg text-gray-700">
@@ -45,7 +46,9 @@
       <a href="/documentation/explanation/audit/" class="inline-block mt-6 px-6 py-3 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 transition-colors">Learn more</a>
     </div>
     <div class="flex-1">
-      Hello
+      <div class="mx-auto max-w-xs md:max-w-sm">
+        <img src="/images/audit-results.png" alt="" class="w-full h-auto">
+      </div>
     </div>
   </div>
 </section>
