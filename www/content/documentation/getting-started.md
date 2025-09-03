@@ -10,7 +10,7 @@ Welcome to Hyaline (pronounced "HIGH-uh-leen"), a documentation tool that helps 
 - A GitHub account OR a supported operating system (64-bit Linux, macOS, or Windows)
 - A [supported LLM Provider](./reference/config.md)
 
-> Please note that you are free to install and use Hyaline without a license for testing and evaluation purposes ONLY. You will need to [obtain a license](/#pricing) to use Hyaline for production use or any other purpose.
+> Please note that you are free to install and use Hyaline without a license for testing and evaluation purposes. You will need to [obtain a license](/#pricing) to use Hyaline for any other purpose.
 
 ## GitHub App
 The [Hyaline GitHub App](https://github.com/apps/hyaline-dev) is the recommended way to use Hyaline. It uses a configuration repository in your organization or personal account to extract, check, and audit documentation. To install the Hyaline GitHub App please see [How To: Install the GitHub App](./how-to/install-github-app.md).
