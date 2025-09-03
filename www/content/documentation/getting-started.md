@@ -10,12 +10,12 @@ Welcome to Hyaline (pronounced "HIGH-uh-leen"), a documentation tool that helps 
 - A GitHub account OR a supported operating system (64-bit Linux, macOS, or Windows)
 - A [supported LLM Provider](./reference/config.md)
 
-> Please note that while you are free to install and use Hyaline for testing and evaluation purposes without a license, you still need to [obtain a license](/#pricing) to use Hyaline for any and all other purposes.
+> Please note that you are free to install and use Hyaline without a license for testing and evaluation purposes ONLY. You will need to [obtain a license](/#pricing) to use Hyaline for production use or any other purpose.
 
 ## GitHub App
-The [Hyaline GitHub App](https://github.com/apps/hyaline-dev) is the recommended way of using Hyaline. It uses a configuration repository in your organization or personal account to extract, check, and audit documentation. To install the Hyaline GitHub App please see [How To: Install the GitHub App](./how-to/install-github-app.md).
+The [Hyaline GitHub App](https://github.com/apps/hyaline-dev) is the recommended way to use Hyaline. It uses a configuration repository in your organization or personal account to extract, check, and audit documentation. To install the Hyaline GitHub App please see [How To: Install the GitHub App](./how-to/install-github-app.md).
 
 Once installed you can visit other How To guides to learn how to [extract documentation](./how-to/extract-documentation.md), [check pull requests](./how-to/check-pull-request.md), or [run an MCP server](./how-to/run-mcp-server.md). Alternatively you can [learn more about how hyaline works](./explanation/hyaline.md) or visit the [configuration reference](./reference/config.md) to learn how to configure Hyaline.
 
 ## From Scratch (Advanced)
-You can also use Hyaline from scratch to support any number of custom workflows or use cases. For an introduction on how to use Hyaline from scratch please see [How To: Use Hyaline From Scratch](./how-to/use-hyaline-from-scratch.md).
+You can also use Hyaline from scratch to support any number of custom workflows or use cases. For an introduction on how to use Hyaline from scratch please visit [How To: Use Hyaline From Scratch](./how-to/use-hyaline-from-scratch.md).
