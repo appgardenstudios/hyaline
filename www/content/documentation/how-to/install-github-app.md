@@ -11,7 +11,7 @@ Install the Hyaline GitHub App into a GitHub organization or personal account.
 - One or more documentation sources (e.g. git repo, documentation website, etc...)
 - A [supported LLM Provider](../reference/config.md)
 
-Note that the Hyaline GitHub App will trigger workflows in your organization, meaning that you stay in control of your configuration and data. If you wish you can also run your own copy of the Hyaline GitHub app (located in the [configuration repository](https://github.com/appgardenstudios/hyaline-github-app-config)) to prevent any data whatsoever from leaving your organization and being sent to us.
+Note that the Hyaline GitHub App will trigger workflows in the configuration repository located in your organization or personal account, meaning that you stay in control of your configuration and data. If you wish you can also run your own copy of the Hyaline GitHub app (located in the [configuration repository](https://github.com/appgardenstudios/hyaline-github-app-config)) to prevent any data whatsoever from leaving your organization and being sent to us.
 
 ## Steps
 
