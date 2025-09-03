@@ -53,7 +53,7 @@ check:
 Run the `Doctor` workflow in the forked `hyaline-github-app-config` repo to ensure that the configuration is valid. Merge the resulting PR if needed.
 
 ### 3. Create Pull Request
-TODO
+Create a pull request in the repo you created the configuration for. You will see a run of the `Internal - Check PR` workflow being kicked off in the forked `hyaline-github-app-config` repo and a comment with recommendations created on the pull request.
 
 ## Next Steps
 Read more about [how checking pull requests works](../explanation/check.md) or more about Hyaline's [configuration](../reference/config.md).

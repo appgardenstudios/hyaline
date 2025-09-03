@@ -53,9 +53,9 @@ Based on the contents of the configuration file above there may be one or more e
 Now you can execute the hyaline command, passing in all of the required and (optionally) optional parameters. Please see [CLI Reference](../reference/cli.md) for a full list of commands and their associated options.
 
 ### 3. Extract Documentation
-TODO
+To extract documentation you need to create a configuration file and then run Hyaline to extract your documentation.
 
-### 3.1 Create a Configuration File
+#### Step 3.1 Create a Configuration File
 
 Create a `hyaline.yml` file in your project root. Here's basic configuration to extract documentation from a typical project that has a locally checked-out git repo and `main` branch:
 
@@ -80,26 +80,20 @@ extract:
     - type: md
       include:
         - "**/*.md"
-  metadata:
-    - document: README.md
-      purpose: Provide an overview of the project, installation instructions, and basic usage examples
-    - document: docs/installation.md
-      purpose: Detailed installation and setup instructions
 ```
 
-### Configuration Breakdown
+**Configuration Breakdown**
 
 - **extract**: Top-level key for extraction configuration
 - **source**: Metadata about the documentation source (id and description)
 - **crawler**: Specifies how to crawl the documentation (git repository in this case)
 - **extractors**: List of extractors to process documentation files (markdown in this case)
-- **metadata**: Define purposes for specific documents
 
 Note that the above configuration is for a simple example, but Hyaline can be configured to extract documentation from multiple systems and sources (e.g. websites, remote git repositories). For complete configuration options and details, see the [Configuration Reference](../reference/config.md).
 
-## Step 3.2: Extract Documentation
+#### Step 3.2: Extract Documentation
 
-Now let's extract your documentation into a data set (note that you will need to run this from the root of the documentation source):
+Now run Hyaline to extract your documentation into a data set (note that you will need to run this from the root of the documentation source):
 
 ```bash
 $ hyaline extract documentation \
