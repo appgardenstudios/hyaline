@@ -20,15 +20,6 @@
   font-display: swap;
 }
 
-/* Quicksand Variable Font */
-@font-face {
-  font-family: 'Quicksand';
-  src: url('/fonts/Quicksand-Variable.woff2') format('woff2-variations');
-  font-weight: 600;
-  font-style: normal;
-  font-display: swap;
-}
-
 /* Tailwind Theme Variables */
 @theme {
   --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
