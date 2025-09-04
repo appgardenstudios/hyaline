@@ -1,8 +1,8 @@
 {{ define "main" }}
-<div class="relative overflow-hidden">
-  <img class="absolute z-[-1] w-[2000px] max-w-[unset]" src="/images/blobs.png">
+<div class="overflow-hidden">
   <!-- Hero Section -->
-  <section class="w-full mx-auto relative overflow-y-visible">
+  <section class="w-full mx-auto relative">
+    <img class="absolute z-[-1] max-w-[unset] [mask-image:linear-gradient(to_bottom,rgba(0,0,0,1)_0%,rgba(0,0,0,0)_50%)]" src="/images/bubbles.png">
     <div class="h-full py-16 px-4 sm:px-6 lg:px-8 mx-auto container">
       <div>
         <h1 class="text-4xl md:text-5xl xl:text-6xl font-bold mb-4">Is your documentation <br/> up-to-date?</h1>
@@ -17,7 +17,7 @@
 
   <!-- How it Works -->
   <section>
-    <div class="px-4 sm:px-6 lg:px-8 py-12 sm:py-18 lg:py-24 container mx-auto flex gap-16 flex-col-reverse md:flex-row items-center">
+    <div class="px-4 sm:px-6 lg:px-8 py-16 sm:py-24 lg:py-36 container mx-auto flex gap-16 flex-col-reverse lg:flex-row items-center">
       <div class="flex-1">
         <div class="mx-auto w-full max-w-lg">
           {{ partial "inline-svg.html" (dict "src" "images/keep-up-to-date.svg" "alt" "Screenshot of Hyaline PR Check in GitHub showing code diff with green additions and red deletions, plus a bot comment from hyaline-bot displaying documentation recommendations including updating README.md usage examples due to CLI output format changes and updating docs/CLI.md output formats section, with a note that Hyaline will automatically detect documentation updates in the PR and mark recommendations as reviewed" "class" "w-full sm:w-lg lg:w-full h-auto" "applyDropShadow" true) }}
@@ -33,8 +33,9 @@
     </div>
   </section>
 
-  <section class="w-full">
-    <div class="px-4 sm:px-6 lg:px-8 py-12 sm:py-18 lg:py-24 container mx-auto flex gap-16 flex-col md:flex-row items-center">
+  <section class="relative">
+    <img class="absolute -top-48 z-[-1] max-w-[unset] [mask-image:linear-gradient(to_bottom,rgba(0,0,0,1)_0%,rgba(0,0,0,0)_50%)] rotate-180 -scale-y-100" src="/images/bubbles.png">
+    <div class="px-4 sm:px-6 lg:px-8 py-16 sm:py-24 lg:py-36 container mx-auto flex gap-16 flex-col lg:flex-row items-center">
       <div class="flex-1">
         <h2 class="text-2xl md:text-3xl xl:text-4xl font-bold mb-4">Stay compliant</h2>
         <p class="text-lg text-gray-700">
@@ -50,8 +51,9 @@
     </div>
   </section>
 
-  <section class="w-full">
-    <div class="px-4 sm:px-6 lg:px-8 py-12 sm:py-18 lg:py-24 container mx-auto flex gap-16 flex-col-reverse md:flex-row items-center">
+  <section class="relative">
+    <img class="absolute -top-48 z-[-1] max-w-[unset] [mask-image:linear-gradient(to_top,rgba(0,0,0,1)_0%,rgba(0,0,0,0)_50%)] rotate-180" src="/images/bubbles.png">
+    <div class="px-4 sm:px-6 lg:px-8 py-16 sm:py-24 lg:py-36 container mx-auto flex gap-16 flex-col-reverse lg:flex-row items-center">
       <div class="flex-1">
         <div class="mx-auto w-full max-w-xl">
           {{ partial "inline-svg.html" (dict "src" "images/author-anywhere.svg" "alt" "" "class" "w-full sm:w-lg lg:w-full h-auto" "applyDropShadow" true) }}
@@ -67,8 +69,9 @@
     </div>
   </section>
 
-  <section>
-    <div class="px-4 sm:px-6 lg:px-8 py-12 sm:py-18 lg:py-24 container mx-auto flex gap-16 flex-col-reverse md:flex-row items-center">
+  <section class="relative">
+    <img class="absolute -top-48 z-[-1] max-w-[unset] [mask-image:linear-gradient(to_top,rgba(0,0,0,1)_0%,rgba(0,0,0,0)_50%)] -scale-y-100" src="/images/bubbles.png">
+    <div class="px-4 sm:px-6 lg:px-8 py-16 sm:py-24 lg:py-36 container mx-auto flex gap-16 flex-col lg:flex-row items-center">
       <div class="flex-1">
         <h2 class="text-2xl md:text-3xl xl:text-4xl font-bold mb-4">Use everywhere</h2>
         <p class="text-lg text-gray-700">
@@ -783,5 +786,6 @@
   const header = document.querySelector('header');
   header.children[0].classList.add('container', 'mx-auto');
 </script>
+
 
 {{ end }}
