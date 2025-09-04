@@ -1,83 +1,89 @@
 {{ define "main" }}
-<!-- Hero Section -->
-<section class="w-full mx-auto overflow-hidden bg-[url('/images/blobs.png')]">
-  <div class="h-full py-16 px-4 sm:px-6 lg:px-8 mx-auto container flex flex-col lg:flex-row gap-16 justify-center items-center overflow-hidden">
-    <div class="flex-1">
-      <h1 class="text-4xl md:text-5xl xl:text-6xl font-bold mb-4">Is your documentation <br/> up-to-date?</h1>
-      <p class="text-md md:text-lg text-gray-700 max-w-lg">
-        Hyaline extracts documentation from any source, uses AI to detect when code changes require documentation updates, runs compliance checks, and makes documentation available where it's needed.
-      </p>
-      <a href="#keep-up-to-date" class="inline-block mt-6 px-6 py-3 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 transition-colors">Learn more</a>
-    </div>
-  </div>
-</section>
-
-<!-- How it Works -->
-<section class="bg-neutral-100">
-  <div class="px-4 sm:px-6 lg:px-8 py-12 sm:py-18 lg:py-24 container mx-auto flex gap-16 flex-col md:flex-row items-center">
-    <div class="flex-1">
-      <div class="mx-auto w-full max-w-lg">
-        <img src="/images/up-to-date.svg" alt="Screenshot of Hyaline PR Check in GitHub showing code diff with green additions and red deletions, plus a bot comment from hyaline-bot displaying documentation
-    recommendations including updating README.md usage examples due to CLI output format changes and updating docs/CLI.md output formats section, with a note that
-    Hyaline will automatically detect documentation updates in the PR and mark recommendations as reviewed" class="w-full sm:w-lg lg:w-full h-auto">
+<div class="relative overflow-hidden">
+  <img class="absolute z-[-1] w-[2000px] max-w-[unset]" src="/images/blobs.png">
+  <!-- Hero Section -->
+  <section class="w-full mx-auto relative overflow-y-visible">
+    <div class="h-full py-16 px-4 sm:px-6 lg:px-8 mx-auto container">
+      <div>
+        <h1 class="text-4xl md:text-5xl xl:text-6xl font-bold mb-4">Is your documentation <br/> up-to-date?</h1>
+        <div class="text-md md:text-lg text-gray-700 max-w-lg">
+          {{/*  <div style="width: 70px; height: 200px; float: right; shape-outside: polygon(100% 0, 0 100%, 100% 100%); clip-path: polygon(100% 0, 0 100%, 100% 100%); background: transparent;"></div>  */}}
+          Hyaline extracts documentation from any source, uses AI to detect when code changes require documentation updates, runs compliance checks, and makes documentation available where it's needed.
+        </div>
+        <a href="/documentation/getting-started/" class="inline-block mt-6 px-6 py-3 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 transition-colors">Get Started</a>
       </div>
     </div>
-    <div class="flex-1">
-      <h2 id="keep-up-to-date" class="text-2xl md:text-3xl xl:text-4xl font-bold mb-4">Keep up-to-date</h2>
-      <p class="text-lg text-gray-700">
-        Your product evolves with every commit—your documentation should too. Hyaline automatically reviews Pull Requests and identifies what documentation need to be updated. No more shipping new features with yesterday's documentation.
-      </p>
-      <a href="/documentation/explanation/check/" class="inline-block mt-6 px-6 py-3 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 transition-colors">Learn more</a>
-    </div>
-  </div>
-</section>
+  </section>
 
-<section class="w-full">
-  <div class="px-4 sm:px-6 lg:px-8 py-12 sm:py-18 lg:py-24 container mx-auto flex gap-16 flex-col md:flex-row items-center">
-    <div class="flex-1">
-      <h2 id="stay-compliant" class="text-2xl md:text-3xl xl:text-4xl font-bold mb-4">Stay compliant</h2>
-      <p class="text-lg text-gray-700">
-        Incomplete documentation can mean compliance gaps. Hyaline checks documentation against your policy requirements, catching issues before auditors do.
-      </p>
-      <a href="/documentation/explanation/audit/" class="inline-block mt-6 px-6 py-3 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 transition-colors">Learn more</a>
-    </div>
-    <div class="flex-1">
-      <div class="mx-auto w-full max-w-xl">
-        <img src="/images/audit-results.svg" alt="" class="w-full sm:w-lg lg:w-full h-auto">
+  <!-- How it Works -->
+  <section>
+    <div class="px-4 sm:px-6 lg:px-8 py-12 sm:py-18 lg:py-24 container mx-auto flex gap-16 flex-col-reverse md:flex-row items-center">
+      <div class="flex-1">
+        <div class="mx-auto w-full max-w-lg">
+          {{ partial "inline-svg.html" (dict "src" "images/keep-up-to-date.svg" "alt" "Screenshot of Hyaline PR Check in GitHub showing code diff with green additions and red deletions, plus a bot comment from hyaline-bot displaying documentation recommendations including updating README.md usage examples due to CLI output format changes and updating docs/CLI.md output formats section, with a note that Hyaline will automatically detect documentation updates in the PR and mark recommendations as reviewed" "class" "w-full sm:w-lg lg:w-full h-auto" "applyDropShadow" true) }}
+        </div>
+      </div>
+      <div class="flex-1">
+        <h2 id="keep-up-to-date" class="text-2xl md:text-3xl xl:text-4xl font-bold mb-4">Keep up-to-date</h2>
+        <p class="text-lg text-gray-700">
+          Your product evolves with every commit—your documentation should too. Hyaline automatically reviews Pull Requests and identifies what documentation need to be updated. No more shipping new features with yesterday's documentation.
+        </p>
+        <a href="/documentation/explanation/check/" class="inline-block mt-6 px-6 py-3 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 transition-colors">Learn more</a>
       </div>
     </div>
-  </div>
-</section>
+  </section>
 
-<section class="w-full bg-neutral-100">
-  <div class="px-4 sm:px-6 lg:px-8 py-12 sm:py-18 lg:py-24 mx-auto max-w-[110rem] flex gap-16 flex-wrap items-center">
-    <div class="flex-1">
-      Hello
+  <section class="w-full">
+    <div class="px-4 sm:px-6 lg:px-8 py-12 sm:py-18 lg:py-24 container mx-auto flex gap-16 flex-col md:flex-row items-center">
+      <div class="flex-1">
+        <h2 class="text-2xl md:text-3xl xl:text-4xl font-bold mb-4">Stay compliant</h2>
+        <p class="text-lg text-gray-700">
+          Incomplete documentation can mean compliance gaps. Hyaline checks documentation against your policy requirements, catching issues before auditors do.
+        </p>
+        <a href="/documentation/explanation/audit/" class="inline-block mt-6 px-6 py-3 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 transition-colors">Learn more</a>
+      </div>
+      <div class="flex-1">
+        <div class="mx-auto w-full max-w-xl">
+          {{ partial "inline-svg.html" (dict "src" "images/stay-compliant.svg" "alt" "" "class" "w-full sm:w-lg lg:w-full h-auto" "applyDropShadow" true) }}
+        </div>
+      </div>
     </div>
-    <div class="flex-1">
-      <h2 id="author-anywhere" class="text-2xl md:text-3xl xl:text-4xl font-bold mb-4">Author anywhere</h2>
-      <p class="text-lg text-gray-700">
-        Your documentation lives in a lot of places. Hyaline brings it together without changing how you work. Keep your tools, gain searchable, organized documentation.
-      </p>
-      <a href="/documentation/explanation/extract/" class="inline-block mt-6 px-6 py-3 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 transition-colors">Learn more</a>
-    </div>
-  </div>
-</section>
+  </section>
 
-<section class="w-full">
-  <div class="px-4 sm:px-6 lg:px-8 py-12 sm:py-18 lg:py-24 mx-auto max-w-[110rem] flex gap-16 flex-wrap items-center">
-    <div class="flex-1">
-      <h2 id="use-everywhere" class="text-2xl md:text-3xl xl:text-4xl font-bold mb-4">Use everywhere</h2>
-      <p class="text-lg text-gray-700">
-        Great documentation becomes useless if people can't access it. Hyaline exports your documentation to multiple formats and provides documentation via an MCP server for AI assistants. Make your information accessible to everyone who needs it.
-      </p>
-      <a href="/documentation/explanation/mcp/" class="inline-block mt-6 px-6 py-3 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 transition-colors">Learn more</a>
+  <section class="w-full">
+    <div class="px-4 sm:px-6 lg:px-8 py-12 sm:py-18 lg:py-24 container mx-auto flex gap-16 flex-col-reverse md:flex-row items-center">
+      <div class="flex-1">
+        <div class="mx-auto w-full max-w-xl">
+          {{ partial "inline-svg.html" (dict "src" "images/author-anywhere.svg" "alt" "" "class" "w-full sm:w-lg lg:w-full h-auto" "applyDropShadow" true) }}
+        </div>
+      </div>
+      <div class="flex-1">
+        <h2 class="text-2xl md:text-3xl xl:text-4xl font-bold mb-4">Author anywhere</h2>
+        <p class="text-lg text-gray-700">
+          Your documentation lives in a lot of places. Hyaline brings it together without changing how you work. Keep your tools, gain searchable, organized documentation.
+        </p>
+        <a href="/documentation/explanation/extract/" class="inline-block mt-6 px-6 py-3 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 transition-colors">Learn more</a>
+      </div>
     </div>
-    <div class="flex-1">
-      Hello
+  </section>
+
+  <section>
+    <div class="px-4 sm:px-6 lg:px-8 py-12 sm:py-18 lg:py-24 container mx-auto flex gap-16 flex-col-reverse md:flex-row items-center">
+      <div class="flex-1">
+        <h2 class="text-2xl md:text-3xl xl:text-4xl font-bold mb-4">Use everywhere</h2>
+        <p class="text-lg text-gray-700">
+          Great documentation becomes useless if people can't access it. Hyaline exports your documentation to multiple formats and provides documentation via an MCP server for AI assistants. Make your information accessible to everyone who needs it.
+        </p>
+        <a href="/documentation/explanation/mcp/" class="inline-block mt-6 px-6 py-3 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 transition-colors">Learn more</a>
+      </div>
+      <div class="flex-1">
+        <div class="mx-auto w-full max-w-xl">
+          {{ partial "inline-svg.html" (dict "src" "images/use-everywhere.svg" "alt" "" "class" "w-full sm:w-lg lg:w-full h-auto" "applyDropShadow" true) }}
+        </div>
+      </div>
     </div>
-  </div>
-</section>
+  </section>
+</div>
 
 <!-- Pricing Section -->
 <section id="pricing" class="py-16 md:py-24 bg-blue-900 text-white">
@@ -777,4 +783,5 @@
   const header = document.querySelector('header');
   header.children[0].classList.add('container', 'mx-auto');
 </script>
+
 {{ end }}
