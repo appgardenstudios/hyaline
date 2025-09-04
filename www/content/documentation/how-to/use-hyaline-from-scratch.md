@@ -1,10 +1,10 @@
 ---
-title: "How To: Use Hyaline Solo (Advanced)"
-description: "Configure and run Hyaline solo without using the GitHub App."
-purpose: Document how to run Hyaline solo without using the GitHub App
+title: "How To: Use Hyaline From Scratch (Advanced)"
+description: "Configure and run Hyaline from scratch without using the GitHub App."
+purpose: Document how to run Hyaline from scratch without using the GitHub App
 ---
 ## Purpose
-Run Hyaline solo without using the GitHub App
+Run Hyaline from scratch without using the GitHub App
 
 ## Prerequisite(s)
 - [Go Toolchain Installed](https://go.dev/) if building from scratch (version 1.24+)
@@ -13,7 +13,7 @@ Run Hyaline solo without using the GitHub App
 ## Steps
 
 ### 1. Install CLI
-You can either download a pre-build version from GitHub (**1.1**) or build the CLI yourself (**1.2**)
+You can either download a pre-built version from GitHub (**1.1**) or build the CLI yourself (**1.2**)
 
 #### 1.1 Download CLI
 Before starting the installation process you need to determine your operating system and architecture. Hyaline supports 64-bit Linux (`linux`), MacOS (`darwin`), and Windows (`windows`) operating systems for either `amd64` or `arm64` architectures (`amd64` only for Windows).
@@ -107,12 +107,12 @@ This command will:
 For more details on how extraction works, see [Explanation: Extract](../explanation/extract.md).
 
 ### 4. Check a PR
-To check a GitHub pull request you need to check in your configuration file (**4.1**), setup the required secrets (**4.2**), and then create a GitHub Workflow file to run a GitHub Action to check a pull request (**4.3**).
+To check a GitHub pull request you need to check in your configuration file (**4.1**), set up the required secrets (**4.2**), and then create a GitHub Workflow file to run a GitHub Action to check a pull request (**4.3**).
 
 #### 4.1 Check in Configuration
 Create a Hyaline Configuration File with [extract](../reference/config.md#extract) and [check](../reference/config.md#check) configured, and check it into your GitHub repository.
 
-Make sure you don't check in any secrets, like the LLM Provider Key or the GitHub Token. Instead, setup the configuration to pull them from the environment.
+Make sure you don't check in any secrets, like the LLM Provider Key or the GitHub Token. Instead, set up the configuration to pull them from the environment.
 
 See [config reference](../reference/config.md) for more information on creating a configuration file and referencing secrets.
 

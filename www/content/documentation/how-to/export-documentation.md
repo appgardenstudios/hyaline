@@ -14,7 +14,7 @@ Export current documentation using the Hyaline CLI.
 ## Steps
 
 ### 1. Download Current Documentation
-Go to the latest `Internal - Merge` workflow run in the forked `hyaline-github-app-config` repository and download the artifact `_current-documentation`. Once downloaded extract the folder and note the location of the extracted `documentation.db` file for later use.
+Go to the latest `_Merge` workflow run in the forked `hyaline-github-app-config` repository and download the artifact `_current-documentation`. Once downloaded extract the folder and note the location of the extracted `documentation.db` file for later use.
 
 ### 2. Select Output Format
 Hyaline supports exporting extracted documentation in a variety of formats. See [CLI](../reference/cli.md) or [Export](../reference/export.md) reference documentation to see the available options and select an output format.

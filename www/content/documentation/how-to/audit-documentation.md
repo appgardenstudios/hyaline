@@ -15,7 +15,7 @@ Configure Hyaline to audit documentation using the Hyaline GitHub App.
 ### 1. Create Configuration
 The first step is to create a configuration file for the audit in the `audits/` folder in the forked `hyaline-github-app-config` repo.
 
-For example, the configuration to could look something like:
+For example, the configuration could look something like:
 
 ```yml
 llm:
@@ -41,7 +41,7 @@ For more information on how to configure an audit and what checks are available 
 Run the `Doctor` workflow in the forked `hyaline-github-app-config` repo to 1) ensure that the configuration is valid and 2) to add the audit to the list of available audits. Merge the resulting PR if needed.
 
 ### 3. Run Audit
-Run the `Manual - Audit` workflow in the forked `hyaline-github-app-config` repo to trigger an audit of the current extracted documentation. Audit results will be attached to the workflow run once it completes.
+Run the `Run Audit` workflow in the forked `hyaline-github-app-config` repo to trigger an audit of the current extracted documentation. Audit results will be attached to the workflow run once it completes.
 
 ## Next Steps
 Read more about [how auditing documentation works](../explanation/audit.md) or more about Hyaline's [configuration](../reference/config.md).

@@ -55,7 +55,7 @@ Configuration to extract documentation from a documentation site should be place
 Run the `Doctor` workflow in the forked `hyaline-github-app-config` repo to 1) ensure that the configuration is valid and 2) to add the repository or site to the list of available extraction targets. Merge the resulting PR if needed.
 
 ### 3. Run Extract
-Run the `Manual - Extract` workflow in the forked `hyaline-github-app-config` repo to trigger an extraction. Note that you can trigger a merge of this documentation into the current documentation data set by leaving the `Trigger Merge Workflow` option enabled.
+Run the `Extract Repo/Site` workflow in the forked `hyaline-github-app-config` repo to trigger an extraction. Note that you can trigger a merge of this documentation into the current documentation data set by leaving the `Trigger Merge Workflow` option enabled.
 
 ## Next Steps
 Read more about [how extraction works](../explanation/extract.md) or more about Hyaline's [configuration](../reference/config.md).
