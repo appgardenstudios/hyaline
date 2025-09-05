@@ -55,10 +55,7 @@ See: [How To: Install the GitHub App](/documentation/how-to/install-github-app/)
 
 All secrets are stored in your GitHub repository's secret management system and never exposed in logs or artifacts.
 
-When working with remote repositories, Hyaline supports:
-
-- SSH key authentication for git repositories
-- HTTP authentication for private repositories
+When working with remote repositories, Hyaline supports either ssh key or http authentication.
 
 ## From Scratch Model
 
