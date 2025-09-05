@@ -25,7 +25,7 @@
       <div class="flex-1">
         <h2 id="keep-up-to-date" class="text-2xl md:text-3xl xl:text-4xl font-bold mb-4">Keep up-to-date</h2>
         <p class="text-lg text-gray-700">
-          Your product evolves with every commit—your documentation should too. Hyaline automatically reviews your Pull Requests and identifies what documentation need to be updated. No more shipping new features with yesterday's documentation.
+          Your product evolves with every commit—your documentation should too. Hyaline automatically reviews your Pull Requests and identifies what documentation needs to be updated. No more shipping new features with yesterday's documentation.
         </p>
         <a href="/documentation/explanation/check/" class="inline-block mt-6 px-6 py-3 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 transition-colors">Learn more</a>
       </div>
@@ -80,7 +80,7 @@
       </div>
       <div class="flex-1">
         <div class="mx-auto w-full max-w-xl">
-          {{ partial "inline-svg.html" (dict "src" "images/use-everywhere.svg" "class" "w-full sm:w-lg lg:w-full h-auto" "applyDropShadow" true "alt" "Chat interface showing AI assistant responding to question about back-end service architecture, with hyaline_get_documents dropdown selected, displaying microservice architecture details including API Gateway, PostgreSQL, Redis, AWS EKS, RabbitMQ, and Multi-region setup, surrounded by logos of various AI assistants") }}
+          {{ partial "inline-svg.html" (dict "src" "images/use-everywhere.svg" "class" "w-full sm:w-lg lg:w-full h-auto" "applyDropShadow" true "alt" "Chat interface showing AI assistant responding to question about back-end service architecture, with a call to hyaline_get_documents present, displaying microservice architecture details, surrounded by logos of various AI assistants") }}
         </div>
       </div>
     </div>
@@ -572,7 +572,7 @@
             </p>
             <ul class="pl-6 space-y-2 list-disc mb-4">
               <li><strong>Cost Control</strong> - You have complete visibility and control over your LLM and GitHub Actions usage. You can monitor costs directly, set spending limits, and optimize usage based on your needs.</li>
-              <li><strong>Data Privacy</strong> - This approach minimizes the data that flows through Hyaline's systems. Your code remains private in your GitHub repositories and is processed directly by your chosen LLM provider. Note: The only exception is webhook payloads sent to the Hyaline GitHub app, which include code diffs that we ignore. Learn more about our data handling practices on our <a href="/security/" class="underline">security page</a>.</li>
+              <li><strong>Data Privacy</strong> - This approach minimizes the data that flows through Hyaline's systems. Your code remains private in your GitHub repositories and is processed directly by your chosen LLM provider. Note: The only exception is webhook payloads sent to the Hyaline-hosted (it is possible to self-host) GitHub App, which include code diffs that we ignore. Learn more about our data handling practices on our <a href="/security/" class="underline">security page</a>.</li>
               <li><strong>Simplicity</strong> - Many organizations already have enterprise agreements with LLM providers (like OpenAI, Anthropic, or Azure) and GitHub. You can leverage these existing relationships, compliance approvals, and negotiated rates rather than managing another vendor relationship.</li>
             </ul>
             <p>
