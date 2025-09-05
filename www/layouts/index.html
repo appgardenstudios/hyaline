@@ -1,470 +1,101 @@
 {{ define "main" }}
-<!-- Hero Section -->
-<section class="py-16 md:py-24 bg-white">
-  <div class="container mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="max-w-4xl mx-auto">
-      <div class="w-full mb-12">
-        {{ readFile "static/images/infographic.svg" | safeHTML }}
-      </div>
-      <h1 class="text-4xl md:text-5xl font-bold text-center text-gray-900 mb-6">
-        Your documentation <span class="text-blue-600">made useful</span>
-      </h1>
-      <p class="text-xl text-center text-gray-600 mb-8 max-w-2xl mx-auto">
-        Hyaline keeps your documentation updated and accessible to both humans
-        and AI tools.
-      </p>
-      <div class="flex justify-center gap-4">
-        <a
-          href="/documentation/getting-started/"
-          class="px-8 py-3 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-          >Get Started</a
-        >
+<div class="overflow-hidden">
+  <!-- Hero Section -->
+  <section class="relative">
+    <img alt="" class="absolute z-[-1] max-w-[unset] [mask-image:linear-gradient(to_bottom,rgba(0,0,0,1)_0%,rgba(0,0,0,0)_50%)]" src="/images/bubbles.png">
+    <div class="py-16 px-4 sm:px-6 lg:px-8 mx-auto container">
+      <div class="text-center">
+        <h1 class="text-4xl md:text-5xl xl:text-6xl font-bold mb-4">Is your documentation <br/> up-to-date?</h1>
+        <div class="text-md md:text-lg text-gray-700 max-w-lg mx-auto">
+          Hyaline uses AI to detect when code changes require documentation updates, ensures your documentation remains compliant, extracts documentation from any source, and delivers your documentation where it's needed.
+        </div>
+        <a href="/documentation/getting-started/" class="inline-block mt-6 px-6 py-3 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 transition-colors">Get Started</a>
       </div>
     </div>
-  </div>
+  </section>
 
-  <div class="px-4 sm:px-6 lg:px-8 mt-16">
-    <div class="container mx-auto max-w-2xl">
-      {{ partial "render-video.html" (dict "id" "overview-video" "image"
-      "static/images/problem.svg" "video"
-      "https://www.youtube.com/embed/8kzHXzhKA0A?autoplay=1") }}
-    </div>
-  </div>
-</section>
-
-<section id="learn-more" class="py-16 md:py-24 bg-gray-100">
-  <div class="container mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="text-center mb-16 fade-in">
-      <h2 class="text-4xl md:text-5xl font-bold mb-6">How does it work?</h2>
-    </div>
-
-    <div
-      class="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-16 max-w-5xl mx-auto"
-    >
-      <div class="lg:col-span-1">
-        <div
-          class="space-y-2"
-          id="tabs-container"
-          role="tablist"
-          aria-label="Product features"
-        >
-          <!-- Tab 1 -->
-          <div
-            class="p-4 rounded-xl cursor-pointer transition-all duration-300 transform hover:scale-102 aria-selected:bg-blue-600 aria-selected:text-white aria-selected:shadow-lg aria-[selected='false']:bg-white aria-[selected='false']:hover:bg-gray-100 aria-[selected='false']:text-gray-800 aria-[selected='false']:shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-            id="tab-1"
-            role="tab"
-            aria-selected="true"
-            aria-controls="panel-1"
-            tabindex="0"
-          >
-            <div class="flex items-center">
-              <div
-                class="w-10 h-10 rounded-full flex items-center justify-center mr-4 aria-selected:bg-white/20 aria-[selected='false']:bg-white"
-              >
-                <div
-                  class="aria-selected:text-white aria-[selected='false']:text-blue-600"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    class="h-6 w-6"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  >
-                    <path
-                      d="M18 8.5L5.9999 8.4999"
-                      stroke-width="1.5"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                    />
-                    <path
-                      d="M21 12.5L3 12.5"
-                      stroke-width="1.5"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                    />
-                    <path
-                      d="M16 21.5L16 15.5M16 15.5L18 17.5M16 15.5L14 17.5"
-                      stroke-width="1.5"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                    />
-                    <path
-                      d="M12 8.5L12 2.5M12 2.5L14 4.5M12 2.5L10 4.5"
-                      stroke-width="1.5"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                    />
-                    <path
-                      d="M8 21.5L8 15.5M8 15.5L10 17.5M8 15.5L6 17.5"
-                      stroke-width="1.5"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                    />
-                  </svg>
-                </div>
-              </div>
-              <h3 class="text-lg font-semibold">Extract</h3>
-            </div>
-          </div>
-
-          <!-- Tab 2 -->
-          <div
-            class="p-4 rounded-xl cursor-pointer transition-all duration-300 transform hover:scale-102 aria-selected:bg-blue-600 aria-selected:text-white aria-selected:shadow-lg aria-[selected='false']:bg-white aria-[selected='false']:hover:bg-gray-100 aria-[selected='false']:text-gray-800 aria-[selected='false']:shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-            id="tab-2"
-            role="tab"
-            aria-selected="false"
-            aria-controls="panel-2"
-            tabindex="-1"
-          >
-            <div class="flex items-center">
-              <div
-                class="w-10 h-10 rounded-full flex items-center justify-center mr-4 aria-selected:bg-white/20 aria-[selected='false']:bg-white"
-              >
-                <div
-                  class="aria-selected:text-white aria-[selected='false']:text-blue-600"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    class="h-6 w-6"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  >
-                    <path
-                      d="M19 19.1414C17.1962 20.9097 14.7255 22 12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C14.7974 2 17.3265 3.14864 19.1414 5"
-                      stroke-width="1.5"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                    />
-                    <path
-                      d="M8 15C8.91212 16.2144 10.3643 17 12 17C12.7111 17 13.3875 16.8515 14 16.5839"
-                      stroke-width="1.5"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                    />
-                    <path
-                      d="M8.00897 9L8 9"
-                      stroke-width="2"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                    />
-                    <path
-                      d="M22 15L22 15M22 18L22 18M22 21L22 21"
-                      stroke-width="2"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                    />
-                    <circle
-                      cx="16"
-                      cy="10"
-                      r="3"
-                      stroke-width="1.5"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                    />
-                    <path
-                      d="M22 12C21.7927 11.6041 21.689 11.4062 21.552 11.2328C21.2015 10.7894 20.6784 10.4407 20.0558 10.2354C19.8124 10.1551 19.5416 10.1034 19 10"
-                      stroke-width="1.5"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                    />
-                  </svg>
-                </div>
-              </div>
-              <h3 class="text-lg font-semibold">Reference</h3>
-            </div>
-          </div>
-
-          <!-- Tab 3 -->
-          <div
-            class="p-4 rounded-xl cursor-pointer transition-all duration-300 transform hover:scale-102 aria-selected:bg-blue-600 aria-selected:text-white aria-selected:shadow-lg aria-[selected='false']:bg-white aria-[selected='false']:hover:bg-gray-100 aria-[selected='false']:text-gray-800 aria-[selected='false']:shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-            id="tab-3"
-            role="tab"
-            aria-selected="false"
-            aria-controls="panel-3"
-            tabindex="-1"
-          >
-            <div class="flex items-center">
-              <div
-                class="w-10 h-10 rounded-full flex items-center justify-center mr-4 aria-selected:bg-white/20 aria-[selected='false']:bg-white"
-              >
-                <div
-                  class="aria-selected:text-white aria-[selected='false']:text-blue-600"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    class="h-6 w-6"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  >
-                    <path
-                      d="M6.53792 2.32172C6.69664 1.89276 7.30336 1.89276 7.46208 2.32172L8.1735 4.2443C8.27331 4.51403 8.48597 4.72669 8.7557 4.8265L10.6783 5.53792C11.1072 5.69664 11.1072 6.30336 10.6783 6.46208L8.7557 7.1735C8.48597 7.27331 8.27331 7.48597 8.1735 7.7557L7.46208 9.67828C7.30336 10.1072 6.69665 10.1072 6.53792 9.67828L5.8265 7.7557C5.72669 7.48597 5.51403 7.27331 5.2443 7.1735L3.32172 6.46208C2.89276 6.30336 2.89276 5.69665 3.32172 5.53792L5.2443 4.8265C5.51403 4.72669 5.72669 4.51403 5.8265 4.2443L6.53792 2.32172Z"
-                      stroke="currentColor"
-                      stroke-width="1.5"
-                    ></path>
-                    <path
-                      d="M14.4039 9.64136L15.8869 11.1244M6 22H7.49759C8.70997 22 9.31617 22 9.86124 21.7742C10.4063 21.5484 10.835 21.1198 11.6923 20.2625L19.8417 12.1131C20.3808 11.574 20.6503 11.3045 20.7944 11.0137C21.0685 10.4605 21.0685 9.81094 20.7944 9.25772C20.6503 8.96695 20.3808 8.69741 19.8417 8.15832C19.3026 7.61924 19.0331 7.3497 18.7423 7.20561C18.1891 6.93146 17.5395 6.93146 16.9863 7.20561C16.6955 7.3497 16.426 7.61924 15.8869 8.15832L7.73749 16.3077C6.8802 17.165 6.45156 17.5937 6.22578 18.1388C6 18.6838 6 19.29 6 20.5024V22Z"
-                      stroke="currentColor"
-                      stroke-width="1.5"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                    ></path>
-                  </svg>
-                </div>
-              </div>
-              <h3 class="text-lg font-semibold">Update</h3>
-            </div>
-          </div>
+  <!-- How it Works -->
+  <section>
+    <div class="px-4 sm:px-6 lg:px-8 py-16 sm:py-24 lg:py-36 container mx-auto flex gap-16 flex-col-reverse lg:flex-row items-center">
+      <div class="flex-1">
+        <div class="mx-auto w-full max-w-xl">
+          {{ partial "inline-svg.html" (dict "src" "images/keep-up-to-date.svg" "class" "w-full sm:w-lg lg:w-full h-auto" "applyDropShadow" true "alt" "Screenshot of Hyaline PR Check in GitHub showing code diff with green additions and red deletions, plus a bot comment from hyaline-bot displaying documentation recommendations including updating README.md usage examples due to CLI output format changes and updating docs/CLI.md output formats section, with a note that Hyaline will automatically detect documentation updates in the PR and mark recommendations as reviewed") }}
         </div>
       </div>
+      <div class="flex-1">
+        <h2 id="keep-up-to-date" class="text-2xl md:text-3xl xl:text-4xl font-bold mb-4">Keep up-to-date</h2>
+        <p class="text-lg text-gray-700">
+          Your product evolves with every commit—your documentation should too. Hyaline automatically reviews your Pull Requests and identifies what documentation needs to be updated. No more shipping new features with yesterday's documentation.
+        </p>
+        <a href="/documentation/explanation/check/" class="inline-block mt-6 px-6 py-3 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 transition-colors">Learn more</a>
+      </div>
+    </div>
+  </section>
 
-      <div class="lg:col-span-2 mt-8 lg:mt-0 relative">
-        <div id="tab-content-container">
-          <!-- Content 1 -->
-          <div
-            class="bg-white rounded-2xl shadow-xl overflow-hidden transition-all duration-500 ease-in-out hidden:invisible hidden:opacity-0 hidden:transform hidden:translate-y-5 hidden:absolute hidden:w-full not-hidden:visible not-hidden:opacity-100 not-hidden:transform not-hidden:translate-y-0 not-hidden:relative"
-            id="panel-1"
-            role="tabpanel"
-            aria-labelledby="tab-1"
-            tabindex="0"
-          >
-            {{ partial "render-video.html" (dict "id" "centralized-video"
-            "image" "static/images/extract.svg" "video"
-            "https://www.youtube.com/embed/ijSUNOPYPF0?autoplay=1") }}
-            <div class="p-8">
-              <div class="flex items-center mb-4">
-                <div
-                  class="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center mr-4"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    class="h-6 w-6 text-white"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  >
-                    <path
-                      d="M18 8.5L5.9999 8.4999"
-                      stroke-width="1.5"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                    />
-                    <path
-                      d="M21 12.5L3 12.5"
-                      stroke-width="1.5"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                    />
-                    <path
-                      d="M16 21.5L16 15.5M16 15.5L18 17.5M16 15.5L14 17.5"
-                      stroke-width="1.5"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                    />
-                    <path
-                      d="M12 8.5L12 2.5M12 2.5L14 4.5M12 2.5L10 4.5"
-                      stroke-width="1.5"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                    />
-                    <path
-                      d="M8 21.5L8 15.5M8 15.5L10 17.5M8 15.5L6 17.5"
-                      stroke-width="1.5"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                    />
-                  </svg>
-                </div>
-                <h3 class="text-2xl font-bold text-blue-600">
-                  Centralized Documentation
-                </h3>
-              </div>
-              <p class="text-gray-600 text-lg leading-relaxed">
-                Your documentation lives across repositories, wikis,
-                documentation sites, internal tools, and knowledge bases.
-                Hyaline extracts and unifies information from all these sources
-                into a single, searchable dataset that stays current as your
-                documentation is updated.
-              </p>
-              <a
-                href="/documentation/explanation/extract/"
-                class="mt-8 px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 cursor-pointer inline-block"
-              >
-                Learn more
-              </a>
-            </div>
-          </div>
-
-          <!-- Content 2 -->
-          <div
-            class="bg-white rounded-2xl shadow-xl overflow-hidden transition-all duration-500 ease-in-out hidden:invisible hidden:opacity-0 hidden:transform hidden:translate-y-5 hidden:absolute hidden:w-full not-hidden:visible not-hidden:opacity-100 not-hidden:transform not-hidden:translate-y-0 not-hidden:relative"
-            id="panel-2"
-            role="tabpanel"
-            aria-labelledby="tab-2"
-            tabindex="0"
-            hidden
-          >
-            {{ partial "render-video.html" (dict "id" "reference-video" "image"
-            "static/images/mcp.svg" "video"
-            "https://www.youtube.com/embed/wkAmHMq8IEc?autoplay=1") }}
-            <div class="p-8">
-              <div class="flex items-center mb-4">
-                <div
-                  class="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center mr-4"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    class="h-6 w-6 text-white"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  >
-                    <path
-                      d="M19 19.1414C17.1962 20.9097 14.7255 22 12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C14.7974 2 17.3265 3.14864 19.1414 5"
-                      stroke-width="1.5"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                    />
-                    <path
-                      d="M8 15C8.91212 16.2144 10.3643 17 12 17C12.7111 17 13.3875 16.8515 14 16.5839"
-                      stroke-width="1.5"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                    />
-                    <path
-                      d="M8.00897 9L8 9"
-                      stroke-width="2"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                    />
-                    <path
-                      d="M22 15L22 15M22 18L22 18M22 21L22 21"
-                      stroke-width="2"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                    />
-                    <circle
-                      cx="16"
-                      cy="10"
-                      r="3"
-                      stroke-width="1.5"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                    />
-                    <path
-                      d="M22 12C21.7927 11.6041 21.689 11.4062 21.552 11.2328C21.2015 10.7894 20.6784 10.4407 20.0558 10.2354C19.8124 10.1551 19.5416 10.1034 19 10"
-                      stroke-width="1.5"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                    />
-                  </svg>
-                </div>
-                <h3 class="text-2xl font-bold text-blue-600">MCP Powered</h3>
-              </div>
-              <p class="text-gray-600 text-lg leading-relaxed">
-                Hyaline provides your documentation directly to AI tools through
-                an MCP server. Your AI assistants can instantly access product
-                and system documentation to help you build better software
-                faster.
-              </p>
-              <a
-                href="/documentation/explanation/mcp/"
-                class="mt-8 px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 inline-block"
-              >
-                Learn more
-              </a>
-            </div>
-          </div>
-
-          <!-- Content 3 -->
-          <div
-            class="bg-white rounded-2xl shadow-xl overflow-hidden transition-all duration-500 ease-in-out hidden:invisible hidden:opacity-0 hidden:transform hidden:translate-y-5 hidden:absolute hidden:w-full not-hidden:visible not-hidden:opacity-100 not-hidden:transform not-hidden:translate-y-0 not-hidden:relative"
-            id="panel-3"
-            role="tabpanel"
-            aria-labelledby="tab-3"
-            tabindex="0"
-            hidden
-          >
-            {{ partial "render-video.html" (dict "id" "up-to-date-video" "image"
-            "static/images/update.svg" "video"
-            "https://www.youtube.com/embed/0J25Q2qxF_o?autoplay=1") }}
-            <div class="p-8">
-              <div class="flex items-center mb-4">
-                <div
-                  class="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center mr-4"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    class="h-6 w-6 text-white"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  >
-                    <path
-                      d="M6.53792 2.32172C6.69664 1.89276 7.30336 1.89276 7.46208 2.32172L8.1735 4.2443C8.27331 4.51403 8.48597 4.72669 8.7557 4.8265L10.6783 5.53792C11.1072 5.69664 11.1072 6.30336 10.6783 6.46208L8.7557 7.1735C8.48597 7.27331 8.27331 7.48597 8.1735 7.7557L7.46208 9.67828C7.30336 10.1072 6.69665 10.1072 6.53792 9.67828L5.8265 7.7557C5.72669 7.48597 5.51403 7.27331 5.2443 7.1735L3.32172 6.46208C2.89276 6.30336 2.89276 5.69665 3.32172 5.53792L5.2443 4.8265C5.51403 4.72669 5.72669 4.51403 5.8265 4.2443L6.53792 2.32172Z"
-                      stroke="currentColor"
-                      stroke-width="1.5"
-                    ></path>
-                    <path
-                      d="M14.4039 9.64136L15.8869 11.1244M6 22H7.49759C8.70997 22 9.31617 22 9.86124 21.7742C10.4063 21.5484 10.835 21.1198 11.6923 20.2625L19.8417 12.1131C20.3808 11.574 20.6503 11.3045 20.7944 11.0137C21.0685 10.4605 21.0685 9.81094 20.7944 9.25772C20.6503 8.96695 20.3808 8.69741 19.8417 8.15832C19.3026 7.61924 19.0331 7.3497 18.7423 7.20561C18.1891 6.93146 17.5395 6.93146 16.9863 7.20561C16.6955 7.3497 16.426 7.61924 15.8869 8.15832L7.73749 16.3077C6.8802 17.165 6.45156 17.5937 6.22578 18.1388C6 18.6838 6 19.29 6 20.5024V22Z"
-                      stroke="currentColor"
-                      stroke-width="1.5"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                    ></path>
-                  </svg>
-                </div>
-                <h3 class="text-2xl font-bold text-blue-600">
-                  Always Up-to-Date
-                </h3>
-              </div>
-              <p class="text-gray-600 text-lg leading-relaxed">
-                As you make changes to your systems, Hyaline automatically
-                identifies which documentation needs updates. It keeps both your
-                team's internal documentation and customer-facing guides
-                accurate and current with your evolving codebase.
-              </p>
-              <a
-                href="/documentation/explanation/check/"
-                class="mt-8 px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 cursor-pointer inline-block"
-              >
-                Learn more
-              </a>
-            </div>
-          </div>
+  <section class="relative">
+    <img alt="" class="absolute -top-48 z-[-1] max-w-[unset] [mask-image:linear-gradient(to_bottom,rgba(0,0,0,1)_0%,rgba(0,0,0,0)_50%)] rotate-180 -scale-y-100" src="/images/bubbles.png">
+    <div class="px-4 sm:px-6 lg:px-8 py-16 sm:py-24 lg:py-36 container mx-auto flex gap-16 flex-col lg:flex-row items-center">
+      <div class="flex-1">
+        <h2 class="text-2xl md:text-3xl xl:text-4xl font-bold mb-4">Stay compliant</h2>
+        <p class="text-lg text-gray-700">
+          Incomplete documentation creates friction in your organization. Hyaline audits documentation using your rules and policies, helping you stay organized and compliant.
+        </p>
+        <a href="/documentation/explanation/audit/" class="inline-block mt-6 px-6 py-3 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 transition-colors">Learn more</a>
+      </div>
+      <div class="flex-1">
+        <div class="mx-auto w-full max-w-xl">
+          {{ partial "inline-svg.html" (dict "src" "images/stay-compliant.svg" "class" "w-full sm:w-lg lg:w-full h-auto" "applyDropShadow" true "alt" "Hyaline audit summary showing compliance check results with 50% pass rate, displaying rules like api-security, has-purpose, matches-purpose, priority-review-tag, installation, and dependencies with pass/fail status indicators") }}
         </div>
       </div>
     </div>
-  </div>
-</section>
+  </section>
+
+  <section class="relative">
+    <img alt="" class="absolute z-[-1] max-w-[unset] [mask-image:linear-gradient(to_bottom,rgba(0,0,0,1)_0%,rgba(0,0,0,0)_50%)]" src="/images/bubbles.png">
+    <div class="px-4 sm:px-6 lg:px-8 py-16 sm:py-24 lg:py-36 container mx-auto flex gap-16 flex-col-reverse lg:flex-row items-center">
+      <div class="flex-1">
+        <div class="mx-auto w-full max-w-xl">
+          {{ partial "inline-svg.html" (dict "src" "images/author-anywhere.svg" "class" "w-full sm:w-lg lg:w-full h-auto" "applyDropShadow" true "alt" "Documentation interface showing App Garden Studios coding standards with sidebar navigation for Architecture, Development, Marketing, Operations, and Testing sections, displaying readability and consistency guidelines with code examples, surrounded by logos of various documentation authoring tools") }}
+        </div>
+      </div>
+      <div class="flex-1">
+        <h2 class="text-2xl md:text-3xl xl:text-4xl font-bold mb-4">Author anywhere</h2>
+        <p class="text-lg text-gray-700">
+          Your documentation lives in many different places. Hyaline can extract it all without changing how you work. Keep your workflows and gain up-to-date, usable documentation.
+        </p>
+        <a href="/documentation/explanation/extract/" class="inline-block mt-6 px-6 py-3 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 transition-colors">Learn more</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="relative">
+    <img alt="" class="absolute -top-48 z-[-1] max-w-[unset] [mask-image:linear-gradient(to_bottom,rgba(0,0,0,1)_0%,rgba(0,0,0,0)_50%)] rotate-180 -scale-y-100" src="/images/bubbles.png">
+    <div class="px-4 sm:px-6 lg:px-8 py-16 sm:py-24 lg:py-36 container mx-auto flex gap-16 flex-col lg:flex-row items-center">
+      <div class="flex-1">
+        <h2 class="text-2xl md:text-3xl xl:text-4xl font-bold mb-4">Use everywhere</h2>
+        <p class="text-lg text-gray-700">
+          Even the best documentation is useless if you can't access it. Bring your documentation into your AI workflows using Hyaline's MCP server. Use your documentation wherever you need it.
+        </p>
+        <a href="/documentation/explanation/mcp/" class="inline-block mt-6 px-6 py-3 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 transition-colors">Learn more</a>
+      </div>
+      <div class="flex-1">
+        <div class="mx-auto w-full max-w-xl">
+          {{ partial "inline-svg.html" (dict "src" "images/use-everywhere.svg" "class" "w-full sm:w-lg lg:w-full h-auto" "applyDropShadow" true "alt" "Chat interface showing AI assistant responding to question about back-end service architecture, with a call to hyaline_get_documents present, displaying microservice architecture details, surrounded by logos of various AI assistants") }}
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
 
 <!-- Pricing Section -->
 <section id="pricing" class="py-16 md:py-24 bg-blue-900 text-white">
   <div class="mx-auto px-4 sm:px-6 lg:px-8">
-    <h2 class="text-3xl md:text-4xl font-bold text-center mb-8">Pricing per Company</h2>
+    <h2 class="text-3xl md:text-4xl font-bold text-center mb-8">
+      Pricing
+    </h2>
 
     <!-- Pricing Toggle -->
-    <div class="flex justify-center mb-12">
+    <div class="flex flex-col items-center mb-12">
       <div class="bg-blue-800 p-1 rounded-lg flex items-center">
         <button
           id="monthly-btn"
@@ -481,15 +112,22 @@
       </div>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl lg:max-w-5xl xl:max-w-6xl mx-auto">
+    <div
+      class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl lg:max-w-5xl xl:max-w-6xl mx-auto"
+    >
       <div
         class="bg-white p-8 rounded-2xl shadow-lg flex flex-col text-gray-900"
       >
-        <h3 class="text-2xl font-bold mb-2">Free</h3>
+        <h3 class="text-2xl font-bold mb-2">Free License</h3>
         <p class="text-gray-600 mb-6 h-12 flex items-start text-sm">
           For Open Source, Non-Profit, and Education
         </p>
-        <div class="text-4xl font-bold mb-6 text-blue-600">$0</div>
+        <div class="text-4xl font-bold mb-6 text-blue-600">
+          <span id="free-price">$0</span
+          ><span id="free-period" class="text-base font-normal text-gray-500"
+            >/month*</span
+          >
+        </div>
         <ul class="space-y-3 mb-8 flex-grow">
           <li class="flex items-start">
             <svg
@@ -505,23 +143,7 @@
                 d="M5 13l4 4L19 7"
               ></path>
             </svg>
-            <span>Documentation Extraction</span>
-          </li>
-          <li class="flex items-start">
-            <svg
-              class="h-5 w-5 text-emerald-600 mt-0.5 mr-2"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M5 13l4 4L19 7"
-              ></path>
-            </svg>
-            <span>MCP Server</span>
+            <span>Unlimited Users/Repos/Sites</span>
           </li>
           <li class="flex items-start">
             <svg
@@ -538,6 +160,70 @@
               ></path>
             </svg>
             <span>Update Recommendations</span>
+          </li>
+          <li class="flex items-start">
+            <svg
+              class="h-5 w-5 text-emerald-600 mt-0.5 mr-2"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M5 13l4 4L19 7"
+              ></path>
+            </svg>
+            <span>Documentation Audits</span>
+          </li>
+          <li class="flex items-start">
+            <svg
+              class="h-5 w-5 text-emerald-600 mt-0.5 mr-2"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M5 13l4 4L19 7"
+              ></path>
+            </svg>
+            <span>Documentation Export</span>
+          </li>
+          <li class="flex items-start">
+            <svg
+              class="h-5 w-5 text-emerald-600 mt-0.5 mr-2"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M5 13l4 4L19 7"
+              ></path>
+            </svg>
+            <span>GitHub App</span>
+          </li>
+          <li class="flex items-start">
+            <svg
+              class="h-5 w-5 text-emerald-600 mt-0.5 mr-2"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M5 13l4 4L19 7"
+              ></path>
+            </svg>
+            <span>MCP Server</span>
           </li>
           <li class="flex items-start">
             <svg
@@ -566,12 +252,15 @@
       <div
         class="bg-white p-8 rounded-2xl shadow-lg flex flex-col text-gray-900"
       >
-        <h3 class="text-2xl font-bold mb-2">Startup</h3>
+        <h3 class="text-2xl font-bold mb-2">Startup License</h3>
         <p class="text-gray-600 mb-6 h-12 flex items-start text-sm">
           For startups in operation &lt;1 year
         </p>
         <div class="text-4xl font-bold mb-6 text-blue-600">
-          <span id="startup-price">$99</span><span id="startup-period" class="text-base font-normal text-gray-500">/month</span>
+          <span id="startup-price">$99</span
+          ><span id="startup-period" class="text-base font-normal text-gray-500"
+            >/month*</span
+          >
         </div>
         <ul class="space-y-3 mb-8 flex-grow">
           <li class="flex items-start">
@@ -588,23 +277,7 @@
                 d="M5 13l4 4L19 7"
               ></path>
             </svg>
-            <span>Documentation Extraction</span>
-          </li>
-          <li class="flex items-start">
-            <svg
-              class="h-5 w-5 text-emerald-600 mt-0.5 mr-2"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M5 13l4 4L19 7"
-              ></path>
-            </svg>
-            <span>MCP Server</span>
+            <span>Unlimited Users/Repos/Sites</span>
           </li>
           <li class="flex items-start">
             <svg
@@ -621,6 +294,70 @@
               ></path>
             </svg>
             <span>Update Recommendations</span>
+          </li>
+          <li class="flex items-start">
+            <svg
+              class="h-5 w-5 text-emerald-600 mt-0.5 mr-2"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M5 13l4 4L19 7"
+              ></path>
+            </svg>
+            <span>Documentation Audits</span>
+          </li>
+          <li class="flex items-start">
+            <svg
+              class="h-5 w-5 text-emerald-600 mt-0.5 mr-2"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M5 13l4 4L19 7"
+              ></path>
+            </svg>
+            <span>Documentation Export</span>
+          </li>
+          <li class="flex items-start">
+            <svg
+              class="h-5 w-5 text-emerald-600 mt-0.5 mr-2"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M5 13l4 4L19 7"
+              ></path>
+            </svg>
+            <span>GitHub App</span>
+          </li>
+          <li class="flex items-start">
+            <svg
+              class="h-5 w-5 text-emerald-600 mt-0.5 mr-2"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M5 13l4 4L19 7"
+              ></path>
+            </svg>
+            <span>MCP Server</span>
           </li>
           <li class="flex items-start">
             <svg
@@ -650,10 +387,17 @@
       <div
         class="bg-white p-8 rounded-2xl shadow-lg flex flex-col text-gray-900"
       >
-        <h3 class="text-2xl font-bold mb-2">Standard</h3>
-        <p class="text-gray-600 mb-6 h-12 flex items-start text-sm">For everyone</p>
+        <h3 class="text-2xl font-bold mb-2">Standard License</h3>
+        <p class="text-gray-600 mb-6 h-12 flex items-start text-sm">
+          For everyone
+        </p>
         <div class="text-4xl font-bold mb-6 text-blue-600">
-          <span id="standard-price">$249</span><span id="standard-period" class="text-base font-normal text-gray-500">/month</span>
+          <span id="standard-price">$249</span
+          ><span
+            id="standard-period"
+            class="text-base font-normal text-gray-500"
+            >/month*</span
+          >
         </div>
         <ul class="space-y-3 mb-8 flex-grow">
           <li class="flex items-start">
@@ -670,23 +414,7 @@
                 d="M5 13l4 4L19 7"
               ></path>
             </svg>
-            <span>Documentation Extraction</span>
-          </li>
-          <li class="flex items-start">
-            <svg
-              class="h-5 w-5 text-emerald-600 mt-0.5 mr-2"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M5 13l4 4L19 7"
-              ></path>
-            </svg>
-            <span>MCP Server</span>
+            <span>Unlimited Users/Repos/Sites</span>
           </li>
           <li class="flex items-start">
             <svg
@@ -718,6 +446,70 @@
                 d="M5 13l4 4L19 7"
               ></path>
             </svg>
+            <span>Documentation Audits</span>
+          </li>
+          <li class="flex items-start">
+            <svg
+              class="h-5 w-5 text-emerald-600 mt-0.5 mr-2"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M5 13l4 4L19 7"
+              ></path>
+            </svg>
+            <span>Documentation Export</span>
+          </li>
+          <li class="flex items-start">
+            <svg
+              class="h-5 w-5 text-emerald-600 mt-0.5 mr-2"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M5 13l4 4L19 7"
+              ></path>
+            </svg>
+            <span>GitHub App</span>
+          </li>
+          <li class="flex items-start">
+            <svg
+              class="h-5 w-5 text-emerald-600 mt-0.5 mr-2"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M5 13l4 4L19 7"
+              ></path>
+            </svg>
+            <span>MCP Server</span>
+          </li>
+          <li class="flex items-start">
+            <svg
+              class="h-5 w-5 text-emerald-600 mt-0.5 mr-2"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M5 13l4 4L19 7"
+              ></path>
+            </svg>
             <span>Email Support</span>
           </li>
         </ul>
@@ -729,6 +521,10 @@
           >Purchase</a
         >
       </div>
+    </div>
+
+    <div class="w-full max-w-xl mx-auto">
+      <p class="text-blue-100 text-sm mt-8 text-center">*The price to purchase a license does not include LLM or GitHub Actions usage, as users bring their own access to these services. <a href="#faq1-button" class="underline">See below to learn more</a>.</p>
     </div>
 
     <div class="mt-16 max-w-4xl mx-auto">
@@ -749,7 +545,7 @@
             id="faq1-button"
           >
             <span class="font-semibold text-lg"
-              >Why per company instead of per seat/person/usage/etc?</span
+              >Why do I need to bring my own access to an LLM provider and GitHub Actions?</span
             >
             <svg
               id="faq1-icon"
@@ -768,11 +564,19 @@
           </button>
           <div
             id="faq1-content"
-            class="hidden px-6 pb-4"
+            class="hidden px-6 pb-4 text-white/80 leading-relaxed"
             aria-labelledby="faq1-button"
           >
-            <p class="text-white/80 leading-relaxed">
-              We believe documentation works best when it's accessible to everyone who needs it. By pricing per company rather than per seat, we remove barriers to collaboration and ensure that anyone in your company can contribute to and benefit from your documentation. You shouldn't have to choose between comprehensive documentation and your budget—with Hyaline, you get both.
+            <p class="mb-4">
+              Hyaline uses a "bring your own" model for LLM providers and GitHub Actions for several reasons:
+            </p>
+            <ul class="pl-6 space-y-2 list-disc mb-4">
+              <li><strong>Cost Control</strong> - You have complete visibility and control over your LLM and GitHub Actions usage. You can monitor costs directly, set spending limits, and optimize usage based on your needs.</li>
+              <li><strong>Data Privacy</strong> - This approach minimizes the data that flows through Hyaline's systems. Your code remains private in your GitHub repositories and is processed directly by your chosen LLM provider. Note: The only exception is webhook payloads sent to the Hyaline-hosted (it is possible to self-host) GitHub App, which include code diffs that we ignore. Learn more about our data handling practices on our <a href="/security/" class="underline">security page</a>.</li>
+              <li><strong>Simplicity</strong> - Many organizations already have enterprise agreements with LLM providers (like OpenAI, Anthropic, or Azure) and GitHub. You can leverage these existing relationships, compliance approvals, and negotiated rates rather than managing another vendor relationship.</li>
+            </ul>
+            <p>
+              This approach is also why we are able to offer organization-wide licensing rather than per-user or usage-based pricing.
             </p>
           </div>
         </div>
@@ -812,7 +616,12 @@
             aria-labelledby="faq2-button"
           >
             <p class="text-white/80 leading-relaxed">
-              You can use Hyaline without a license for evaluation and demonstration purposes only. For all other uses, a license is required. We offer free licenses for open source projects, non-profit organizations, and educational institutions—just reach out to request one. All other companies need to purchase a license for continued use beyond evaluation.
+              You can use Hyaline without a license for evaluation and
+              demonstration purposes only. For all other uses, a license is
+              required. We offer free licenses for open source projects,
+              non-profit organizations, and educational institutions—just reach
+              out to request one. All other companies need to purchase a license
+              for continued use beyond evaluation.
             </p>
           </div>
         </div>
@@ -852,7 +661,12 @@
             aria-labelledby="faq3-button"
           >
             <p class="text-white/80 leading-relaxed">
-              To make your experience with Hyaline as seamless as possible. We don't want you to have to spend time hunting for license files, dealing with activation issues, or managing renewals across your team. We trust you to purchase appropriate licenses, and in return, you get to focus on what matters—making your documentation useful.
+              To make your experience with Hyaline as seamless as possible. We
+              don't want you to have to spend time hunting for license files,
+              dealing with activation issues, or managing renewals across your
+              team. We trust you to purchase appropriate licenses, and in
+              return, you get to focus on what matters—making your documentation
+              useful.
             </p>
           </div>
         </div>
@@ -892,7 +706,12 @@
             aria-labelledby="faq4-button"
           >
             <p class="text-white/80 leading-relaxed">
-              While Hyaline is source-available (you can view the code), we've chosen a proprietary license model to ensure we can sustainably develop and support the product long-term. This approach allows us to dedicate resources to making Hyaline the best documentation tool possible while maintaining fair pricing and offering free licenses to qualifying organizations.
+              While Hyaline is source-available (you can view the code), we've
+              chosen a proprietary license model to ensure we can sustainably
+              develop and support the product long-term. This approach allows us
+              to dedicate resources to making Hyaline the best documentation
+              tool possible while maintaining fair pricing and offering free
+              licenses to qualifying organizations.
             </p>
           </div>
         </div>
@@ -938,6 +757,8 @@
   document.addEventListener("DOMContentLoaded", function () {
     const monthlyBtn = document.getElementById("monthly-btn");
     const annualBtn = document.getElementById("annual-btn");
+    const freePrice = document.getElementById("free-price");
+    const freePeriod = document.getElementById("free-period");
     const startupPrice = document.getElementById("startup-price");
     const startupPeriod = document.getElementById("startup-period");
     const startupLink = document.getElementById("startup-link");
@@ -947,17 +768,43 @@
 
     // Monthly pricing (default)
     const monthlyPricing = {
-      startup: { price: "$99", period: "/month", link: "https://buy.stripe.com/aFa8wQ4W0crI1OxeWy1VK01" },
-      standard: { price: "$249", period: "/month", link: "https://buy.stripe.com/9B6fZiagk1N478RcOq1VK03" }
+      free: {
+        price: "$0",
+        period: "/month*",
+      },
+      startup: {
+        price: "$99",
+        period: "/month*",
+        link: "https://buy.stripe.com/aFa8wQ4W0crI1OxeWy1VK01",
+      },
+      standard: {
+        price: "$249",
+        period: "/month*",
+        link: "https://buy.stripe.com/9B6fZiagk1N478RcOq1VK03",
+      },
     };
 
     // Annual pricing
     const annualPricing = {
-      startup: { price: "$999", period: "/year", link: "https://buy.stripe.com/bJeaEYbko4Zg64NbKm1VK02" },
-      standard: { price: "$2499", period: "/year", link: "https://buy.stripe.com/3cI3cwewAajA3WF8ya1VK04" }
+      free: {
+        price: "$0",
+        period: "/year*",
+      },
+      startup: {
+        price: "$999",
+        period: "/year*",
+        link: "https://buy.stripe.com/bJeaEYbko4Zg64NbKm1VK02",
+      },
+      standard: {
+        price: "$2499",
+        period: "/year*",
+        link: "https://buy.stripe.com/3cI3cwewAajA3WF8ya1VK04",
+      },
     };
 
     function updatePricing(pricing) {
+      freePrice.textContent = pricing.free.price;
+      freePeriod.textContent = pricing.free.period;
       startupPrice.textContent = pricing.startup.price;
       startupPeriod.textContent = pricing.startup.period;
       startupLink.href = pricing.startup.link;
@@ -973,12 +820,12 @@
       inactiveBtn.classList.add("text-blue-200", "hover:text-white");
     }
 
-    monthlyBtn.addEventListener("click", function() {
+    monthlyBtn.addEventListener("click", function () {
       updatePricing(monthlyPricing);
       setActiveButton(monthlyBtn, annualBtn);
     });
 
-    annualBtn.addEventListener("click", function() {
+    annualBtn.addEventListener("click", function () {
       updatePricing(annualPricing);
       setActiveButton(annualBtn, monthlyBtn);
     });
@@ -987,84 +834,28 @@
     updatePricing(monthlyPricing);
     setActiveButton(monthlyBtn, annualBtn);
   });
+
+  // Header shadow toggle on scroll
+  function updateHeaderShadow() {
+    const shadowClasses = ['shadow-sm', 'transition-shadow', 'duration-300', 'ease-in-out'];
+    const header = document.querySelector('header');
+    if (window.scrollY > 16) {
+      header.classList.add(...shadowClasses);
+    } else {
+      header.classList.remove(...shadowClasses);
+    }
+  }
+
+  // Check initial scroll position on page load
+  updateHeaderShadow();
+  
+  // Listen for scroll events
+  window.addEventListener('scroll', updateHeaderShadow);
+
+  // Apply container class to nav bar
+  const header = document.querySelector('header');
+  header.children[0].classList.add('container', 'mx-auto');
 </script>
 
-<script>
-  // Tab functionality for "How does it work" section
-  document.addEventListener("DOMContentLoaded", function () {
-    // Tab functionality
-    const tabList = document.getElementById("tabs-container");
-    const tabs = Array.from(tabList.querySelectorAll('[role="tab"]'));
-    const panels = document.querySelectorAll('[role="tabpanel"]');
 
-    // Add event listeners to each tab
-    tabs.forEach((tab) => {
-      tab.addEventListener("click", (e) => {
-        e.preventDefault();
-        activateTab(tab);
-      });
-
-      // Add keyboard event listeners for accessibility
-      tab.addEventListener("keydown", (e) => {
-        const index = tabs.indexOf(tab);
-
-        switch (e.key) {
-          case "ArrowLeft":
-            e.preventDefault();
-            focusTab(index - 1 >= 0 ? index - 1 : tabs.length - 1);
-            break;
-          case "ArrowRight":
-            e.preventDefault();
-            focusTab(index + 1 < tabs.length ? index + 1 : 0);
-            break;
-          case "Home":
-            e.preventDefault();
-            focusTab(0);
-            break;
-          case "End":
-            e.preventDefault();
-            focusTab(tabs.length - 1);
-            break;
-          case "Enter":
-          case " ":
-            e.preventDefault();
-            activateTab(tab);
-            break;
-        }
-      });
-    });
-
-    // Focus and activate tab
-    function focusTab(index) {
-      tabs[index].focus();
-      activateTab(tabs[index]);
-    }
-
-    // Activate a tab - update ARIA states and display the panel
-    function activateTab(tab) {
-      // Deactivate all tabs
-      tabs.forEach((t) => {
-        t.setAttribute("aria-selected", "false");
-        t.tabIndex = -1;
-      });
-
-      // Activate the selected tab
-      tab.setAttribute("aria-selected", "true");
-      tab.tabIndex = 0;
-
-      // Hide all panels
-      panels.forEach((panel) => {
-        panel.hidden = true;
-      });
-
-      // Show the selected panel
-      const panelId = tab.getAttribute("aria-controls");
-      const panel = document.getElementById(panelId);
-      panel.hidden = false;
-    }
-
-    // Initialize with first tab active
-    activateTab(tabs[0]);
-  });
-</script>
 {{ end }}

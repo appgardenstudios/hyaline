@@ -1,61 +1,50 @@
 <!DOCTYPE html>
-<html lang="en" charset="utf-8" class="h-full">
+<html lang="en" charset="utf-8" class="h-full scroll-pt-28">
   <head>
-    <title>{{ if eq .Title "Hyaline" }}{{ .Title }}{{ else }}{{ .Title }} - Hyaline{{ end }}</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>
+      {{ if eq .Title "Hyaline" }}{{ .Title }}{{ else }}{{ .Title }} - Hyaline{{
+      end }}
+    </title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta
       name="description"
       content="{{ if .Description }}{{ .Description }}{{ else }}Use Hyaline to make your documentation useful. Hyaline keeps your documentation updated and accessible to both humans and AI tools.{{ end }}"
     />
-    <link rel="canonical" href="{{ .Permalink }}">
-    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="canonical" href="{{ .Permalink }}" />
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
     {{ partialCached "css.html" . }}
   </head>
 
   <body class="bg-white">
     <!-- Navigation Bar -->
     <header class="sticky top-0 bg-white shadow-sm z-50 h-14">
-      <div class="mx-auto px-4 sm:px-6 lg:px-8 h-full">
+      <div class="mx-auto px-4 sm:px-6 lg:px-8 h-full w-full">
         <div class="flex justify-between items-center h-full">
           <div class="flex items-center">
-            <a href="/" class="text-gray-900 inline-block" aria-label="hyaline">
-              <svg
-                width="90"
-                height="16"
-                viewBox="0 0 208 39"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-                aria-hidden="true"
-              >
-                <path
-                  d="M27.448 2.296V37H22.84V21.784H4.648V37H-0.0079999V2.296H4.648V17.368H22.84V2.296H27.448ZM46.6611 25.432L33.7971 2.296H39.5091L49.8291 21.448L48.3891 21.544L58.6131 2.296H64.2771L51.3171 25.432V37H46.6611V25.432ZM62.536 37L77.704 0.855999H77.992L93.112 37H87.784L76.456 8.152L79.768 5.992L67.096 37H62.536ZM71.416 23.848H84.328L85.864 27.88H70.072L71.416 23.848ZM99.6483 2.296H104.304V32.536H121.92V37H99.6483V2.296ZM129.508 2.296H134.164V37H129.508V2.296ZM174.181 38.104L147.349 10.888L148.693 11.224L148.789 37H144.133V1.24H144.373L170.917 28.552L169.813 28.312L169.717 2.296H174.325V38.104H174.181ZM184.305 2.296H206.865V6.76H188.961V17.32H204.945V21.784H188.961V32.536H207.536V37H184.305V2.296Z"
-                  fill="currentColor"
-                />
-              </svg>
+            <a href="/" class="text-gray-800 inline-block text-xl">
+              hyaline
             </a>
           </div>
           <nav class="hidden md:flex space-x-8">
             <a
               href="/documentation/"
-              class="text-gray-700 hover:text-blue-600 transition-colors"
+              class="text-gray-700 hover:text-blue-600 transition-colors flex items-center"
               >Documentation</a
             >
             <a
               href="/articles/"
-              class="text-gray-700 hover:text-blue-600 transition-colors"
+              class="text-gray-700 hover:text-blue-600 transition-colors flex items-center"
               >Articles</a
             >
             <a
               href="/#pricing"
-              class="text-gray-700 hover:text-blue-600 transition-colors"
+              class="text-gray-700 hover:text-blue-600 transition-colors flex items-center"
               >Pricing</a
             >
             <a
-              href="https://github.com/appgardenstudios/hyaline/releases"
-              class="text-gray-700 hover:text-blue-600 transition-colors"
-              target="_blank"
-              rel="noopener noreferrer"
-              >Download</a
+              href="/documentation/getting-started/"
+              class="border-2 border-blue-600 text-blue-600 px-4 py-2 rounded-md hover:bg-blue-600 hover:text-white transition-colors font-medium"
+              >Get Started</a
             >
           </nav>
           <div class="md:hidden">
@@ -99,30 +88,26 @@
         </div>
         <!-- Mobile Menu -->
         <div id="mobile-menu" class="md:hidden hidden">
-          <div
-            class="px-2 pt-2 pb-4 space-y-1 bg-white border border-gray-200"
-          >
+          <div class="px-2 pt-2 pb-4 space-y-1 bg-white border border-gray-200">
             <a
               href="/documentation/"
-              class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50"
+              class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50 text-center"
               >Documentation</a
             >
             <a
               href="/articles/"
-              class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50"
+              class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50 text-center"
               >Articles</a
             >
             <a
               href="/#pricing"
-              class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50"
+              class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50 text-center"
               >Pricing</a
             >
             <a
-              href="https://github.com/appgardenstudios/hyaline/releases"
-              class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50"
-              target="_blank"
-              rel="noopener noreferrer"
-              >Download</a
+              href="/documentation/getting-started/"
+              class="block px-3 py-2 rounded-md text-base font-medium border-2 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white transition-colors text-center"
+              >Get Started</a
             >
           </div>
         </div>
