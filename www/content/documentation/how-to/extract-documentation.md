@@ -58,4 +58,4 @@ Run the `Doctor` workflow in the forked `hyaline-github-app-config` repo to 1) e
 Run the `Extract Repo/Site` workflow in the forked `hyaline-github-app-config` repo to trigger an extraction. Note that you can trigger a merge of this documentation into the current documentation data set by leaving the `Trigger Merge Workflow` option enabled.
 
 ## Next Steps
-Read more about [how extraction works](../explanation/extract.md) or more about Hyaline's [configuration](../reference/config.md).
+Read more about [how extraction works](../explanation/extract.md) or visit the [configuration reference](../reference/config.md).

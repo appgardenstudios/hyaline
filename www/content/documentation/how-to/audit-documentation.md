@@ -44,4 +44,4 @@ Run the `Doctor` workflow in the forked `hyaline-github-app-config` repo to 1) e
 Run the `Run Audit` workflow in the forked `hyaline-github-app-config` repo to trigger an audit of the current extracted documentation. Audit results will be attached to the workflow run once it completes.
 
 ## Next Steps
-Read more about [how auditing documentation works](../explanation/audit.md) or more about Hyaline's [configuration](../reference/config.md).
+Read more about [how auditing documentation works](../explanation/audit.md) or visit the [configuration reference](../reference/config.md).

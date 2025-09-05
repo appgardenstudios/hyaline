@@ -22,4 +22,4 @@ This will vary by client, but the gist of it is you want to have the client run 
 Please see your client documentation for specific steps.
 
 ## Next Steps
-Visit the [CLI Reference](../reference/cli.md).
+Read more about [Hyaline's MCP server](../explanation/mcp.md) or visit the [CLI reference](../reference/cli.md).

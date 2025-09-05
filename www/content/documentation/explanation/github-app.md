@@ -52,3 +52,6 @@ Workflows marked as internal (starting with `_`) are used by the GitHub App to c
 Note that the artifact created by the `_Merge` workflow contains the merged current documentation data set, and can be downloaded and used with the [MCP Server](./mcp.md) or [exported](./export.md) into a variety of formats.
 
 </div>
+
+## Next Steps
+Read more about [extracting documentation](./extract.md) or visit the [how to install the GitHub App](../how-to/install-github-app.md) page.

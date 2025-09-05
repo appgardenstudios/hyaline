@@ -25,3 +25,6 @@ When merging, Hyaline does the following:
 The final output database contains all three sources: **Source 1** from **Input 1**, **Source 2** from **Input 2**, and **Source 3** from **Input 2**.
 
 </div>
+
+## Next Steps
+Read more about the [MCP server](./mcp.md) or visit the [data set schema reference](../reference/data-set.md) page.

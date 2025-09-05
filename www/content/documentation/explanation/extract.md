@@ -270,4 +270,4 @@ extract:
 In this example you can see a document that have been extracted. Based on the configuration `Document 1` has the tag `system` set to `my-app`, and `Document 1 > Section 2` has the tag `component` set to `fe`. Note that you can set as many tags on each document and/or section as you wish.
 
 ## Next Steps
-Read on about how [checking documentation](./check.md) works, or visit the [configuration reference documentation](../reference/config.md) to see how to configure Hyaline to extract your documentation.
+Read more about [checking changes](./check.md) or visit the [configuration reference documentation](../reference/config.md).

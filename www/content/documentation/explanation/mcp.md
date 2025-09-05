@@ -64,4 +64,4 @@ Example filtering URIs:
 </div>
 
 ## Next Steps
-You can go read the [MCP reference](../reference/mcp.md) to see details on the tools exposed by the MCP server, or go and view the [CLI reference](../reference/cli.md) to see how to run the MCP server.
+Read more about [exporting documentation](./export.md) or visit the [mcp reference documentation](../reference/mcp.md).

@@ -30,4 +30,4 @@ Depending on your operating system you will need to do one or more of the follow
 Run `hyaline version` to ensure that the Hyaline CLI is installed and working properly.
 
 ## Next Steps
-Visit the [CLI Reference](../reference/cli.md).
+Read more about [how to use Hyaline from scratch](./use-hyaline-from-scratch.md) or visit the [CLI Reference](../reference/cli.md).

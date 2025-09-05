@@ -205,3 +205,6 @@ If `hyaline check pr` is run more than once for the same PR, Hyaline will update
 Note that the state of the checkboxes are preserved, allowing you to track which recommendations have been addressed. Hyaline will automatically check the box if it detects that the document has been updated as a part of the PR (provided it is configured to perform that check).
 
 </div>
+
+## Next Steps
+Read more about [auditing documentation](./audit.md) or visit the [configuration reference documentation](../reference/config.md).

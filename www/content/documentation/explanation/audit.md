@@ -218,3 +218,6 @@ This example verifies that documents have both a "compliance: required" tag and 
 Once Hyaline completes the audit, it generates a JSON file containing detailed results for each rule and check. The results provide information about what passed, what failed, and why.
 
 For detailed information about the results schema, see the [Audit Results Reference](../reference/audit-results.md).
+
+## Next Steps
+Read more about [merging documentation](./merge.md) or visit the [configuration reference documentation](../reference/config.md).

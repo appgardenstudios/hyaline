@@ -119,4 +119,4 @@ Hyaline can export your documentation into an SQLite database file. The format f
 </div>
 
 ## Next Steps
-Continue reading about various Hyaline concepts such as [extract](./extract.md), or get started by visiting [getting started](../getting-started.md).
+Read more about the [GitHub App](./github-app.md) or visit the [getting started](../getting-started.md) page.

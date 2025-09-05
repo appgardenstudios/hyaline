@@ -28,3 +28,6 @@ The export format type `json` will instruct Hyaline to export your documentation
 The export format type `sqlite` will instruct Hyaline to export your documentation into an SQLite database file. The format for this data is the same as the extracted documentation data set. Please see [Documentation Data Set](../reference/data-set.md) for more information on the database schema.
 
 </div>
+
+## Next Steps
+Read more about the [data set schema](../reference/data-set.md) or visit the [export reference documentation](../reference/export.md).
