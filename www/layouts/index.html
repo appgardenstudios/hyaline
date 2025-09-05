@@ -2,7 +2,7 @@
 <div class="overflow-hidden">
   <!-- Hero Section -->
   <section class="relative">
-    <img class="absolute z-[-1] max-w-[unset] [mask-image:linear-gradient(to_bottom,rgba(0,0,0,1)_0%,rgba(0,0,0,0)_50%)]" src="/images/bubbles.png">
+    <img alt="" class="absolute z-[-1] max-w-[unset] [mask-image:linear-gradient(to_bottom,rgba(0,0,0,1)_0%,rgba(0,0,0,0)_50%)]" src="/images/bubbles.png">
     <div class="py-16 px-4 sm:px-6 lg:px-8 mx-auto container">
       <div class="text-center">
         <h1 class="text-4xl md:text-5xl xl:text-6xl font-bold mb-4">Is your documentation <br/> up-to-date?</h1>
@@ -33,7 +33,7 @@
   </section>
 
   <section class="relative">
-    <img class="absolute -top-48 z-[-1] max-w-[unset] [mask-image:linear-gradient(to_bottom,rgba(0,0,0,1)_0%,rgba(0,0,0,0)_50%)] rotate-180 -scale-y-100" src="/images/bubbles.png">
+    <img alt="" class="absolute -top-48 z-[-1] max-w-[unset] [mask-image:linear-gradient(to_bottom,rgba(0,0,0,1)_0%,rgba(0,0,0,0)_50%)] rotate-180 -scale-y-100" src="/images/bubbles.png">
     <div class="px-4 sm:px-6 lg:px-8 py-16 sm:py-24 lg:py-36 container mx-auto flex gap-16 flex-col lg:flex-row items-center">
       <div class="flex-1">
         <h2 class="text-2xl md:text-3xl xl:text-4xl font-bold mb-4">Stay compliant</h2>
@@ -51,7 +51,7 @@
   </section>
 
   <section class="relative">
-    <img class="absolute z-[-1] max-w-[unset] [mask-image:linear-gradient(to_bottom,rgba(0,0,0,1)_0%,rgba(0,0,0,0)_50%)]" src="/images/bubbles.png">
+    <img alt="" class="absolute z-[-1] max-w-[unset] [mask-image:linear-gradient(to_bottom,rgba(0,0,0,1)_0%,rgba(0,0,0,0)_50%)]" src="/images/bubbles.png">
     <div class="px-4 sm:px-6 lg:px-8 py-16 sm:py-24 lg:py-36 container mx-auto flex gap-16 flex-col-reverse lg:flex-row items-center">
       <div class="flex-1">
         <div class="mx-auto w-full max-w-xl">
@@ -69,7 +69,7 @@
   </section>
 
   <section class="relative">
-    <img class="absolute -top-48 z-[-1] max-w-[unset] [mask-image:linear-gradient(to_bottom,rgba(0,0,0,1)_0%,rgba(0,0,0,0)_50%)] rotate-180 -scale-y-100" src="/images/bubbles.png">
+    <img alt="" class="absolute -top-48 z-[-1] max-w-[unset] [mask-image:linear-gradient(to_bottom,rgba(0,0,0,1)_0%,rgba(0,0,0,0)_50%)] rotate-180 -scale-y-100" src="/images/bubbles.png">
     <div class="px-4 sm:px-6 lg:px-8 py-16 sm:py-24 lg:py-36 container mx-auto flex gap-16 flex-col lg:flex-row items-center">
       <div class="flex-1">
         <h2 class="text-2xl md:text-3xl xl:text-4xl font-bold mb-4">Use everywhere</h2>
@@ -523,8 +523,8 @@
       </div>
     </div>
 
-    <div class="w-full max-w-4xl mx-auto">
-      <p class="text-blue-100 text-sm mt-8 text-center">*The price to purchase a license does not include LLM or GitHub Actions usage. See below to learn more.</p>
+    <div class="w-full max-w-xl mx-auto">
+      <p class="text-blue-100 text-sm mt-8 text-center">*The price to purchase a license does not include LLM or GitHub Actions usage, as users bring their own access to these services. <a href="#faq1-button" class="underline">See below to learn more</a>.</p>
     </div>
 
     <div class="mt-16 max-w-4xl mx-auto">
@@ -533,6 +533,54 @@
       </h3>
 
       <div class="space-y-4">
+        <!-- FAQ Item 1 -->
+        <div
+          class="bg-white/10 backdrop-blur-sm rounded-lg border border-white/20"
+        >
+          <button
+            class="w-full px-6 py-4 text-left flex justify-between items-center text-white hover:bg-white/5 transition-colors rounded-lg focus:outline-none focus:ring-2 focus:ring-white/50"
+            onclick="toggleFAQ('faq1')"
+            aria-expanded="false"
+            aria-controls="faq1-content"
+            id="faq1-button"
+          >
+            <span class="font-semibold text-lg"
+              >Why do I need to bring my own access to an LLM provider and GitHub Actions?</span
+            >
+            <svg
+              id="faq1-icon"
+              class="w-5 h-5 transform transition-transform duration-200"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M19 9l-7 7-7-7"
+              ></path>
+            </svg>
+          </button>
+          <div
+            id="faq1-content"
+            class="hidden px-6 pb-4 text-white/80 leading-relaxed"
+            aria-labelledby="faq1-button"
+          >
+            <p class="mb-4">
+              Hyaline uses a "bring your own" model for LLM providers and GitHub Actions for several reasons:
+            </p>
+            <ul class="pl-6 space-y-2 list-disc mb-4">
+              <li><strong>Cost Control</strong> - You have complete visibility and control over your LLM and GitHub Actions usage. You can monitor costs directly, set spending limits, and optimize usage based on your needs.</li>
+              <li><strong>Data Privacy</strong> - This approach minimizes the data that flows through Hyaline's systems. Your code remains private in your GitHub repositories and is processed directly by your chosen LLM provider. Note: The only exception is webhook payloads sent to the Hyaline GitHub app, which include code diffs that we ignore. Learn more about our data handling practices on our <a href="/security/" class="underline">security page</a>.</li>
+              <li><strong>Simplicity</strong> - Many organizations already have enterprise agreements with LLM providers (like OpenAI, Anthropic, or Azure) and GitHub. You can leverage these existing relationships, compliance approvals, and negotiated rates rather than managing another vendor relationship.</li>
+            </ul>
+            <p>
+              This approach is also why we are able to offer organization-wide licensing rather than per-user pricing.
+            </p>
+          </div>
+        </div>
+
         <!-- FAQ Item 2 -->
         <div
           class="bg-white/10 backdrop-blur-sm rounded-lg border border-white/20"
