@@ -220,4 +220,4 @@ Once Hyaline completes the audit, it generates a JSON file containing detailed r
 For detailed information about the results schema, see the [Audit Results Reference](../reference/audit-results.md).
 
 ## Next Steps
-Read more about [merging documentation](./merge.md) or visit the [configuration reference documentation](../reference/config.md).
+Read more about [merging documentation](./merge.md) or visit the [audit results reference documentation](../reference/audit-results.md).
