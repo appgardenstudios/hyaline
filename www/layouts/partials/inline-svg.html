@@ -1,0 +1,30 @@
+{{- $src := .src -}}
+{{- $class := .class -}}
+{{- $alt := .alt -}}
+{{- $applyDropShadow := .applyDropShadow -}}
+{{- $file := printf "static/%s" $src -}}
+{{- $content := readFile $file -}}
+{{- if $class -}}
+{{- $content = replaceRE `<svg([^>]*)>` (printf `<svg$1 class="%s">` $class) $content -}}
+{{- end -}}
+{{- if $alt -}}
+{{- $content = replaceRE `<svg([^>]*)>` (printf `<svg$1 aria-label="%s">` $alt) $content -}}
+{{- end -}}
+{{- /* Add drop shadow filter definition if applyDropShadow is true */ -}}
+{{- if $applyDropShadow -}}
+{{- $filterDef := `<defs><filter id="drop-shadow" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="rgba(0,0,0,0.25)"/></filter></defs>` -}}
+{{- $content = replaceRE `(<svg[^>]*>)` (printf `$1%s` $filterDef) $content -}}
+{{- end -}}
+{{- if $applyDropShadow -}}
+<style>
+svg:has(#drop-shadow) {
+  overflow: visible;
+  padding: 12px;
+  margin: -12px;
+}
+svg:has(#drop-shadow) > g > g {
+  filter: url(#drop-shadow);
+}
+</style>
+{{- end -}}
+{{ $content | safeHTML }}
