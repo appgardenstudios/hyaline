@@ -45,7 +45,7 @@ $ hyaline version
 ```
 $ hyaline extract documentation --config ./hyaline.yml --output ./documentation.db
 ```
-Extract documentation from the system defined in the config file found at `./hyaline.yml` and create a current documentation dataset at `./documentation.db`.
+Extract documentation from the system defined in the config file found at `./hyaline.yml` and create a current documentation data set at `./documentation.db`.
 
 ## check diff
 `hyaline check diff` checks a diff and outputs a list of recommended documentation updates.

@@ -4,7 +4,7 @@ description: MCP server tools and prompts for making extracted documentation ava
 purpose: Detail the functionality of Hyaline's MCP server
 ---
 ## Overview
-Hyaline provides a built-in MCP server that can make the [current data set](./data-set.md) extracted by Hyaline's [extract documentation](../explanation/extract.md) command available to LLMs. For information on how to set up and run the MCP server please see the [how to](../how-to/run-mcp.md) or the [cli reference](./cli.md).
+Hyaline provides a built-in MCP server that can make the [current data set](./data-set.md) extracted by Hyaline's [extract documentation](../explanation/extract.md) command available to LLMs. For information on how to set up and run the MCP server please see the [how to](../how-to/run-mcp-server.md) or the [cli reference](./cli.md).
 
 ## Tools
 Hyaline's MCP server provides the following tools:

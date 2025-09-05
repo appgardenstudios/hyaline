@@ -1,7 +1,7 @@
 ---
-title: "How To: Install the Hyaline CLI"
-description: "How to download, install, and set up the Hyaline CLI on Linux, macOS, or Windows."
-purpose: Document how to install the Hyaline CLI
+title: "How To: Install the Hyaline CLI Locally"
+description: "How to download, install, and set up the Hyaline CLI locally on Linux, macOS, or Windows."
+purpose: Document how to install the Hyaline CLI Locally
 ---
 ## Purpose
 Install the Hyaline CLI.
@@ -26,5 +26,8 @@ Depending on your operating system you will need to do one or more of the follow
 * Make `hyaline` executable (if applicable)
 * Add `hyaline` to your PATH (if desired)
 
+### 4. Ensure CLI is Installed
+Run `hyaline version` to ensure that the Hyaline CLI is installed and working properly.
+
 ## Next Steps
-Visit [How To Run the CLI](./run-cli.md) or the [CLI Reference](../reference/cli.md).
+Visit the [CLI Reference](../reference/cli.md).
