@@ -76,4 +76,4 @@ Install the [Hyaline GitHub App (hyaline.dev)](https://github.com/apps/hyaline-d
 You can verify the installation of the GitHub App by opening a non-draft PR in one of the repositories in your organization. Once you do you should see the workflow `_Check PR` kicked off in the forked `hyaline-github-app-config` repository and a comment on the pull request with Hyaline's documentation update recommendations. Then, once the pull request is merged, you should see a corresponding workflow run of `_Extract` followed by a workflow run of `_Merge` in the forked `hyaline-github-app-config` repository.
 
 ## Next Steps
-To read more about the Hyaline GitHub App please see [an explanation of Hyaline's GitHub App](../explanation/github-app.md) or read on to see how to [extract documentation from a repository or site](./extract-documentation.md).
+Read more about [how to extract documentation from a repository or site](./extract-documentation.md) or visit [an explanation of Hyaline's GitHub App](../explanation/github-app.md).

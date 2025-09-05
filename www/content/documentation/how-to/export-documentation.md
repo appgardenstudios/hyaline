@@ -42,4 +42,4 @@ $ hyaline export documentation --documentation ./documentation.db /
 For example, the command above exports the documentation in `./documentation.db` to the file `./export.json` in JSON format. It only includes documentation from the `frontend` source, and excludes any documentation with the tag `type=customer`.
 
 ## Next Steps
-Visit [How To Run the Hyaline MCP Server](./run-mcp-server.md) or the [CLI Reference](../reference/cli.md).
+Read more about [how to run the MCP Server](./run-mcp-server.md) or visit the [CLI reference](../reference/cli.md).
