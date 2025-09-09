@@ -1,6 +1,6 @@
 llm:
   provider: github-models
-  model: gpt-5
+  model: openai/gpt-4o
   key: ${GITHUB_TOKEN}
 
 github:
