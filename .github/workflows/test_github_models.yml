@@ -1,0 +1,22 @@
+on:
+  pull_request:
+    types: [opened, reopened, synchronize, ready_for_review]
+
+jobs:
+  test-github-models:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+      models: read
+    steps:
+      - name: Setup Hyaline
+        uses: appgardenstudios/hyaline-actions/setup@v1
+      - name: Check PR
+        uses: appgardenstudios/hyaline-actions/check-pr@v1
+        with:
+          config: ./.vscode/hyaline/check-pr-openai/test_github_models.yml
+          repository: ${{ github.repository }}
+          pr_number: ${{ github.event.pull_request.number }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

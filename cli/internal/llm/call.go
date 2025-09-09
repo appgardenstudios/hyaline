@@ -23,9 +23,12 @@ func CallLLM(systemPrompt string, userPrompt string, tools []*Tool, cfg *config.
 		err = errors.New("llm configuration missing")
 		return
 	}
+	slog.Debug("Calling LLM", "provider", cfg.Provider, "model", cfg.Model)
 	switch cfg.Provider {
 	case config.LLMProviderAnthropic:
 		return callAnthropic(systemPrompt, userPrompt, tools, cfg)
+	case config.LLMProviderOpenAI, config.LLMProviderGitHubModels:
+		return callOpenAI(systemPrompt, userPrompt, tools, cfg)
 	case config.LLMProviderTesting:
 		return "LLM TEST RESPONSE", nil
 	default:

@@ -50,6 +50,7 @@ require (
 	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/ncruces/go-strftime v0.1.9 // indirect
 	github.com/nlnwa/whatwg-url v0.6.1 // indirect
+	github.com/openai/openai-go/v2 v2.4.0 // indirect
 	github.com/pjbgf/sha1cd v0.3.2 // indirect
 	github.com/remyoudompheng/bigfft v0.0.0-20230129092748-24d4a6f8daec // indirect
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
