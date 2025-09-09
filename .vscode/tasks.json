@@ -84,16 +84,6 @@
         "reveal": "silent"
       }
     },{
-      "label": "check-pr-openai",
-      "type": "shell",
-      "command": "rm -f ../.vscode/hyaline/check-pr-openai/recommendations.json && gh -R appgardenstudios/hyaline-example pr comment 12 --delete-last --yes",
-      "options":{
-        "cwd": "${workspaceFolder}/cli/"
-      },
-      "presentation":{
-        "reveal": "silent"
-      }
-    },{
       "label": "check-pr-update-comment",
       "type": "shell",
       "command": "rm -f ../.vscode/hyaline/check-pr-update-comment/recommendations.json",

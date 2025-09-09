@@ -164,19 +164,19 @@
       "type": "go",
       "request": "launch",
       "mode": "debug",
-      "preLaunchTask": "check-pr-openai",
+      "preLaunchTask": "check-pr",
       "cwd": "${workspaceFolder}/cli/",
       "program": "${workspaceFolder}/cli/cmd/hyaline.go",
       "envFile": "${workspaceFolder}/cli/.env",
       "args":[
         "--debug",
         "check", "pr",
-        "--config", "../.vscode/hyaline/check-pr-openai/hyaline.yml",
-        "--documentation", "../.vscode/hyaline/check-pr-openai/documentation.sqlite",
+        "--config", "../.vscode/hyaline/check-pr/hyaline-openai.yml",
+        "--documentation", "../.vscode/hyaline/check-pr/documentation.sqlite",
         "--pull-request", "appgardenstudios/hyaline-example/12",
         "--issue", "appgardenstudios/hyaline-example/2",
         "--issue", "appgardenstudios/hyaline-example/3",
-        "--output", "../.vscode/hyaline/check-pr-openai/recommendations.json"
+        "--output", "../.vscode/hyaline/check-pr/recommendations.json"
       ]
     },{
       "name": "Check PR Update Comment",
