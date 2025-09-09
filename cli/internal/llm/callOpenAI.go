@@ -17,7 +17,6 @@ func callOpenAI(systemPrompt string, userPrompt string, tools []*Tool, cfg *conf
 	var clientOptions []option.RequestOption
 	clientOptions = append(clientOptions, option.WithAPIKey(cfg.Key))
 
-	// Handle endpoint logic
 	if cfg.Provider == config.LLMProviderGitHubModels {
 		if cfg.Endpoint == "" {
 			slog.Debug("Using default GitHub Models endpoint")
@@ -40,7 +39,6 @@ func callOpenAI(systemPrompt string, userPrompt string, tools []*Tool, cfg *conf
 	// Tools
 	toolParams := make([]openai.ChatCompletionToolUnionParam, len(tools))
 	for i, tool := range tools {
-		// Convert jsonschema to OpenAI function parameters format
 		functionParams := openai.FunctionParameters{
 			"type":       "object",
 			"properties": tool.Schema.Properties,
