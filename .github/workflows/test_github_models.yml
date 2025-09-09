@@ -23,6 +23,6 @@ jobs:
       - name: Check PR
         run: |
           cd cli
-          ./hyaline check pr --config ../.vscode/hyaline/check-pr-openai/test_github_models.yml --pr ${{ github.event.pull_request.number }}
+          ./hyaline check pr --config ../.vscode/hyaline/check-pr-openai/test_github_models.yml --pull-request ${{ github.repository }}/${{ github.event.pull_request.number }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
