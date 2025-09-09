@@ -64,6 +64,8 @@ jobs:
     permissions:
       pull-requests: write
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
       - name: Setup Hyaline
         uses: appgardenstudios/hyaline-actions/setup@v1
       - name: Check PR
