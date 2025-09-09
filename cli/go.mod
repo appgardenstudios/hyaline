@@ -13,6 +13,7 @@ require (
 	github.com/google/go-github/v71 v71.0.0
 	github.com/invopop/jsonschema v0.13.0
 	github.com/mark3labs/mcp-go v0.32.0
+	github.com/openai/openai-go/v2 v2.4.0
 	github.com/urfave/cli/v2 v2.27.5
 	github.com/whilp/git-urls v1.0.0
 	golang.org/x/net v0.37.0

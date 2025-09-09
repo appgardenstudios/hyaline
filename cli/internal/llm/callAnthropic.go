@@ -14,9 +14,13 @@ func callAnthropic(systemPrompt string, userPrompt string, tools []*Tool, cfg *c
 	if cfg.Key == "" {
 		slog.Warn("Calling anthropic without a key being set")
 	}
-	client := anthropic.NewClient(
-		option.WithAPIKey(cfg.Key),
-	)
+	var clientOptions []option.RequestOption
+	clientOptions = append(clientOptions, option.WithAPIKey(cfg.Key))
+	if cfg.Endpoint != "" {
+		slog.Debug("Using custom Anthropic endpoint", "endpoint", cfg.Endpoint)
+		clientOptions = append(clientOptions, option.WithBaseURL(cfg.Endpoint))
+	}
+	client := anthropic.NewClient(clientOptions...)
 
 	messages := []anthropic.MessageParam{
 		anthropic.NewUserMessage(anthropic.NewTextBlock(userPrompt)),
@@ -58,7 +62,7 @@ func callAnthropic(systemPrompt string, userPrompt string, tools []*Tool, cfg *c
 			ToolChoice: toolChoice,
 		})
 		if err != nil {
-			slog.Debug("llm.callAnthropic errored when sending a new message", "error", err)
+			slog.Error("llm.callAnthropic errored when sending a new message", "error", err)
 			return
 		}
 
@@ -83,11 +87,12 @@ func callAnthropic(systemPrompt string, userPrompt string, tools []*Tool, cfg *c
 				tool := getTool(block.Name, tools)
 				if tool == nil {
 					err = fmt.Errorf("invalid tool name received: %s", block.Name)
-					slog.Debug("llm.callAnthropic received an invalid tool name", "name", block.Name, "error", err)
+					slog.Error("llm.callAnthropic received an invalid tool name", "name", block.Name, "error", err)
 					return
 				}
 
 				// Call the tool
+				slog.Debug("llm.callAnthropic invoking tool", "tool", tool.Name)
 				stop, response, err := tool.Callback(variant.JSON.Input.Raw())
 
 				// Handle if the tool requests that we stop now rather than loop
@@ -99,7 +104,7 @@ func callAnthropic(systemPrompt string, userPrompt string, tools []*Tool, cfg *c
 				isError := false
 				if err != nil {
 					isError = true
-					slog.Debug("llm.callAnthropic received a tool error", "tool", block.Name, "error", err)
+					slog.Error("llm.callAnthropic received a tool error", "tool", block.Name, "error", err)
 				}
 
 				// Add our result to the tool results
