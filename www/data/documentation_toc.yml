@@ -59,5 +59,7 @@ items:
         url: /documentation/reference/export
       - title: Config Validation
         url: /documentation/reference/config-validation
+  - title: LLMs
+    url: /documentation/llms
   - title: Roadmap
     url: /documentation/roadmap

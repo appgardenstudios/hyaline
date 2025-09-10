@@ -28,16 +28,19 @@ The connection information to use when calling out to an LLM.
 
 ```yaml
 llm:
-  provider: anthropic | testing
+  provider: anthropic | openai | github-models | testing
   model: model-identifier
   key: ${LLM_API_KEY}
+  endpoint: <custom-provider-url>
 ```
 
-**provider**: The provider to use when calling out to an LLM. possible values are `anthropic` and `testing`.
+**provider**: The provider to use when calling out to an LLM. See [LLMs](../llms/) to learn more about the supported providers.
 
 **model**: The LLM model to use. See each provider's documentation for a list of possible values.
 
 **key**: The API key to use in requests. Note that this should be pulled from the environment and not hard-coded in the configuration file itself (see Secrets above)
+
+**endpoint**: An optional custom provider URL. Specify this if your LLM provider is hosted from a non-standard URL. For `github-models`, this defaults to `https://models.github.ai/inference`.
 
 ## GitHub
 The configuration for calling out to GitHub (not used for extraction, just for PR and issue retrieval during checks)

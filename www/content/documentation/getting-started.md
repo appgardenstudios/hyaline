@@ -8,7 +8,7 @@ Welcome to Hyaline (pronounced "HIGH-uh-leen"), a documentation tool that helps 
 ## Prerequisites
 - One or more documentation sources (e.g. git repo, filesystem directory, website)
 - A GitHub account OR a supported operating system (64-bit Linux, macOS, or Windows)
-- A [supported LLM Provider](./reference/config.md)
+- A [supported LLM Provider](./llms/)
 
 > Please note that you are free to install and use Hyaline without a license for testing and evaluation purposes. You will need to [obtain a license](/#pricing) to use Hyaline for any other purpose.
 
