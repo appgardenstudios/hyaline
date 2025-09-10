@@ -116,6 +116,10 @@ func TestGetMarkdownSections_MultiLevelDuplicates(t *testing.T) {
 	}
 }
 
+func TestExtractMarkdownSectionPurposes(t *testing.T) {
+	// TODO
+}
+
 // getAllFullNames recursively collects all FullName values from a section tree
 func getAllFullNames(s *section) []string {
 	var fullNames []string

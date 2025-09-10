@@ -69,7 +69,7 @@ func extractHtml(id string, sourceID string, rawData []byte, options *config.Ext
 	}
 
 	// Extract/insert sections
-	err = extractSections(id, sourceID, markdown, db)
+	err = extractSections(id, sourceID, markdown, false, "", db)
 	if err != nil {
 		slog.Debug("extract.extractMd could not extract sections", "error", err)
 		return err

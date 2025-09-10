@@ -62,3 +62,7 @@ purpose: My Purpose!-->`
 	}
 
 }
+
+func TestExtractPurposeFromComment(t *testing.T) {
+	// TODO
+}
