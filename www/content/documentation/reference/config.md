@@ -34,7 +34,7 @@ llm:
   endpoint: <custom-provider-url>
 ```
 
-**provider**: The provider to use when calling out to an LLM. See [LLMs](../llms/) to learn more about the supported providers.
+**provider**: The provider to use when calling out to an LLM. Possible values are `anthropic`, `openai`, `github-models`, and `testing`. See [LLMs](../llms/) to learn more about the supported providers.
 
 **model**: The LLM model to use. See each provider's documentation for a list of possible values.
 
