@@ -17,6 +17,7 @@ type LLM struct {
 	Provider LLMProvider `yaml:"provider,omitempty"`
 	Model    string      `yaml:"model,omitempty"`
 	Key      string      `yaml:"key,omitempty"`
+	Endpoint string      `yaml:"endpoint,omitempty"`
 }
 
 type LLMProvider string
@@ -27,7 +28,7 @@ func (p LLMProvider) String() string {
 
 func (p LLMProvider) IsValidLLMProvider() bool {
 	switch p {
-	case LLMProviderAnthropic, LLMProviderTesting:
+	case LLMProviderAnthropic, LLMProviderOpenAI, LLMProviderGitHubModels, LLMProviderTesting:
 		return true
 	default:
 		return false
@@ -35,8 +36,10 @@ func (p LLMProvider) IsValidLLMProvider() bool {
 }
 
 const (
-	LLMProviderAnthropic LLMProvider = "anthropic"
-	LLMProviderTesting   LLMProvider = "testing"
+	LLMProviderAnthropic    LLMProvider = "anthropic"
+	LLMProviderOpenAI       LLMProvider = "openai"
+	LLMProviderGitHubModels LLMProvider = "github-models"
+	LLMProviderTesting      LLMProvider = "testing"
 )
 
 type GitHub struct {
