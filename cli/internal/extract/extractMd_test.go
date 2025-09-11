@@ -1,6 +1,8 @@
 package extract
 
-import "testing"
+import (
+	"testing"
+)
 
 func TestExtractMdDocumentPurpose(t *testing.T) {
 	empty := ""
@@ -64,5 +66,30 @@ purpose: My Purpose!-->`
 }
 
 func TestExtractPurposeFromComment(t *testing.T) {
-	// TODO
+	var tests = []struct {
+		name    string
+		lines   []string
+		key     string
+		purpose string
+	}{
+		{"Empty lines", []string{}, "purpose:", ""},
+		{"Empty string", []string{""}, "purpose:", ""},
+		{"No Comment", []string{"section content"}, "purpose:", ""},
+		{"Comment Start", []string{"<!--"}, "purpose:", ""},
+		{"Invalid Comment", []string{"<!-->"}, "purpose:", ""},
+		{"Single Line Comment", []string{"<!-- purpose: My Purpose! -->"}, "purpose:", "My Purpose!"},
+		{"Single Line No End", []string{"<!-- purpose: My Purpose!"}, "purpose:", "My Purpose!"},
+		{"Multi Line With End", []string{"<!--", "purpose: My Purpose! -->"}, "purpose:", "My Purpose!"},
+		{"Multi Line With Spaces", []string{"<!--", "purpose: My Purpose!      -->"}, "purpose:", "My Purpose!"},
+		{"Multi Line No End", []string{"<!--", "purpose: My Purpose!"}, "purpose:", "My Purpose!"},
+		{"Multi Line End After", []string{"<!--", "purpose: My Purpose!", "-->"}, "purpose:", "My Purpose!"},
+	}
+
+	for _, test := range tests {
+		purpose := extractPurposeFromComment(test.lines, test.key)
+
+		if purpose != test.purpose {
+			t.Errorf("%s - expected %s, got %s", test.name, purpose, test.purpose)
+		}
+	}
 }

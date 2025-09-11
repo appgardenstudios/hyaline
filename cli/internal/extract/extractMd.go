@@ -77,8 +77,8 @@ func extractMdDocumentPurpose(document string, purposeKey string) string {
 
 // Extract purpose from comment where lines[0] starts with a comment
 func extractPurposeFromComment(lines []string, key string) string {
-	// guard against empty lines
-	if len(lines) == 0 {
+	// guard against empty lines or doesn't start with a comment
+	if len(lines) == 0 || !strings.HasPrefix(lines[0], "<!--") {
 		return ""
 	}
 
