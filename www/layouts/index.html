@@ -3,13 +3,18 @@
   <!-- Hero Section -->
   <section class="relative">
     <img alt="" class="absolute z-[-1] max-w-[unset] [mask-image:linear-gradient(to_bottom,rgba(0,0,0,1)_0%,rgba(0,0,0,0)_50%)]" src="/images/bubbles.png">
-    <div class="py-16 px-4 sm:px-6 lg:px-8 mx-auto container">
-      <div class="text-center">
+    <div class="px-4 sm:px-6 lg:px-8 py-16 sm:py-24 lg:py-36 container mx-auto flex gap-16 flex-col lg:flex-row items-center">
+      <div class="flex-1">
         <h1 class="text-4xl md:text-5xl xl:text-6xl font-bold mb-4">Is your documentation <br/> up-to-date?</h1>
-        <div class="text-md md:text-lg text-gray-700 max-w-lg mx-auto">
+        <div class="text-md md:text-lg text-gray-700 max-w-lg">
           Hyaline uses AI to detect when code changes require documentation updates, ensures your documentation remains compliant, extracts documentation from any source, and delivers your documentation where it's needed.
         </div>
         <a href="/documentation/getting-started/" class="inline-block mt-6 px-6 py-3 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 transition-colors">Get Started</a>
+      </div>
+      <div class="flex-1 w-full ">
+        <div class="mx-auto w-full max-w-xl">
+          {{ partial "render-video.html" (dict "id" "demo-video" "image" "/static/images/demo-thumbnail.svg" "video" "/videos/demo.mp4") }}
+        </div>
       </div>
     </div>
   </section>
