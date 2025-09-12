@@ -1,7 +1,7 @@
 ---
 title: "Explanation: Merge"
 description: Learn how Hyaline merges multiple documentation data sets
-purpose: Explain how Hyaline merge documentation works
+purpose: Explain how Hyaline merges documentation data sets
 ---
 ## Overview
 

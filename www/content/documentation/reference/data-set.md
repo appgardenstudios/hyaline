@@ -10,6 +10,7 @@ This documents the database schema of the Hyaline Documentation Data Set as gene
 ![Data Set Schema](_img/data-set-schema.svg)
 
 ## Tables
+<!-- purpose: Document all database tables and their structure -->
 The following tables make up a Hyaline Documentation Data Set.
 
 ### SOURCE
