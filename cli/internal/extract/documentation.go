@@ -44,7 +44,7 @@ func Documentation(cfg *config.Extract, db *sqlite.Queries) (err error) {
 			if config.PathIsIncluded(id, e.Include, e.Exclude) {
 				switch e.Type {
 				case config.DocTypeMarkdown:
-					return extractMd(id, cfg.Source.ID, rawData, db)
+					return extractMd(id, cfg.Source.ID, rawData, &e.Options, db)
 				case config.DocTypeHTML:
 					return extractHtml(id, cfg.Source.ID, rawData, &e.Options, db)
 				}

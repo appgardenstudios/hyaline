@@ -219,7 +219,36 @@ Hyaline can be configured to add tags and purposes to each document and section 
 
 ### Adding Metadata - Purpose
 
-Purpose can be added to each matching document and/or section for later use.
+By default Hyaline will attempt to extract a document or section's purpose when extracting markdown documentation. 
+
+<div class="side-by-side">
+
+```md
+> Contents of Document 1
+---
+purpose: ABC
+---
+# Section 1
+Section 1 content
+...
+
+
+> Contents of Document 2
+# Section 1
+<!-- purpose: XYZ -->
+Section 1 content
+...
+```
+
+![Adding Metadata via Extraction - Purpose](./_img/extract-documentation-purpose.svg)
+
+</div>
+
+In this example you can see a set of documents that have been extracted. Based on the embedded purpose metadata `Document 1` has its purpose set to `ABC`, and `Document 2 > Section 1` has its purpose set to `XYZ`.
+
+You can change the key used in the extraction by setting `options.purposeKey` in the extractor configuration, or disable purpose extraction entirely by setting `options.disablePurposeExtraction` to `true`. Please see the [configuration reference](../reference/config.md) for more details.
+
+Purpose can also be added to each matching document and/or section using the configuration.
 
 <div class="side-by-side">
 
@@ -235,7 +264,7 @@ extract:
   ...
 ```
 
-![Adding Metadata - Purpose](./_img/extract-documentation-purpose.svg)
+![Adding Metadata via Configuration - Purpose](./_img/extract-documentation-purpose.svg)
 
 </div>
 

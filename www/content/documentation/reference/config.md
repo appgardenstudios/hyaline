@@ -280,7 +280,9 @@ Extractor options based on the type of the extractor.
 extract:
   extractors:
     - type: md
-      options: # There are no options for the md extractor
+      options:
+        disablePurposeExtraction: false
+        purposeKey: purpose
 ```
 
 ```yaml
@@ -290,6 +292,10 @@ extract:
       options:
         selector: main
 ```
+
+**disablePurposeExtraction**: If true will disable purpose extraction when the type of documentation is md. By default Hyaline will extract document and section purposes from front-matter or comments using the value of `purposeKey`. Please see the explanation of [Extract](../explanation/extract.md) for more information.
+
+**purposeKey**: The key to use when extracting purpose from documents and sections when the type of documentation is md. If not set Hyaline will default to using the key `purpose`. Please see the explanation of [Extract](../explanation/extract.md) for more information.
 
 **selector**: A css-style selector used to extract documentation when the type of documentation is html. Only documentation that is a child of this selector will be extracted. Uses [Cascadia](https://pkg.go.dev/github.com/andybalholm/cascadia). Please see the explanation of [Extract](../explanation/extract.md) for more information.
 

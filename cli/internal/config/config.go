@@ -170,7 +170,9 @@ const (
 )
 
 type ExtractorOptions struct {
-	Selector string `yaml:"selector,omitempty"`
+	Selector                 string `yaml:"selector,omitempty"`
+	DisablePurposeExtraction bool   `yaml:"disablePurposeExtraction,omitempty"`
+	PurposeKey               string `yaml:"purposeKey,omitempty"`
 }
 
 type DocumentSet struct {
