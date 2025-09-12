@@ -19,5 +19,10 @@ Once installed you can visit other How To guides to learn how to [extract docume
 
 Note that the Hyaline GitHub App will trigger workflows in the configuration repository located in your organization or personal account, meaning that you stay in control of your configuration and data. If you wish you can also run your own copy of the Hyaline GitHub App (located in the [configuration repository](https://github.com/appgardenstudios/hyaline-github-app-config)) to prevent any data whatsoever from leaving your organization and being sent to us.
 
+## Just Try It Out
+If you just want to try out Hyaline, please see [How To Try Out Hyaline](./how-to/try-out-hyaline.md). This will guide you through the steps needed to try out Hyaline in a single repository using the free tier of the GitHub Models LLM.
+
+Note that this is not the recommended installation method, as it will only check documentation in a single repository and will not create or use a centralized set of documentation to keep up-to-date. To unlock the full utility of Hyaline please [Install the GitHub App](./how-to/install-github-app.md).
+
 ## From Scratch (Advanced)
 You can also use Hyaline from scratch to support any number of custom workflows or use cases. For an introduction on how to use Hyaline from scratch please visit [How To: Use Hyaline From Scratch](./how-to/use-hyaline-from-scratch.md).

@@ -5,6 +5,8 @@ items:
     url: /documentation/getting-started
   - title: How To
     items:
+      - title: Try out Hyaline
+        url: /documentation/how-to/try-out-hyaline
       - title: Install the GitHub App
         url: /documentation/how-to/install-github-app
       - title: Extract Documentation
