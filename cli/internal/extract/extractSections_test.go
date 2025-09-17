@@ -139,7 +139,7 @@ func TestExtractMarkdownSectionPurposes(t *testing.T) {
 	expected := "main purpose"
 	childrenExpected := []string{"", "", "", "", "value"}
 
-	extractMarkdownSectionPurposes(s, "purpose:")
+	extractMarkdownSectionPurposes(s, "purpose")
 
 	if s.Purpose != expected {
 		t.Errorf("%s - expected %s, got %s", "s", expected, s.Purpose)

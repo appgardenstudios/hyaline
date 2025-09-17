@@ -1,6 +1,7 @@
 package extract
 
 import (
+	"strings"
 	"testing"
 )
 
@@ -13,7 +14,7 @@ purpose: I'm Here!
 ---`
 	complexFrontMatter := `---
 not-purpose: true
-purpose: document purpose
+purpose: "document purpose"
 still-not-purpose: Blargh
 ---
 `
@@ -29,7 +30,7 @@ purpose: document purpose
 	multiLineCommentFirstLine := `<!-- purpose: My Purpose!
 -->`
 	multiLineComment := `<!--
-purpose: My Purpose!
+purpose: "My Purpose!"
 -->`
 	multiLineCommentEndingLine := `<!--
 purpose: My Purpose!-->`
@@ -65,31 +66,90 @@ purpose: My Purpose!-->`
 
 }
 
-func TestExtractPurposeFromComment(t *testing.T) {
+func TestExtractFrontMatter(t *testing.T) {
+	basic := `---
+purpose: here!
+---
+`
+	multiline := `---
+purpose: here!
+
+another: line
+
+---
+`
+
 	var tests = []struct {
-		name    string
-		lines   []string
-		key     string
-		purpose string
+		name     string
+		lines    string
+		contents string
 	}{
-		{"Empty lines", []string{}, "purpose:", ""},
-		{"Empty string", []string{""}, "purpose:", ""},
-		{"No Comment", []string{"section content"}, "purpose:", ""},
-		{"Comment Start", []string{"<!--"}, "purpose:", ""},
-		{"Invalid Comment", []string{"<!-->"}, "purpose:", ""},
-		{"Single Line Comment", []string{"<!-- purpose: My Purpose! -->"}, "purpose:", "My Purpose!"},
-		{"Single Line No End", []string{"<!-- purpose: My Purpose!"}, "purpose:", "My Purpose!"},
-		{"Multi Line With End", []string{"<!--", "purpose: My Purpose! -->"}, "purpose:", "My Purpose!"},
-		{"Multi Line With Spaces", []string{"<!--", "purpose: My Purpose!      -->"}, "purpose:", "My Purpose!"},
-		{"Multi Line No End", []string{"<!--", "purpose: My Purpose!"}, "purpose:", "My Purpose!"},
-		{"Multi Line End After", []string{"<!--", "purpose: My Purpose!", "-->"}, "purpose:", "My Purpose!"},
+		{"Empty String", "", ""},
+		{"Empty Frontmatter", "---\n---", ""},
+		{"No Frontmatter", "The contents line 1\nLine2\nLine3", ""},
+		{"Basic", basic, "purpose: here!"},
+		{"Multiline", multiline, "purpose: here!\n\nanother: line"},
 	}
 
 	for _, test := range tests {
-		purpose := extractPurposeFromComment(test.lines, test.key)
+		contents := extractFrontMatter(strings.Split(test.lines, "\n"))
 
-		if purpose != test.purpose {
-			t.Errorf("%s - expected %s, got %s", test.name, purpose, test.purpose)
+		if contents != test.contents {
+			t.Errorf("%s - expected %s, got %s", test.name, test.contents, contents)
+		}
+	}
+}
+
+func TestExtractHTMLComment(t *testing.T) {
+	multiline := `<!--
+The content
+Line 2
+-->`
+	multiline2 := `<!--
+The content
+Line 2-->`
+
+	var tests = []struct {
+		name     string
+		lines    string
+		contents string
+	}{
+		{"Empty String", "", ""},
+		{"No Comment", "The contents line 1\nLine2\nLine3", ""},
+		{"Single Line", "<!-- The contents! -->", "The contents!"},
+		{"Empty Single Line", "<!-- -->", ""},
+		{"Comment Without end", "<!-->\nLine2", ">\nLine2"},
+		{"Multiline", multiline, "The content\nLine 2"},
+		{"Multiline2", multiline2, "The content\nLine 2"},
+	}
+
+	for _, test := range tests {
+		contents := extractHTMLComment(strings.Split(test.lines, "\n"))
+
+		if contents != test.contents {
+			t.Errorf("%s - expected %s, got %s", test.name, test.contents, contents)
+		}
+	}
+}
+
+func TestExtractPurpose(t *testing.T) {
+	var tests = []struct {
+		name     string
+		contents string
+		key      string
+		result   string
+	}{
+		{"Basic", "purpose: value", "purpose", "value"},
+		{"Empty", "", "purpose", ""},
+		{"Invalid YAML", "purpose:::: value", "purpose", ""},
+		{"Missing", "other: value", "purpose", ""},
+	}
+
+	for _, test := range tests {
+		purpose := extractPurpose(test.contents, test.key)
+
+		if purpose != test.result {
+			t.Errorf("%s - expected %s, got %s", test.name, test.result, purpose)
 		}
 	}
 }

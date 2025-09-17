@@ -6,6 +6,8 @@ import (
 	"hyaline/internal/sqlite"
 	"log/slog"
 	"strings"
+
+	"gopkg.in/yaml.v3"
 )
 
 func extractMd(id string, sourceID string, rawData []byte, options *config.ExtractorOptions, db *sqlite.Queries) error {
@@ -48,84 +50,76 @@ func extractMd(id string, sourceID string, rawData []byte, options *config.Extra
 
 // Extract purpose statement from a document. If not found return <blank>
 func extractMdDocumentPurpose(document string, purposeKey string) string {
-	key := purposeKey + ":"
-	parts := strings.Split(document, "\n")
-	// Only support frontmatter extraction if the document starts with frontmatter
-	if len(parts) >= 3 && strings.HasPrefix(parts[0], "---") {
-		inFrontmatter := true
-		for _, line := range parts[1:] {
-			trimmedLine := strings.TrimSpace(line)
-			if strings.HasPrefix(trimmedLine, "---") {
-				inFrontmatter = false
-			}
-			if inFrontmatter && strings.HasPrefix(trimmedLine, key) {
-				purpose := strings.TrimSpace(trimmedLine[len(key):])
-				if len(purpose) > 0 {
-					return purpose
-				}
-			}
-		}
+	lines := strings.Split(document, "\n")
+	metadata := ""
+	// Only support frontMatter extraction if the document starts with frontMatter
+	if len(lines) > 0 && strings.HasPrefix(lines[0], "---") {
+		metadata = extractFrontMatter(lines)
 	}
 
-	// Only support comment extraction if the document starts with html comment
-	if len(parts) > 0 && strings.HasPrefix(parts[0], "<!--") {
-		return extractPurposeFromComment(parts, key)
+	// Only support HTML comment extraction if the document starts with an HTML comment
+	if len(lines) > 0 && strings.HasPrefix(lines[0], "<!--") {
+		metadata = extractHTMLComment(lines)
 	}
 
-	return ""
+	return extractPurpose(metadata, purposeKey)
 }
 
-// Extract purpose from comment where lines[0] starts with a comment
-func extractPurposeFromComment(lines []string, key string) string {
-	// guard against empty lines or doesn't start with a comment
-	if len(lines) == 0 || !strings.HasPrefix(lines[0], "<!--") {
+func extractFrontMatter(lines []string) string {
+	// Return early if we know we don't have frontmatter
+	if len(lines) < 3 || !strings.HasPrefix(lines[0], "---") {
 		return ""
 	}
 
-	// Handle single line comment
-	// Ensuring that --> is fully after <!--
+	// Get and return contents
+	contents := []string{}
+	for _, line := range lines[1:] {
+		if strings.HasPrefix(line, "---") {
+			break
+		}
+		contents = append(contents, line)
+	}
+
+	return strings.TrimSpace(strings.Join(contents, "\n"))
+}
+
+func extractHTMLComment(lines []string) string {
+	// Return early if we don't have a comment
+	if len(lines) < 1 || !strings.HasPrefix(lines[0], "<!--") {
+		return ""
+	}
+
+	contents := []string{}
+	// Handle remainder of first line
 	loc := strings.Index(lines[0][4:], "-->")
 	if loc > -1 {
-		remainder := strings.TrimSpace(lines[0][4 : loc+4]) // +4 because loc starts and the end of <!--
-		if strings.HasPrefix(remainder, key) {
-			purpose := strings.TrimSpace(remainder[len(key):])
-			if len(purpose) > 0 {
-				return purpose
-			}
-		}
+		return strings.TrimSpace(lines[0][4 : loc+4])
 	} else {
-		// Handle multi-line comment
-		// See if purpose is on the first line
-		remainder := strings.TrimSpace(lines[0][4:])
-		if strings.HasPrefix(remainder, key) {
-			purpose := strings.TrimSpace(remainder[len(key):])
-			if len(purpose) > 0 {
-				return purpose
-			}
-		}
-		if len(lines) > 1 {
-			inComment := true
-			for _, line := range lines[1:] {
-				trimmedLine := strings.TrimSpace(line)
-				loc := strings.Index(trimmedLine, "-->")
-				if loc > -1 {
-					// See if purpose is on this line before the comment end
-					if strings.HasPrefix(trimmedLine, key) {
-						purpose := strings.TrimSpace(trimmedLine[len(key):loc])
-						if len(purpose) > 0 {
-							return purpose
-						}
-					}
-					inComment = false
-				}
-				if inComment && strings.HasPrefix(trimmedLine, key) {
-					purpose := strings.TrimSpace(trimmedLine[len(key):])
-					if len(purpose) > 0 {
-						return purpose
-					}
-				}
-			}
+		contents = append(contents, lines[0][4:])
+	}
+
+	// Go until we see the end of the comment
+	for _, line := range lines[1:] {
+		loc = strings.Index(line, "-->")
+		if loc > -1 {
+			contents = append(contents, line[:loc])
+			break
+		} else {
+			contents = append(contents, line)
 		}
 	}
-	return ""
+
+	return strings.TrimSpace(strings.Join(contents, "\n"))
+}
+
+// Extract purpose (identified by key) from a yaml formatted metadata string
+func extractPurpose(metadata string, key string) string {
+	purposeStruct := map[string]string{}
+	err := yaml.Unmarshal([]byte(metadata), &purposeStruct)
+	if err != nil {
+		slog.Debug("extract.extractPurpose could not parse yaml metadata", "error", err)
+		return ""
+	}
+
+	return purposeStruct[key]
 }

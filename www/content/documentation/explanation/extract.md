@@ -219,7 +219,7 @@ Hyaline can be configured to add tags and purposes to each document and section 
 
 ### Adding Metadata - Purpose
 
-By default Hyaline will attempt to extract a document or section's purpose when extracting markdown documentation. 
+By default Hyaline will attempt to extract a document or section's purpose when extracting markdown documentation. Note that document and section metadata must be in the yaml format to be extracted.
 
 <div class="side-by-side">
 

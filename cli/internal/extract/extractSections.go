@@ -25,7 +25,7 @@ func extractSections(documentID string, sourceID string, markdown string, extrac
 
 	// Extract purpose (if enabled)
 	if extractPurpose {
-		extractMarkdownSectionPurposes(sections, purposeKey+":")
+		extractMarkdownSectionPurposes(sections, purposeKey)
 	}
 
 	// Insert our sections
@@ -151,18 +151,19 @@ func deduplicateSectionName(name string, originalNames map[string]struct{}, gene
 	}
 }
 
-func extractMarkdownSectionPurposes(section *section, key string) {
+func extractMarkdownSectionPurposes(section *section, purposeKey string) {
 	content := strings.TrimSpace(section.Content)
 
 	// If the first line of the section content starts with <!--, attempt to extract purpose from the comment
 	if strings.HasPrefix(content, "<!--") {
-		parts := strings.Split(content, "\n")
-		section.Purpose = extractPurposeFromComment(parts, key)
+		lines := strings.Split(content, "\n")
+		metadata := extractHTMLComment(lines)
+		section.Purpose = extractPurpose(metadata, purposeKey)
 	}
 
 	// Extract child section purposes
 	for _, child := range section.Children {
-		extractMarkdownSectionPurposes(child, key)
+		extractMarkdownSectionPurposes(child, purposeKey)
 	}
 }
 
