@@ -28,6 +28,29 @@ func TestGetMarkdownSections_BasicFunctionality(t *testing.T) {
 	}
 }
 
+func TestGetMarkdownSections_CodeBlocks(t *testing.T) {
+	lines := []string{
+		"Start",
+		"```",
+		"# Section 1",
+		"Content",
+		"```",
+		"In Between",
+		"```",
+		"# Section 2",
+		"Content",
+		"```",
+		"End",
+	}
+
+	root := getMarkdownSections(lines)
+
+	if len(root.Children) != 0 {
+		t.Error("Children should be empty")
+	}
+
+}
+
 func TestGetMarkdownSections_DuplicateNames(t *testing.T) {
 	lines := []string{
 		"# Section A (1)",
