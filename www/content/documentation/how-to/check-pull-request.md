@@ -13,7 +13,7 @@ Configure Hyaline to check a pull request using the Hyaline GitHub App.
 ## Steps
 
 ### 1. Create Configuration
-The first step is to create a configuration file for the repo in the `repos/` folder in the forked `hyaline-github-app-config` configuration repository if one does not already exist. Note that the name of the configuration file MUST match the name of the repository.
+The first step is to create a configuration file for the repo in the `repos/` folder in your `hyaline-github-app-config` repo instance if one does not already exist. Note that the name of the configuration file MUST match the name of the repository.
 
 For example, the configuration to could look something like:
 
@@ -50,10 +50,10 @@ check:
 ```
 
 ### 2. Run Doctor
-Run the `Doctor` workflow in the forked `hyaline-github-app-config` repo to ensure that the configuration is valid. Merge the resulting PR if needed.
+Run the `Doctor` workflow in your `hyaline-github-app-config` repo instance to ensure that the configuration is valid. Merge the resulting PR if needed.
 
 ### 3. Create Pull Request
-Create a pull request in the repo you created the configuration for. You will see a run of the `_Check PR` workflow being kicked off in the forked `hyaline-github-app-config` repo and a comment with recommendations created on the pull request.
+Create a pull request in the repo you created the configuration for. You will see a run of the `_Check PR` workflow being kicked off in your `hyaline-github-app-config` repo instance and a comment with recommendations created on the pull request.
 
 ## Next Steps
 Read more about [how checking pull requests works](../explanation/check.md) or visit the [configuration reference](../reference/config.md).

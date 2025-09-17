@@ -13,7 +13,7 @@ Configure Hyaline to extract documentation using the Hyaline GitHub App
 ## Steps
 
 ### 1. Create Configuration
-The first step is to create a configuration file for the documentation source in the appropriate folder in the forked `hyaline-github-app-config` repo.
+The first step is to create a configuration file for the documentation source in the appropriate folder in your `hyaline-github-app-config` repo instance.
 
 For example, the configuration to extract documentation from a repository should be places in the `repos/` folder named `<repo-name>.yml` and should look something like:
 
@@ -52,10 +52,10 @@ extract:
 Configuration to extract documentation from a documentation site should be placed in `sites/` and the crawler/extractors should be configured as needed (see the [configuration reference](../reference/config.md) for more information).
 
 ### 2. Run Doctor
-Run the `Doctor` workflow in the forked `hyaline-github-app-config` repo to 1) ensure that the configuration is valid and 2) to add the repository or site to the list of available extraction targets. Merge the resulting PR if needed.
+Run the `Doctor` workflow in your `hyaline-github-app-config` repo instance to 1) ensure that the configuration is valid and 2) to add the repository or site to the list of available extraction targets. Merge the resulting PR if needed.
 
 ### 3. Run Extract
-Run the `Extract Repo/Site` workflow in the forked `hyaline-github-app-config` repo to trigger an extraction. Note that you can trigger a merge of this documentation into the current documentation data set by leaving the `Trigger Merge Workflow` option enabled.
+Run the `Extract Repo/Site` workflow in your `hyaline-github-app-config` repo instance to trigger an extraction. Note that you can trigger a merge of this documentation into the current documentation data set by leaving the `Trigger Merge Workflow` option enabled.
 
 ## Next Steps
 Read more about [how extraction works](../explanation/extract.md) or visit the [configuration reference](../reference/config.md).
