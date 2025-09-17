@@ -6,7 +6,7 @@ purpose: Provide an overview of Hyaline and its purpose
 # About Hyaline
 
 ## What is Hyaline?
-
+<!-- purpose: Explain what Hyaline is and its main features -->
 Hyaline is a documentation maintenance tool that helps software development teams keep their documentation current, accurate, and accessible. It automatically identifies when code changes require documentation updates, verifies that documentation match their intended purpose, and provides seamless integration with AI development workflows.
 
 Key capabilities include:

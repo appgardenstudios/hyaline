@@ -1,8 +1,10 @@
+<!-- purpose: Provide a high-level introduction of the Hyaline CLI and provide guidance for developing, testing, running, and releasing Hyaline. -->
 # Hyaline CLI
 
 # Developing
 
 ## Dependencies
+<!-- purpose: Document any additional dependencies required to develop, test, or release Hyaline. -->
 
 * `make`
 * `go` (v1.24+)
@@ -11,11 +13,13 @@
 * `sqlc` for compiling sql queries (`go install github.com/sqlc-dev/sqlc/cmd/sqlc@v1.27.0`)
 
 ## Generate DB Queries
+<!-- purpose: Document how to generate db queries. -->
 ```sh
 $ make db
 ```
 
 ## Running Locally
+<!-- purpose: Document how to run Hyaline locally. -->
 ```sh
 $ make
 $ ./hyaline
@@ -24,6 +28,7 @@ $ ./hyaline
 Note that you can also use `make install` to build and install Hyaline locally for testing.
 
 ## Debugging
+<!-- purpose: Document how to debug Hyaline locally. -->
 There is a `.vscode/launch.json` file checked in that has various debugger launch configurations. They use the config stored in `cli/_example/config.yml` and rely on a `cli/.env` file being present to work (which is .gitignored). The .env file should look like:
 
 ```
@@ -37,6 +42,7 @@ HYALINE_SSH_PASSWORD= #A password for the PEM above (blank if PEM is not passwor
 Note that you must have the `github.com/appgardenstudios/hyaline-example` repository cloned as a sibling directory to hyaline for some of the launch configurations to work properly.
 
 ## Testing
+<!-- purpose: Document how to test Hyaline locally. -->
 Unit tests are run with `make test`, and there are e2e tests that invoke the actual hyaline binary that you can run with `make e2e`.
 
 Note that the following env vars must be set for the `e2e` tests to work and pass:
@@ -46,6 +52,7 @@ Note that the following env vars must be set for the `e2e` tests to work and pas
 Note that the e2e test [updatePR_test.go](./e2e/updatePR_test.go) creates a comment on a PR and cleans it up using the GitHub CLI (`gh`).
 
 ## Releasing
+<!-- purpose: Document how to release Hyaline. -->
 Release by checking out the appropriate commit on the main branch and then running `make release`.
 
 Note that test will be run, so the env vars required for testing must be set (see above for details)

@@ -116,6 +116,42 @@ func TestGetMarkdownSections_MultiLevelDuplicates(t *testing.T) {
 	}
 }
 
+func TestExtractMarkdownSectionPurposes(t *testing.T) {
+	noContent := &section{}
+	emptyContent := &section{
+		Content: "",
+	}
+	noComment := &section{
+		Content: "section information\nanother line",
+	}
+	comment := &section{
+		Content: "<!-- key: value -->\nsection information\nanother line",
+	}
+	purpose := &section{
+		Content: "<!-- \npurpose: value\n -->\nsection information\nanother line",
+	}
+
+	s := &section{
+		Content:  "<!-- purpose: main purpose -->section content",
+		Children: []*section{noContent, emptyContent, noComment, comment, purpose},
+	}
+
+	expected := "main purpose"
+	childrenExpected := []string{"", "", "", "", "value"}
+
+	extractMarkdownSectionPurposes(s, "purpose")
+
+	if s.Purpose != expected {
+		t.Errorf("%s - expected %s, got %s", "s", expected, s.Purpose)
+	}
+
+	for i, purpose := range childrenExpected {
+		if s.Children[i].Purpose != purpose {
+			t.Errorf("%d - expected %s, got %s", i, purpose, s.Children[i].Purpose)
+		}
+	}
+}
+
 // getAllFullNames recursively collects all FullName values from a section tree
 func getAllFullNames(s *section) []string {
 	var fullNames []string

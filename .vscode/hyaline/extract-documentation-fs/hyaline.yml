@@ -28,7 +28,7 @@ extract:
       tags:
         - key: system
           value: my-app
-    - document: "README.md"
+    - document: "index.html"
       purpose: "The purpose of this document is to explain the project"
       tags:
         - key: system # duped to test upsert

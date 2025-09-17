@@ -14,13 +14,21 @@ type section struct {
 	Name     string
 	FullName string
 	Content  string
+	Purpose  string
 	Children []*section
 }
 
-func extractSections(documentID string, sourceID string, markdown string, db *sqlite.Queries) error {
+func extractSections(documentID string, sourceID string, markdown string, extractPurpose bool, purposeKey string, db *sqlite.Queries) error {
 
+	// Get our tree of sections
 	sections := getMarkdownSections(strings.Split(markdown, "\n"))
 
+	// Extract purpose (if enabled)
+	if extractPurpose {
+		extractMarkdownSectionPurposes(sections, purposeKey)
+	}
+
+	// Insert our sections
 	return insertSections(sections, 0, documentID, sourceID, db)
 }
 
@@ -143,6 +151,22 @@ func deduplicateSectionName(name string, originalNames map[string]struct{}, gene
 	}
 }
 
+func extractMarkdownSectionPurposes(section *section, purposeKey string) {
+	content := strings.TrimSpace(section.Content)
+
+	// If the first line of the section content starts with <!--, attempt to extract purpose from the comment
+	if strings.HasPrefix(content, "<!--") {
+		lines := strings.Split(content, "\n")
+		metadata := extractHTMLComment(lines)
+		section.Purpose = extractPurpose(metadata, purposeKey)
+	}
+
+	// Extract child section purposes
+	for _, child := range section.Children {
+		extractMarkdownSectionPurposes(child, purposeKey)
+	}
+}
+
 func insertSections(s *section, order int, documentID string, sourceID string, db *sqlite.Queries) error {
 	// If Parent is nil, it's the root document and we don't insert it
 	if s.Parent != nil {
@@ -153,7 +177,7 @@ func insertSections(s *section, order int, documentID string, sourceID string, d
 			ParentID:      s.Parent.FullName,
 			PeerOrder:     order,
 			Name:          s.Name,
-			Purpose:       "",
+			Purpose:       s.Purpose,
 			ExtractedData: strings.TrimSpace(s.Content),
 		})
 		if err != nil {

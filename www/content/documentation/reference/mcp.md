@@ -7,6 +7,7 @@ purpose: Detail the functionality of Hyaline's MCP server
 Hyaline provides a built-in MCP server that can make the [current data set](./data-set.md) extracted by Hyaline's [extract documentation](../explanation/extract.md) command available to LLMs. For information on how to set up and run the MCP server please see the [how to](../how-to/run-mcp-server.md) or the [cli reference](./cli.md).
 
 ## Tools
+<!-- purpose: Document all the available tools the Hyaline MCP server provides -->
 Hyaline's MCP server provides the following tools:
 
 ### list_documents
@@ -28,6 +29,7 @@ Get the contents of documents matching the specified URI, or all documents if no
 One or more documents (including the contents of each document).
 
 ## Prompts
+<!-- Document all the available prompts the Hyaline MCP server provides -->
 Hyaline's MCP server provides the following prompts:
 
 ### answer_question
