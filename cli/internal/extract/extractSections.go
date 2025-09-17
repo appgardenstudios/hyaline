@@ -50,6 +50,7 @@ func getMarkdownSections(lines []string) *section {
 	originalFullNames := make(map[string]struct{})
 	generatedFullNames := make(map[string]struct{})
 
+	// Start parsing not in a code block
 	inCodeBlock := false
 
 	for _, line := range lines {
