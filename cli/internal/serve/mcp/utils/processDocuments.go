@@ -9,7 +9,7 @@ import (
 	"path"
 	"strings"
 
-	giturls "github.com/whilp/git-urls"
+	"github.com/go-git/go-git/v5/plumbing/transport"
 )
 
 // Results holds processing results
@@ -179,7 +179,7 @@ func generateSourceURL(crawlerType string, root string, documentID string) strin
 	switch crawlerType {
 	case string(config.ExtractorTypeGit):
 		// For git crawler, root should be a git URL
-		if gitURL, err := giturls.Parse(root); err == nil {
+		if gitURL, err := transport.NewEndpoint(root); err == nil {
 			// Convert git URL to web URL using proper URL construction
 			sourceURL := &url.URL{
 				Scheme: "https",

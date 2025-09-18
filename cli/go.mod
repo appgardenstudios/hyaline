@@ -15,7 +15,6 @@ require (
 	github.com/mark3labs/mcp-go v0.32.0
 	github.com/openai/openai-go/v2 v2.4.1
 	github.com/urfave/cli/v2 v2.27.5
-	github.com/whilp/git-urls v1.0.0
 	golang.org/x/net v0.44.0
 	gopkg.in/yaml.v3 v3.0.1
 	modernc.org/sqlite v1.36.0
