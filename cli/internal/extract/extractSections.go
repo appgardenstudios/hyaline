@@ -50,10 +50,18 @@ func getMarkdownSections(lines []string) *section {
 	originalFullNames := make(map[string]struct{})
 	generatedFullNames := make(map[string]struct{})
 
+	// Start parsing not in a code block
+	inCodeBlock := false
+
 	for _, line := range lines {
+		// If the line starts with ```, enter or exit the code block
+		if strings.HasPrefix(line, "```") {
+			inCodeBlock = !inCodeBlock
+		}
+
 		// If line starts with #, modify current to the correct level
 		level := countPounds(line)
-		if level == 0 {
+		if level == 0 || inCodeBlock {
 			// Add to current section
 			current.Content = current.Content + "\n" + line
 		} else {
