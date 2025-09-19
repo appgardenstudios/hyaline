@@ -12,9 +12,7 @@ import (
 
 func TestDiff_IgnoresInvalidIDsFromLLM(t *testing.T) {
 	// 1. Mock llm.CallLLM
-	originalCallLLM := callLLM
-	defer func() { callLLM = originalCallLLM }()
-
+	var callLLM llm.CallLLMHandler
 	callLLM = func(systemPrompt string, prompt string, tools []*llm.Tool, cfg *config.LLM) (string, error) {
 		// Simulate LLM calling the 'needs_update' tool with valid and invalid IDs
 		for _, tool := range tools {
@@ -61,7 +59,7 @@ func TestDiff_IgnoresInvalidIDsFromLLM(t *testing.T) {
 	llmCfg := &config.LLM{}
 
 	// 4. Call Diff
-	results, _, err := Diff(files, documents, nil, nil, checkCfg, llmCfg)
+	results, _, err := Diff(files, documents, nil, nil, checkCfg, llmCfg, callLLM)
 	if err != nil {
 		t.Fatalf("Diff returned an error: %v", err)
 	}

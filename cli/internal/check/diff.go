@@ -17,8 +17,6 @@ import (
 	"github.com/invopop/jsonschema"
 )
 
-var callLLM = llm.CallLLM
-
 type DiffCheckType string
 
 const (
@@ -71,7 +69,7 @@ type checkNoUpdateNeededSchema struct {
 
 type updateResultMapCallback func(id string, reason string, check DiffCheck)
 
-func Diff(files []code.FilteredFile, documents []*docs.FilteredDoc, pr *github.PullRequest, issues []*github.Issue, checkCfg *config.Check, llmCfg *config.LLM) (results []Result, fileCheckContextHashes FileCheckContextHashes, err error) {
+func Diff(files []code.FilteredFile, documents []*docs.FilteredDoc, pr *github.PullRequest, issues []*github.Issue, checkCfg *config.Check, llmCfg *config.LLM, callLLM llm.CallLLMHandler) (results []Result, fileCheckContextHashes FileCheckContextHashes, err error) {
 	resultMap := make(map[string][]Reason)
 	fileCheckContextHashes = make(FileCheckContextHashes)
 	validIDs := buildValidIDMap(documents)
@@ -87,7 +85,7 @@ func Diff(files []code.FilteredFile, documents []*docs.FilteredDoc, pr *github.P
 
 	updateResultMap := func(id string, reason string, check DiffCheck) {
 		// Ignore IDs that aren't in the valid documents/sections
-		if !validIDs[id] {
+		if _, ok := validIDs[id]; !ok {
 			slog.Debug("check.Diff ignoring invalid document/section ID", "id", id, "reason", reason, "file", check.File)
 			return
 		}
@@ -523,8 +521,8 @@ func checkNewUpdateIfSections(glob string, sections []docs.FilteredSection, filt
 	}
 }
 
-func buildValidIDMap(documents []*docs.FilteredDoc) map[string]bool {
-	validIDs := make(map[string]bool)
+func buildValidIDMap(documents []*docs.FilteredDoc) map[string]struct{} {
+	validIDs := make(map[string]struct{})
 
 	var addSectionsToValidIDMap func(sections []docs.FilteredSection)
 	addSectionsToValidIDMap = func(sections []docs.FilteredSection) {
@@ -534,7 +532,7 @@ func buildValidIDMap(documents []*docs.FilteredDoc) map[string]bool {
 				DocumentPath: section.Section.DocumentID,
 				Section:      section.Section.ID,
 			}
-			validIDs[uri.String()] = true
+			validIDs[uri.String()] = struct{}{}
 			if len(section.Sections) > 0 {
 				addSectionsToValidIDMap(section.Sections)
 			}
@@ -546,7 +544,7 @@ func buildValidIDMap(documents []*docs.FilteredDoc) map[string]bool {
 			SourceID:     document.Document.SourceID,
 			DocumentPath: document.Document.ID,
 		}
-		validIDs[uri.String()] = true
+		validIDs[uri.String()] = struct{}{}
 		addSectionsToValidIDMap(document.Sections)
 	}
 
