@@ -1,4 +1,8 @@
 {{- $paginator := .Paginator -}}
+{{/*
+  The number of adjacent page links to display to either side of the current
+  page and prev/next buttons. Example: < 1 2 ...8 9 *10* 11 12 ... 34 35 >
+*/}}
 {{- $adjacent_links := 2 -}}
 {{- $max_links := (add (mul $adjacent_links 2) 1) -}}
 {{- $lower_limit := (add 1 $adjacent_links) -}}
