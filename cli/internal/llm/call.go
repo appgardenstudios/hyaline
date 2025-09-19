@@ -17,6 +17,8 @@ type Tool struct {
 	Callback func(string) (bool, string, error)
 }
 
+type CallLLMHandler func(systemPrompt string, userPrompt string, tools []*Tool, cfg *config.LLM) (string, error)
+
 func CallLLM(systemPrompt string, userPrompt string, tools []*Tool, cfg *config.LLM) (result string, err error) {
 	if cfg == nil || cfg.Provider == "" {
 		slog.Error("llm configuration must be present to call an llm")

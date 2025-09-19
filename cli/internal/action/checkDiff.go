@@ -8,6 +8,7 @@ import (
 	"hyaline/internal/config"
 	"hyaline/internal/docs"
 	"hyaline/internal/github"
+	"hyaline/internal/llm"
 	"hyaline/internal/repo"
 	"hyaline/internal/sqlite"
 	"log/slog"
@@ -246,7 +247,7 @@ func CheckDiff(args *CheckDiffArgs) error {
 
 func getRecommendations(filteredFiles []code.FilteredFile, documents []*docs.FilteredDoc, pr *github.PullRequest, issues []*github.Issue, changedFiles map[string]struct{}, checkConfig *config.Check, llmConfig *config.LLM) ([]CheckRecommendation, check.FileCheckContextHashes, error) {
 	// Check Diff
-	results, fileCheckContextHashes, err := check.Diff(filteredFiles, documents, pr, issues, checkConfig, llmConfig)
+	results, fileCheckContextHashes, err := check.Diff(filteredFiles, documents, pr, issues, checkConfig, llmConfig, llm.CallLLM)
 	if err != nil {
 		slog.Debug("getRecommendations could not check diff", "error", err)
 		return nil, nil, err
