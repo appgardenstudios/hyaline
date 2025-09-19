@@ -11,10 +11,6 @@
 
   <!-- Articles Section -->
   <section id="articles" class="mb-12">
-    <div class="mb-8">
-      <h2 class="text-3xl font-bold text-gray-900">All Articles</h2>
-    </div>
-
     <!-- Article Cards -->
     {{ $paginator := .Paginate (.Pages.ByDate.Reverse) 10 }}
     <div class="space-y-6">
