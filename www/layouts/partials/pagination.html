@@ -1,0 +1,66 @@
+{{- $paginator := .Paginator -}}
+{{/*
+  The number of adjacent page links to display to either side of the current
+  page and prev/next buttons. Example: < 1 2 ...8 9 *10* 11 12 ... 34 35 >
+*/}}
+{{- $adjacent_links := 2 -}}
+{{- $max_links := (add (mul $adjacent_links 2) 1) -}}
+{{- $lower_limit := (add 1 $adjacent_links) -}}
+{{- $upper_limit := (sub $paginator.TotalPages $adjacent_links) -}}
+
+{{- if gt $paginator.TotalPages 1 -}}
+<nav aria-label="Page navigation">
+  <ul class="flex items-center -space-x-px h-10 text-base">
+    <li>
+      {{- if $paginator.HasPrev -}}
+      <a href="{{ $paginator.Prev.URL }}" class="flex items-center justify-center px-4 h-10 ms-0 leading-tight text-gray-500 bg-white border border-gray-300 rounded-s-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
+      {{- else -}}
+      <span class="flex items-center justify-center px-4 h-10 ms-0 leading-tight text-gray-400 bg-white border border-gray-300 rounded-s-lg cursor-not-allowed dark:bg-gray-800 dark:border-gray-700 dark:text-gray-500">
+      {{- end -}}
+        <span class="sr-only">Previous</span>
+        <svg class="w-3 h-3 rtl:rotate-180" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
+          <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 1 1 5l4 4"/>
+        </svg>
+      {{- if $paginator.HasPrev -}}
+      </a>
+      {{- else -}}
+      </span>
+      {{- end -}}
+    </li>
+
+    {{- range $paginator.Pagers -}}
+      {{- $page_number := .PageNumber -}}
+      {{- if or (le $paginator.TotalPages $max_links) (and (ge $page_number (sub $paginator.PageNumber $adjacent_links)) (le $page_number (add $paginator.PageNumber $adjacent_links))) (and (ge $paginator.TotalPages (sub $max_links 1)) (or (le $page_number $lower_limit) (ge $page_number $upper_limit))) -}}
+        <li>
+          {{- if eq . $paginator -}}
+          <a href="{{ .URL }}" aria-current="page" class="z-10 flex items-center justify-center px-4 h-10 leading-tight text-blue-600 border border-blue-300 bg-blue-50 hover:bg-blue-100 hover:text-blue-700 dark:border-gray-700 dark:bg-gray-700 dark:text-white">{{ .PageNumber }}</a>
+          {{- else -}}
+          <a href="{{ .URL }}" class="flex items-center justify-center px-4 h-10 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">{{ .PageNumber }}</a>
+          {{- end -}}
+        </li>
+      {{- else if or (eq $page_number (add $lower_limit 1)) (eq $page_number (sub $upper_limit 1)) -}}
+        <li>
+          <span class="flex items-center justify-center px-4 h-10 leading-tight text-gray-500 bg-white border border-gray-300">...</span>
+        </li>
+      {{- end -}}
+    {{- end -}}
+
+    <li>
+      {{- if $paginator.HasNext -}}
+      <a href="{{ $paginator.Next.URL }}" class="flex items-center justify-center px-4 h-10 leading-tight text-gray-500 bg-white border border-gray-300 rounded-e-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
+      {{- else -}}
+      <span class="flex items-center justify-center px-4 h-10 leading-tight text-gray-400 bg-white border border-gray-300 rounded-e-lg cursor-not-allowed dark:bg-gray-800 dark:border-gray-700 dark:text-gray-500">
+      {{- end -}}
+        <span class="sr-only">Next</span>
+        <svg class="w-3 h-3 rtl:rotate-180" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
+          <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 9 4-4-4-4"/>
+        </svg>
+      {{- if $paginator.HasNext -}}
+      </a>
+      {{- else -}}
+      </span>
+      {{- end -}}
+    </li>
+  </ul>
+</nav>
+{{- end -}}
