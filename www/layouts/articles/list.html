@@ -9,15 +9,16 @@
     </p>
   </header>
 
-  <!-- Latest Articles Section -->
-  <section id="latest" class="mb-12">
+  <!-- Articles Section -->
+  <section id="articles" class="mb-12">
     <div class="mb-8">
-      <h2 class="text-3xl font-bold text-gray-900">Latest</h2>
+      <h2 class="text-3xl font-bold text-gray-900">All Articles</h2>
     </div>
 
     <!-- Article Cards -->
+    {{ $paginator := .Paginate (.Pages.ByDate.Reverse) 10 }}
     <div class="space-y-6">
-      {{ range first 3 .Pages }}
+      {{ range $paginator.Pages }}
       <article class="group">
         <a 
           href="{{ .Permalink }}" 
@@ -26,7 +27,7 @@
         >
           <div class="flex-shrink-0 w-36 h-36 bg-gray-100 rounded-lg mr-6 flex items-center justify-center overflow-hidden">
             {{ if .Params.thumbnail }}
-            <img src="{{ .Params.thumbnail }}" alt="" class="w-full h-full object-cover">
+            <img src="/articles/{{ .Params.thumbnail }}" alt="" class="w-full h-full object-cover">
             {{ else }}
             <svg class="w-12 h-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -51,6 +52,13 @@
       </article>
       {{ end }}
     </div>
+
+    <!-- Pagination -->
+    {{ if gt $paginator.TotalPages 1 }}
+    <div class="mt-12 flex justify-center">
+      {{ partial "pagination.html" . }}
+    </div>
+    {{ end }}
   </section>
 </div>
 {{ end }}
