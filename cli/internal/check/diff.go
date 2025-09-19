@@ -523,21 +523,11 @@ func checkNewUpdateIfSections(glob string, sections []docs.FilteredSection, filt
 	}
 }
 
-func addSectionsToValidIDMap(validIDs map[string]bool, sections []docs.FilteredSection) {
-	for _, section := range sections {
-		compositeID := fmt.Sprintf("%s/%s#%s", section.Section.SourceID, section.Section.DocumentID, section.Section.ID)
-		validIDs[compositeID] = true
-		if len(section.Sections) > 0 {
-			addSectionsToValidIDMap(validIDs, section.Sections)
-		}
-	}
-}
-
 func buildValidIDMap(documents []*docs.FilteredDoc) map[string]bool {
 	validIDs := make(map[string]bool)
 
-	var recursiveAddSections func(sections []docs.FilteredSection)
-	recursiveAddSections = func(sections []docs.FilteredSection) {
+	var addSectionsToValidIDMap func(sections []docs.FilteredSection)
+	addSectionsToValidIDMap = func(sections []docs.FilteredSection) {
 		for _, section := range sections {
 			uri := docs.DocumentURI{
 				SourceID:     section.Section.SourceID,
@@ -546,7 +536,7 @@ func buildValidIDMap(documents []*docs.FilteredDoc) map[string]bool {
 			}
 			validIDs[uri.String()] = true
 			if len(section.Sections) > 0 {
-				recursiveAddSections(section.Sections)
+				addSectionsToValidIDMap(section.Sections)
 			}
 		}
 	}
@@ -557,7 +547,7 @@ func buildValidIDMap(documents []*docs.FilteredDoc) map[string]bool {
 			DocumentPath: document.Document.ID,
 		}
 		validIDs[uri.String()] = true
-		recursiveAddSections(document.Sections)
+		addSectionsToValidIDMap(document.Sections)
 	}
 
 	return validIDs
