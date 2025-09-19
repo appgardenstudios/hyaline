@@ -17,6 +17,8 @@ import (
 	"github.com/invopop/jsonschema"
 )
 
+var callLLM = llm.CallLLM
+
 type DiffCheckType string
 
 const (
@@ -72,6 +74,7 @@ type updateResultMapCallback func(id string, reason string, check DiffCheck)
 func Diff(files []code.FilteredFile, documents []*docs.FilteredDoc, pr *github.PullRequest, issues []*github.Issue, checkCfg *config.Check, llmCfg *config.LLM) (results []Result, fileCheckContextHashes FileCheckContextHashes, err error) {
 	resultMap := make(map[string][]Reason)
 	fileCheckContextHashes = make(FileCheckContextHashes)
+	validIDs := buildValidIDMap(documents)
 
 	updateFileCheckContextHashes := func(check DiffCheck) {
 		checkContextHashes, exists := fileCheckContextHashes[check.File]
@@ -83,6 +86,12 @@ func Diff(files []code.FilteredFile, documents []*docs.FilteredDoc, pr *github.P
 	}
 
 	updateResultMap := func(id string, reason string, check DiffCheck) {
+		// Ignore IDs that aren't in the valid documents/sections
+		if !validIDs[id] {
+			slog.Debug("check.Diff ignoring invalid document/section ID", "id", id, "reason", reason, "file", check.File)
+			return
+		}
+
 		entry, ok := resultMap[id]
 		newReason := Reason{
 			Reason:   reason,
@@ -129,7 +138,7 @@ func Diff(files []code.FilteredFile, documents []*docs.FilteredDoc, pr *github.P
 		updateFileCheckContextHashes(check)
 		tools := getCheckTools(updateResultMap, check)
 		slog.Debug("check.Diff calling llm", "file", file.Filename, "systemPrompt", systemPrompt, "prompt", prompt, "tools", len(tools))
-		_, err = llm.CallLLM(systemPrompt, prompt, tools, llmCfg)
+		_, err = callLLM(systemPrompt, prompt, tools, llmCfg)
 		if err != nil {
 			slog.Debug("check.Change encountered an error when calling the llm", "error", err)
 			return
@@ -138,15 +147,18 @@ func Diff(files []code.FilteredFile, documents []*docs.FilteredDoc, pr *github.P
 
 	// Process resultMap into results
 	for id, reasons := range resultMap {
-		source, remainder, _ := strings.Cut(id, "/")
-		document, sections, _ := strings.Cut(remainder, "#")
+		parsedURI, err := docs.NewDocumentURI(id)
+		if err != nil {
+			slog.Warn("check.Diff could not parse document URI from result map", "uri", id, "error", err)
+			continue
+		}
 		section := []string{}
-		if sections != "" {
-			section = strings.Split(sections, "/")
+		if parsedURI.Section != "" {
+			section = strings.Split(parsedURI.Section, "/")
 		}
 		results = append(results, Result{
-			Source:   source,
-			Document: document,
+			Source:   parsedURI.SourceID,
+			Document: parsedURI.DocumentPath,
 			Section:  section,
 			Reasons:  reasons,
 		})
@@ -314,7 +326,8 @@ func formatCheckPromptDocuments(documents []*docs.FilteredDoc) string {
 
 	for _, document := range documents {
 		// <document>
-		str.WriteString(fmt.Sprintf("%s<document id=\"%s/%s\">\n", strings.Repeat(" ", indent), document.Document.SourceID, document.Document.ID))
+		uri := docs.DocumentURI{SourceID: document.Document.SourceID, DocumentPath: document.Document.ID}
+		str.WriteString(fmt.Sprintf("%s<document id=\"%s\">\n", strings.Repeat(" ", indent), uri.String()))
 
 		indent += 2
 
@@ -354,7 +367,8 @@ func formatCheckPromptSections(sections []docs.FilteredSection, indent int) stri
 
 	for _, section := range sections {
 		// <section id="">
-		str.WriteString(fmt.Sprintf("%s<section id=\"%s/%s#%s\">\n", strings.Repeat(" ", indent), section.Section.SourceID, section.Section.DocumentID, section.Section.ID))
+		uri := docs.DocumentURI{SourceID: section.Section.SourceID, DocumentPath: section.Section.DocumentID, Section: section.Section.ID}
+		str.WriteString(fmt.Sprintf("%s<section id=\"%s\">\n", strings.Repeat(" ", indent), uri.String()))
 
 		indent += 2
 
@@ -485,7 +499,8 @@ func checkNewUpdateIfDocuments(glob string, documents []*docs.FilteredDoc, filte
 
 	for _, document := range documents {
 		if docs.DocumentMatches(document.Document.ID, document.Document.SourceID, document.Tags, &filter) {
-			cb(document.Document.SourceID+"/"+document.Document.ID,
+			uri := docs.DocumentURI{SourceID: document.Document.SourceID, DocumentPath: document.Document.ID}
+			cb(uri.String(),
 				fmt.Sprintf("Update this document if any files matching `%s` were %s (matching file: %s).", glob, action, check.File),
 				check)
 		} else {
@@ -499,12 +514,53 @@ func checkNewUpdateIfDocuments(glob string, documents []*docs.FilteredDoc, filte
 func checkNewUpdateIfSections(glob string, sections []docs.FilteredSection, filter config.DocumentationFilter, cb updateResultMapCallback, action string, check DiffCheck) {
 	for _, section := range sections {
 		if docs.SectionMatches(section.Section.ID, section.Section.DocumentID, section.Section.SourceID, section.Tags, &filter, false) {
-			cb(section.Section.SourceID+"/"+section.Section.DocumentID+"#"+section.Section.ID,
+			uri := docs.DocumentURI{SourceID: section.Section.SourceID, DocumentPath: section.Section.DocumentID, Section: section.Section.ID}
+			cb(uri.String(),
 				fmt.Sprintf("Update this document if any files matching `%s` were %s (matching file: %s).", glob, action, check.File),
 				check)
 		}
 		checkNewUpdateIfSections(glob, section.Sections, filter, cb, action, check)
 	}
+}
+
+func addSectionsToValidIDMap(validIDs map[string]bool, sections []docs.FilteredSection) {
+	for _, section := range sections {
+		compositeID := fmt.Sprintf("%s/%s#%s", section.Section.SourceID, section.Section.DocumentID, section.Section.ID)
+		validIDs[compositeID] = true
+		if len(section.Sections) > 0 {
+			addSectionsToValidIDMap(validIDs, section.Sections)
+		}
+	}
+}
+
+func buildValidIDMap(documents []*docs.FilteredDoc) map[string]bool {
+	validIDs := make(map[string]bool)
+
+	var recursiveAddSections func(sections []docs.FilteredSection)
+	recursiveAddSections = func(sections []docs.FilteredSection) {
+		for _, section := range sections {
+			uri := docs.DocumentURI{
+				SourceID:     section.Section.SourceID,
+				DocumentPath: section.Section.DocumentID,
+				Section:      section.Section.ID,
+			}
+			validIDs[uri.String()] = true
+			if len(section.Sections) > 0 {
+				recursiveAddSections(section.Sections)
+			}
+		}
+	}
+
+	for _, document := range documents {
+		uri := docs.DocumentURI{
+			SourceID:     document.Document.SourceID,
+			DocumentPath: document.Document.ID,
+		}
+		validIDs[uri.String()] = true
+		recursiveAddSections(document.Sections)
+	}
+
+	return validIDs
 }
 
 func getContextHash(context string) string {
