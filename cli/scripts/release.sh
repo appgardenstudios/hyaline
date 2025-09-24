@@ -52,6 +52,18 @@ zip -9 ./hyaline-windows-amd64.zip ./hyaline.exe
 rm -f ./hyaline.exe
 cd ../
 
+# Build docker image
+docker build --build-arg VERSION=$TAG -t hyaline:$TAG .
+
+# Log in to GitHub Container Registry
+echo "$GHCR_TOKEN" | docker login ghcr.io -u $(gh api user -q .login) --password-stdin
+
+# Push docker image to ghcr.io
+docker tag hyaline:$TAG ghcr.io/appgardenstudios/hyaline:$TAG
+docker push ghcr.io/appgardenstudios/hyaline:$TAG
+docker tag hyaline:$TAG ghcr.io/appgardenstudios/hyaline:latest
+docker push ghcr.io/appgardenstudios/hyaline:latest
+
 # Create Tag
 git tag $TAG
 

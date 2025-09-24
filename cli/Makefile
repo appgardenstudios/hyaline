@@ -4,6 +4,10 @@
 build:
 	go build -o ./hyaline -ldflags="-X 'main.Version=development'" ./cmd/hyaline.go
 
+.PHONY: docker-build
+docker-build:
+	docker build --build-arg VERSION=development -t hyaline:development .
+
 .PHONY: db
 db:
 	sqlc generate
