@@ -17,7 +17,7 @@ Run the hyaline mcp server locally.
 Go to the latest `_Merge` workflow run in your `hyaline-github-app-config` repo instance and download the artifact `_current-documentation`. Once downloaded extract the folder and note the location of the extracted `documentation.db` file for later use.
 
 ### 2. Add MCP Server to Client
-This will vary by client, but the gist is to configure the client to run the[ Hyaline Docker image](https://github.com/appgardenstudios/hyaline/pkgs/container/hyaline), mount the documentation as a volume, and start the MCP server. Here is example configuration for configuring the Hyaline MCP server for Claude Code (substituting `<path-to-documentation.db>` with the path to the downloaded `documentation.db` on your local machine):
+This will vary by client, but the gist is to configure the client to run the [Hyaline Docker image](https://github.com/appgardenstudios/hyaline/pkgs/container/hyaline), mount the documentation as a volume, and start the MCP server. Here is example configuration for configuring the Hyaline MCP server for Claude Code (substituting `<path-to-documentation.db>` with the path to the downloaded `documentation.db` on your local machine):
 
 ```json
 {
