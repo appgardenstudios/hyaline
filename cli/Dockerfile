@@ -5,12 +5,11 @@ ARG VERSION=development
 
 WORKDIR /app
 
-# Get dependencies
-COPY go.mod go.sum ./
-RUN go mod download
-
-# Copy the rest of the source code
+# Copy the code
 COPY . .
+
+# Install dependencies
+RUN go mod download
 
 # Build the binary
 RUN CGO_ENABLED=0 GOOS=linux go build -a -ldflags="-w -X 'main.Version=${VERSION}'" -o /hyaline ./cmd/hyaline.go
