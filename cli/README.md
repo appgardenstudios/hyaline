@@ -11,6 +11,7 @@
 * `diff` (gnu version) for testing (`brew install diffutils`)
 * `gh` (github cli) for testing and releasing (`brew install gh`)
 * `sqlc` for compiling sql queries (`go install github.com/sqlc-dev/sqlc/cmd/sqlc@v1.27.0`)
+* `docker` (v28.4+)
 
 ## Generate DB Queries
 <!-- purpose: Document how to generate db queries. -->
@@ -54,5 +55,8 @@ Note that the e2e test [updatePR_test.go](./e2e/updatePR_test.go) creates a comm
 ## Releasing
 <!-- purpose: Document how to release Hyaline. -->
 Release by checking out the appropriate commit on the main branch and then running `make release`.
+
+Note that the following env vars must be set for the `release` to work:
+* **GHCR_TOKEN** (A classic PAT with access to `write:packages`)
 
 Note that test will be run, so the env vars required for testing must be set (see above for details)
