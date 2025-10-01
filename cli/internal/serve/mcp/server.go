@@ -21,11 +21,11 @@ type Server struct {
 	githubArtifact     string
 	githubToken        string
 	githubArtifactPath string
-	filesystemDocPath  string
+	documentationPath  string
 }
 
 // NewServer creates and initializes a new MCP server
-func NewServer(db *sqlite.Queries, version string, githubRepo string, githubArtifact string, githubArtifactPath string, githubToken string, filesystemDocPath string) (*Server, error) {
+func NewServer(db *sqlite.Queries, version string, githubRepo string, githubArtifact string, githubArtifactPath string, githubToken string, documentationPath string) (*Server, error) {
 	slog.Debug("serve.mcp.NewServer starting")
 
 	// Load all data into memory
@@ -48,7 +48,7 @@ func NewServer(db *sqlite.Queries, version string, githubRepo string, githubArti
 		githubArtifact:     githubArtifact,
 		githubArtifactPath: githubArtifactPath,
 		githubToken:        githubToken,
-		filesystemDocPath:  filesystemDocPath,
+		documentationPath:  documentationPath,
 	}
 
 	// Register tools and prompts
@@ -73,13 +73,7 @@ func (hyalineMCPServer *Server) registerTools() {
 	})
 
 	hyalineMCPServer.mcpServer.AddTool(tools.ReloadDocumentationTool(), func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
-		// Use the appropriate documentation path based on mode
-		documentationPath := hyalineMCPServer.filesystemDocPath
-		if hyalineMCPServer.githubRepo != "" {
-			documentationPath = hyalineMCPServer.githubArtifactPath
-		}
-
-		result, newDocumentationData, err := tools.HandleReloadDocumentation(ctx, request, hyalineMCPServer.githubRepo, hyalineMCPServer.githubArtifact, hyalineMCPServer.githubToken, documentationPath)
+		result, newDocumentationData, err := tools.HandleReloadDocumentation(ctx, request, hyalineMCPServer.githubRepo, hyalineMCPServer.githubArtifact, hyalineMCPServer.githubToken, hyalineMCPServer.githubArtifactPath, hyalineMCPServer.documentationPath)
 		if err != nil {
 			return result, err
 		}

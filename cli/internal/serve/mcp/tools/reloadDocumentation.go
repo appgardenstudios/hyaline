@@ -19,7 +19,7 @@ func ReloadDocumentationTool() mcp.Tool {
 	)
 }
 
-func HandleReloadDocumentation(_ context.Context, request mcp.CallToolRequest, githubRepo string, githubArtifact string, githubToken string, documentationPath string) (*mcp.CallToolResult, *utils.DocumentationData, error) {
+func HandleReloadDocumentation(_ context.Context, request mcp.CallToolRequest, githubRepo string, githubArtifact string, githubToken string, githubArtifactPath string, filesystemDocPath string) (*mcp.CallToolResult, *utils.DocumentationData, error) {
 	var absPath string
 
 	// If GitHub repository is configured, download from GitHub
@@ -49,11 +49,11 @@ func HandleReloadDocumentation(_ context.Context, request mcp.CallToolRequest, g
 			return mcp.NewToolResultError(fmt.Sprintf("Failed to unzip artifact: %s", err.Error())), nil, nil
 		}
 
-		// Join the unzipped directory with the documentation path
-		absPath = filepath.Join(unzipDir, documentationPath)
+		// Join the unzipped directory with the GitHub artifact path
+		absPath = filepath.Join(unzipDir, githubArtifactPath)
 	} else {
 		// Use the documentation path from the filesystem
-		absPath = documentationPath
+		absPath = filesystemDocPath
 	}
 
 	// Initialize database

@@ -40,7 +40,7 @@ func Serve(logLevel *slog.LevelVar, version string) *cli.Command {
 						Name:     "github-token",
 						EnvVars:  []string{"HYALINE_CONFIG_GITHUB_TOKEN"},
 						Required: false,
-						Usage:    "A GitHub Personal Access Tokenccess to read action artifacts from the hyaline-github-app-config repo. Required when using `--github-repo`.",
+						Usage:    "A GitHub Personal Access Token to read action artifacts from the hyaline-github-app-config repo. Required when using `--github-repo`.",
 					},
 				},
 				Action: func(cCtx *cli.Context) error {

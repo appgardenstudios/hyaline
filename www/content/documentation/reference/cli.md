@@ -146,7 +146,7 @@ Merge multiple documentation databases `./docs1.db`, `./docs2.db`, and `./docs3.
 * `--github-repo` - The path of the hyaline-github-app-config repo in GitHub (e.g. `owner/repo`). When set, downloads documentation from GitHub artifacts. Either `--documentation` or `--github-repo` is required.
 * `--github-artifact` - The name of the documentation artifact in the hyaline-github-app-config repo. Defaults to `_current-documentation`.
 * `--github-artifact-path` - The path to the SQLite database within the GitHub artifact. Defaults to `documentation.db`.
-* `--github-token` - A GitHub Personal Access Tokenccess to read action artifacts from the hyaline-github-app-config repo. Required when using `--github-repo`. Can also be set via the `HYALINE_CONFIG_GITHUB_TOKEN` environment variable.
+* `--github-token` - A GitHub Personal Access Token to read action artifacts from the hyaline-github-app-config repo. Required when using `--github-repo`. Can also be set via the `HYALINE_CONFIG_GITHUB_TOKEN` environment variable.
 
 **Example (local filesystem)**:
 ```

@@ -67,15 +67,16 @@ func dispatchWorkflow(t *testing.T, token string, repo string, workflowFileName 
 		case <-ticker.C:
 			runs, _, err := client.Actions.ListWorkflowRunsByFileName(ctx, owner, repoName, workflowFileName, &github.ListWorkflowRunsOptions{
 				ListOptions: github.ListOptions{
-					PerPage: 5,
+					PerPage: 1,
 				},
 			})
 			if err != nil {
 				t.Fatalf("failed to list workflow runs: %v", err)
 			}
 
-			// Find the newest run that's newer than lastRunID
-			for _, run := range runs.WorkflowRuns {
+			// Check the newest run (at index 0) if it's newer than lastRunID
+			if len(runs.WorkflowRuns) > 0 {
+				run := runs.WorkflowRuns[0]
 				if run.GetID() > lastRunID {
 					status := run.GetStatus()
 					conclusion := run.GetConclusion()
@@ -89,7 +90,6 @@ func dispatchWorkflow(t *testing.T, token string, repo string, workflowFileName 
 						t.Fatalf("workflow failed with conclusion: %s", conclusion)
 					}
 					// Still running, continue waiting
-					break
 				}
 			}
 		}

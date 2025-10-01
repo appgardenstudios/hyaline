@@ -19,6 +19,7 @@ FROM scratch
 
 LABEL org.opencontainers.image.source=https://github.com/appgardenstudios/hyaline
 
+COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 COPY --from=builder /hyaline /hyaline
 
 ENTRYPOINT ["/hyaline"]
