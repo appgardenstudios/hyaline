@@ -11,14 +11,15 @@ import (
 	"github.com/mark3labs/mcp-go/mcp"
 )
 
-// setupServeMCPClient creates and initializes an MCP client for testing the new serve mcp command
-func setupServeMCPClient(t *testing.T, dbPath string) *mcpClient.Client {
-	// Get absolute path to database
-	absDBPath, err := filepath.Abs(dbPath)
-	if err != nil {
-		t.Fatalf("expected to get absolute path for database: %v", err)
-	}
+type ServeMCPClientOptions struct {
+	DBPath         string
+	GitHubRepo     string
+	GitHubArtifact string
+	GitHubToken    string
+}
 
+// setupServeMCPClient creates and initializes an MCP client for testing the new serve mcp command
+func setupServeMCPClient(t *testing.T, opts ServeMCPClientOptions) *mcpClient.Client {
 	// Build the hyaline binary path relative to this test file
 	dir, err := os.Getwd()
 	if err != nil {
@@ -26,13 +27,29 @@ func setupServeMCPClient(t *testing.T, dbPath string) *mcpClient.Client {
 	}
 	binaryPath := filepath.Join(dir, "../hyaline-e2e")
 
-	// Create MCP client using stdio transport to run hyaline serve mcp
-	args := []string{
-		"serve", "mcp",
-		"--documentation", absDBPath,
+	// Build args based on options
+	args := []string{"serve", "mcp"}
+
+	if opts.GitHubRepo != "" {
+		args = append(args, "--github-repo", opts.GitHubRepo)
+		if opts.GitHubArtifact != "" {
+			args = append(args, "--github-artifact", opts.GitHubArtifact)
+		}
+		if opts.GitHubToken != "" {
+			args = append(args, "--github-token", opts.GitHubToken)
+		}
+	} else if opts.DBPath != "" {
+		// Get absolute path to database
+		absDBPath, err := filepath.Abs(opts.DBPath)
+		if err != nil {
+			t.Fatalf("expected to get absolute path for database: %v", err)
+		}
+		args = append(args, "--documentation", absDBPath)
+	} else {
+		t.Fatal("either DBPath or GitHubRepo must be specified")
 	}
 
-	t.Logf("Starting MCP client with args: %v", args)
+	t.Logf("Starting MCP client")
 	client, err := mcpClient.NewStdioMCPClient(binaryPath, nil, args...)
 	if err != nil {
 		t.Fatalf("expected to create MCP client successfully: %v", err)
@@ -67,7 +84,7 @@ func setupServeMCPClient(t *testing.T, dbPath string) *mcpClient.Client {
 
 // callServeMCPServer creates an MCP client, performs a request, and writes output to the provided path
 func callServeMCPServer(t *testing.T, dbPath string, request mcp.CallToolRequest, outputPath string) {
-	client := setupServeMCPClient(t, dbPath)
+	client := setupServeMCPClient(t, ServeMCPClientOptions{DBPath: dbPath})
 	ctx := context.Background()
 
 	response, err := client.CallTool(ctx, request)

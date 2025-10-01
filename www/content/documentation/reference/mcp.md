@@ -28,6 +28,15 @@ Get the contents of documents matching the specified URI, or all documents if no
 **Output**
 One or more documents (including the contents of each document).
 
+### reload_documentation
+Reload the documentation dataset. When running in GitHub Artifacts mode (with `--github-repo`), this downloads the latest artifact from the configured repository. When running in local filesystem mode (with `--documentation`), this reloads the documentation from the local database file.
+
+**Arguments**
+None.
+
+**Output**
+A success message indicating the documentation was reloaded successfully.
+
 ## Prompts
 <!-- Document all the available prompts the Hyaline MCP server provides -->
 Hyaline's MCP server provides the following prompts:

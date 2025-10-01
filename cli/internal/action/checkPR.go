@@ -121,11 +121,12 @@ func CheckPR(args *CheckPRArgs) error {
 	}
 
 	// Get Documents
-	docDB, err := sqlite.InitInput(args.Documentation)
+	docDB, close, err := sqlite.InitInput(args.Documentation)
 	if err != nil {
 		slog.Debug("action.CheckPR could not initialize documentation db", "documentation", args.Documentation, "error", err)
 		return err
 	}
+	defer close()
 	documents, err := docs.GetFilteredDocs(&cfg.Check.Documentation, docDB)
 	if err != nil {
 		slog.Debug("action.CheckPR could not get filtered documents", "error", err)

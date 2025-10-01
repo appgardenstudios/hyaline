@@ -1,42 +1,78 @@
 package action
 
 import (
-	"database/sql"
+	"fmt"
+	"hyaline/internal/github"
+	"hyaline/internal/io"
 	"hyaline/internal/serve/mcp"
+	"hyaline/internal/sqlite"
 	"log/slog"
+	"os"
 	"path/filepath"
-
-	_ "modernc.org/sqlite"
 )
 
 type ServeMCPArgs struct {
-	Documentation string
+	Documentation      string
+	GitHubRepo         string
+	GitHubArtifact     string
+	GitHubArtifactPath string
+	GitHubToken        string
 }
 
 func ServeMCP(args *ServeMCPArgs, version string) error {
 	slog.Info("Starting MCP server")
 	slog.Debug("action.ServeMCP Args", slog.Group("args",
 		"documentation", args.Documentation,
+		"githubRepo", args.GitHubRepo,
+		"githubArtifact", args.GitHubArtifact,
+		"githubArtifactPath", args.GitHubArtifactPath,
 		"version", version,
 	))
 
 	// Get absolute path to database
-	absPath, err := filepath.Abs(args.Documentation)
-	if err != nil {
-		slog.Debug("action.ServeMCP could not get an absolute path for documentation", "documentation", args.Documentation, "error", err)
-		return err
+	var absPath string
+	var err error
+	var tempDir string
+
+	if args.GitHubRepo != "" {
+		// Create a temporary directory to store the documentation
+		tempDir, err = os.MkdirTemp("", "hyaline-docs-*")
+		if err != nil {
+			return fmt.Errorf("failed to create temp dir: %w", err)
+		}
+		defer os.RemoveAll(tempDir)
+
+		zipPath, err := github.DownloadLatestArtifact(args.GitHubRepo, args.GitHubArtifact, args.GitHubToken, tempDir)
+		if err != nil {
+			return fmt.Errorf("failed to download artifact: %w", err)
+		}
+
+		// Unzip the artifact
+		unzipDir := filepath.Join(tempDir, "unzipped")
+		err = io.Unzip(zipPath, unzipDir)
+		if err != nil {
+			return fmt.Errorf("failed to unzip artifact: %w", err)
+		}
+
+		// Join the unzipped directory with the artifact path
+		absPath = filepath.Join(unzipDir, args.GitHubArtifactPath)
+	} else {
+		absPath, err = filepath.Abs(args.Documentation)
+		if err != nil {
+			slog.Debug("action.ServeMCP could not get an absolute path for documentation", "documentation", args.Documentation, "error", err)
+			return err
+		}
 	}
 
-	// Open SQLite database
-	db, err := sql.Open("sqlite", absPath)
+	db, close, err := sqlite.InitInput(absPath)
 	if err != nil {
-		slog.Debug("action.ServeMCP could not open SQLite DB", "dataSourceName", absPath, "error", err)
+		slog.Debug("action.ServeMCP could not initialize SQLite DB", "path", absPath, "error", err)
 		return err
 	}
-	defer db.Close()
+	defer close()
 
 	// Create and start MCP server
-	server, err := mcp.NewServer(db, version)
+	server, err := mcp.NewServer(db, version, args.GitHubRepo, args.GitHubArtifact, args.GitHubArtifactPath, args.GitHubToken, args.Documentation)
 	if err != nil {
 		slog.Debug("action.ServeMCP could not create MCP server", "error", err)
 		return err

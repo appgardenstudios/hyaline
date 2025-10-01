@@ -2,11 +2,11 @@ package mcp
 
 import (
 	"context"
-	"database/sql"
 	"fmt"
 	"hyaline/internal/serve/mcp/prompts"
 	"hyaline/internal/serve/mcp/tools"
 	"hyaline/internal/serve/mcp/utils"
+	"hyaline/internal/sqlite"
 	"log/slog"
 
 	"github.com/mark3labs/mcp-go/mcp"
@@ -15,12 +15,17 @@ import (
 
 // Server represents the MCP server with in-memory data
 type Server struct {
-	mcpServer         *server.MCPServer
-	documentationData *utils.DocumentationData
+	mcpServer          *server.MCPServer
+	documentationData  *utils.DocumentationData
+	githubRepo         string
+	githubArtifact     string
+	githubToken        string
+	githubArtifactPath string
+	filesystemDocPath  string
 }
 
 // NewServer creates and initializes a new MCP server
-func NewServer(db *sql.DB, version string) (*Server, error) {
+func NewServer(db *sqlite.Queries, version string, githubRepo string, githubArtifact string, githubArtifactPath string, githubToken string, filesystemDocPath string) (*Server, error) {
 	slog.Debug("serve.mcp.NewServer starting")
 
 	// Load all data into memory
@@ -37,8 +42,13 @@ func NewServer(db *sql.DB, version string) (*Server, error) {
 	)
 
 	hyalineMCPServer := &Server{
-		mcpServer:         mcpServer,
-		documentationData: documentationData,
+		mcpServer:          mcpServer,
+		documentationData:  documentationData,
+		githubRepo:         githubRepo,
+		githubArtifact:     githubArtifact,
+		githubArtifactPath: githubArtifactPath,
+		githubToken:        githubToken,
+		filesystemDocPath:  filesystemDocPath,
 	}
 
 	// Register tools and prompts
@@ -60,6 +70,26 @@ func (hyalineMCPServer *Server) registerTools() {
 
 	hyalineMCPServer.mcpServer.AddTool(tools.GetDocumentsTool(), func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
 		return tools.HandleGetDocuments(ctx, request, hyalineMCPServer.documentationData)
+	})
+
+	hyalineMCPServer.mcpServer.AddTool(tools.ReloadDocumentationTool(), func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+		// Use the appropriate documentation path based on mode
+		documentationPath := hyalineMCPServer.filesystemDocPath
+		if hyalineMCPServer.githubRepo != "" {
+			documentationPath = hyalineMCPServer.githubArtifactPath
+		}
+
+		result, newDocumentationData, err := tools.HandleReloadDocumentation(ctx, request, hyalineMCPServer.githubRepo, hyalineMCPServer.githubArtifact, hyalineMCPServer.githubToken, documentationPath)
+		if err != nil {
+			return result, err
+		}
+
+		// Update the documentation data if reload was successful
+		if newDocumentationData != nil {
+			hyalineMCPServer.documentationData = newDocumentationData
+		}
+
+		return result, nil
 	})
 }
 

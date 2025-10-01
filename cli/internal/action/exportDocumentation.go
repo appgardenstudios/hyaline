@@ -99,11 +99,12 @@ func ExportDocumentation(args *ExportDocumentationArgs) error {
 	}
 
 	// Open Documentation database
-	docDB, err := sqlite.InitInput(args.Documentation)
+	docDB, close, err := sqlite.InitInput(args.Documentation)
 	if err != nil {
 		slog.Debug("action.ExportDocumentation could not initialize documentation db", "documentation", args.Documentation, "error", err)
 		return err
 	}
+	defer close()
 
 	// Get documentation
 	filters := &config.CheckDocumentation{}

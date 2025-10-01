@@ -32,11 +32,12 @@ func MergeDocumentation(args *MergeDocumentationArgs) error {
 		slog.Info(fmt.Sprintf("Merging %d of %d", i+1, len(args.Inputs)))
 
 		// Initialize input database
-		inputDB, err := sqlite.InitInput(input)
+		inputDB, close, err := sqlite.InitInput(input)
 		if err != nil {
 			slog.Debug("action.MergeDocumentation could not initialize input", "input", input, "error", err)
 			return err
 		}
+		defer close()
 
 		// Get all sources from input database
 		sources, err := inputDB.GetAllSources(ctx)

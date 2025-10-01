@@ -1,0 +1,70 @@
+The <documents> XML structure contains all available documents and sections with their corresponding document URIs, along with <purpose> and <tags> metadata when available.
+
+<documents>
+          <document>
+            <uri>document://backend/CHANGELOG.md</uri>
+            <source>e2e/_input/audit-documentation/docs/CHANGELOG.md</source>
+            <purpose>This document tracks all changes and releases.</purpose>
+            <tags>
+              <tag>
+                <key>type</key>
+                <value>reference</value>
+              </tag>
+            </tags>
+            <sections>
+              <section>
+                <name>Changelog</name>
+              </section>
+              <section>
+                <name>[1.0.0] - 2024-01-15</name>
+              </section>
+              <section>
+                <name>Added</name>
+              </section>
+              <section>
+                <name>Changed</name>
+              </section>
+              <section>
+                <name>Fixed</name>
+              </section>
+            </sections>
+          </document>
+          <document>
+            <uri>document://backend/NOPURPOSE.md</uri>
+            <source>e2e/_input/audit-documentation/docs/NOPURPOSE.md</source>
+            <sections>
+              <section>
+                <name>Document Without Purpose</name>
+              </section>
+            </sections>
+          </document>
+          <document>
+            <uri>document://backend/README.md</uri>
+            <source>e2e/_input/audit-documentation/docs/README.md</source>
+            <purpose>This document provides an overview of the project and installation instructions.</purpose>
+            <tags>
+              <tag>
+                <key>level</key>
+                <value>beginner</value>
+              </tag>
+              <tag>
+                <key>type</key>
+                <value>guide</value>
+              </tag>
+            </tags>
+            <sections>
+              <section>
+                <name>Test Project</name>
+              </section>
+              <section>
+                <name>Installation</name>
+              </section>
+              <section>
+                <name>Usage</name>
+              </section>
+              <section>
+                <name>Features</name>
+              </section>
+            </sections>
+          </document>
+</documents>
