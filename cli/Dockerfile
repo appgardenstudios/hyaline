@@ -3,6 +3,10 @@ FROM golang:1.24 AS builder
 
 ARG VERSION=development
 
+# This will be copied over as a /tmp dir for Hyaline to use
+# for temporary files (e.g. SQLite DB downloads)
+RUN mkdir -p /tmp-hyaline
+
 WORKDIR /app
 
 # Copy the code
@@ -21,6 +25,7 @@ LABEL org.opencontainers.image.source=https://github.com/appgardenstudios/hyalin
 
 COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 COPY --from=builder /hyaline /hyaline
+COPY --from=builder /tmp-hyaline /tmp
 
 ENTRYPOINT ["/hyaline"]
 
