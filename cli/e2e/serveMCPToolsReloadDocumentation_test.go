@@ -11,19 +11,14 @@ import (
 )
 
 func TestServeMCPReloadDocumentation(t *testing.T) {
-	githubToken := os.Getenv("HYALINE_CONFIG_GITHUB_TOKEN")
-	githubRepo := "appgardenstudios/hyaline-example"
+	githubToken := os.Getenv("_HYALINE_TEST_GITHUB_TOKEN")
 
 	// Set initial documentation to documentation_1.db
-	dispatchWorkflow(t, githubToken, githubRepo, "set-current-documentation.yml", map[string]interface{}{
+	dispatchWorkflow(t, githubToken, "appgardenstudios/hyaline-example", "set-current-documentation.yml", map[string]interface{}{
 		"artifact_source": "documentation_1.db",
 	})
 
-	client := setupServeMCPClient(t, ServeMCPClientOptions{
-		GitHubRepo:     githubRepo,
-		GitHubArtifact: "_current-documentation",
-		GitHubToken:    githubToken,
-	})
+	client := setupServeMCPClient(t, "serve mcp --github-repo appgardenstudios/hyaline-example --github-token "+githubToken)
 	ctx := context.Background()
 
 	// 1. List documents before reload
@@ -53,7 +48,7 @@ func TestServeMCPReloadDocumentation(t *testing.T) {
 	compareFiles(goldenPathBefore, outputPathBefore, t)
 
 	// 2. Switch to documentation_2.db and reload
-	dispatchWorkflow(t, githubToken, githubRepo, "set-current-documentation.yml", map[string]interface{}{
+	dispatchWorkflow(t, githubToken, "appgardenstudios/hyaline-example", "set-current-documentation.yml", map[string]interface{}{
 		"artifact_source": "documentation_2.db",
 	})
 

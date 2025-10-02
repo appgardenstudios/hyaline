@@ -15,17 +15,13 @@ import (
 
 // Server represents the MCP server with in-memory data
 type Server struct {
-	mcpServer          *server.MCPServer
-	documentationData  *utils.DocumentationData
-	githubRepo         string
-	githubArtifact     string
-	githubToken        string
-	githubArtifactPath string
-	documentationPath  string
+	mcpServer         *server.MCPServer
+	documentationData *utils.DocumentationData
+	options           utils.ServerOptions
 }
 
 // NewServer creates and initializes a new MCP server
-func NewServer(db *sqlite.Queries, version string, githubRepo string, githubArtifact string, githubArtifactPath string, githubToken string, documentationPath string) (*Server, error) {
+func NewServer(db *sqlite.Queries, version string, opts utils.ServerOptions) (*Server, error) {
 	slog.Debug("serve.mcp.NewServer starting")
 
 	// Load all data into memory
@@ -42,13 +38,9 @@ func NewServer(db *sqlite.Queries, version string, githubRepo string, githubArti
 	)
 
 	hyalineMCPServer := &Server{
-		mcpServer:          mcpServer,
-		documentationData:  documentationData,
-		githubRepo:         githubRepo,
-		githubArtifact:     githubArtifact,
-		githubArtifactPath: githubArtifactPath,
-		githubToken:        githubToken,
-		documentationPath:  documentationPath,
+		mcpServer:         mcpServer,
+		documentationData: documentationData,
+		options:           opts,
 	}
 
 	// Register tools and prompts
@@ -73,7 +65,7 @@ func (hyalineMCPServer *Server) registerTools() {
 	})
 
 	hyalineMCPServer.mcpServer.AddTool(tools.ReloadDocumentationTool(), func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
-		result, newDocumentationData, err := tools.HandleReloadDocumentation(ctx, request, hyalineMCPServer.githubRepo, hyalineMCPServer.githubArtifact, hyalineMCPServer.githubToken, hyalineMCPServer.githubArtifactPath, hyalineMCPServer.documentationPath)
+		result, newDocumentationData, err := tools.HandleReloadDocumentation(ctx, request, hyalineMCPServer.options)
 		if err != nil {
 			return result, err
 		}

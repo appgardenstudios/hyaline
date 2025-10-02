@@ -146,7 +146,7 @@ Merge multiple documentation databases `./docs1.db`, `./docs2.db`, and `./docs3.
 * `--github-repo` - The path of the hyaline-github-app-config repo in GitHub (e.g. `owner/repo`). When set, downloads documentation from GitHub artifacts. Either `--documentation` or `--github-repo` is required.
 * `--github-artifact` - The name of the documentation artifact in the hyaline-github-app-config repo. Defaults to `_current-documentation`.
 * `--github-artifact-path` - The path to the SQLite database within the GitHub artifact. Defaults to `documentation.db`.
-* `--github-token` - A GitHub Personal Access Token to read action artifacts from the hyaline-github-app-config repo. Required when using `--github-repo`. Can also be set via the `HYALINE_CONFIG_GITHUB_TOKEN` environment variable.
+* `--github-token` - A GitHub Personal Access Token to read action artifacts from the hyaline-github-app-config repo. Required when using `--github-repo`. Consider setting this using an environment variable (e.g. `--github-token $HYALINE_SERVE_MCP_GITHUB_TOKEN`).
 
 **Example (local filesystem)**:
 ```
@@ -156,7 +156,7 @@ Start a local MCP server using the standard I/O transport and have it use the ex
 
 **Example (GitHub artifacts)**:
 ```
-$ hyaline serve mcp --github-repo appgardenstudios/hyaline-example --github-token $HYALINE_CONFIG_GITHUB_TOKEN
+$ hyaline serve mcp --github-repo appgardenstudios/hyaline-example --github-token $HYALINE_SERVE_MCP_GITHUB_TOKEN
 ```
 Start a local MCP server that downloads and serves documentation from GitHub artifacts in the `appgardenstudios/hyaline-example` repository.
 

@@ -37,10 +37,11 @@ func Serve(logLevel *slog.LevelVar, version string) *cli.Command {
 						Usage: "The path to the SQLite database within the GitHub artifact",
 					},
 					&cli.StringFlag{
-						Name:     "github-token",
-						EnvVars:  []string{"HYALINE_CONFIG_GITHUB_TOKEN"},
+						Name: "github-token",
+						// Only intended for internal testing purposes
+						EnvVars:  []string{"_HYALINE_TEST_GITHUB_TOKEN"},
 						Required: false,
-						Usage:    "A GitHub Personal Access Token to read action artifacts from the hyaline-github-app-config repo. Required when using `--github-repo`.",
+						Usage:    "A GitHub Personal Access Token to read action artifacts from the hyaline-github-app-config repo. Required when using `--github-repo`. Consider setting this using an environment variable (e.g. `--github-token $HYALINE_SERVE_MCP_GITHUB_TOKEN`).",
 					},
 				},
 				Action: func(cCtx *cli.Context) error {

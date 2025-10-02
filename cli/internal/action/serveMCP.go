@@ -5,6 +5,7 @@ import (
 	"hyaline/internal/github"
 	"hyaline/internal/io"
 	"hyaline/internal/serve/mcp"
+	"hyaline/internal/serve/mcp/utils"
 	"hyaline/internal/sqlite"
 	"log/slog"
 	"os"
@@ -72,7 +73,13 @@ func ServeMCP(args *ServeMCPArgs, version string) error {
 	defer close()
 
 	// Create and start MCP server
-	server, err := mcp.NewServer(db, version, args.GitHubRepo, args.GitHubArtifact, args.GitHubArtifactPath, args.GitHubToken, args.Documentation)
+	server, err := mcp.NewServer(db, version, utils.ServerOptions{
+		GitHubRepo:         args.GitHubRepo,
+		GitHubArtifact:     args.GitHubArtifact,
+		GitHubArtifactPath: args.GitHubArtifactPath,
+		GitHubToken:        args.GitHubToken,
+		DocumentationPath:  args.Documentation,
+	})
 	if err != nil {
 		slog.Debug("action.ServeMCP could not create MCP server", "error", err)
 		return err

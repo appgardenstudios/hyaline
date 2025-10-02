@@ -19,13 +19,13 @@ func ReloadDocumentationTool() mcp.Tool {
 	)
 }
 
-func HandleReloadDocumentation(_ context.Context, request mcp.CallToolRequest, githubRepo string, githubArtifact string, githubToken string, githubArtifactPath string, filesystemDocPath string) (*mcp.CallToolResult, *utils.DocumentationData, error) {
+func HandleReloadDocumentation(_ context.Context, request mcp.CallToolRequest, opts utils.ServerOptions) (*mcp.CallToolResult, *utils.DocumentationData, error) {
 	var absPath string
 
 	// If GitHub repository is configured, download from GitHub
-	if githubRepo != "" {
+	if opts.GitHubRepo != "" {
 		// Check if GitHub token is configured
-		if githubToken == "" {
+		if opts.GitHubToken == "" {
 			return mcp.NewToolResultError("GitHub token is not configured."), nil, nil
 		}
 
@@ -37,7 +37,7 @@ func HandleReloadDocumentation(_ context.Context, request mcp.CallToolRequest, g
 		defer os.RemoveAll(tempDir)
 
 		// Download latest artifact
-		zipPath, err := github.DownloadLatestArtifact(githubRepo, githubArtifact, githubToken, tempDir)
+		zipPath, err := github.DownloadLatestArtifact(opts.GitHubRepo, opts.GitHubArtifact, opts.GitHubToken, tempDir)
 		if err != nil {
 			return mcp.NewToolResultError(fmt.Sprintf("Failed to download artifact: %s", err.Error())), nil, nil
 		}
@@ -50,10 +50,10 @@ func HandleReloadDocumentation(_ context.Context, request mcp.CallToolRequest, g
 		}
 
 		// Join the unzipped directory with the GitHub artifact path
-		absPath = filepath.Join(unzipDir, githubArtifactPath)
+		absPath = filepath.Join(unzipDir, opts.GitHubArtifactPath)
 	} else {
 		// Use the documentation path from the filesystem
-		absPath = filesystemDocPath
+		absPath = opts.DocumentationPath
 	}
 
 	// Initialize database
