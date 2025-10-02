@@ -13,7 +13,6 @@ import (
 )
 
 // setupServeMCPClient creates and initializes an MCP client for testing the serve mcp command
-// The command string should contain the full command arguments (e.g., "serve mcp --documentation ./test.db")
 func setupServeMCPClient(t *testing.T, command string) *mcpClient.Client {
 	// Build the hyaline binary path relative to this test file
 	dir, err := os.Getwd()
@@ -60,11 +59,7 @@ func setupServeMCPClient(t *testing.T, command string) *mcpClient.Client {
 
 // callServeMCPServer creates an MCP client, performs a request, and writes output to the provided path
 func callServeMCPServer(t *testing.T, dbPath string, request mcp.CallToolRequest, outputPath string) {
-	absDBPath, err := filepath.Abs(dbPath)
-	if err != nil {
-		t.Fatalf("expected to get absolute path for database: %v", err)
-	}
-	client := setupServeMCPClient(t, "serve mcp --documentation "+absDBPath)
+	client := setupServeMCPClient(t, "serve mcp --documentation "+dbPath)
 	ctx := context.Background()
 
 	response, err := client.CallTool(ctx, request)
