@@ -108,7 +108,7 @@ func TestServeMCPListDocumentsNotFound(t *testing.T) {
 }
 
 func TestServeMCPListDocumentsInvalidURI(t *testing.T) {
-	client := setupServeMCPClient(t, "./_input/serve-mcp/documentation.sqlite")
+	client := setupServeMCPClient(t, "serve mcp --documentation ./_input/serve-mcp/documentation.sqlite")
 	ctx := context.Background()
 
 	// Test with invalid URI format

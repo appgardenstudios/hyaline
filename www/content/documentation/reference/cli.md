@@ -142,13 +142,25 @@ Merge multiple documentation databases `./docs1.db`, `./docs2.db`, and `./docs3.
 `hyaline serve mcp` starts an MCP server running locally over stdio and serves up the documentation produced by running `hyaline extract documentation`.
 
 **Options**:
-* `--documentation` - (required) Path to the SQLite database containing documentation
+* `--documentation` - Path to the SQLite database containing documentation. Required when `--github-repo` is not set.
+* `--github-repo` - The path of the hyaline-github-app-config repo in GitHub (e.g. `owner/repo`). When set, downloads documentation from GitHub artifacts. Either `--documentation` or `--github-repo` is required.
+* `--github-artifact` - The name of the documentation artifact in the hyaline-github-app-config repo. Defaults to `_current-documentation`.
+* `--github-artifact-path` - The path to the SQLite database within the GitHub artifact. Defaults to `documentation.db`.
+* `--github-token` - A GitHub Personal Access Token to read action artifacts from the hyaline-github-app-config repo. Required when using `--github-repo`. Consider setting this using an environment variable (e.g. `--github-token $HYALINE_SERVE_MCP_GITHUB_TOKEN`).
 
-**Example**:
+**Example (local filesystem)**:
 ```
 $ hyaline serve mcp --documentation ./documentation.db
 ```
 Start a local MCP server using the standard I/O transport and have it use the extracted documentation found in `./documentation.db`.
+
+**Example (GitHub artifacts)**:
+```
+$ hyaline serve mcp --github-repo appgardenstudios/hyaline-example --github-token $HYALINE_SERVE_MCP_GITHUB_TOKEN
+```
+Start a local MCP server that downloads and serves documentation from GitHub artifacts in the `appgardenstudios/hyaline-example` repository.
+
+See the explanation about the [GitHub App](../explanation/github-app.md) for more details.
 
 ## export documentation
 `hyaline export documentation` exports documentation from a documentation data set. Please see the explanation for [export](../explanation/export.md) for more details.

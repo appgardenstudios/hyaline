@@ -53,7 +53,7 @@ func InitOutput(outputPath string) (q *Queries, close func() error, err error) {
 	return
 }
 
-func InitInput(inputPath string) (q *Queries, err error) {
+func InitInput(inputPath string) (q *Queries, close func() error, err error) {
 	// Get absolute path
 	absPath, err := filepath.Abs(inputPath)
 	if err != nil {
@@ -74,6 +74,7 @@ func InitInput(inputPath string) (q *Queries, err error) {
 		slog.Debug("sqlite.InitInput could not open input SQLite DB", "dataSourceName", absPath, "error", err)
 		return
 	}
+	close = db.Close
 
 	// Create sqlc queries struct
 	q = New(db)

@@ -4,6 +4,7 @@ import (
 	"context"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 	"time"
 
@@ -11,14 +12,8 @@ import (
 	"github.com/mark3labs/mcp-go/mcp"
 )
 
-// setupServeMCPClient creates and initializes an MCP client for testing the new serve mcp command
-func setupServeMCPClient(t *testing.T, dbPath string) *mcpClient.Client {
-	// Get absolute path to database
-	absDBPath, err := filepath.Abs(dbPath)
-	if err != nil {
-		t.Fatalf("expected to get absolute path for database: %v", err)
-	}
-
+// setupServeMCPClient creates and initializes an MCP client for testing the serve mcp command
+func setupServeMCPClient(t *testing.T, command string) *mcpClient.Client {
 	// Build the hyaline binary path relative to this test file
 	dir, err := os.Getwd()
 	if err != nil {
@@ -26,13 +21,10 @@ func setupServeMCPClient(t *testing.T, dbPath string) *mcpClient.Client {
 	}
 	binaryPath := filepath.Join(dir, "../hyaline-e2e")
 
-	// Create MCP client using stdio transport to run hyaline serve mcp
-	args := []string{
-		"serve", "mcp",
-		"--documentation", absDBPath,
-	}
+	// Parse command string into args
+	args := strings.Fields(command)
 
-	t.Logf("Starting MCP client with args: %v", args)
+	t.Logf("Starting MCP client")
 	client, err := mcpClient.NewStdioMCPClient(binaryPath, nil, args...)
 	if err != nil {
 		t.Fatalf("expected to create MCP client successfully: %v", err)
@@ -67,7 +59,7 @@ func setupServeMCPClient(t *testing.T, dbPath string) *mcpClient.Client {
 
 // callServeMCPServer creates an MCP client, performs a request, and writes output to the provided path
 func callServeMCPServer(t *testing.T, dbPath string, request mcp.CallToolRequest, outputPath string) {
-	client := setupServeMCPClient(t, dbPath)
+	client := setupServeMCPClient(t, "serve mcp --documentation "+dbPath)
 	ctx := context.Background()
 
 	response, err := client.CallTool(ctx, request)

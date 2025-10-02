@@ -225,6 +225,19 @@
         "--documentation", "../.vscode/hyaline/serve-mcp/documentation.sqlite"
       ]
     },{
+      "name": "Serve MCP (GitHub)",
+      "type": "go",
+      "request": "launch",
+      "mode": "debug",
+      "cwd": "${workspaceFolder}/cli/",
+      "program": "${workspaceFolder}/cli/cmd/hyaline.go",
+      "envFile": "${workspaceFolder}/cli/.env",
+      "args":[
+        "--debug",
+        "serve", "mcp",
+        "--github-repo", "appgardenstudios/hyaline-example"
+      ]
+    },{
       "name": "Export Documentation (fs)",
       "type": "go",
       "request": "launch",

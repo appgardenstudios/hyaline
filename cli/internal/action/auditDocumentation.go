@@ -62,11 +62,12 @@ func AuditDocumentation(args *AuditDocumentationArgs) error {
 	}
 
 	// Initialize documentation database
-	db, err := sqlite.InitInput(args.Documentation)
+	db, close, err := sqlite.InitInput(args.Documentation)
 	if err != nil {
 		slog.Debug("action.AuditDocumentation could not initialize documentation database", "documentation", args.Documentation, "error", err)
 		return err
 	}
+	defer close()
 
 	slog.Debug("action.AuditDocumentation initialized documentation database", "documentation", args.Documentation)
 

@@ -58,7 +58,7 @@ The following repository variables should be created in your `hyaline-github-app
 **HYALINE_LLM_MODEL** - The LLM model to be used. This will be referenced as the value for `llm.provider` in the configs (using environment substitution). Please see [configuration reference](../reference/config.md) for supported values.
 
 ### 3. Run Install
-To bootstrap the repository in preparation for the Github App installation you will need to run the `Install` workflow and review/edit/merge the generated pull request.
+To bootstrap the repository in preparation for the GitHub App installation you will need to run the `Install` workflow and review/edit/merge the generated pull request.
 
 Manually trigger the `Install` workflow in your `hyaline-github-app-config` repo instance and ensure that it completes successfully. It will run `Update Hyaline` to ensure your `hyaline-github-app-config` repo is properly connected and up-to-date. It also runs `Doctor` to generate a pull request with a set of suggested changes and configuration updates based on the repositories in scope of the `HYALINE_GITHUB_TOKEN` generated above.
 

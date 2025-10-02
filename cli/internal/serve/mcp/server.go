@@ -2,11 +2,11 @@ package mcp
 
 import (
 	"context"
-	"database/sql"
 	"fmt"
 	"hyaline/internal/serve/mcp/prompts"
 	"hyaline/internal/serve/mcp/tools"
 	"hyaline/internal/serve/mcp/utils"
+	"hyaline/internal/sqlite"
 	"log/slog"
 
 	"github.com/mark3labs/mcp-go/mcp"
@@ -17,10 +17,11 @@ import (
 type Server struct {
 	mcpServer         *server.MCPServer
 	documentationData *utils.DocumentationData
+	options           utils.ServerOptions
 }
 
 // NewServer creates and initializes a new MCP server
-func NewServer(db *sql.DB, version string) (*Server, error) {
+func NewServer(db *sqlite.Queries, version string, opts utils.ServerOptions) (*Server, error) {
 	slog.Debug("serve.mcp.NewServer starting")
 
 	// Load all data into memory
@@ -39,6 +40,7 @@ func NewServer(db *sql.DB, version string) (*Server, error) {
 	hyalineMCPServer := &Server{
 		mcpServer:         mcpServer,
 		documentationData: documentationData,
+		options:           opts,
 	}
 
 	// Register tools and prompts
@@ -60,6 +62,20 @@ func (hyalineMCPServer *Server) registerTools() {
 
 	hyalineMCPServer.mcpServer.AddTool(tools.GetDocumentsTool(), func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
 		return tools.HandleGetDocuments(ctx, request, hyalineMCPServer.documentationData)
+	})
+
+	hyalineMCPServer.mcpServer.AddTool(tools.ReloadDocumentationTool(), func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+		result, newDocumentationData, err := tools.HandleReloadDocumentation(ctx, request, hyalineMCPServer.options)
+		if err != nil {
+			return result, err
+		}
+
+		// Update the documentation data if reload was successful
+		if newDocumentationData != nil {
+			hyalineMCPServer.documentationData = newDocumentationData
+		}
+
+		return result, nil
 	})
 }
 

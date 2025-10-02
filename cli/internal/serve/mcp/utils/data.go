@@ -2,7 +2,6 @@ package utils
 
 import (
 	"context"
-	"database/sql"
 	"fmt"
 	"hyaline/internal/docs"
 	"hyaline/internal/sqlite"
@@ -31,14 +30,13 @@ type DocumentationData struct {
 }
 
 // LoadAllData loads all documentation data from the database into memory
-func LoadAllData(db *sql.DB) (*DocumentationData, error) {
+func LoadAllData(db *sqlite.Queries) (*DocumentationData, error) {
 	slog.Debug("serve.mcp.data.LoadAllData starting")
 
 	ctx := context.Background()
-	queries := sqlite.New(db)
 
 	// Load sources
-	sqliteSources, err := queries.GetAllSources(ctx)
+	sqliteSources, err := db.GetAllSources(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("failed to load sources: %w", err)
 	}
@@ -52,7 +50,7 @@ func LoadAllData(db *sql.DB) (*DocumentationData, error) {
 		}
 
 		// Load documents for this source
-		sqliteDocuments, err := queries.GetDocumentsForSource(ctx, source.ID)
+		sqliteDocuments, err := db.GetDocumentsForSource(ctx, source.ID)
 		if err != nil {
 			return nil, fmt.Errorf("failed to load documents for source %s: %w", source.ID, err)
 		}
@@ -67,7 +65,7 @@ func LoadAllData(db *sql.DB) (*DocumentationData, error) {
 			}
 
 			// Load document tags
-			documentTags, err := queries.GetDocumentTags(ctx, sqlite.GetDocumentTagsParams{
+			documentTags, err := db.GetDocumentTags(ctx, sqlite.GetDocumentTagsParams{
 				SourceID:   source.ID,
 				DocumentID: document.ID,
 			})
@@ -81,7 +79,7 @@ func LoadAllData(db *sql.DB) (*DocumentationData, error) {
 			}
 
 			// Load sections
-			sqliteSections, err := queries.GetSectionsForDocument(ctx, sqlite.GetSectionsForDocumentParams{
+			sqliteSections, err := db.GetSectionsForDocument(ctx, sqlite.GetSectionsForDocumentParams{
 				SourceID:   source.ID,
 				DocumentID: document.ID,
 			})
@@ -99,7 +97,7 @@ func LoadAllData(db *sql.DB) (*DocumentationData, error) {
 				}
 
 				// Load section tags
-				sectionTags, err := queries.GetSectionTags(ctx, sqlite.GetSectionTagsParams{
+				sectionTags, err := db.GetSectionTags(ctx, sqlite.GetSectionTagsParams{
 					SourceID:   source.ID,
 					DocumentID: document.ID,
 					SectionID:  section.ID,
