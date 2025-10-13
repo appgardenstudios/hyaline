@@ -58,7 +58,7 @@ Read the contents of a specific documentation resource.
 - `uri` - The document URI in the format `document://<source-id>/<document-id>`
 
 **Output**
-The complete contents of the requested document.
+The extracted contents of the requested document.
 
 ## Prompts
 <!-- purpose: Document all the available prompts the Hyaline MCP server provides -->
