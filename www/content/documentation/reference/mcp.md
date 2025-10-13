@@ -37,8 +37,31 @@ None.
 **Output**
 A success message indicating the documentation was reloaded successfully.
 
+## Resources
+<!-- purpose: Document all the resource features the Hyaline MCP server provides -->
+Hyaline's MCP server exposes all extracted documents as MCP resources. Access to resources varies by client. For example, Claude Code and many other clients use an `@` symbol (e.g. `@hyaline:document://hyaline-example/docs/index.html`). Refer to your client documentation for specific usage guidance.
+
+### List Resources
+List all available documentation resources. Each resource represents a single document in the documentation data set.
+
+**Output**
+A list of all available resources, where each resource includes:
+- `uri` - The document URI in the format `document://<source-id>/<document-id>`
+- `name` - The name of the document, including its file path in the documentation source (e.g. `docs/index.html`)
+- `description` - The document's purpose (if available)
+- `mimeType` - Always `text/markdown` (extracted documentation is in markdown format)
+
+### Read Resource
+Read the contents of a specific documentation resource.
+
+**Arguments**
+- `uri` - The document URI in the format `document://<source-id>/<document-id>`
+
+**Output**
+The extracted contents of the requested document.
+
 ## Prompts
-<!-- Document all the available prompts the Hyaline MCP server provides -->
+<!-- purpose: Document all the available prompts the Hyaline MCP server provides -->
 Hyaline's MCP server provides the following prompts:
 
 ### answer_question

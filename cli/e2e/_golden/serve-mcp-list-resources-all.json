@@ -1,0 +1,16 @@
+{
+  "resources": [
+    {
+      "uri": "document://mcp-test/docs/doc.html",
+      "name": "docs/doc.html",
+      "description": "Detailed documentation page",
+      "mimeType": "text/markdown"
+    },
+    {
+      "uri": "document://mcp-test/docs/index.html",
+      "name": "docs/index.html",
+      "description": "Main documentation index page",
+      "mimeType": "text/markdown"
+    }
+  ]
+}
