@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"hyaline/internal/serve/mcp/prompts"
+	"hyaline/internal/serve/mcp/resources"
 	"hyaline/internal/serve/mcp/tools"
 	"hyaline/internal/serve/mcp/utils"
 	"hyaline/internal/sqlite"
@@ -34,7 +35,8 @@ func NewServer(db *sqlite.Queries, version string, opts utils.ServerOptions) (*S
 	mcpServer := server.NewMCPServer(
 		"Hyaline Documentation Server",
 		version,
-		server.WithToolCapabilities(false), // Tools don't change dynamically
+		server.WithToolCapabilities(false),            // Tools don't change dynamically
+		server.WithResourceCapabilities(false, false), // Resources are static (no subscribe, no listChanged)
 	)
 
 	hyalineMCPServer := &Server{
@@ -43,9 +45,10 @@ func NewServer(db *sqlite.Queries, version string, opts utils.ServerOptions) (*S
 		options:           opts,
 	}
 
-	// Register tools and prompts
+	// Register tools, prompts, and resources
 	hyalineMCPServer.registerTools()
 	hyalineMCPServer.registerPrompts()
+	hyalineMCPServer.registerResources()
 
 	slog.Debug("serve.mcp.NewServer complete")
 	return hyalineMCPServer, nil
@@ -83,4 +86,17 @@ func (hyalineMCPServer *Server) registerPrompts() {
 	hyalineMCPServer.mcpServer.AddPrompt(prompts.AnswerQuestionPrompt(), func(ctx context.Context, request mcp.GetPromptRequest) (*mcp.GetPromptResult, error) {
 		return prompts.HandleAnswerQuestion(ctx, request)
 	})
+}
+
+func (hyalineMCPServer *Server) registerResources() {
+	documentResources := resources.CreateDocumentResources(hyalineMCPServer.documentationData)
+
+	handler := func(ctx context.Context, request mcp.ReadResourceRequest) ([]mcp.ResourceContents, error) {
+		return resources.HandleReadResource(ctx, request, hyalineMCPServer.documentationData)
+	}
+
+	// Register each resource with the shared handler
+	for _, resource := range documentResources {
+		hyalineMCPServer.mcpServer.AddResource(resource, handler)
+	}
 }

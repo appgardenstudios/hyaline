@@ -1,0 +1,1 @@
+resource not found: handler not found for resource URI 'document://mcp-test/nonexistent.md': resource not found

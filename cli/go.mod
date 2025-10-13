@@ -12,7 +12,7 @@ require (
 	github.com/gocolly/colly/v2 v2.2.0
 	github.com/google/go-github/v74 v74.0.0
 	github.com/invopop/jsonschema v0.13.0
-	github.com/mark3labs/mcp-go v0.32.0
+	github.com/mark3labs/mcp-go v0.41.1
 	github.com/openai/openai-go/v2 v2.4.1
 	github.com/urfave/cli/v2 v2.27.5
 	golang.org/x/net v0.44.0
